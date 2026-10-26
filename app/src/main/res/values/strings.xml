@@ -395,4 +395,28 @@
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
+
+    <!-- Errors -->
+    <string name="error_playback_file_missing">file doesn\'t exist</string>
+    <string name="error_playback_permission_denied">permission denied</string>
+    <string name="error_playback_no_connection">no connection</string>
+    <string name="error_playback_server_refused">server denied access</string>
+    <string name="error_playback_file_damaged">file is damaged</string>
+    <string name="error_playback_format_unsupported">format not supported</string>
+    <string name="error_playback_decoding_failed">decoding failed</string>
+    <string name="error_playback_source_off">source unavailable</string>
+    <string name="error_playback_not_playable">nothing to play</string>
+    <string name="error_playback_unknown">unknown error</string>
+    <string name="error_backup_not_a_backup">Not a Kreate backup</string>
+    <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
+    <string name="error_backup_damaged">Backup is damaged</string>
+    <string name="error_player_not_ready">Player not ready</string>
+    <string name="error_no_equalizer">No equalizer found</string>
+    <string name="error_album_reset_order">Couldn\'t reset order</string>
+    <string name="error_move_song">Couldn\'t move song</string>
+    <string name="error_playlist_remove_song">Couldn\'t remove song</string>
+    <string name="error_queue_every_song">Couldn\'t get all songs</string>
+    <string name="error_lyrics_load">Couldn\'t load lyrics</string>
+    <string name="error_unreachable">Can\'t reach %1$s</string>
+    <string name="error_loudness_failed">Loudness measurement failed</string>
 </resources>

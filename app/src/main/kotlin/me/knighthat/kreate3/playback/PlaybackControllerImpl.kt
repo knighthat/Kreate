@@ -333,7 +333,10 @@ class PlaybackControllerImpl(
                         // Whatever screen is open, or none, the user learns why a song stopped
                         notifier.post(
                             Message(
-                                error.userMessage(connected.currentMediaItem),
+                                error.userMessage(
+                                    connected.currentMediaItem,
+                                    context.getString(error.reasonRes()),
+                                ),
                                 dismissable = true,
                                 channel = AppChannel.PLAYBACK,
                             )

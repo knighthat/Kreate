@@ -21,6 +21,7 @@ package me.knighthat.kreate3.playback
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
+import me.knighthat.kreate3.R
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,35 +42,45 @@ class PlaybackErrorsTest {
     fun messageNamesTheSongAndWhyItFailed() {
         assertEquals(
             "Couldn't play \"Derezzed\": its file is gone",
-            error(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND).userMessage(song),
+            error(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND).userMessage(
+                song,
+                "its file is gone"
+            ),
+        )
+    }
+
+    @Test
+    fun errorsSayWhyTheSongFailed() {
+        assertEquals(
+            R.string.error_playback_file_missing,
+            error(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND).reasonRes(),
         )
         assertEquals(
-            "Couldn't play \"Derezzed\": no connection",
-            error(PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED).userMessage(song),
+            R.string.error_playback_no_connection,
+            error(PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED).reasonRes(),
         )
         assertEquals(
-            "Couldn't play \"Derezzed\": its format isn't supported",
-            error(PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED).userMessage(song),
+            R.string.error_playback_format_unsupported,
+            error(PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED).reasonRes(),
         )
     }
 
     @Test
     fun sourceErrorsSayWhatIsWrongWithTheSource() {
+        assertEquals(R.string.error_playback_source_off, error(ERROR_CODE_SOURCE_OFF).reasonRes())
         assertEquals(
-            "Couldn't play \"Derezzed\": its source is off or not set up",
-            error(ERROR_CODE_SOURCE_OFF).userMessage(song),
-        )
-        assertEquals(
-            "Couldn't play \"Derezzed\": its source has nothing to play",
-            error(ERROR_CODE_NOT_PLAYABLE).userMessage(song),
+            R.string.error_playback_not_playable,
+            error(ERROR_CODE_NOT_PLAYABLE).reasonRes()
         )
     }
 
     @Test
     fun songWithoutTitleAndUnknownErrorStillSaySomething() {
+        val unknown = error(PlaybackException.ERROR_CODE_UNSPECIFIED)
+        assertEquals(R.string.error_playback_unknown, unknown.reasonRes())
         assertEquals(
             "Couldn't play this song: something went wrong",
-            error(PlaybackException.ERROR_CODE_UNSPECIFIED).userMessage(null),
+            unknown.userMessage(null, "something went wrong"),
         )
     }
 }

@@ -59,6 +59,9 @@ paths:
   argument.
 - A dialog has `dialog_title_{dialog}` and `dialog_body_{dialog}`; when it has several bodies they
   are numbered, `dialog_body_{dialog}_1`. The buttons use `action_*`.
+- An error the user sees is `error_*`. When a message is built from a text and an error (`Couldn't
+  play "Song": its file is gone`), only the error is a string; the rest stays a literal for now.
+  Code without a `Context` holds the error as a `@StringRes` and its caller resolves it.
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`). The Context a view model needs for its strings
   is injected (`private val context: Context`, Koin provides it), never read from a global.

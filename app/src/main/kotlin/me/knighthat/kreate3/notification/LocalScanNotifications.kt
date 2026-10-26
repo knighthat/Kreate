@@ -24,6 +24,7 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import me.knighthat.kreate3.R
 
 /**
  * The two notifications of [AppChannel.LOCAL_SCAN]: one for reading the device's music, one for
@@ -98,7 +99,7 @@ class LocalScanNotifications(private val context: Context) {
             context.notify(
                 FAILED_FIRST_ID + index,
                 done(name)
-                    .setContentText("Couldn't measure its loudness")
+                    .setContentText(context.getString(R.string.error_loudness_failed))
                     .setGroup(FAILED_GROUP)
                     .build()
             )

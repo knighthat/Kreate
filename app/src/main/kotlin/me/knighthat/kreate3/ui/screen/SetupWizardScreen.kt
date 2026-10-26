@@ -161,7 +161,7 @@ private suspend fun Context.importBackup(uri: Uri): String? =
         Backup.stageWithoutRollback(this, input)
         null
     } catch (e: BackupException) {
-        e.message
+        getString(e.messageRes)
     } catch (_: IOException) {
         getString(R.string.setting_description_restore_status_failed)
     } catch (_: SecurityException) {

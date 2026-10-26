@@ -20,11 +20,13 @@ package me.knighthat.kreate3.backup
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.core.content.pm.PackageInfoCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup.Companion.applyPendingRestore
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.preferences.PreferencesBackup
@@ -54,9 +56,9 @@ internal data class BackupManifest(
 )
 
 /**
- * A backup that can't be restored, [message] tells the user why.
+ * A backup that can't be restored, [messageRes] tells the user why.
  */
-class BackupException(message: String) : Exception(message)
+class BackupException(@param:StringRes val messageRes: Int) : Exception()
 
 /**
  * Saves the library and the preferences of every profile to a zip, and restores them from one.
@@ -129,7 +131,7 @@ class Backup(
         /** Backup of what was there before a restore, in the cache folder. */
         internal const val ROLLBACK_FILE = "rollback.zip"
 
-        private const val NOT_A_BACKUP = "This file is not a Kreate backup"
+        private val NOT_A_BACKUP = R.string.error_backup_not_a_backup
 
         private val JSON = Json { ignoreUnknownKeys = true }
 
@@ -229,7 +231,7 @@ class Backup(
                 || manifest.globalPreferences > PreferencesBackup.GLOBAL_VERSION
                 || manifest.profilePreferences > PreferencesBackup.PROFILE_VERSION
             )
-                throw BackupException("This backup is from a newer version of Kreate, update the app to restore it")
+                throw BackupException(R.string.error_backup_newer_version)
 
             val database = File(target, DATABASE_ENTRY)
             val header = ByteArray(SQLITE_HEADER.size)
@@ -238,7 +240,7 @@ class Backup(
                     target
                 )
             )
-                throw BackupException("This backup is damaged")
+                throw BackupException(R.string.error_backup_damaged)
         }
 
         /**

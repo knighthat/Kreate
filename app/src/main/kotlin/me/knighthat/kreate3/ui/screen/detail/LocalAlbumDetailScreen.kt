@@ -95,6 +95,8 @@ fun LocalAlbumDetailScreen(
     val isReordering by viewModel.isReordering.collectAsState()
     val arranged by viewModel.arranged.collectAsState()
     val notifier = LocalNotifier.current
+    val resetFailed = stringResource(R.string.error_album_reset_order)
+    val moveFailed = stringResource(R.string.error_move_song)
 
     LocalAlbumDetailContent(
         name = album?.name,
@@ -119,12 +121,12 @@ fun LocalAlbumDetailScreen(
         onReorder = viewModel::reorder,
         onResetOrder = {
             viewModel.resetOrder { reset ->
-                notifier.post(if (reset) "Back in the album's order" else "Couldn't reset the order")
+                notifier.post(if (reset) "Back in the album's order" else resetFailed)
             }
         },
         onMoveSong = { song, after ->
             viewModel.moveSong(song.mediaId, after?.mediaId) { moved ->
-                if (!moved) notifier.post("Couldn't move it in the album")
+                if (!moved) notifier.post(moveFailed)
             }
         },
         share = if (canShare) viewModel::shareLink else null,

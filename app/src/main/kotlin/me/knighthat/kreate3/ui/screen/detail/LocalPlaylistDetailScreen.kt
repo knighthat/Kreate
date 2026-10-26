@@ -82,6 +82,8 @@ fun LocalPlaylistDetailScreen(
     val mode by viewModel.editMode.collectAsState()
     val arranged by viewModel.arranged.collectAsState()
     val notifier = LocalNotifier.current
+    val moveFailed = stringResource(R.string.error_move_song)
+    val removeFailed = stringResource(R.string.error_playlist_remove_song)
 
     LocalPlaylistDetailContent(
         name = playlist?.name,
@@ -97,7 +99,7 @@ fun LocalPlaylistDetailScreen(
         onModeChange = viewModel::edit,
         onMoveSong = { song, after ->
             viewModel.moveSong(song.mediaId, after?.mediaId) { moved ->
-                if (!moved) notifier.post("Couldn't move it in the playlist")
+                if (!moved) notifier.post(moveFailed)
             }
         },
         onRemoveSong = { song, fromMenu ->
@@ -105,7 +107,7 @@ fun LocalPlaylistDetailScreen(
                 // A cover tapped in a row of covers to remove says nothing unless it failed
                 if (fromMenu || !removed) notifier.post(
                     if (removed) "Removed from ${playlist?.name ?: "the playlist"}"
-                    else "Couldn't remove it from the playlist"
+                    else removeFailed
                 )
             }
         },

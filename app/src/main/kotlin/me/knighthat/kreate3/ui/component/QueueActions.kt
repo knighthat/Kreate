@@ -193,11 +193,12 @@ fun rememberQuickQueueActions(
 ): (QueueAction) -> Unit {
     val playback = koinInject<PlaybackController>()
     val notifier = LocalNotifier.current
+    val everySongFailed = stringResource(R.string.error_queue_every_song)
     val scope = rememberCoroutineScope()
     val currentShown by rememberUpdatedState(shown)
     val currentSongs by rememberUpdatedState(songs)
 
-    return remember(playback, notifier, scope) {
+    return remember(playback, notifier, scope, everySongFailed) {
         { action ->
             scope.launch {
                 val first = currentShown()
@@ -208,7 +209,7 @@ fun rememberQuickQueueActions(
 
                 val all = currentSongs()
                 if (all == null) {
-                    notifier.post("Couldn't get every song")
+                    notifier.post(everySongFailed)
                     return@launch
                 }
                 // The list can be a whole library, the controller can be called from any thread

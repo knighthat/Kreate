@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -433,7 +434,7 @@ private fun LyricsPageContent(
                     }
 
                     else -> {
-                        Message("Couldn't load the lyrics")
+                        Message(stringResource(R.string.error_lyrics_load))
                         TextButton(onClick = onFetchAgain) { Text("Retry") }
                     }
                 }

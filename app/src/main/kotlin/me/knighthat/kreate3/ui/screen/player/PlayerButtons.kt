@@ -97,6 +97,8 @@ internal fun PlayerButtons(
 private fun EqualizerButton(controller: PlaybackController) {
     val context = LocalContext.current
     val notifier = LocalNotifier.current
+    val notReady = stringResource(R.string.error_player_not_ready)
+    val noEqualizer = stringResource(R.string.error_no_equalizer)
     // Started for a result, the equalizer learns which app opened it
     val equalizer =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
@@ -108,7 +110,7 @@ private fun EqualizerButton(controller: PlaybackController) {
         onClick = {
             val audioSession = controller.audioSessionId()
             if (audioSession == null) {
-                notifier.post("The player isn't ready yet")
+                notifier.post(notReady)
                 return@ModeButton
             }
             val panel = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
@@ -118,7 +120,7 @@ private fun EqualizerButton(controller: PlaybackController) {
             try {
                 equalizer.launch(panel)
             } catch (_: ActivityNotFoundException) {
-                notifier.post("No equalizer on this device")
+                notifier.post(noEqualizer)
             }
         },
     )
