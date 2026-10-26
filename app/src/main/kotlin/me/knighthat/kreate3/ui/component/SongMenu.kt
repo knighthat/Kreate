@@ -467,14 +467,14 @@ private fun SongMenuActions(
     if (navigator != null && album != null)
         MenuRow(
             R.drawable.album,
-            stringResource(R.string.menu_go_to, pluralStringResource(R.plurals.album, 1))
+            stringResource(R.string.menu_go_to, pluralStringResource(R.plurals.unit_album, 1))
         ) { close { navigator.open(album) } }
     if (navigator != null && artists.isNotEmpty())
         MenuRow(
             icon = R.drawable.artist,
             label = stringResource(
                 R.string.menu_go_to,
-                pluralStringResource(R.plurals.artist, artists.size),
+                pluralStringResource(R.plurals.unit_artist, artists.size),
             ),
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
         ) {

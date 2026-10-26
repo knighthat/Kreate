@@ -296,10 +296,10 @@ enum class Tab(
     @param:PluralsRes val noun: Int,
     @param:DrawableRes val icon: Int,
 ) {
-    SONGS(Songs, R.string.tab_songs, R.plurals.song, R.drawable.music_note),
-    ALBUMS(Albums, R.string.tab_albums, R.plurals.album, R.drawable.album),
-    ARTISTS(Artists, R.string.tab_artists, R.plurals.artist, R.drawable.artist),
-    PLAYLISTS(Playlists, R.string.tab_playlists, R.plurals.playlist, R.drawable.queue_music);
+    SONGS(Songs, R.string.tab_songs, R.plurals.unit_song, R.drawable.music_note),
+    ALBUMS(Albums, R.string.tab_albums, R.plurals.unit_album, R.drawable.album),
+    ARTISTS(Artists, R.string.tab_artists, R.plurals.unit_artist, R.drawable.artist),
+    PLAYLISTS(Playlists, R.string.tab_playlists, R.plurals.unit_playlist, R.drawable.queue_music);
 
     companion object {
 

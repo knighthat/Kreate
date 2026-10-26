@@ -53,7 +53,7 @@ paths:
   bar, the player) is `tab_*`, the title of the screen it opens is `screen_title_*`; the title of a
   setting is `setting_title_*`, the title of a dialog `dialog_title_*`.
 - A noun that is shown in the singular or the plural, and is not a `tab_*` nor a `screen_title_*`,
-  is a plural with the noun as its name (`album`: album, albums), never cut from another string.
+  is a plural named `unit_{noun}` (`unit_album`: album, albums), never cut from another string.
   Texts in `plurals.xml` are lowercase, a heading or label capitalizes them in code
   (`replaceFirstChar`). A menu entry that goes to a noun is `menu_go_to` with the plural as its
   argument.

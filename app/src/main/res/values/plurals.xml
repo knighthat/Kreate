@@ -41,19 +41,19 @@
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>
     </plurals>
-    <plurals name="song">
+    <plurals name="unit_song">
         <item quantity="one">song</item>
         <item quantity="other">songs</item>
     </plurals>
-    <plurals name="album">
+    <plurals name="unit_album">
         <item quantity="one">album</item>
         <item quantity="other">albums</item>
     </plurals>
-    <plurals name="artist">
+    <plurals name="unit_artist">
         <item quantity="one">artist</item>
         <item quantity="other">artists</item>
     </plurals>
-    <plurals name="playlist">
+    <plurals name="unit_playlist">
         <item quantity="one">playlist</item>
         <item quantity="other">playlists</item>
     </plurals>

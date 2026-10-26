@@ -278,7 +278,7 @@ private fun LyricsSearchDialog(
                     value = typedArtist,
                     onValueChange = { typedArtist = it },
                     label = {
-                        val artistName = pluralStringResource(R.plurals.artist, 1)
+                        val artistName = pluralStringResource(R.plurals.unit_artist, 1)
                         Text(artistName.replaceFirstChar { it.uppercase() })
                     },
                     singleLine = true,

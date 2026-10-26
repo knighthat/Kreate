@@ -132,7 +132,7 @@ private fun LocalArtistDetailContent(
                 item {
                     SectionTitle(
                         pluralStringResource(
-                            R.plurals.album,
+                            R.plurals.unit_album,
                             2
                         ).replaceFirstChar { it.uppercase() })
                     LazyRow(
@@ -152,7 +152,7 @@ private fun LocalArtistDetailContent(
             item {
                 SectionTitle(
                     pluralStringResource(
-                        R.plurals.song,
+                        R.plurals.unit_song,
                         2
                     ).replaceFirstChar { it.uppercase() })
             }

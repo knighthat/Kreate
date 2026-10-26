@@ -143,7 +143,7 @@ private fun OpenSubsonicArtistDetailContent(
                 item(key = "albums") {
                     SectionTitle(
                         pluralStringResource(
-                            R.plurals.album,
+                            R.plurals.unit_album,
                             2
                         ).replaceFirstChar { it.uppercase() })
                     LazyRow(
