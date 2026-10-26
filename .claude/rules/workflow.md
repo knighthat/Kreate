@@ -37,6 +37,10 @@
   that probably shouldn't be staged (e.g. `.idea/*` touched by Studio) and new files to add.
 - **CLAUDE.md stays lean:** only durable, approved rules; no descriptions of what exists. Details
   go in `.claude/rules/` (by path) or `.claude/docs/`.
+- **Rules stay lean too:** one topic per rule, with the narrowest `paths` that still cover it; split
+  a rule when part of it matters only to some of its paths. Reference material (probe results,
+  server behavior, how-tos) goes in `.claude/docs/`, long naming or lookup lists become tables, and
+  a rule says each thing once, linking to the rule that owns it instead of repeating it.
 - **Agent files live under `.claude/`:** rules in `rules/`, details in `docs/`, plus
   `rule-index.md`, `file-index.md` and its parts in `file-index/`; never a top-level `docs/`, and
   never `.claude/agents/`, which Claude Code reads as subagent definitions. What's meant to stay
