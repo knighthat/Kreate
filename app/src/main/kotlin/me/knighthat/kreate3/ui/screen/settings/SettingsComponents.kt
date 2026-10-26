@@ -347,26 +347,24 @@ fun TextSetting(
 /**
  * A whole number typed in a dialog, between [min] and [max].
  *
- * @param unit what the number counts, like "seconds", shown after it
  * @param note extra line under the title, like when a change applies
  */
 @Composable
 fun NumberSetting(
     title: String,
     value: Long,
-    unit: String,
     min: Long,
     max: Long,
     onSave: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    note: String? = null,
+    note: @Composable (Long) -> String? = { null },
 ) {
     val outOfRange = stringResource(R.string.setting_description_between, min, max)
 
     TextSetting(
         title = title,
         value = value.toString(),
-        summary = listOfNotNull("$value $unit", note).joinToString(". "),
+        summary = note(value).orEmpty(),
         onSave = { onSave(it.toLong()) },
         modifier = modifier,
         keyboardType = KeyboardType.Number,

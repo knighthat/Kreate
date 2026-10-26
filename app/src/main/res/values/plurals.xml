@@ -17,17 +17,9 @@
   -->
 
 <resources>
-    <plurals name="unit_minute">
-        <item quantity="one">minute</item>
-        <item quantity="other">minutes</item>
-    </plurals>
-    <plurals name="unit_second">
-        <item quantity="one">second</item>
-        <item quantity="other">seconds</item>
-    </plurals>
-    <plurals name="unit_time">
-        <item quantity="one">time</item>
-        <item quantity="other">times</item>
+    <plurals name="time">
+        <item quantity="one">%1$d time</item>
+        <item quantity="other">%1$d times</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">%1$d minute</item>

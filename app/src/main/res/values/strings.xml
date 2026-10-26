@@ -18,13 +18,13 @@
 
 <resources>
     <string name="app_name">Kreate</string>
-    <string name="source_ytm" translatable="false">YouTube Music</string>
+    <string name="source_ytm">YouTube Music</string>
     <string name="source_opensubsonicapi" translatable="false">OpenSubsonic API</string>
     <string name="source_local">On device</string>
     <string name="source_better_lyrics" translatable="false">Better Lyrics</string>
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
-    <string name="mib">MiB</string>
+    <string name="mib">%1$d MiB</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
@@ -63,24 +63,25 @@
 
     <!-- common -->
     <string name="setting_description_between">Between %1$d and %2$d</string>
-    <string name="setting_description_next_launch">Applies from the next launch</string>
-    <string name="setting_description_percent_of_app_memory" formatted="false">% of app memory</string>
+    <string name="setting_description_restart_required">%1$s. Restart required</string>
 
     <!-- general -->
     <string name="setting_title_scan_interval">Scan interval</string>
-    <string name="setting_description_scan_interval">How often the device is searched for new music</string>
+    <string name="setting_description_scan_interval">Search for new local media every %1$s</string>
     <string name="setting_title_cache">Cache</string>
-    <string name="setting_description_cache">Songs streamed from a server or %1$s. Applies from the next launch</string>
+    <string name="setting_description_cache">Cache up to %1$s of songs streamed remotely. Restart required</string>
     <string name="setting_title_downloads">Downloads</string>
-    <string name="setting_description_downloads">Songs kept to play offline, separate from the cache</string>
+    <string name="setting_description_downloads">%1$s. Songs kept to play offline, separate from the cache</string>
     <string name="setting_title_disk_cache">Disk cache</string>
+    <string name="setting_description_disk_cache">%1$s. Keep seen images in local storage for faster load time</string>
     <string name="setting_title_memory_cache">Memory cache</string>
+    <string name="setting_description_memory_cache">%1$s of app memory. Keep recently seen images in even faster cache pool</string>
     <string name="setting_title_dont_exit_with_back">Don\'t exit with back</string>
     <string name="setting_description_dont_exit_with_back">Going back from the first screen does nothing</string>
     <string name="setting_title_confirm_exit">Confirm exit</string>
     <string name="setting_description_confirm_exit">Go back twice from the first screen to exit</string>
     <string name="setting_title_confirmation_time">Confirmation time</string>
-    <string name="setting_description_confirmation_time">How long the second time is waited for</string>
+    <string name="setting_description_confirmation_time">Wait for %1$s before dismissing confirmation</string>
 
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>
@@ -141,7 +142,7 @@
     <string name="setting_title_keep_the_queue">Keep the queue</string>
     <string name="setting_description_keep_the_queue">Pick up where you left off after the app closes</string>
     <string name="setting_title_save_interval">Save interval</string>
-    <string name="setting_description_save_interval">How often the place in the song is saved while it plays</string>
+    <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>

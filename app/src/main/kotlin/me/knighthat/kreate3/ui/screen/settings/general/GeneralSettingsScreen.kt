@@ -30,6 +30,7 @@ import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import kotlin.math.roundToLong
 
 private const val MIB = 1024L * 1024
 
@@ -52,54 +53,72 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         NumberSetting(
             title = stringResource(R.string.setting_title_scan_interval),
             value = scanInterval.toLong(),
-            unit = pluralStringResource(R.plurals.unit_minute, scanInterval),
             min = 15,
             max = 24 * 60,
             onSave = { Preferences.LOCAL_SCAN_INTERVAL.update(it.toInt()) },
-            note = stringResource(R.string.setting_description_scan_interval),
+            note = {
+                stringResource(
+                    R.string.setting_description_scan_interval,
+                    pluralStringResource(R.plurals.minute, it.toInt(), it)
+                )
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_songs))
         NumberSetting(
             title = stringResource(R.string.setting_title_cache),
             value = songCache / MIB,
-            unit = stringResource(R.string.mib),
             min = 128,
             max = 32 * 1024,
             onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it * MIB) },
-            note = stringResource(
-                R.string.setting_description_cache,
-                stringResource(R.string.source_ytm)
-            ),
+            note = {
+                stringResource(
+                    R.string.setting_description_cache,
+                    stringResource(R.string.mib, it),
+                    stringResource(R.string.source_ytm)
+                )
+            },
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_downloads),
             value = songDownloads / MIB,
-            unit = stringResource(R.string.mib),
             min = 128,
             max = 256 * 1024,
             onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it * MIB) },
-            note = stringResource(R.string.setting_description_downloads),
+            note = {
+                stringResource(
+                    R.string.setting_description_downloads,
+                    stringResource(R.string.mib, it),
+                )
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_images))
         NumberSetting(
             title = stringResource(R.string.setting_title_disk_cache),
             value = diskCache / MIB,
-            unit = stringResource(R.string.mib),
             min = 16,
             max = 4096,
             onSave = { Preferences.IMAGE_DISK_CACHE.update(it * MIB) },
-            note = stringResource(R.string.setting_description_next_launch),
+            note = {
+                stringResource(
+                    R.string.setting_description_disk_cache,
+                    stringResource(R.string.mib, it)
+                )
+            },
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_memory_cache),
-            value = Math.round(memoryCache * 100),
-            unit = stringResource(R.string.setting_description_percent_of_app_memory),
+            value = (memoryCache * 100).roundToLong(),
             min = 5,
             max = 50,
             onSave = { Preferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
-            note = stringResource(R.string.setting_description_next_launch),
+            note = {
+                stringResource(
+                    R.string.setting_description_memory_cache,
+                    stringResource(R.string.percent, it)
+                )
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_navigation))
@@ -120,11 +139,15 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 NumberSetting(
                     title = stringResource(R.string.setting_title_confirmation_time),
                     value = exitTimeout.toLong(),
-                    unit = pluralStringResource(R.plurals.unit_second, exitTimeout),
                     min = 1,
                     max = 10,
                     onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
-                    note = stringResource(R.string.setting_description_confirmation_time),
+                    note = {
+                        stringResource(
+                            R.string.setting_description_confirmation_time,
+                            pluralStringResource(R.plurals.second, it.toInt(), it)
+                        )
+                    },
                 )
         }
     }

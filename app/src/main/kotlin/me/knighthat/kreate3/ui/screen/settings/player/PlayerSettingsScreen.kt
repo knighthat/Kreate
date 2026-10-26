@@ -99,11 +99,15 @@ fun PlayerSettingsScreen(
             NumberSetting(
                 title = stringResource(R.string.setting_title_save_interval),
                 value = queueSaveInterval.toLong(),
-                unit = pluralStringResource(R.plurals.unit_second, queueSaveInterval),
                 min = 1,
                 max = 5 * 60,
                 onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
-                note = stringResource(R.string.setting_description_save_interval),
+                note = {
+                    stringResource(
+                        R.string.setting_description_save_interval,
+                        pluralStringResource(R.plurals.second, it.toInt(), it)
+                    )
+                },
             )
         val off = stringResource(R.string.status_off)
         val preloadLabels = PRELOAD_SECONDS.associateWith {
@@ -147,11 +151,15 @@ fun PlayerSettingsScreen(
         NumberSetting(
             title = stringResource(R.string.setting_title_minimum_play_time),
             value = historyMinSeconds.toLong(),
-            unit = pluralStringResource(R.plurals.unit_second, historyMinSeconds),
             min = 1,
             max = 10 * 60,
             onSave = { Preferences.PLAYBACK_HISTORY_MIN_SECONDS.update(it.toInt()) },
-            note = stringResource(R.string.setting_description_minimum_play_time),
+            note = {
+                stringResource(
+                    R.string.setting_description_minimum_play_time,
+                    pluralStringResource(R.plurals.second, it.toInt(), it)
+                )
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_lyrics))

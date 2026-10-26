@@ -112,29 +112,41 @@ fun NetworkSettingsScreen(
         NumberSetting(
             title = stringResource(R.string.setting_title_connect_timeout),
             value = connectTimeout.toLong(),
-            unit = pluralStringResource(R.plurals.unit_second, connectTimeout),
             min = 1,
             max = 120,
             onSave = { Preferences.NETWORK_CONNECT_TIMEOUT.update(it.toInt()) },
-            note = stringResource(R.string.setting_description_next_launch),
+            note = {
+                stringResource(
+                    R.string.setting_description_restart_required,
+                    pluralStringResource(R.plurals.second, it.toInt(), it)
+                )
+            },
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_read_timeout),
             value = readTimeout.toLong(),
-            unit = pluralStringResource(R.plurals.unit_second, readTimeout),
             min = 1,
             max = 300,
             onSave = { Preferences.NETWORK_READ_TIMEOUT.update(it.toInt()) },
-            note = stringResource(R.string.setting_description_next_launch),
+            note = {
+                stringResource(
+                    R.string.setting_description_restart_required,
+                    pluralStringResource(R.plurals.second, it.toInt(), it)
+                )
+            },
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_retries),
             value = maxRetries.toLong(),
-            unit = pluralStringResource(R.plurals.unit_time, maxRetries),
             min = 0,
             max = 10,
             onSave = { Preferences.NETWORK_MAX_RETRIES.update(it.toInt()) },
-            note = stringResource(R.string.setting_description_retries),
+            note = {
+                stringResource(
+                    R.string.setting_description_restart_required,
+                    pluralStringResource(R.plurals.time, it.toInt(), it)
+                )
+            },
         )
 
         // A source's own proxy, on its page, overrides this one
