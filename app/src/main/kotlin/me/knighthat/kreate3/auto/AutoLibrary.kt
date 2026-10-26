@@ -304,7 +304,13 @@ internal class AutoLibrary(
             .setMediaId(AutoNode.Collection(tab, origin, key).id)
             .setMediaMetadata(
                 item.mediaMetadata.buildUpon()
-                    .setArtworkUri(context.autoArtworkUri(item.mediaMetadata.artworkUri))
+                    // Without it Auto shows the artist under the title, the artist's own name
+                    .setDisplayTitle(item.mediaMetadata.title)
+                    // Auto draws a warning sign where a card has no cover
+                    .setArtworkUri(
+                        context.autoArtworkUri(item.mediaMetadata.artworkUri)
+                            ?: resourceUri(R.drawable.music_note)
+                    )
                     .setIsBrowsable(opens)
                     .setIsPlayable(!opens)
                     .build()
@@ -326,6 +332,8 @@ internal class AutoLibrary(
             .setMediaId(AutoNode.Song(list, song.mediaId).id)
             .setMediaMetadata(
                 metadata.buildUpon()
+                    // Without it Auto shows the artist under the title instead of the subtitle
+                    .setDisplayTitle(metadata.title)
                     .setSubtitle(songSubtitle(artists, album))
                     .setArtworkUri(context.autoArtworkUri(metadata.artworkUri))
                     .build()

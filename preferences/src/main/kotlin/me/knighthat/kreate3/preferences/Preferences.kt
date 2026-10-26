@@ -436,8 +436,9 @@ object Preferences : KoinComponent {
     }
 
     /**
-     * Seconds a song may load while it should be playing before it counts as failed, `0` to wait
-     * as long as the network does. `PlaybackRecovery` reads it each time loading starts.
+     * Seconds a song may load without getting further while it should be playing before it counts
+     * as failed, `0` to wait as long as the network does. A slow load that keeps adding to what is
+     * loaded never fails. `PlaybackRecovery` reads it each time loading starts.
      */
     val PLAYBACK_STALL_SECONDS by lazy { int("playback_stall_seconds", 15) }
 

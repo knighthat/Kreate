@@ -42,9 +42,11 @@ private const val MAX_SKIPS_IN_A_ROW = 3
 
 /**
  * Keeps the player going when a song fails, by what [Preferences.PLAYBACK_FAILURE_ACTION] says.
- * A song that loads longer than [Preferences.PLAYBACK_STALL_SECONDS] while it should be playing
- * fails too: a slow server otherwise leaves the player loading for minutes, Media3 retries a load
- * several times and starts over whenever a few bytes come. The user is told why each song that
+ * A song whose loading gets no further for [Preferences.PLAYBACK_STALL_SECONDS] while it should be
+ * playing fails too: a server that stopped answering otherwise leaves the player loading for
+ * minutes, Media3 retries a load several times and starts over whenever a few bytes come. A slow
+ * load that keeps getting further is waited for, "load before playing" can take longer than the
+ * limit on a slow network. The user is told why each song that
  * isn't tried again failed, through [notifier], whether a screen is open or not.
  *
  * Use it on the main thread, [scope] has to run there. Call [release] with the player.
@@ -62,6 +64,9 @@ class PlaybackRecovery(
     private var retried: String? = null
     private var skipsInARow = 0
 
+    /** A skip of [recover] is on its way, the song it moves to wasn't picked by the user. */
+    private var skipping = false
+
     init {
         player.addListener(this)
         watchStall()
@@ -76,6 +81,8 @@ class PlaybackRecovery(
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         // Also when the same song starts over, repeating it
         retried = null
+        // Another song or queue the user picked starts the count over, as a song that played does
+        if (skipping) skipping = false else skipsInARow = 0
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -107,7 +114,10 @@ class PlaybackRecovery(
         stallWatch = null
     }
 
-    /** Starts waiting while the player loads instead of playing, stops once it doesn't. */
+    /**
+     * Starts waiting while the player loads instead of playing, stops once it doesn't. The wait
+     * starts over whenever more of the song is loaded.
+     */
     private fun watchStall() {
         val loading = player.playbackState == Player.STATE_BUFFERING && player.playWhenReady
         if (!loading) {
@@ -120,9 +130,18 @@ class PlaybackRecovery(
         val seconds = Preferences.PLAYBACK_STALL_SECONDS.value
         if (seconds <= 0) return
         stallWatch = scope.launch {
-            delay(seconds.seconds)
+            var loaded = player.bufferedPosition
+            var waited = 0
+            while (waited < seconds) {
+                delay(1.seconds)
+                val now = player.bufferedPosition
+                if (now > loaded) {
+                    loaded = now
+                    waited = 0
+                } else waited++
+            }
             val item = player.currentMediaItem
-            Log.w(TAG, "Gave up loading ${item?.mediaId} after $seconds s")
+            Log.w(TAG, "Gave up loading ${item?.mediaId}, nothing loaded for $seconds s")
             // Stopping changes the state, this job must not be cancelled by it
             stallWatch = null
             // Drops the load, preparing again starts a new one where the song was
@@ -146,6 +165,7 @@ class PlaybackRecovery(
         if (action.skips && skipsInARow < MAX_SKIPS_IN_A_ROW && player.hasNextMediaItem()) {
             skipsInARow++
             Log.i(TAG, "Skipping $songId")
+            skipping = true
             player.seekToNextMediaItem()
             player.prepare()
         }

@@ -266,7 +266,11 @@ fun <T> SliderSetting(
                 Slider(
                     value = position,
                     onValueChange = { position = it },
-                    onValueChangeFinished = { if (shown != value) onSelect(shown) },
+                    onValueChangeFinished = {
+                        // A tap moves and lets go in one frame, before `shown` is read again
+                        val picked = options[position.roundToInt().coerceIn(options.indices)]
+                        if (picked != value) onSelect(picked)
+                    },
                     valueRange = 0f..options.lastIndex.coerceAtLeast(1).toFloat(),
                     steps = (options.size - 2).coerceAtLeast(0),
                     enabled = options.size > 1,
