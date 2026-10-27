@@ -6,9 +6,13 @@ Paths are relative to `app/src/main/kotlin/me/knighthat/kreate3/`; checked again
 
 Root
 
+- `AppRestart.kt` — `readOnce(preference)` for settings read once by app-wide singletons (network
+  timeouts/retries, song cache + downloads sizes, image caches); `needed` = one of them changed
+  since, lights the settings pages' restart-app button.
 - `KreateApplication.kt` — `startKoin` with every module; global `CoroutineScope` single;
-  `ProfileUserSync` bound as `ActiveUser`; Coil `ImageLoader` factory; top-level
-  `internal fun Context.restart(configure)` (clear task, relaunch via the enabled launcher alias,
+  `ProfileUserSync` bound as `ActiveUser`; Coil `ImageLoader` factory; `restartAfterPlayback()` (
+  restart inside `PlaybackLifecycle.restartAround`, so the player's writes finish first); member
+  `internal fun restart(configure)` (clear task, relaunch via the enabled launcher alias,
   `exit(0)`; used by wizard done/skip and backup restore).
 - `KreateActivity.kt` — main activity: splash (waits on prefs), setup-wizard gate,
   `SETUP_WIZARD_SKIP_ACTION` handling, `OPEN_PLAYER_ACTION` (media notification tap, from onCreate

@@ -49,19 +49,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.knighthat.kreate3.AppRestart
+import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.ui.component.RestartAppButton
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import kotlin.math.roundToInt
 
 /**
- * The frame of a settings page: a top bar named [title] with a back button and [actions], and
- * [content] stacked in a column that scrolls.
+ * The frame of a settings page: a top bar named [title] with a back button, [actions] and a
+ * button that restarts the app once confirmed, on while a setting needs it (see [AppRestart]),
+ * and [content] stacked in a column that scrolls.
  */
 @Composable
 fun SettingsPage(
@@ -71,7 +77,27 @@ fun SettingsPage(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    DetailScaffold(title, onBack, modifier, actions = actions) { padding: PaddingValues ->
+    val context = LocalContext.current
+    val restartNeeded by AppRestart.needed.collectAsStateWithLifecycle(false)
+    var confirmRestart by remember { mutableStateOf(false) }
+    if (confirmRestart)
+        RestartAppDialog(
+            onRestart = {
+                confirmRestart = false
+                (context.applicationContext as KreateApplication).restartAfterPlayback()
+            },
+            onDismiss = { confirmRestart = false },
+        )
+
+    DetailScaffold(
+        title = title,
+        onBack = onBack,
+        modifier = modifier,
+        actions = {
+            actions()
+            RestartAppButton({ confirmRestart = true }, enabled = restartNeeded)
+        },
+    ) { padding: PaddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,6 +106,19 @@ fun SettingsPage(
         ) { content() }
     }
 }
+
+/**
+ * Asks whether to restart the app.
+ */
+@Composable
+private fun RestartAppDialog(onRestart: () -> Unit, onDismiss: () -> Unit) =
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.dialog_title_restart_the_app)) },
+        text = { Text(stringResource(R.string.dialog_body_restart_the_app)) },
+        confirmButton = { TextButton(onClick = onRestart) { Text(stringResource(R.string.action_ok)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
+    )
 
 /**
  * Names a group of settings.

@@ -367,6 +367,7 @@
     <string name="semantic_remove_from_the_queue">Remove from the queue</string>
     <string name="semantic_remove_like">Remove like</string>
     <string name="semantic_remove_songs">Remove songs</string>
+    <string name="semantic_restart_the_app">Restart the app</string>
     <string name="semantic_restart_the_player">Restart the player</string>
     <string name="semantic_resume_the_sleep_timer">Resume the sleep timer</string>
     <string name="semantic_search">Search</string>
@@ -440,6 +441,8 @@
     <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
+    <string name="dialog_title_restart_the_app">Restart the app?</string>
+    <string name="dialog_body_restart_the_app">Playback stops and the app opens again, settings that need a restart apply then.</string>
     <string name="dialog_title_restart_the_player">Restart the player?</string>
     <string name="dialog_body_restart_the_player_1">Playback stops for a moment, then goes on where it was with the new settings.</string>
     <string name="dialog_body_restart_the_player_2">The sleep timer is on, it stops with the player.</string>

@@ -26,6 +26,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.ContentMetadata
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import me.knighthat.kreate3.AppRestart
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import java.io.File
@@ -45,8 +46,8 @@ class SongCaches internal constructor(context: Context, cacheSize: Long, downloa
 
     constructor(context: Context) : this(
         context,
-        Preferences.MEDIA3_CACHE_SIZE.value,
-        Preferences.MEDIA3_DOWNLOAD_SIZE.value,
+        AppRestart.readOnce(Preferences.MEDIA3_CACHE_SIZE),
+        AppRestart.readOnce(Preferences.MEDIA3_DOWNLOAD_SIZE),
     )
 
     private val database = StandaloneDatabaseProvider(context)

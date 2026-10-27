@@ -31,7 +31,9 @@ import coil3.network.NetworkFetcher
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
@@ -41,6 +43,7 @@ import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.SystemNotifications
 import me.knighthat.kreate3.notification.createNotificationChannels
+import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.playbackModule
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.preferencesModule
@@ -80,6 +83,14 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         Runtime.getRuntime().exit(0)
     }
 
+    /**
+     * [restart] once playback stopped and what the player saves is written, see
+     * [PlaybackLifecycle.restartAround]. Runs in the global scope, leaving the screen doesn't stop it.
+     */
+    internal fun restartAfterPlayback(): Job = get<CoroutineScope>().launch {
+        get<PlaybackLifecycle>().restartAround { restart() }
+    }
+
     @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
@@ -101,7 +112,10 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
             }
             .memoryCache {
                 MemoryCache.Builder()
-                    .maxSizePercent(context, Preferences.IMAGE_MEMORY_CACHE_PERCENT.value)
+                    .maxSizePercent(
+                        context,
+                        AppRestart.readOnce(Preferences.IMAGE_MEMORY_CACHE_PERCENT)
+                    )
                     .build()
             }
             .diskCache {
@@ -109,7 +123,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
                 DiskCache.Builder()
                     .directory(directory)
-                    .maxSizeBytes(Preferences.IMAGE_DISK_CACHE.value)
+                    .maxSizeBytes(AppRestart.readOnce(Preferences.IMAGE_DISK_CACHE))
                     .build()
             }
             .build()

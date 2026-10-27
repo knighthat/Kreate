@@ -177,6 +177,23 @@ fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boo
         )
     }
 
+/** Restarts the app, off while [enabled] is `false`. */
+@Composable
+fun RestartAppButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = MaterialTheme.colorScheme.tertiary
+        )
+    ) {
+        Icon(
+            painterResource(R.drawable.power_settings_new),
+            contentDescription = stringResource(R.string.semantic_restart_the_app)
+        )
+    }
+
 /** Restarts the player, off while [enabled] is `false`. */
 @Composable
 fun RestartPlayerButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =

@@ -53,8 +53,14 @@ import java.util.concurrent.TimeUnit
 val networkModule = module {
     single {
         OkHttpClient.Builder()
-            .connectTimeout(Preferences.NETWORK_CONNECT_TIMEOUT.value.toLong(), TimeUnit.SECONDS)
-            .readTimeout(Preferences.NETWORK_READ_TIMEOUT.value.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(
+                AppRestart.readOnce(Preferences.NETWORK_CONNECT_TIMEOUT).toLong(),
+                TimeUnit.SECONDS
+            )
+            .readTimeout(
+                AppRestart.readOnce(Preferences.NETWORK_READ_TIMEOUT).toLong(),
+                TimeUnit.SECONDS
+            )
             .build()
     }
 
@@ -74,7 +80,7 @@ val networkModule = module {
                 install(ContentNegotiation) { json(json) }
 
                 install(HttpRequestRetry) {
-                    retryOnServerErrors(Preferences.NETWORK_MAX_RETRIES.value)
+                    retryOnServerErrors(AppRestart.readOnce(Preferences.NETWORK_MAX_RETRIES))
                     exponentialDelay()
                 }
 

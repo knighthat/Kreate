@@ -67,7 +67,8 @@ ui/screen/
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.
 - settings/ — one subpackage per page; shared bits stay at the root: `SettingsScreen.kt` (page
-  list), `SettingsComponents.kt` (SettingsPage/Section, MainSwitch (page-top switch),
+  list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
+  dialog)/Section, MainSwitch (page-top switch),
   Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
