@@ -41,6 +41,9 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.database.model.PeriodPlay
+import me.knighthat.kreate3.database.model.PeriodSummary
+import me.knighthat.kreate3.database.model.PlayPeriod
 import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.paging.SearchSort
@@ -84,8 +87,22 @@ class SearchViewModelTest {
         override suspend fun deleteSearch(query: String) = Unit
         override suspend fun clearSearches() = Unit
         override fun recentPlays(limit: Int): Flow<List<PlaybackHistory>> = flowOf(emptyList())
+        override fun plays(periods: List<PlayPeriod>, origins: Set<Origin>, newestFirst: Boolean) =
+            flowOf(PagingData.empty<PeriodPlay>())
+
+        override suspend fun listPlays(
+            periods: List<PlayPeriod>,
+            origins: Set<Origin>,
+            newestFirst: Boolean,
+        ) = emptyList<PeriodPlay>()
+
+        override fun periodSummaries(periods: List<PlayPeriod>, origins: Set<Origin>) =
+            flowOf(emptyList<PeriodSummary>())
+
         override suspend fun recordPlay(songId: String, timeSpent: Duration) = 0L
         override suspend fun updatePlay(id: Long, timeSpent: Duration) = Unit
+        override suspend fun deletePlay(id: Long) = Unit
+        override suspend fun deletePlays(periods: List<PlayPeriod>, origins: Set<Origin>) = Unit
         override suspend fun clearPlays() = Unit
     }
 

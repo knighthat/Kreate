@@ -27,10 +27,15 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   playlist + its `covers` JSON, for `PlaylistRepository.all`).
 - model/ — public models mirroring entities/views (`Origin`/`LyricsSync` now come from `:model`);
   `LocalSong.kt` (+`LocalAlbum`/`LocalArtist` scan results), `QueuedSong.kt` (a saved-queue row; not
-  the playback `QueuedSong` in `DataSourceResolver.kt`), `PlaylistCover.kt` (cover of one of a
+  the playback `QueuedSong` in `DataSourceResolver.kt`), `PeriodPlay.kt` (`PlayPeriod`,
+  `PeriodPlay` = a play
+  in a period with its song, `PeriodSummary`; `HistoryRepository.plays`/
+  `periodSummaries` group plays by periods given as a `UNION ALL` of spans in SQL),
+  `PlaylistCover.kt` (cover of one of a
   playlist's songs; `UserPlaylist.covers` = up to 4 different covers of its most played songs,
   filled by `PlaylistRepository.all` only).
-- paging/ — `Paging.kt` (`RoomDatabase.pagedFlow(transform, tables…)`: also invalidates its sources
+- paging/ — `Paging.kt` (`RoomDatabase.pagedFlow(transform, tables…, pageSize)`, `LARGE_PAGE_SIZE`
+  for bigger pages: also invalidates its sources
   on every change of the tables, because Room's paging source ignores changes made while its first
   page loads — the Songs tab missed the startup scan; PagingConfig), `Sorting.kt` (`SortOrder`,
   `*Sort` enums, `toOrderBy`).

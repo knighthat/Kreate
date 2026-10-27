@@ -43,6 +43,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.Notifier
@@ -64,11 +65,15 @@ import me.knighthat.kreate3.ui.component.SongMenuOverlay
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
+import me.knighthat.kreate3.ui.navigation.Account
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
+import me.knighthat.kreate3.ui.navigation.Disliked
+import me.knighthat.kreate3.ui.navigation.Downloaded
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
+import me.knighthat.kreate3.ui.navigation.History
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
@@ -87,6 +92,7 @@ import me.knighthat.kreate3.ui.navigation.Search
 import me.knighthat.kreate3.ui.navigation.SearchResults
 import me.knighthat.kreate3.ui.navigation.Settings
 import me.knighthat.kreate3.ui.navigation.Songs
+import me.knighthat.kreate3.ui.navigation.Statistics
 import me.knighthat.kreate3.ui.navigation.Tab
 import me.knighthat.kreate3.ui.navigation.UiSettings
 import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
@@ -102,6 +108,9 @@ import me.knighthat.kreate3.ui.navigation.playlistRoute
 import me.knighthat.kreate3.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate3.ui.navigation.routeViewModel
 import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
+import me.knighthat.kreate3.ui.screen.account.AccountPage
+import me.knighthat.kreate3.ui.screen.account.AccountScreen
+import me.knighthat.kreate3.ui.screen.account.HistoryScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailScreen
@@ -271,6 +280,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                             entry<Songs> {
                                 HomeSongsScreen(
                                     { topLevel.push(Search) },
+                                    { topLevel.push(Account) },
                                     { topLevel.push(Settings) },
                                     paddingModifier,
                                     contentPadding,
@@ -280,6 +290,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 HomeAlbumsScreen(
                                     { topLevel.push(albumRoute(it)) },
                                     { topLevel.push(Search) },
+                                    { topLevel.push(Account) },
                                     { topLevel.push(Settings) },
                                     paddingModifier,
                                     contentPadding,
@@ -289,6 +300,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 HomeArtistsScreen(
                                     { topLevel.push(artistRoute(it)) },
                                     { topLevel.push(Search) },
+                                    { topLevel.push(Account) },
                                     { topLevel.push(Settings) },
                                     paddingModifier,
                                     contentPadding,
@@ -298,6 +310,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 HomePlaylistsScreen(
                                     { topLevel.push(playlistRoute(it)) },
                                     { topLevel.push(Search) },
+                                    { topLevel.push(Account) },
                                     { topLevel.push(Settings) },
                                     paddingModifier,
                                     contentPadding,
@@ -323,6 +336,39 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                     onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
                                     onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
                                     viewModel = routeViewModel(it),
+                                )
+                            }
+
+                            entry<Account> {
+                                AccountScreen(
+                                    onBack = topLevel::pop,
+                                    onOpen = topLevel::push,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                )
+                            }
+                            entry<History> {
+                                HistoryScreen(topLevel::pop, paddingModifier, contentPadding)
+                            }
+                            entry<Statistics> {
+                                AccountPage(
+                                    R.string.screen_title_statistics,
+                                    topLevel::pop,
+                                    paddingModifier
+                                )
+                            }
+                            entry<Disliked> {
+                                AccountPage(
+                                    R.string.screen_title_disliked,
+                                    topLevel::pop,
+                                    paddingModifier
+                                )
+                            }
+                            entry<Downloaded> {
+                                AccountPage(
+                                    R.string.screen_title_downloaded,
+                                    topLevel::pop,
+                                    paddingModifier
                                 )
                             }
 

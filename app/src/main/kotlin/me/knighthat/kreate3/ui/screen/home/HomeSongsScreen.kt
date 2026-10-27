@@ -54,6 +54,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeSongsScreen(
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -76,6 +77,7 @@ fun HomeSongsScreen(
             viewModel::allSongs
         ),
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         modifier = modifier,
         contentPadding = contentPadding,
@@ -91,6 +93,7 @@ private fun HomeSongsContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -103,6 +106,7 @@ private fun HomeSongsContent(
         modifier = modifier,
         contentPadding = contentPadding,
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         quickActions = {
             PlayAllButton({ onAction(QueueAction.PLAY) })
@@ -136,6 +140,7 @@ private fun HomeSongsPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         onSearch = {},
+        onProfile = {},
         onSettings = {},
     )
 }

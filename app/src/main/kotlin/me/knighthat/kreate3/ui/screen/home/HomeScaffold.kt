@@ -37,7 +37,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -64,6 +63,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.FilterIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.ProfileButton
 import me.knighthat.kreate3.ui.component.SearchButton
@@ -71,9 +71,6 @@ import me.knighthat.kreate3.ui.component.SettingsButton
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.sourceRes
 import kotlin.math.roundToInt
-
-/** How much of the content color is left on a disabled Material component. */
-private const val DISABLED_ALPHA = .38f
 
 /**
  * The title large under the logo and the actions, shrinking into one row as [content] scrolls.
@@ -84,6 +81,7 @@ private fun HomeTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
 ) {
     LargeTopAppBar(
@@ -108,7 +106,7 @@ private fun HomeTopBar(
         },
         actions = {
             SearchButton(onSearch)
-            ProfileButton()
+            ProfileButton(onProfile)
             SettingsButton(onSettings)
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -206,16 +204,7 @@ private fun HomeToolbar(
  */
 @Composable
 private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit) =
-    IconToggleButton(
-        checked = selected,
-        onCheckedChange = { onToggle() },
-        colors = IconButtonDefaults.iconToggleButtonColors(
-            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA),
-            checkedContentColor = MaterialTheme.colorScheme.primary,
-        ),
-    ) {
-        Icon(painterResource(origin.icon), contentDescription = stringResource(origin.sourceRes))
-    }
+    FilterIconButton(origin.icon, stringResource(origin.sourceRes), selected, onToggle)
 
 /**
  * The frame of a home tab: a large top bar named [title] that collapses when the scrollable
@@ -237,6 +226,7 @@ fun HomeScaffold(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     onSearch: () -> Unit = {},
+    onProfile: () -> Unit = {},
     onSettings: () -> Unit = {},
     quickActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
@@ -247,7 +237,7 @@ fun HomeScaffold(
     Scaffold(
         topBar = {
             Column {
-                HomeTopBar(title, scrollBehavior, onSearch, onSettings)
+                HomeTopBar(title, scrollBehavior, onSearch, onProfile, onSettings)
                 HomeToolbar(choices, selected, onToggleOrigin, toolbarScroll, quickActions)
             }
         },

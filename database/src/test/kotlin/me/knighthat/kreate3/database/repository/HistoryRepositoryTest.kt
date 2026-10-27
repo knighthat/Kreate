@@ -23,12 +23,16 @@ import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.asList
 import me.knighthat.kreate3.database.entity.SearchHistoryEntity
+import me.knighthat.kreate3.database.entity.UserSongEntity
+import me.knighthat.kreate3.database.model.PlayPeriod
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 internal class HistoryRepositoryTest : DatabaseTest() {
 
@@ -191,5 +195,146 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         val plays = repository.recentPlays(10).first()
         assertEquals(listOf(20.seconds, 45.seconds), plays.map { it.timeSpent })
         assertEquals(listOf("s1", "s1"), plays.map { it.songId })
+    }
+
+    private suspend fun librarySong(
+        id: String,
+        origin: Origin = Origin.LOCAL,
+        likedAt: Instant? = null
+    ) {
+        addSong(id, origin)
+        database.userSongDao().upsert(
+            UserSongEntity(
+                userId = USER,
+                songId = id,
+                likedAt = likedAt,
+                createdAt = EPOCH,
+                updatedAt = EPOCH,
+            )
+        )
+    }
+
+    /** A period from [from] up to [until], seconds of the test clock. */
+    private fun period(from: Long, until: Long) = PlayPeriod(
+        Instant.fromEpochMilliseconds(from * 1000),
+        Instant.fromEpochMilliseconds(until * 1000),
+    )
+
+    /** Records a play of [songId] at second [at] of the test clock. */
+    private suspend fun playAt(songId: String, at: Long, seconds: Int = 10) {
+        clock.time = Instant.fromEpochMilliseconds(at * 1000)
+        repository.recordPlay(songId, seconds.seconds)
+    }
+
+    private suspend fun played(
+        periods: List<PlayPeriod>,
+        origins: Set<Origin> = emptySet(),
+        newestFirst: Boolean = true,
+    ) = repository.plays(periods, origins, newestFirst).asList()
+        .map { "${it.period}:${it.song.songId}" }
+
+    @Test
+    fun everyPlayIsARowInItsPeriod() = runBlocking {
+        librarySong("s1")
+        librarySong("s2")
+        playAt("s1", 1)
+        playAt("s1", 2)
+        playAt("s2", 5)
+        playAt("s1", 15)
+        val periods = listOf(period(10, 20), period(0, 10))
+
+        assertEquals(listOf("0:s1", "1:s2", "1:s1", "1:s1"), played(periods))
+        assertEquals(listOf("1:s1", "1:s1", "1:s2", "0:s1"), played(periods, newestFirst = false))
+
+        val plays = repository.plays(periods, emptySet(), true).asList()
+        assertEquals(
+            listOf(15_000L, 5_000, 2_000, 1_000),
+            plays.map { it.playedAt.toEpochMilliseconds() },
+        )
+        assertEquals(
+            plays.map { it.id },
+            repository.listPlays(periods, emptySet(), true).map { it.id })
+    }
+
+    @Test
+    fun playedSongsLeaveOutDislikedSongsAndSongsOutOfTheLibrary() = runBlocking {
+        librarySong("liked", likedAt = clock.now())
+        librarySong("disliked", likedAt = DISLIKED)
+        addSong("gone")
+        playAt("liked", 1)
+        playAt("disliked", 2)
+        playAt("gone", 3)
+
+        assertEquals(listOf("0:liked"), played(listOf(period(0, 10))))
+    }
+
+    @Test
+    fun playedSongsAreKeptToTheirPeriodsAndOrigins() = runBlocking {
+        librarySong("local")
+        librarySong("remote", Origin.YOUTUBE)
+        playAt("local", 1)
+        playAt("remote", 2)
+        playAt("local", 20)
+
+        assertEquals(listOf("0:remote", "0:local"), played(listOf(period(0, 10))))
+        assertEquals(listOf("0:remote"), played(listOf(period(0, 30)), setOf(Origin.YOUTUBE)))
+        assertEquals(listOf("0:local", "0:remote", "0:local"), played(listOf(period(0, 30))))
+        assertEquals(emptyList<String>(), played(emptyList()))
+    }
+
+    @Test
+    fun summariesCountSongsOnceAndEveryPlaysTime() = runBlocking {
+        librarySong("s1")
+        librarySong("s2")
+        playAt("s1", 1, seconds = 30)
+        playAt("s1", 2, seconds = 40)
+        playAt("s2", 3, seconds = 50)
+        playAt("s2", 15, seconds = 5)
+
+        val summaries =
+            repository.periodSummaries(listOf(period(10, 20), period(0, 10)), emptySet())
+                .first()
+                .sortedBy { it.period }
+        assertEquals(listOf(0, 1), summaries.map { it.period })
+        assertEquals(listOf(1, 3), summaries.map { it.plays })
+        assertEquals(listOf(1, 2), summaries.map { it.songs })
+        assertEquals(listOf(5.seconds, 120.seconds), summaries.map { it.timeSpent })
+    }
+
+    @Test
+    fun deletingAPlayKeepsTheSongsOtherPlays() = runBlocking {
+        librarySong("s1")
+        playAt("s1", 1)
+        playAt("s1", 2)
+        val first = repository.recentPlays(10).first().last().id
+
+        repository.deletePlay(first)
+
+        assertEquals(
+            listOf(2_000L),
+            repository.recentPlays(10).first().map { it.createdAt.toEpochMilliseconds() })
+    }
+
+    @Test
+    fun deletingWhatIsShownLeavesTheRestAlone() = runBlocking {
+        librarySong("local")
+        librarySong("remote", Origin.YOUTUBE)
+        librarySong("disliked", likedAt = DISLIKED)
+        playAt("local", 1)
+        playAt("remote", 2)
+        playAt("disliked", 3)
+        playAt("remote", 20)
+
+        repository.deletePlays(listOf(period(0, 10)), setOf(Origin.YOUTUBE))
+
+        assertEquals(
+            listOf("remote", "disliked", "local"),
+            repository.recentPlays(10).first().map { it.songId },
+        )
+
+        activeUser.id.value = "other"
+        repository.deletePlays(listOf(period(0, 30)), emptySet())
+        activeUser.id.value = USER
+        assertEquals(3, repository.recentPlays(10).first().size)
     }
 }

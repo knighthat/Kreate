@@ -61,6 +61,7 @@ private const val ALBUM_ITEM_SIZE = 120
 fun HomeAlbumsScreen(
     onOpen: (MediaItem) -> Unit,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -94,6 +95,7 @@ fun HomeAlbumsScreen(
             }
         },
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         modifier = modifier,
         contentPadding = contentPadding,
@@ -113,6 +115,7 @@ private fun HomeAlbumsContent(
     onOpen: (MediaItem) -> Unit,
     onRandom: () -> Unit,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -125,6 +128,7 @@ private fun HomeAlbumsContent(
         modifier = modifier,
         contentPadding = contentPadding,
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         quickActions = { RandomButton(onRandom) },
     ) { padding ->
@@ -159,6 +163,7 @@ private fun HomeAlbumsPreview() = PreviewTheme {
         onOpen = {},
         onRandom = {},
         onSearch = {},
+        onProfile = {},
         onSettings = {},
     )
 }

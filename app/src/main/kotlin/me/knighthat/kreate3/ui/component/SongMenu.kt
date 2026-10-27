@@ -134,6 +134,8 @@ internal class SongMenuRequest(
     val showThumbnail: Boolean,
     val showAlbum: Boolean,
     val actions: List<SongMenuAction>,
+    /** What the row shows at the end in place of the length, see [SongItem]. */
+    val trailing: (@Composable () -> Unit)?,
 )
 
 /**
@@ -318,6 +320,7 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
                 onClick = {},
                 showThumbnail = request.showThumbnail,
                 showAlbum = request.showAlbum,
+                trailing = request.trailing,
                 modifier = Modifier
                     .layout { measurable, _ ->
                         val progress = placement.progress
@@ -599,17 +602,22 @@ private fun ReactionToggle(
     ButtonLabel(label, enabled)
 }
 
+/**
+ * A button of the row at the top of a menu sheet: [icon] over [label], dimmed and off unless
+ * [enabled]. Without [showLabel] the label only describes the icon to screen readers.
+ */
 @Composable
-private fun LabeledIconButton(
+internal fun LabeledIconButton(
     @DrawableRes icon: Int,
     label: String,
-    enabled: Boolean,
+    enabled: Boolean = true,
+    showLabel: Boolean = true,
     onClick: () -> Unit,
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
     IconButton(onClick = onClick, enabled = enabled) {
         Icon(painterResource(icon), contentDescription = label)
     }
-    ButtonLabel(label, enabled)
+    if (showLabel) ButtonLabel(label, enabled)
 }
 
 @Composable

@@ -327,6 +327,12 @@
     <string name="screen_title_network">Network</string>
     <string name="screen_title_backup">Backup</string>
     <string name="screen_title_sign_in_to_youtube">Sign in to %1$s</string>
+    <string name="screen_title_account">Account</string>
+    <string name="screen_title_history">History</string>
+    <string name="screen_title_statistics">Statistics</string>
+    <string name="screen_title_disliked">Disliked</string>
+    <string name="screen_title_downloaded">Downloaded</string>
+    <string name="screen_title_switch_profile">Switch profile</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Tabs">-->
@@ -382,6 +388,9 @@
     <string name="semantic_play_next">Play next</string>
     <string name="semantic_previous">Previous</string>
     <string name="semantic_profile">Profile</string>
+    <string name="semantic_date_range">Date range</string>
+    <string name="semantic_newest_first">Newest first</string>
+    <string name="semantic_oldest_first">Oldest first</string>
     <string name="semantic_remove_bookmark">Remove bookmark</string>
     <string name="semantic_remove_dislike">Remove dislike</string>
     <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>
@@ -427,6 +436,10 @@
     <string name="menu_title_artists">Artists</string>
     <string name="menu_title_add_to_playlist">Add to playlist</string>
     <string name="menu_remove_from_playlist">Remove from playlist</string>
+    <string name="menu_delete_from_history">Delete from history</string>
+    <string name="menu_play_all">Play all</string>
+    <string name="menu_shuffle">Shuffle</string>
+    <string name="menu_clear_history">Clear history</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
     <!--</editor-fold>-->
@@ -482,6 +495,9 @@
     <string name="dialog_body_stop_download">%1$s won\'t be downloaded.</string>
     <string name="dialog_title_restore_a_backup">Restore a backup?</string>
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
+    <string name="dialog_title_clear_history">Clear history?</string>
+    <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
+    <string name="dialog_body_clear_history_shown">The plays shown are taken out of the history, the others stay.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
@@ -581,6 +597,10 @@
     <string name="section_header_suggested_searches">Suggested searches</string>
     <string name="section_header_recent_searches">Recent searches</string>
     <string name="section_header_searches">Searches</string>
+    <string name="section_header_today">Today</string>
+    <string name="section_header_yesterday">Yesterday</string>
+    <string name="section_header_date_range">Date range</string>
+    <string name="section_header_summary">%1$s · %2$s · %3$s</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Screen texts">-->
@@ -598,6 +618,9 @@
     <string name="screen_profiles_hint_search_or_add">Search or add profile</string>
     <string name="screen_profiles_status_active_since">Active since %1$s</string>
     <string name="screen_profiles_status_last_seen">Last seen %1$s</string>
+    <string name="screen_history_status_nothing_played">Nothing played yet</string>
+    <string name="screen_history_status_no_matches">No plays match the filters</string>
+    <string name="screen_history_status_paused">History is paused, new plays aren\'t added</string>
     <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>
     <string name="screen_player_status_timer_song_end">Pauses when the song ends</string>
     <string name="screen_player_status_timer_on_hold">On hold, %1$s left</string>
@@ -645,6 +668,11 @@
     <string name="constant_theme_mode_automatic">System</string>
     <string name="constant_theme_mode_automatic_dynamic">Wallpaper</string>
     <string name="constant_theme_mode_light">Light</string>
+    <string name="constant_history_range_all_time">All time</string>
+    <string name="constant_history_range_today">Today</string>
+    <string name="constant_history_range_last_7_days">Last 7 days</string>
+    <string name="constant_history_range_last_30_days">Last 30 days</string>
+    <string name="constant_history_range_this_year">This year</string>
     <string name="constant_theme_mode_light_dynamic">Light dynamic</string>
     <string name="constant_theme_mode_dark">Dark</string>
     <string name="constant_theme_mode_dark_dynamic">Dark dynamic</string>

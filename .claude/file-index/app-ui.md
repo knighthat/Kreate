@@ -10,17 +10,21 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
   PlayPause/SeeMore/Config
-  buttons, `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
+  buttons, `FilterIconButton` (a filter as its icon alone, origin chips while Icon only),
+  `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
   big icon+title+subtitle tile with busy spinner; wizard restore, Backup
   settings) (`.claude/rules/ui.md`).
 - `SongItem.kt`, `AlbumItem.kt`, `ArtistItem.kt`, `PlaylistItem.kt` — list/grid items. `SongItem`
   long-press opens the song menu (`hasMenu = false` in QueuePage, `menuActions` for list-specific
-  rows); `SongRow` draws both the row and its lifted copy. `PlaylistItem` without a picture of its
+  rows, `trailing` in place of the length, like History's play times); `SongRow` draws both the row
+  and its lifted copy. `PlaylistItem` without a picture of its
   own shows its covers (`EXTRA_COVERS`): 4 → 2 × 2 grid, 1–3 → the most played alone, none →
   `queue_music` icon, or the name's first letter on a hue from the name (HCT) while
   `LocalPlaylistInitial` (`Preferences.PLAYLIST_INITIAL`, provided in `KreateApp`) is on; drawn
   through `Thumbnail`'s `placeholder` slot.
-- `SongMenu.kt` (2026-10-20) — `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
+- `SongMenu.kt` (2026-10-20) — `LabeledIconButton` (internal, the sheet's top row, `showLabel`; also
+  History's
+  sheet), `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`
   progress from `sheetState.requireOffset()`), the ModalBottomSheet (Dislike/Like/Share header, play
   next, add to queue, add to playlist + picker of the app's playlists (newest first, create button
@@ -79,7 +83,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
 ui/navigation/
 
 - `Route.kt` — every screen as a `Route` (Tab routes, Local*/OpenSubsonic*/YouTube* detail routes,
-  SearchResults, YouTubeMore, settings). `albumRoute`/`artistRoute` also take `(origin, id)`.
+  SearchResults, YouTubeMore, settings, Account and its pages). `albumRoute`/`artistRoute` also take
+  `(origin, id)`.
 - `Navigator.kt` (2026-10-20) — `Navigator(current, open)` + `LocalNavigator`, provided by
   KreateApp, for opening screens from components that don't own the back stack (song menu).
 - `TopLevelBackStack.kt` — one back stack per Tab.

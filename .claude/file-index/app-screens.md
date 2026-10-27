@@ -18,6 +18,27 @@ ui/screen/
   has no origin. A dislike also calls `PlaybackController.drop`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
+- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics,
+  Disliked, Downloaded, and Switch profile starts `ProfilesActivity`), `AccountPage.kt` (the empty
+  page Statistics, Disliked and Downloaded show for now). `HistoryScreen.kt` + `HistoryViewModel.kt`
+  (paged `HistoryRepository.plays` over `HistoryBuckets.spans()` clipped to the range, large
+  pages; every play is a `HistoryRow` with its time in `SongItem`'s `trailing`, the day too with
+  a range; `insertSeparators` adds `HistoryHeader`s, sticky, with a superscript songs · time
+  summary from `periodSummaries` and Play/Play next/Add to queue, none while a range is picked; tap
+  plays from
+  that play on in its group (`songsFrom`); menu adds Delete from history (that play); top bar:
+  newest/oldest toggle and Config, which opens `HistorySheet` (a `ModalBottomSheet`: Play all,
+  Play next, Add to queue, Shuffle, Clear history as a row of `LabeledIconButton`s (labels hidden
+  while Icon only), origin chips (shown even for one origin) (
+  `FilterIconButton`s while Icon
+  only), date presets and an inline `DateRangePicker`, each applied at once); nothing is kept, the
+  page opens unfiltered and
+  newest first; entries carry the `query` they came from, keys use it and the list goes to the top
+  when it changes;
+  Clear history clears all, or only what's shown while filtered; paused banner with Resume),
+  `HistoryGroups.kt` (`HistoryBuckets`: Today, Yesterday, days to 6, weeks to a month, months to a
+  year, years up to 50; `spans()` gives each bucket's time span; `HistoryRange` as picker UTC days,
+  presets).
 - home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt`, `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).

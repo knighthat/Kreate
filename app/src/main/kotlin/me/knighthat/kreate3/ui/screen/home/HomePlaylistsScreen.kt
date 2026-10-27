@@ -66,6 +66,7 @@ private const val PLAYLIST_ITEM_SIZE = 220
 fun HomePlaylistsScreen(
     onOpen: (MediaItem) -> Unit,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -101,6 +102,7 @@ fun HomePlaylistsScreen(
         },
         onCreate = { creating = true },
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         modifier = modifier,
         contentPadding = contentPadding,
@@ -130,6 +132,7 @@ private fun HomePlaylistsContent(
     onRandom: () -> Unit,
     onCreate: () -> Unit,
     onSearch: () -> Unit,
+    onProfile: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
@@ -142,6 +145,7 @@ private fun HomePlaylistsContent(
         modifier = modifier,
         contentPadding = contentPadding,
         onSearch = onSearch,
+        onProfile = onProfile,
         onSettings = onSettings,
         quickActions = {
             CreatePlaylistButton(onCreate)
@@ -180,6 +184,7 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         onRandom = {},
         onCreate = {},
         onSearch = {},
+        onProfile = {},
         onSettings = {},
     )
 }

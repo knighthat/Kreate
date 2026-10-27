@@ -55,6 +55,7 @@ private class RowAnchor {
  * empty in the list meanwhile.
  *
  * @param menuActions what the menu offers for the list the song is in, after the song's own
+ * @param trailing what the row shows at the end in place of the length
  */
 @Composable
 fun SongItem(
@@ -66,6 +67,7 @@ fun SongItem(
     thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
     hasMenu: Boolean = true,
     menuActions: List<SongMenuAction> = emptyList(),
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     val host = LocalSongMenuHost.current
     val anchor = remember { RowAnchor() }
@@ -80,6 +82,7 @@ fun SongItem(
         showThumbnail = showThumbnail,
         showAlbum = showAlbum,
         thumbnailOverlay = thumbnailOverlay,
+        trailing = trailing,
         onLongClick = if (hasMenu && host != null) {
             {
                 anchor.coordinates?.takeIf { it.isAttached }?.let {
@@ -90,6 +93,7 @@ fun SongItem(
                         showThumbnail = showThumbnail,
                         showAlbum = showAlbum,
                         actions = menuActions,
+                        trailing = trailing,
                     )
                 }
             }
@@ -106,6 +110,7 @@ internal fun SongRow(
     showThumbnail: Boolean = true,
     showAlbum: Boolean = true,
     thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
 ) {
     val duration = formatDuration(item.mediaMetadata.durationMs)
@@ -117,7 +122,7 @@ internal fun SongRow(
         showThumbnail = showThumbnail,
         overlineEnd = item.mediaMetadata.albumTitle?.toString()?.takeIf { showAlbum },
         thumbnailOverlay = thumbnailOverlay,
-        trailing = duration?.let {
+        trailing = trailing ?: duration?.let {
             { Text(it, style = MaterialTheme.typography.labelSmall) }
         },
         onLongClick = onLongClick,
@@ -144,6 +149,8 @@ private fun SongItemPreview() = PreviewTheme {
             SongItem(liked, onClick = {})
             // Inside its album
             SongItem(liked, onClick = {}, showThumbnail = false, showAlbum = false)
+            // When it was played, in place of its length
+            SongItem(liked, onClick = {}, trailing = { Text("9:41 PM") })
         }
     }
 }

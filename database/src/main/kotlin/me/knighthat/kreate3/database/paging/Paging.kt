@@ -38,13 +38,16 @@ private const val PAGE_SIZE = 50
  *   however long the list is.
  * - No placeholders, a list of any length is not counted row by row.
  */
-private val CONFIG = PagingConfig(
-    pageSize = PAGE_SIZE,
-    prefetchDistance = PAGE_SIZE,
-    initialLoadSize = PAGE_SIZE * 2,
+private fun config(pageSize: Int) = PagingConfig(
+    pageSize = pageSize,
+    prefetchDistance = pageSize,
+    initialLoadSize = pageSize * 2,
     enablePlaceholders = false,
-    maxSize = PAGE_SIZE * 10,
+    maxSize = pageSize * 10,
 )
+
+/** Pages of lists whose rows cost more to load one by one than in bulk, like grouped plays. */
+internal const val LARGE_PAGE_SIZE = PAGE_SIZE * 4
 
 /**
  * Loads [source] page by page and turns every row with [transform]. A new source is made
@@ -56,14 +59,16 @@ private val CONFIG = PagingConfig(
  * the sources are also dropped here on every change.
  *
  * @param tables the tables or views [source] reads
+ * @param pageSize rows of a page, [LARGE_PAGE_SIZE] for larger ones than usual
  */
 internal fun <E : Any, M : Any> RoomDatabase.pagedFlow(
     transform: (E) -> M,
     vararg tables: String,
+    pageSize: Int = PAGE_SIZE,
     source: () -> PagingSource<Int, E>,
 ): Flow<PagingData<M>> {
     val sources = InvalidatingPagingSourceFactory(source)
-    val pages = Pager(CONFIG, pagingSourceFactory = sources).flow
+    val pages = Pager(config(pageSize), pagingSourceFactory = sources).flow
         .map { page -> page.map { transform(it) } }
 
     return channelFlow {

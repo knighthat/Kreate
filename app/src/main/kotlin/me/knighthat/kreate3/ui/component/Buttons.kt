@@ -18,8 +18,6 @@
 
 package me.knighthat.kreate3.ui.component
 
-import android.content.Context
-import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +42,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -59,10 +58,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import me.knighthat.kreate3.ProfilesActivity
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.preferences.Preferences
-import org.koin.core.context.GlobalContext
+
+/** Alpha of a [FilterIconButton] that isn't selected, the disabled one of Material. */
+private const val UNSELECTED_FILTER_ALPHA = .38f
 
 /**
  * An icon button whose only content is [icon], described to screen readers as [description].
@@ -77,6 +76,29 @@ private fun IconAction(
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(painterResource(icon), contentDescription = description)
     }
+}
+
+/**
+ * A filter shown as its [icon] alone, like an origin chip while [LocalIconOnly]: in the primary
+ * color while [selected], in the disabled color otherwise. It can be tapped either way.
+ */
+@Composable
+fun FilterIconButton(
+    @DrawableRes icon: Int,
+    description: String,
+    selected: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) = IconToggleButton(
+    checked = selected,
+    onCheckedChange = { onToggle() },
+    modifier = modifier,
+    colors = IconButtonDefaults.iconToggleButtonColors(
+        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = UNSELECTED_FILTER_ALPHA),
+        checkedContentColor = MaterialTheme.colorScheme.primary,
+    ),
+) {
+    Icon(painterResource(icon), contentDescription = description)
 }
 
 /**
@@ -149,24 +171,8 @@ fun SearchButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.search, stringResource(R.string.semantic_search), onClick, modifier)
 
 @Composable
-fun ProfileButton(modifier: Modifier = Modifier) =
-    IconAction(
-        icon = R.drawable.person,
-        description = stringResource(R.string.semantic_profile),
-        onClick = {
-            val context = GlobalContext.get().get<Context>()
-
-            context.startActivity(
-                ProfilesActivity.intent(
-                    context,
-                    Preferences.THEME_MODE.value,
-                    Preferences.CONTRAST_LEVEL.value
-                )
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        },
-        modifier = modifier
-    )
+fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.person, stringResource(R.string.semantic_profile), onClick, modifier)
 
 @Composable
 fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) =
@@ -404,11 +410,13 @@ private fun IconButtonsPreview() = PreviewTheme {
                 BackButton({})
                 SeeMoreButton({})
                 SearchButton({})
-                ProfileButton()
+                ProfileButton({})
                 SettingsButton({})
                 ConfigButton({})
                 ShareButton({})
                 ShareButton({}, enabled = false)
+                FilterIconButton(R.drawable.date_range, "Filter", selected = true, onToggle = {})
+                FilterIconButton(R.drawable.date_range, "Filter", selected = false, onToggle = {})
             }
             Row {
                 PlayAllButton({})

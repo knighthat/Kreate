@@ -85,6 +85,26 @@ data object OpenSubsonicSettings : Route
 @Serializable
 data object BackupSettings : Route
 
+/** What the active profile has done and kept, opened from the profile button. */
+@Serializable
+data object Account : Route
+
+/** The songs the profile played, opened from [Account]. */
+@Serializable
+data object History : Route
+
+/** How the profile listens, opened from [Account]. */
+@Serializable
+data object Statistics : Route
+
+/** The songs the profile disliked, opened from [Account]. */
+@Serializable
+data object Disliked : Route
+
+/** The songs downloaded to this device, opened from [Account]. */
+@Serializable
+data object Downloaded : Route
+
 /** Google's sign in page, the session it leaves is kept for YouTube. */
 @Serializable
 data object YouTubeSignIn : Route

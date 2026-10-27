@@ -18,11 +18,17 @@
 
 package me.knighthat.kreate3.database.dao
 
+import androidx.paging.PagingSource
+import androidx.room.ColumnInfo
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
+import me.knighthat.kreate3.database.view.UserSongViewEntity
 import kotlin.time.Duration
 
 @Dao
@@ -31,12 +37,52 @@ internal interface PlaybackHistoryDao {
     @Query("SELECT * FROM playback_history WHERE user_id = :userId ORDER BY created_at DESC LIMIT :limit")
     fun recent(userId: String, limit: Int): Flow<List<PlaybackHistoryEntity>>
 
+    // The rows below are filtered by the songs' view, which changes with likes and the library
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
+    fun pagedPeriodPlays(query: RoomRawQuery): PagingSource<Int, PeriodPlayRow>
+
+    @RawQuery
+    suspend fun listPeriodPlays(query: RoomRawQuery): List<PeriodPlayRow>
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
+    fun observeSummaries(query: RoomRawQuery): Flow<List<PeriodSummaryRow>>
+
+    @RawQuery
+    suspend fun listIds(query: RoomRawQuery): List<Long>
+
     @Insert
     suspend fun insert(history: PlaybackHistoryEntity): Long
 
     @Query("UPDATE playback_history SET time_spent = :timeSpent WHERE id = :id")
     suspend fun updateTimeSpent(id: Long, timeSpent: Duration)
 
+    @Query("DELETE FROM playback_history WHERE user_id = :userId AND id IN (:ids)")
+    suspend fun delete(userId: String, ids: List<Long>)
+
     @Query("DELETE FROM playback_history WHERE user_id = :userId")
     suspend fun clear(userId: String)
 }
+
+/**
+ * A play in a period with its song, see `HistoryRepository.plays`.
+ *
+ * @property playedAt epoch millis
+ */
+internal data class PeriodPlayRow(
+    @Embedded val song: UserSongViewEntity,
+    val period: Int,
+    @ColumnInfo(name = "play_id")
+    val playId: Long,
+    @ColumnInfo(name = "played_at")
+    val playedAt: Long,
+)
+
+/** @property timeSpent seconds, like `playback_history.time_spent` */
+internal data class PeriodSummaryRow(
+    val period: Int,
+    val plays: Int,
+    val songs: Int,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)

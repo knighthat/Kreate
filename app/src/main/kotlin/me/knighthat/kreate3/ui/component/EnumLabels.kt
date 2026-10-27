@@ -30,6 +30,7 @@ import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.ui.screen.account.HistoryRangePreset
 
 /**
  * The texts of [options] for a choice, read from [res] once so a non-composable `label` can look
@@ -49,6 +50,16 @@ val LyricsProvider.sourceRes: Int
         LyricsProvider.LYRICS_PLUS -> R.string.source_lyrics_plus
         LyricsProvider.LRCLIB -> R.string.source_lrclib
         LyricsProvider.YOUTUBE -> R.string.source_ytm
+    }
+
+@get:StringRes
+val HistoryRangePreset.labelRes: Int
+    get() = when (this) {
+        HistoryRangePreset.ALL_TIME -> R.string.constant_history_range_all_time
+        HistoryRangePreset.TODAY -> R.string.constant_history_range_today
+        HistoryRangePreset.LAST_7_DAYS -> R.string.constant_history_range_last_7_days
+        HistoryRangePreset.LAST_30_DAYS -> R.string.constant_history_range_last_30_days
+        HistoryRangePreset.THIS_YEAR -> R.string.constant_history_range_this_year
     }
 
 @get:StringRes
