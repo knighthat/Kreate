@@ -37,8 +37,9 @@ object Profile {
     internal const val DIRECTORY_NAME = "profiles"
 
     /**
-     * Folder of the profile's files under [rootDirectory]. Deleting a profile deletes it.
+     * Folder of the profile's files under [rootDirectory]. Deleting a profile deletes it, under
+     * `noBackupFilesDir` too (see `SecretStore`).
      */
-    internal fun directory(rootDirectory: File, profileId: String): File =
+    fun directory(rootDirectory: File, profileId: String): File =
         File(File(rootDirectory, DIRECTORY_NAME), profileId)
 }

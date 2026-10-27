@@ -64,10 +64,13 @@ internal fun Context.notificationBuilder(channel: AppChannel): NotificationCompa
 }
 
 /** Shows [notification] as [id], in place of the one showing with it. */
-internal fun Context.notify(id: Int, notification: Notification) {
+internal fun Context.notify(id: Int, notification: Notification) = notify(null, id, notification)
+
+/** Shows [notification] as [tag] and [id], in place of the one showing with both. */
+internal fun Context.notify(tag: String?, id: Int, notification: Notification) {
     if (!canPostNotifications()) return
     try {
-        NotificationManagerCompat.from(this).notify(id, notification)
+        NotificationManagerCompat.from(this).notify(tag, id, notification)
     } catch (_: SecurityException) {
         // The permission was taken back meanwhile
     }

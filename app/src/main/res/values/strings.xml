@@ -75,6 +75,16 @@
     <string name="setting_description_cache">Cache up to %1$s of songs streamed remotely. Restart required</string>
     <string name="setting_title_downloads">Downloads</string>
     <string name="setting_description_downloads">%1$s. Songs kept to play offline, separate from the cache</string>
+    <string name="setting_title_parallel_downloads">Downloads at once</string>
+    <string name="setting_description_parallel_downloads">%1$s download at the same time, the others wait</string>
+    <string name="setting_title_download_retries">Download retries</string>
+    <string name="setting_description_download_retries">A failing download is tried %1$s more before it fails</string>
+    <string name="setting_title_download_wifi_only">Only download on Wi-Fi</string>
+    <string name="setting_description_download_wifi_only">Downloads wait for unmetered network to continue</string>
+    <string name="setting_title_download_on_low_battery">Download on low battery</string>
+    <string name="setting_description_download_on_low_battery">When off, downloads pause while the battery is low</string>
+    <string name="setting_title_download_lyrics">Download lyrics</string>
+    <string name="setting_description_download_lyrics">Keeps a song\'s lyrics from your lyrics source once it\'s fully downloaded</string>
     <string name="setting_title_disk_cache">Disk cache</string>
     <string name="setting_description_disk_cache">%1$s. Keep seen images in local storage for faster load time</string>
     <string name="setting_title_memory_cache">Memory cache</string>
@@ -277,6 +287,15 @@
     <string name="action_grant">Grant</string>
     <string name="action_go_back">Go back</string>
     <string name="action_next">Next</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_download">Download</string>
+    <string name="action_move_to_downloads">Move to downloads</string>
+    <string name="action_remove_from_cache">Remove from cache</string>
+    <string name="action_play">Play</string>
+    <string name="action_play_next">Next</string>
+    <string name="action_queue">Queue</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Resume</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Statuses">-->
@@ -333,6 +352,8 @@
     <string name="semantic_drag_to_move">Drag to move</string>
     <string name="semantic_equalizer">Equalizer</string>
     <string name="semantic_explicit">Explicit</string>
+    <string name="semantic_downloaded">Downloaded</string>
+    <string name="semantic_cached">Cached</string>
     <string name="semantic_follow">Follow</string>
     <string name="semantic_from_opensubsonic">From the %1$s server</string>
     <string name="semantic_from_youtube">From %1$s</string>
@@ -393,6 +414,11 @@
     <string name="menu_dislike">Dislike</string>
     <string name="menu_like">Like</string>
     <string name="menu_share">Share</string>
+    <string name="menu_download">Download</string>
+    <string name="menu_cached">Cached</string>
+    <string name="menu_downloading">Downloading</string>
+    <string name="menu_downloaded">Downloaded</string>
+    <string name="menu_paused">Paused</string>
     <string name="menu_play_next">Play next</string>
     <string name="menu_add_to_queue">Add to queue</string>
     <string name="menu_add_to_playlist">Add to playlist</string>
@@ -446,6 +472,14 @@
     <string name="dialog_title_restart_the_player">Restart the player?</string>
     <string name="dialog_body_restart_the_player_1">Playback stops for a moment, then goes on where it was with the new settings.</string>
     <string name="dialog_body_restart_the_player_2">The sleep timer is on, it stops with the player.</string>
+    <string name="dialog_title_cached_song">Cached song</string>
+    <string name="dialog_body_cached_song_move">It will be moved to your downloads and kept on this device until you delete it.</string>
+    <string name="dialog_body_cached_song_worse_1">The cached copy is worse than the quality set now, so the song will be downloaded again.</string>
+    <string name="dialog_body_cached_song_worse_2">Cached: %1$s\nDownloads in: %2$s</string>
+    <string name="dialog_title_delete_download">Delete download?</string>
+    <string name="dialog_body_delete_download">%1$s will be removed from this device. It can still be streamed.</string>
+    <string name="dialog_title_stop_download">Stop download?</string>
+    <string name="dialog_body_stop_download">%1$s won\'t be downloaded.</string>
     <string name="dialog_title_restore_a_backup">Restore a backup?</string>
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
@@ -490,6 +524,9 @@
     <string name="error_server_unreachable">Can\'t reach the server: %1$s</string>
     <string name="error_server_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
     <string name="error_server_certificate_changed">The server\'s certificate changed, check it in %1$s settings</string>
+    <string name="error_download_failed">Couldn\'t download</string>
+    <string name="error_download_not_saved">Couldn\'t download, the song couldn\'t be saved</string>
+    <string name="error_downloads_full">Downloads are full, delete some or raise their size in settings</string>
     <string name="error_server_not_configured">Sign in to the server in %1$s settings</string>
     <string name="error_server_unexpected">The server sent something unexpected</string>
     <string name="error_server_load">Couldn\'t load this from the server</string>
@@ -577,7 +614,7 @@
     <string name="notification_sleep_timer_title_channel">Sleep timer</string>
     <string name="notification_sleep_timer_subtitle_channel">Time left until the music pauses, with buttons to change it</string>
     <string name="notification_resume_title_channel">Resuming music</string>
-    <string name="notification_resume_subtitle_channel">Shows for a moment while headphones or the system\'s media controls play the last queue again</string>
+    <string name="notification_resume_subtitle_channel">Shows for a moment while headphones or the system\'s media controls play the last queue again, or a downloaded song starts from its notification</string>
     <string name="notification_local_scan_title_scanning">Scanning music</string>
     <string name="notification_local_scan_title_scanned">Music scan finished</string>
     <string name="notification_local_scan_subtitle_scanned">%1$s scanned</string>
@@ -593,6 +630,15 @@
     <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
     <string name="notification_resume_title_resuming">Resuming music</string>
+    <string name="notification_resume_title_starting">Starting music</string>
+    <string name="notification_downloads_title_channel">Downloads</string>
+    <string name="notification_downloads_subtitle_channel">Songs being downloaded, downloaded, or that couldn\'t be downloaded</string>
+    <string name="notification_downloads_title_downloading">Downloading</string>
+    <string name="notification_downloads_title_downloaded">Downloaded</string>
+    <string name="notification_downloads_title_failed">Download failed</string>
+    <string name="notification_downloads_subtitle_paused">Paused</string>
+    <string name="notification_downloads_subtitle_waiting_for_wifi">Waiting for Wi-Fi</string>
+    <string name="notification_downloads_subtitle_waiting_for_battery">Waiting, the battery is low</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Enum values">-->

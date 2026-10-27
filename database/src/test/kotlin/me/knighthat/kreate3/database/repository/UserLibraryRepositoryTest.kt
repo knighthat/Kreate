@@ -68,6 +68,91 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
 
     //<editor-fold desc="Songs">
     @Test
+    fun forgetThumbnailDeletesRowsKeepingNothingElseAndClearsTheRest() = runBlocking {
+        val file = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        val other = Uri.parse("file:///data/download_covers/b-1440.jpg")
+        addUser("other")
+        addSong("s1")
+        addSong("s2")
+        // Only the cover: the row goes
+        songs.save(UserSong("s1", thumbnail = file))
+        songs.save(UserSong("s2", thumbnail = other))
+        activeUser.id.value = "other"
+        // Liked too: the row stays with the shared cover
+        songs.save(UserSong("s1", thumbnail = file, likedAt = liked))
+
+        songs.forgetThumbnail(file)
+
+        assertNull(database.userSongDao().get(USER, "s1"))
+        assertEquals(liked, database.userSongDao().get("other", "s1")?.likedAt)
+        assertNull(database.userSongDao().get("other", "s1")?.thumbnail)
+        // Another cover stays
+        assertEquals(other, database.userSongDao().get(USER, "s2")?.thumbnail)
+        assertEquals(listOf(other), songs.fileThumbnails())
+    }
+
+    @Test
+    fun eachUserDownloadsOnTheirOwn() = runBlocking {
+        val cover = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        addUser("other")
+        addSong("s1")
+        songs.save(UserSong("s1", thumbnail = cover, downloadedAt = liked))
+        activeUser.id.value = "other"
+        songs.save(UserSong("s1", likedAt = liked, downloadedAt = liked))
+
+        assertEquals(setOf("s1"), songs.downloadedIds().first())
+        assertEquals(setOf("s1"), songs.downloadedByAnyone())
+
+        // The other user leaves: they keep the like, the download goes
+        songs.forgetDownload("s1", cover)
+        assertEquals(emptySet<String>(), songs.downloadedIds().first())
+        assertEquals(liked, database.userSongDao().get("other", "s1")?.likedAt)
+        assertEquals(setOf("s1"), songs.downloadedByAnyone())
+
+        // The last one leaves: a row keeping only the download and its cover goes
+        activeUser.id.value = USER
+        songs.forgetDownload("s1", cover)
+        assertNull(database.userSongDao().get(USER, "s1"))
+        assertEquals(emptySet<String>(), songs.downloadedByAnyone())
+    }
+
+    @Test
+    fun forgetDownloadOfEveryUserAndDownloadersUpdate() = runBlocking {
+        val cover = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        addUser("other")
+        addSong("s1")
+        songs.save(UserSong("s1", name = "Mine", downloadedAt = liked))
+        activeUser.id.value = "other"
+        songs.save(UserSong("s1", downloadedAt = liked))
+
+        songs.updateDownloaders("s1") { it.copy(thumbnail = cover) }
+        assertEquals(cover, database.userSongDao().get(USER, "s1")?.thumbnail)
+        assertEquals(cover, database.userSongDao().get("other", "s1")?.thumbnail)
+
+        songs.forgetDownload("s1", cover, everyUser = true)
+        assertNull(database.userSongDao().get("other", "s1"))
+        val kept = database.userSongDao().get(USER, "s1")
+        assertEquals("Mine", kept?.name)
+        assertNull(kept?.thumbnail)
+        assertNull(kept?.downloadedAt)
+    }
+
+    @Test
+    fun forgetThumbnailOfOneSongLeavesTheOthers() = runBlocking {
+        val file = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        addSong("s1")
+        addSong("s2")
+        songs.save(UserSong("s1", thumbnail = file))
+        songs.save(UserSong("s2", thumbnail = file, name = "Mine"))
+
+        songs.forgetThumbnail(file, "s2")
+
+        assertEquals(file, database.userSongDao().get(USER, "s1")?.thumbnail)
+        assertNull(database.userSongDao().get(USER, "s2")?.thumbnail)
+        assertEquals("Mine", database.userSongDao().get(USER, "s2")?.name)
+    }
+
+    @Test
     fun likedSongsLeaveOutDislikesAndNeutralOnes() = runBlocking {
         listOf("liked", "disliked", "neutral").forEach { addSong(it) }
         librarySong("liked", liked)

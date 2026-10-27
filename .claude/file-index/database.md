@@ -35,7 +35,11 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   page loads — the Songs tab missed the startup scan; PagingConfig), `Sorting.kt` (`SortOrder`,
   `*Sort` enums, `toOrderBy`).
 - repository/ — public interface + internal `*Impl` pairs: `Song`, `Album`, `Artist`, `Playlist`,
-  `History`, `Queue`, `User`, `UserSong` (likes/tri-state — `.claude/rules/data-model.md`),
+  `History`, `Queue`, `User`, `UserSong` (likes/tri-state — `.claude/rules/data-model.md`;
+  `forgetThumbnail(uri, songId?)` takes a file cover off every user's rows: deleted when nothing
+  else is kept, else `NULL`; `fileThumbnails()`; per-user downloads via `user_song.downloaded_at`:
+  `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,
+  `updateDownloaders`),
   `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
   `RemoteItem`; liked-song sync from servers). Helpers: `Mappers.kt` (entity↔model),
   `OriginFilter.kt` (SQL WHERE by origins), `SearchPattern.kt` (escaped LIKE).

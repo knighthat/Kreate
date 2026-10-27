@@ -38,9 +38,19 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
 - Browsing is live. YouTube search/browse results and every remote album, artist and playlist are
   shown from the provider and never written. A remote song is stored when it **starts playing**
   (`PlayedSongRecorder`: added to the library, no like), when it's added to a playlist or gets a
-  like/dislike (the same store, `SongStore`: playlist links and reactions need its `song` row) or
+  like/dislike (the same store, `SongStore`: playlist links and reactions need its `song` row),
+  when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it) or
   when synced as liked. A planned Import button will store a remote item only on an explicit user
   action.
 - Local album art is meant to be stored as the MediaStore album art id, with the `content://` URI
   built at render time (the stored URI form differs by Android version). Not done yet: don't build
   on the stored URI as if it were final.
+
+## Downloads are per user, files are shared
+
+`user_song.downloaded_at` marks a user's download; the file (one per song, Media3's download id =
+the song's `kreate://` address) is shared and kept while any user marks it. A user downloading a
+song another has gets it at once, or a better copy (best quality any user asked for, never
+lowered). Leaving a download (menu, notification Cancel) is the active user's only;
+pause stays device-wide. A row keeping only the download (and its download cover) is deleted when
+it's left. All by the maintainer's choice (2026-10-26).

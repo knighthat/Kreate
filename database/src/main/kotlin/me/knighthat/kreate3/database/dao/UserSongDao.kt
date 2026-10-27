@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.database.dao
 
+import android.net.Uri
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -106,4 +107,64 @@ internal interface UserSongDao {
 
     @Query("DELETE FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun delete(userId: String, songId: String)
+
+    /**
+     * Deletes the rows of every user whose cover is [thumbnail], of the song [songId] or of any
+     * when `null`, that keep nothing else: no name, artists, reaction, album position or
+     * download.
+     */
+    @Query(
+        "DELETE FROM user_song WHERE thumbnail = :thumbnail " +
+                "AND (:songId IS NULL OR song_id = :songId) " +
+                "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
+                "AND album_position IS NULL AND downloaded_at IS NULL"
+    )
+    suspend fun deleteKeepingOnly(thumbnail: Uri, songId: String?)
+
+    /**
+     * Deletes the rows of the song [songId] downloaded by the user [userId], or by any when
+     * `null`, that keep nothing else: no name, artists, reaction, album position, and no cover
+     * but [thumbnail].
+     */
+    @Query(
+        "DELETE FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL " +
+                "AND (:userId IS NULL OR user_id = :userId) " +
+                "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
+                "AND album_position IS NULL AND (thumbnail IS NULL OR thumbnail = :thumbnail)"
+    )
+    suspend fun deleteKeepingOnlyDownload(songId: String, userId: String?, thumbnail: Uri?)
+
+    /**
+     * The song [songId] is no longer downloaded by the user [userId], or by any when `null`; the
+     * cover [thumbnail] goes with it.
+     */
+    @Query(
+        "UPDATE user_song SET downloaded_at = NULL, updated_at = :now, " +
+                "thumbnail = CASE WHEN thumbnail = :thumbnail THEN NULL ELSE thumbnail END " +
+                "WHERE song_id = :songId AND downloaded_at IS NOT NULL " +
+                "AND (:userId IS NULL OR user_id = :userId)"
+    )
+    suspend fun clearDownload(songId: String, userId: String?, thumbnail: Uri?, now: Instant)
+
+    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND downloaded_at IS NOT NULL")
+    fun downloadedIds(userId: String): Flow<List<String>>
+
+    /** The songs downloaded by any user. */
+    @Query("SELECT DISTINCT song_id FROM user_song WHERE downloaded_at IS NOT NULL")
+    suspend fun downloadedByAnyone(): List<String>
+
+    /** The rows of every user who downloaded the song [songId]. */
+    @Query("SELECT * FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL")
+    suspend fun downloaders(songId: String): List<UserSongEntity>
+
+    /** Every user's [thumbnail] of the song [songId], or of any when `null`, goes back to the shared one. */
+    @Query(
+        "UPDATE user_song SET thumbnail = NULL, updated_at = :now WHERE thumbnail = :thumbnail " +
+                "AND (:songId IS NULL OR song_id = :songId)"
+    )
+    suspend fun clearThumbnail(thumbnail: Uri, songId: String?, now: Instant)
+
+    /** Every cover of a file on the device that a user set, any user. */
+    @Query("SELECT DISTINCT thumbnail FROM user_song WHERE thumbnail LIKE 'file:%'")
+    suspend fun fileThumbnails(): List<Uri>
 }

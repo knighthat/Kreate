@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b065d794379c776b7085bef6feb569ad",
+    "identityHash": "202719b39a118a2bcd7032a952804ab7",
     "entities": [
       {
         "tableName": "album",
@@ -1041,7 +1041,7 @@
       },
       {
         "tableName": "user_song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `song_id` TEXT NOT NULL, `name` TEXT, `artists` TEXT, `thumbnail` TEXT, `liked_at` INTEGER, `album_position` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`user_id`, `song_id`), FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `song_id` TEXT NOT NULL, `name` TEXT, `artists` TEXT, `thumbnail` TEXT, `liked_at` INTEGER, `album_position` INTEGER, `downloaded_at` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`user_id`, `song_id`), FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -1078,6 +1078,11 @@
           {
             "fieldPath": "albumPosition",
             "columnName": "album_position",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "downloadedAt",
+            "columnName": "downloaded_at",
             "affinity": "INTEGER"
           },
           {
@@ -1119,6 +1124,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_user_song_user_id_liked_at` ON `${TABLE_NAME}` (`user_id`, `liked_at`)"
+          },
+          {
+            "name": "index_user_song_user_id_downloaded_at",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "downloaded_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_song_user_id_downloaded_at` ON `${TABLE_NAME}` (`user_id`, `downloaded_at`)"
           }
         ],
         "foreignKeys": [
@@ -1163,7 +1178,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b065d794379c776b7085bef6feb569ad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '202719b39a118a2bcd7032a952804ab7')"
     ]
   }
 }

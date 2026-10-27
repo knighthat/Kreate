@@ -23,6 +23,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -64,13 +65,20 @@ class PersistentQueue(
     private val writes = Channel<Write>(Channel.UNLIMITED)
     private val following: Job
 
+    /** Completes once the saved queue was put back, or wasn't to be. */
+    private val restored = CompletableDeferred<Unit>()
+
     private val enabled: Boolean
         get() = Preferences.PERSISTENT_QUEUE_ENABLED.value
 
     init {
         writeScope.launch { write() }
         following = scope.launch {
-            if (enabled && player.mediaItemCount == 0) restore()
+            try {
+                if (enabled && player.mediaItemCount == 0) restore()
+            } finally {
+                restored.complete(Unit)
+            }
             player.addListener(this@PersistentQueue)
 
             combine(
@@ -170,6 +178,13 @@ class PersistentQueue(
         player.setMediaItems(saved.items, saved.start, saved.position)
         Log.d(TAG, "Restored ${saved.items.size} songs")
     }
+
+    /**
+     * Waits until the saved queue was put back, or wasn't to be. A change to the queue made
+     * before could land before the restored songs, or be taken for them: a song added to an
+     * empty player is only there once the session has handled it.
+     */
+    suspend fun awaitRestored() = restored.await()
 
     /** Songs to queue, starting at [start] from [position] ms. */
     class Saved(val items: List<MediaItem>, val start: Int, val position: Long)

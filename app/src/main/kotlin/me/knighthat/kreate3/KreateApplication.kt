@@ -37,8 +37,10 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
+import me.knighthat.kreate3.download.downloadModule
 import me.knighthat.kreate3.lyrics.LyricsSource
 import me.knighthat.kreate3.lyrics.lyricsModule
+import me.knighthat.kreate3.notification.DownloadNotifications
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.SystemNotifications
@@ -50,6 +52,7 @@ import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.source.DeviceReactionsImpl
 import me.knighthat.kreate3.source.SongStore
@@ -109,6 +112,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 )
                 add(LocalCoverKeyer())
                 add(LocalCoverFetcher.Factory())
+                // A downloaded cover's small copy where it is drawn small
+                add(CoverFiles.Mapper(get()))
             }
             .memoryCache {
                 MemoryCache.Builder()
@@ -138,6 +143,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         createNotificationChannels()
         // A scan's progress left by a killed process, before the work starts again
         LocalScanNotifications(this).clearStale()
+        DownloadNotifications(this).clearStale()
 
         startKoin {
             androidContext(this@KreateApplication)
@@ -151,6 +157,9 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single { SystemNotifications(androidContext()) }
                     single { Notifier(get()) }
                     single { LocalScanNotifications(androidContext()) }
+
+                    // Covers kept as files: downloaded ones and the user's own
+                    single { CoverFiles(androidContext()) }
 
                     // Creates the database users of the profiles, and tells the database who is active
                     val isSetup = setupCompletedFile().exists()
@@ -178,8 +187,12 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 lyricsModule,
                 networkModule,
                 playbackModule,
+                downloadModule,
                 viewModelModule
             )
         }
+
+        // Covers whose file is gone, like after a backup from another device was restored
+        get<CoroutineScope>().launch { get<CoverFiles>().forgetMissing(get()) }
     }
 }

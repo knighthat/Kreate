@@ -63,7 +63,9 @@ import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.auto.grantArtwork
 import me.knighthat.kreate3.auto.smallCoverJpeg
 import me.knighthat.kreate3.auto.withServedArtwork
+import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.AppChannel
+import me.knighthat.kreate3.notification.DownloadedSongAction
 import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
@@ -495,6 +497,20 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
      * Restart of a timer that finished, which may start the service again.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        DownloadedSongAction.of(intent?.action)?.let { action ->
+            val id = intent?.dataString ?: return START_NOT_STICKY
+            // Android 16 gives audio focus to an app in the background only while its service
+            // is in the foreground, which the media notification makes it only once playing
+            if (action == DownloadedSongAction.PLAY)
+                startForegroundWith(
+                    RESUME_FOREGROUND_ID,
+                    notificationBuilder(AppChannel.RESUME)
+                        .setContentTitle(getString(R.string.notification_resume_title_starting))
+                        .build(),
+                )
+            playDownloaded(action, id)
+            return START_NOT_STICKY
+        }
         if (intent?.action == SleepTimerCommands.RESTART) {
             val extras = intent.extras ?: Bundle.EMPTY
             sleepTimer?.restart(
@@ -509,6 +525,34 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         sleepTimer?.change(action) ?: SleepTimerNotification(this).cancel()
         return START_NOT_STICKY
     }
+
+    /**
+     * Does [action] with the song downloaded as [id], from a button of its notification. The
+     * queue is changed through [PlaybackController], like the app does, the service connects to
+     * itself.
+     */
+    private fun playDownloaded(action: DownloadedSongAction, id: String) =
+        get<CoroutineScope>().launch(Dispatchers.Main) {
+            // A service just started puts the saved queue back first, the song goes after it
+            persistentQueue?.awaitRestored()
+            val item = get<SongDownloads>().item(id)
+            if (item == null) {
+                leaveResumeForeground()
+                return@launch
+            }
+            val playback = get<PlaybackController>()
+            when (action) {
+                DownloadedSongAction.PLAY -> playback.play(item)
+                DownloadedSongAction.PLAY_NEXT -> playback.playNext(listOf(item))
+                DownloadedSongAction.ENQUEUE -> playback.enqueue(listOf(item))
+            }
+            if (action != DownloadedSongAction.PLAY) return@launch
+            // The media notification takes the foreground over as music plays
+            withTimeoutOrNull(HANDOVER_WAIT) {
+                while (!isPlaybackOngoing) delay(HANDOVER_CHECK)
+            }
+            leaveResumeForeground()
+        }
 
     /**
      * Puts the service in the foreground with [notification] as [id], until the media

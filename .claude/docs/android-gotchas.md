@@ -97,6 +97,33 @@ Learned on `SleepTimerNotification` (DecoratedCustomViewStyle +
 - Android bundles an app's notifications when 2+ show; a custom view's buttons are then hidden until
   expanded.
 
+## Notification groups and Media3 downloads
+
+Seen on API 36 building downloads (`DownloadNotifications`, `SongDownloadService`, 2026-10-27):
+
+- A group summary's own action buttons never show from Android 7 on, collapsed or expanded, with
+  one child or many. Put buttons on the children.
+- When the foreground service whose notification is the group summary stops, Android removes the
+  summary **and every child of its group**. Children that must outlive the service (a paused
+  download) need a group of their own.
+- Android sheds notification updates past about 5 per second per app (`Package enqueue rate is
+  5.38. Shedding …` in logcat): the dropped update is simply lost. Coalesce bursts (post the
+  summary once, a moment later). `getActiveNotifications()` also lags a notification just posted.
+- Media3's `DownloadService` calls `resumeDownloads()` in its first `onCreate` of the process:
+  re-apply an app-level `pauseDownloads()` after `super.onCreate()`. With no scheduler and
+  requirements unmet (Wi-Fi only) it stays foreground and waits; once nothing runs (all paused) it
+  stops itself. Its `addDownload` on an existing id replaces the request (new `customCacheKey`
+  wins) and queues it again; the old key's bytes stay in the cache.
+- A read-only `CacheDataSource` (no write sink) never writes the cache: hole spans are released,
+  content metadata is only written while writing, and `NoOpCacheEvictor` needs no span touches.
+- Starting a non-exported service from a notification button works from the background (the tap
+  grants a short allowance); use `PendingIntent.getForegroundService` (API 26+) when the service
+  must go foreground, `getService` otherwise. A `run-as … kill -9` keeps the app's notifications,
+  `am force-stop` clears them.
+- On a cold start through a notification button, a `MediaController` command can race
+  `PersistentQueue`'s restore: an item added to an empty player is only there once the session
+  handled it, so the restore still sees it empty. Wait for the restore first (`awaitRestored`).
+
 ## Android Studio Database Inspector
 
 With App Inspection attached, the inspector hooks `BundledSQLiteConnection` and uses it from its own

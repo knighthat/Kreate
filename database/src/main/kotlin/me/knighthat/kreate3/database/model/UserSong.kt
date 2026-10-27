@@ -32,6 +32,7 @@ import kotlin.time.Instant
  * @property likedAt when the user liked the song, `null` if not liked
  * @property albumPosition where the user put the song in its album, lowest first, `null` to use
  * the shared position
+ * @property downloadedAt when the user downloaded the song, `null` if they didn't
  */
 data class UserSong(
     val songId: String,
@@ -40,4 +41,5 @@ data class UserSong(
     val thumbnail: Uri? = null,
     val likedAt: Instant? = null,
     val albumPosition: Int? = null,
+    val downloadedAt: Instant? = null,
 )

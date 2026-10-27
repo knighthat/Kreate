@@ -10,6 +10,12 @@ source/ (app-side glue for sources)
   merged in order, de-duplicated.
 - `SongDetails.kt` — `songDetails(origin, songId, youTube, openSubsonic)`: a remote song as its
   source has it now, to store it (`PlayedSongRecorder`, `SongStore`).
+- `CoverFiles.kt` — covers kept as files under `noBackupFilesDir`: `download_covers` (2 sizes,
+  `downloaded(address, size)`, `sizedLike`) and `custom(profileId)` =
+  `profiles/<id>/custom_thumbnail`; `kindOf` → `CoverKind`
+  (NONE/DOWNLOADED/CUSTOM/OTHER); `Mapper` (Coil, 1440 → 512 file when drawn small);
+  `forgetMissing` (app start, gone files off every user's songs). Koin single in
+  `KreateApplication`.
 - `SongStore.kt` — `SongStore.store(songId, origin)` (Koin single): makes sure a song is in the
   `song` table before the user keeps something about it (playlist, reaction); one fetched live is
   fetched with `songDetails` and stored with `savePlayedSong` (added to the library).

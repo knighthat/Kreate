@@ -30,12 +30,12 @@ Docs (`.claude/docs/`) are read only when needed. `app/…` is `app/src/main/kot
 
 ## Docs
 
-| Doc                    | Covers                                                                                                                                              |
-|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `emulator.md`          | device permission, launching, database, driving the UI, previews, instrumented tests, release builds, test audio, Perfetto jank traces, sign-ins    |
-| `android-gotchas.md`   | background playback on Android 16, Android Auto, intents that ask the UI to act, playback resumption, RemoteViews notifications, Database Inspector |
-| `playback-pipeline.md` | resolving songs, data source chain, caches, quality copies, formats and gain, Navidrome observations, open items                                    |
-| `youtube-streams.md`   | innertubex setup, PO tokens, signed-out vs session, client behavior                                                                                 |
-| `cover-cache.md`       | cover sizes, disk cache keys, hardware bitmaps                                                                                                      |
-| `proxies.md`           | proxy fallback, library behavior, untested cases                                                                                                    |
-| `lyrics-servers.md`    | how BetterLyrics, LyricsPlus and LRCLIB answered when probed                                                                                        |
+| Doc                    | Covers                                                                                                                                                                                        |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `emulator.md`          | device permission, launching, database, driving the UI, previews, instrumented tests, release builds, test audio, Perfetto jank traces, sign-ins                                              |
+| `android-gotchas.md`   | background playback on Android 16, Android Auto, intents that ask the UI to act, playback resumption, RemoteViews notifications, notification groups and Media3 downloads, Database Inspector |
+| `playback-pipeline.md` | resolving songs, data source chain, caches, quality copies, formats and gain, Navidrome observations, open items                                                                              |
+| `youtube-streams.md`   | innertubex setup, PO tokens, signed-out vs session, client behavior                                                                                                                           |
+| `cover-cache.md`       | cover sizes, disk cache keys, hardware bitmaps                                                                                                                                                |
+| `proxies.md`           | proxy fallback, library behavior, untested cases                                                                                                                                              |
+| `lyrics-servers.md`    | how BetterLyrics, LyricsPlus and LRCLIB answered when probed                                                                                                                                  |

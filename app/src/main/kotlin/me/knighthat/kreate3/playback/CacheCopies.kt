@@ -37,12 +37,14 @@ import me.knighthat.kreate3.provider.youtube.YouTubeProvider
  * @param drop drops a copy of a song, see [SongCaches.drop]
  * @param quality the quality the songs of an origin are set to now
  * @param isOnline whether songs can be streamed now
+ * @param whole hears of a song whose copy was read whole, see [SongCaches.changed]
  */
 class CacheCopies internal constructor(
     private val copies: (QueuedSong) -> Map<StreamQuality, Boolean>,
     private val drop: (QueuedSong) -> Unit,
     private val quality: suspend (Origin) -> StreamQuality,
     private val isOnline: () -> Boolean,
+    private val whole: (QueuedSong) -> Unit = {},
 ) {
 
     constructor(caches: SongCaches, context: Context, youTube: YouTubeProvider) : this(
@@ -50,6 +52,7 @@ class CacheCopies internal constructor(
         caches::drop,
         { context.streamQuality(it, youTube) },
         context::isOnline,
+        caches::changed,
     )
 
     /** The copy each song is read from since it started, by its address, the oldest first. */
@@ -90,6 +93,7 @@ class CacheCopies internal constructor(
         try {
             val copies = copies(song)
             if (copies[quality] != true) return
+            whole(song)
             copies.keys.filter { it < quality }.forEach { drop(song.copy(quality = it)) }
         } catch (e: Exception) {
             // Kept for now, dropped next time

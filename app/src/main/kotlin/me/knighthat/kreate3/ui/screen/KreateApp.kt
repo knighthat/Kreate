@@ -44,6 +44,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
@@ -53,6 +54,7 @@ import me.knighthat.kreate3.ui.component.LocalMessageHost
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.LocalPlaylistInitial
 import me.knighthat.kreate3.ui.component.LocalSongMenuHost
+import me.knighthat.kreate3.ui.component.LocalSongStorage
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
@@ -167,6 +169,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
     val playlistInitial by Preferences.PLAYLIST_INITIAL.collectAsStateWithLifecycle()
+    val songStorage by koinInject<SongDownloads>().songs.collectFlowAsState()
 
     val topLevel = rememberTopLevelBackStack()
     val playback = koinInject<PlaybackController>()
@@ -207,6 +210,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,
             LocalPlaylistInitial provides playlistInitial,
+            LocalSongStorage provides songStorage,
             LocalNotifier provides notifier,
             LocalMessageHost provides messages,
             LocalNavigator provides navigator,

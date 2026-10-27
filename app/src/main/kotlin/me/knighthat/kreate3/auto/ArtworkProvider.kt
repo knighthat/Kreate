@@ -133,10 +133,16 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
  * The cover at [source], drawn small, loaded like [ArtworkProvider] does; `null` when it can't
  * be loaded.
  */
-private suspend fun Context.smallCover(source: Uri): Bitmap? {
+internal suspend fun Context.smallCover(source: Uri): Bitmap? = cover(source, SMALL_COVER)
+
+/**
+ * The cover at [source], drawn at most [size] wide and high, as a bitmap whose pixels can be
+ * read; `null` when it can't be loaded.
+ */
+internal suspend fun Context.cover(source: Uri, size: Int): Bitmap? {
     val request = ImageRequest.Builder(this)
         .data(source)
-        .size(SMALL_COVER)
+        .size(size)
         // Compressed afterwards, a hardware bitmap can't be read
         .allowHardware(false)
         .build()

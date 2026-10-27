@@ -82,7 +82,7 @@ class SongDataSourceTest {
     /** Whether songs of the server skip the cache. */
     private var directPlay = false
 
-    private val caches = SongCaches(context, 1024 * 1024, 1024 * 1024)
+    private val caches = SongCaches(context, 1024 * 1024)
 
     private val factory = songDataSourceFactory(
         context = context,
@@ -180,6 +180,110 @@ class SongDataSourceTest {
         assertArrayEquals(audio, read(song))
         assertEquals(0, server.asked)
         // Nothing is copied to the cache
+        assertEquals(0L, cachedIn(caches.cache, song))
+    }
+
+    /** Writes [bytes] to [cache] as the [quality] copy of [song]. */
+    private fun store(cache: Cache, song: QueuedSong, quality: StreamQuality, bytes: ByteArray) {
+        val source =
+            File(context.filesDir, "stored-${quality.name}.bin").apply { writeBytes(bytes) }
+        CacheWriter(
+            CacheDataSource(cache, FileDataSource()),
+            DataSpec.Builder()
+                .setUri(Uri.fromFile(source))
+                .setKey(song.copy(quality = quality).cacheKey)
+                .build(),
+            null,
+            null,
+        ).cache()
+    }
+
+    @Test
+    fun downloadWinsOverTheCacheWhateverItsQuality() {
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+        val downloaded = audio.reversedArray()
+        store(caches.cache, song, StreamQuality.HIGH, audio)
+        store(caches.downloads, song, StreamQuality.LOW, downloaded)
+
+        assertArrayEquals(downloaded, read(song))
+        assertEquals(0, server.asked)
+    }
+
+    @Test
+    fun downloadedSongIsReadFromTheDownloadsWithDirectPlay() {
+        directPlay = true
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+        store(caches.downloads, song, StreamQuality.LOW, audio)
+
+        address = null
+        assertArrayEquals(audio, read(song))
+        assertEquals(0, server.asked)
+    }
+
+    @Test
+    fun playbackNeverWritesTheDownloads() {
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+        // Half downloaded, like while the downloader runs
+        store(caches.downloads, song, StreamQuality.HIGH, audio.copyOf(audio.size / 2))
+        val before = cachedIn(caches.downloads, song)
+
+        assertArrayEquals(audio.copyOf(audio.size / 2), read(song).copyOf(audio.size / 2))
+        assertEquals(before, cachedIn(caches.downloads, song))
+    }
+
+    @Test
+    fun readOnlyCacheRefusesWrites() {
+        val cache = ReadOnlyCache(caches.downloads)
+        val key = QueuedSong(Origin.OPEN_SUBSONIC, "s1").cacheKey
+
+        assertThrows(UnsupportedOperationException::class.java) { cache.startFile(key, 0, 1) }
+        assertThrows(UnsupportedOperationException::class.java) { cache.removeResource(key) }
+        assertThrows(UnsupportedOperationException::class.java) { cache.release() }
+    }
+
+    /** Downloads [song] in [quality] the way the downloader does. */
+    private fun download(song: QueuedSong, quality: StreamQuality) {
+        val upstream = downloadDataSourceFactory(
+            context = context,
+            client = OkHttpClient(),
+            openSubsonic = OkHttpClient(),
+            youTube = OkHttpClient(),
+            resolver = DataSourceResolver(
+                Providers(listOf(local, server, FakeProvider(Origin.YOUTUBE) { null })),
+                { _, _, _ -> null },
+            ),
+            caches = caches,
+        )
+        CacheWriter(
+            CacheDataSource(caches.downloads, upstream.createDataSource()),
+            DataSpec.Builder()
+                .setUri(song.uri)
+                .setKey(song.copy(quality = quality).cacheKey)
+                .build(),
+            null,
+            null,
+        ).cache()
+    }
+
+    @Test
+    fun downloadMovesTheCachedCopyWithoutStreaming() {
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+        store(caches.cache, song, StreamQuality.HIGH, audio)
+
+        address = null
+        download(song, StreamQuality.HIGH)
+        assertEquals(0, server.asked)
+        assertEquals(audio.size.toLong(), cachedIn(caches.downloads, song))
+        assertEquals(StreamQuality.HIGH, caches.downloaded(song))
+    }
+
+    @Test
+    fun downloadStreamsWhatTheCacheLacksWithoutCachingIt() {
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+
+        download(song, StreamQuality.HIGH)
+        assertEquals(1, server.asked)
+        assertEquals(audio.size.toLong(), cachedIn(caches.downloads, song))
         assertEquals(0L, cachedIn(caches.cache, song))
     }
 

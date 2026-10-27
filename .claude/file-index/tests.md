@@ -7,10 +7,12 @@ Paths are relative to `<module>/src/main/kotlin/me/knighthat/kreate3/`; checked 
 Tests mirror the main paths under `src/test/`.
 
 - app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `SongSubtitleTest`, `ServedArtworkTest`, backup/
-  `BackupTest`, playback/`DataSourceResolverTest`,
-  `CacheCopiesTest` (Robolectric), `SongDataSourceTest`, `LoudnessNormalizerTest`,
+  `BackupTest`, download/`SongDownloadsTest` (song kept in a request), playback/
+  `DataSourceResolverTest`,
+  `CacheCopiesTest` (Robolectric), `SongDataSourceTest` (read order, read-only downloads, the
+  downloader's cache move), `LoudnessNormalizerTest`,
   `PlaybackErrorsTest`, `ShuffledOrderTest`, source/`CoverCacheTest`, `LoudnessMeterTest`,
-  `MediaStoreScannerTest`,
+  `MediaStoreScannerTest`, `CoverFilesTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`.
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,

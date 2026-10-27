@@ -46,8 +46,9 @@ open items are at the end.
 
 - Two `SimpleCache`s sharing `exoplayer_internal.db` (excluded from backups):
   `cache` = `cacheDir/songs`, LRU sized by `Preferences.SONG_CACHE`;
-  `downloads` = `noBackupFilesDir/downloads`, no eviction, read-only in playback. Nothing writes
-  `downloads` yet; its cap `SONG_DOWNLOADS` is stored but unused.
+  `downloads` = `noBackupFilesDir/exoplayer`, `NoOpCacheEvictor`, read-only in playback, written
+  only by Media3's `DownloadManager` (`download/SongDownloads.kt`); `MEDIA3_DOWNLOAD_SIZE` refuses
+  new downloads once reached, nothing is evicted.
 - YouTube guard: with cached parts of length L, streams of another `contentLength` are skipped; if
   none match, the cached parts are dropped. OpenSubsonic has no such guard (length unknown).
 
@@ -64,8 +65,16 @@ open items are at the end.
   `CacheCopies.pick` at song start: best whole copy ≥ setting, else (online) best partial ≥ setting,
   else (online) a new copy at the setting, else (offline) best whole, else best partial. Seeks reuse
   the pinned copy. Lower copies are dropped only once the read copy is whole (`readEnded`).
-- A future downloader must store under the copy key, and the router should then consider download
-  copies.
+- Read order for a remote song: whole download copy (any quality) → `downloads` read-only layer →
+  `cache` → stream; local songs are read where they are, no cache. Playback wraps `downloads` in
+  `ReadOnlyCache` (writes throw); a read-only `CacheDataSource` also never writes (holes released,
+  metadata only written while writing, `NoOpCacheEvictor` needs no span touches). Covered by
+  `SongDataSourceTest`.
+- Downloads store under the copy key (request id = song address, `customCacheKey` = copy key).
+  `SongDataSource` reads a song's best whole download copy first, whatever the setting, even with
+  direct play. The downloader reads through `downloadDataSourceFactory`: the whole `cache` copy of
+  the same key if there (a move, no network), else streamed in that quality (not kept in `cache`).
+  A completed download drops the song's `cache` copies.
 
 ## Formats and gain (`SongFormatRecorder.kt`)
 

@@ -79,7 +79,7 @@ import me.knighthat.kreate3.source.local.isAlbumArt
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import org.koin.compose.koinInject
 
-private val BADGE_SIZE = 12.dp
+internal val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
 
 /** The name of the source an item comes from, as its own strings say it. */
@@ -123,7 +123,8 @@ internal fun memoryCacheKey(model: Any): String? = when (model) {
  * What Coil can load for the cover of the song [item], in the order to try. A song on this
  * device has its [LocalCover]. Any other song has what its ids and picture lead to at its source
  * first ([me.knighthat.kreate3.provider.Provider.songArtworkUris]), the item's `artworkUri` last: a
- * list may give none, like the songs of an album, or one that doesn't load anymore.
+ * list may give none, like the songs of an album, or one that doesn't load anymore. A cover that
+ * is a file on the device, like a downloaded song's, comes first instead.
  */
 fun songThumbnailModels(
     item: MediaItem,
@@ -138,6 +139,9 @@ fun songThumbnailModels(
 
     val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
     val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, size, cover)
+    // A cover kept on the device, like a downloaded song's, loads offline without waiting for
+    // the source's to fail
+    if (cover?.scheme == "file") return (listOf(cover) + fromIds).distinct()
     return (fromIds + listOfNotNull(cover)).distinct()
 }
 
@@ -282,7 +286,8 @@ fun ItemBadge(
 }
 
 /**
- * The badges that apply to [item]: where it comes from, explicit content, a liked song, a bookmarked album, a followed artist.
+ * The badges that apply to [item]: where it comes from, explicit content, a downloaded or cached
+ * song, a liked song, a bookmarked album, a followed artist.
  *
  * @param reserveHeight keep the height of the badges when there are none, so items next to each
  * other in a grid keep their titles on the same line
@@ -310,6 +315,7 @@ fun ItemBadges(
     ) {
         item.origin?.let { OriginBadge(it, size) }
         if (item.isExplicit) ExplicitBadge(size)
+        StorageBadge(item.storage, size)
         if (!showReactions) return@Row
         if (item.isLiked) ItemBadge(R.drawable.favorite, "Favorite", size = size)
         if (item.isBookmarked) ItemBadge(R.drawable.bookmark, "Bookmarked", size = size)

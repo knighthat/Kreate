@@ -20,3 +20,11 @@ Sizes, cache keys and bitmaps: `.claude/docs/cover-cache.md`.
 - Queued songs carry their cover as an `ArtworkProvider` address (`withServedArtwork`), because
   Android Auto's player reads only `content://` covers. App code reading a song's `artworkUri`
   goes through `thumbnailModel`/`songThumbnailModels`, or `coverSource()`, to load the original.
+- A user's own song cover (`user_song.thumbnail`) can be a file kept on the device
+  (`CoverFiles`, both under `noBackupFilesDir`): `download_covers/<hash>-512.jpg` and `-1440.jpg`
+  (rows point at the 1440 one, `CoverFiles.Mapper` draws the 512 one where `coverSize` says so) or
+  `profiles/<profile id>/custom_thumbnail/` for covers the user picked (goes with the profile).
+  `songThumbnailModels` tries a file cover first.
+  A download never replaces a custom cover whose file exists. Taking a file cover away
+  (`forgetThumbnail`) deletes rows that keep nothing else, else sets it `NULL`; covers whose file is
+  gone are taken away at app start (`forgetMissing`), all by the maintainer's choice (2026-10-26).

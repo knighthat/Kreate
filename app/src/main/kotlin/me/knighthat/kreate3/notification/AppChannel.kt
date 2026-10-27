@@ -83,12 +83,23 @@ enum class AppChannel(
         descriptionRes = R.string.notification_resume_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
         isSilent = true,
+    ),
+
+    /**
+     * The songs being downloaded, downloaded and failed, each group with a notification per song,
+     * see [DownloadNotifications].
+     */
+    DOWNLOADS(
+        id = "downloads",
+        titleRes = R.string.notification_downloads_title_channel,
+        descriptionRes = R.string.notification_downloads_subtitle_channel,
+        importance = NotificationManagerCompat.IMPORTANCE_LOW,
     );
 
     /** The id of a [Message]'s notification, a new one replaces the one already showing. */
     val notificationId: Int
-        // Clear of Media3's media notification, 1001, LocalScanNotifications' 3000s and the
-        // sleep timer's 4000
+        // Clear of Media3's media notification, 1001, LocalScanNotifications' 3000s, the
+        // sleep timer's 4000 and DownloadNotifications' 6000s
         get() = 2000 + ordinal
 }
 

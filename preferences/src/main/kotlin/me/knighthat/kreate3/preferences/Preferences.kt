@@ -36,6 +36,7 @@ import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
 import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_TAP_RADIO
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
+import me.knighthat.kreate3.preferences.Preferences.LYRICS_SOURCE
 import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_ENABLED
@@ -396,11 +397,41 @@ object Preferences : KoinComponent {
 
     /**
      * Largest size, in bytes, the downloaded songs may take together. The default is 4 GiB.
-     * It is separate from [MEDIA3_CACHE_SIZE], downloads are never dropped to make room.
-     *
-     * Nothing downloads songs yet, so nothing reads it yet.
+     * It is separate from [MEDIA3_CACHE_SIZE], downloads are never dropped to make room: once
+     * they take this much, new downloads are refused. Read when a download starts.
      */
     val MEDIA3_DOWNLOAD_SIZE by lazy { long("song_downloads", 4L * 1024 * 1024 * 1024) }
+
+    /**
+     * Songs downloaded at the same time, the others wait for their turn. `SongDownloads` applies
+     * it to the downloader as it changes, a song already downloading isn't stopped.
+     */
+    val DOWNLOAD_PARALLEL_COUNT by lazy { int("download_parallel_count", 2) }
+
+    /**
+     * Times a download that keeps failing is tried again before it counts as failed, Media3's
+     * default 5. A try that gets further counts from zero again. `SongDownloads` applies it to the
+     * downloader as it changes.
+     */
+    val DOWNLOAD_RETRY_COUNT by lazy { int("download_retry_count", 5) }
+
+    /**
+     * Whether downloads wait for Wi-Fi, or another network that isn't metered, a cached song
+     * moved to the downloads too. `SongDownloads` applies it as it changes.
+     */
+    val DOWNLOAD_WIFI_ONLY by lazy { boolean("download_wifi_only", false) }
+
+    /**
+     * Whether downloads go on while Android says the battery is low; off, they pause until it
+     * says the battery is fine again. `SongDownloads` applies it as it changes.
+     */
+    val DOWNLOAD_ON_LOW_BATTERY by lazy { boolean("download_on_low_battery", true) }
+
+    /**
+     * Whether a song's lyrics are stored once it is downloaded whole, from the source of
+     * [LYRICS_SOURCE], like the lyrics page stores them. `DownloadedSongStore` reads it.
+     */
+    val DOWNLOAD_LYRICS by lazy { boolean("download_lyrics", false) }
 
     /**
      * Least time, in seconds, a song has to play before it is added to the playback history.

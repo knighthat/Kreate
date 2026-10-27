@@ -73,6 +73,10 @@ data class QueuedSong(
     val cacheKey: String
         get() = quality?.let { "$uri#${it.name}" } ?: uri.toString()
 
+    /** The song itself, without the copy or the client it is read with. */
+    val song: QueuedSong
+        get() = QueuedSong(origin, id)
+
     companion object {
         private const val SCHEME = "kreate"
 
@@ -82,6 +86,13 @@ data class QueuedSong(
             val origin = Origin.entries.firstOrNull { it.name == uri.authority } ?: return null
             val id = uri.pathSegments.singleOrNull() ?: return null
             return QueuedSong(origin, id)
+        }
+
+        /** @return the copy [key] is the [cacheKey] of, `null` when it isn't one */
+        fun ofCacheKey(key: String): QueuedSong? {
+            val uri = key.toUri()
+            val song = of(uri) ?: return null
+            return song.copy(quality = StreamQuality.entries.firstOrNull { it.name == uri.fragment })
         }
     }
 }

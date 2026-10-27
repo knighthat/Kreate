@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.Song
@@ -166,6 +167,38 @@ interface UserSongRepository {
      * Removes the song from the library. The shared song stays.
      */
     suspend fun remove(songId: String)
+
+    /**
+     * Takes [thumbnail] off the songs of every user whose own cover it is, of the song [songId]
+     * only, or of any when `null`, like a file deleted or about to be. A row that keeps nothing
+     * else about its song is deleted, the song leaves that user's library; any other gets the
+     * shared cover back.
+     */
+    suspend fun forgetThumbnail(thumbnail: Uri, songId: String? = null)
+
+    /** Every cover of a file on the device any user has as their own, see [UserSong.thumbnail]. */
+    suspend fun fileThumbnails(): List<Uri>
+
+    /** The songs the active user downloaded, see [UserSong.downloadedAt]. */
+    fun downloadedIds(): Flow<Set<String>>
+
+    /** The songs any user downloaded. */
+    suspend fun downloadedByAnyone(): Set<String>
+
+    /**
+     * The song [songId] is no longer downloaded by the active user, or by any user when
+     * [everyUser]. Their cover [thumbnail] goes with it. A row that keeps nothing else about the
+     * song is deleted, the song leaves that user's library.
+     */
+    suspend fun forgetDownload(songId: String, thumbnail: Uri?, everyUser: Boolean = false)
+
+    /**
+     * Changes what every user who downloaded the song [songId] keeps about it, only what
+     * [transform] changes is replaced, like [update] for each of them.
+     *
+     * @throws IllegalArgumentException when [transform] changes the song id
+     */
+    suspend fun updateDownloaders(songId: String, transform: (UserSong) -> UserSong)
 
     /**
      * Moves the song [songId] of the album [albumId] to right after the song [after], to the start

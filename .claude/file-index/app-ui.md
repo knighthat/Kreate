@@ -26,6 +26,10 @@ ui/component/ (shared composables; each file that draws something ends with its 
   next, add to queue, add to playlist + picker of the app's playlists (newest first, create button
   in its header), radio, go to album/artist(s) + picker, list actions like "Remove from
   playlist", Details = "In construction"). `SongMenuAction` for list-specific actions.
+- `SongDownload.kt` — `LocalSongStorage` (provided in KreateApp), `MediaItem.storage`,
+  `StorageBadge` (downloaded > cached, in `ItemBadges`), `SongDownloadAction` (song menu header
+  button next to Share: Download / Cached → move-or-remove dialog with worse-quality warning /
+  Downloading → stop dialog / Paused → stop or Resume / Downloaded → delete dialog).
 - `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
   `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
   `song` table is stored first (`SongStore`).

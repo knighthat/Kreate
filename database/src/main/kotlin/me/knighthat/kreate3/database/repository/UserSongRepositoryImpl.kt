@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
 import androidx.paging.PagingData
 import androidx.room.RoomRawQuery
 import androidx.sqlite.SQLiteStatement
@@ -191,6 +192,40 @@ internal class UserSongRepositoryImpl(
 
     override suspend fun remove(songId: String) =
         userSongDao.delete(scope.requireId(), songId)
+
+    override suspend fun forgetThumbnail(thumbnail: Uri, songId: String?) =
+        database.inTransaction {
+            userSongDao.deleteKeepingOnly(thumbnail, songId)
+            userSongDao.clearThumbnail(thumbnail, songId, clock.now())
+        }
+
+    override suspend fun fileThumbnails(): List<Uri> = userSongDao.fileThumbnails()
+
+    override fun downloadedIds(): Flow<Set<String>> =
+        scope.observe(emptySet()) { userId ->
+            userSongDao.downloadedIds(userId).map { it.toSet() }
+        }.distinctUntilChanged()
+
+    override suspend fun downloadedByAnyone(): Set<String> =
+        userSongDao.downloadedByAnyone().toSet()
+
+    override suspend fun forgetDownload(songId: String, thumbnail: Uri?, everyUser: Boolean) {
+        val userId = if (everyUser) null else scope.requireId()
+        database.inTransaction {
+            userSongDao.deleteKeepingOnlyDownload(songId, userId, thumbnail)
+            userSongDao.clearDownload(songId, userId, thumbnail, clock.now())
+        }
+    }
+
+    override suspend fun updateDownloaders(songId: String, transform: (UserSong) -> UserSong) =
+        database.inTransaction {
+            val now = clock.now()
+            userSongDao.downloaders(songId).forEach { current ->
+                val updated = transform(current.toModel())
+                require(updated.songId == songId) { "The song of a library entry cannot be changed" }
+                userSongDao.upsert(updated.toEntity(current.userId, current.createdAt, now))
+            }
+        }
 
     override suspend fun moveInAlbum(albumId: String, songId: String, after: String?) {
         val userId = scope.requireId()

@@ -23,6 +23,9 @@ playback/
   controls; `MediaButtonReceiver` in the manifest), going foreground first under
   `RESUME_FOREGROUND_ID` 5000 (`AppChannel.RESUME`); for System UI's card after a reboot only the
   playing song, cover as `artworkData`.
+  `onStartCommand` also takes a downloaded song's notification buttons (`DownloadedSongAction`,
+  data = download id): Play goes foreground first (5000, "Starting music"), then
+  `PlaybackController.play`/`playNext`/`enqueue` with the item `SongDownloads.item` decodes.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
   `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`queue` in its own
   order, `shuffledOrder` = queue positions in play order while shuffled else `null`, walked from
@@ -67,7 +70,11 @@ playback/
   Content-Type → `answered`); router sets the `CacheCopies` copy as DataSpec key + customData,
   OpenSubsonic direct play skips the cache.
 - `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in
-  noBackupFilesDir); `copies(song)` (quality → whole?), `drop`, `cachedLength`.
+  noBackupFilesDir, no eviction); `copies(song)` (quality → whole?), `cached`, `cachedSongs`,
+  `downloaded`, `drop`/`dropAll`, `cachedLength`, `changed` flow (copy whole/dropped, for badges).
+  `SongDataSource.kt` also has `downloadDataSourceFactory` (the downloader's upstream).
+- `ReadOnlyCache.kt` — `Cache` delegate whose writes/removals/release throw; playback reads
+  `downloads` through it.
 - `LoudnessNormalizer.kt` — volume change in dB from a song's gain (`normalizationDb`,
   `cutToVolume`, `replayGainLoudness`), from the recorder's in-memory formats first, then the DB;
   to `LOUDNESS_TARGET_LUFS`, OpenSubsonic `raw` gains read against `OPEN_SUBSONIC_REPLAY_GAIN_LUFS`,
@@ -85,7 +92,9 @@ playback/
   change; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s while
   playing) when `PERSISTENT_QUEUE_ENABLED`; restores it unprepared in `PlaybackService.onCreate` if
   the player is empty; `saved()` (also for playback resumption) gives the queue as items;
-  `release()` before the player's. Table: PK (user_id, ordinal), `position` =
+  `release()` before the player's. `awaitRestored()`: done once the saved queue was put back (or
+  wasn't), a downloaded song's notification button waits for it on a cold start. Table: PK (user_id,
+  ordinal), `position` =
   ms of the one playing row (single-statement CASE update keeps it unique), songs missing from
   `song` skipped on insert.
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,

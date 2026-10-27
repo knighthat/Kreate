@@ -37,6 +37,8 @@ import kotlin.time.Instant
  * @property likedAt when the user liked the song, `null` if not liked
  * @property albumPosition where the user put the song in its album, lowest first, `null` to use
  * the shared position
+ * @property downloadedAt when the user downloaded the song, `null` if they didn't. The file is
+ * shared by every user who did, and kept while one of them does.
  * @property createdAt when the row was first stored
  * @property updatedAt when the row was last changed
  */
@@ -57,7 +59,7 @@ import kotlin.time.Instant
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("song_id"), Index("user_id", "liked_at")],
+    indices = [Index("song_id"), Index("user_id", "liked_at"), Index("user_id", "downloaded_at")],
 )
 internal data class UserSongEntity(
     @ColumnInfo(name = "user_id")
@@ -71,6 +73,8 @@ internal data class UserSongEntity(
     val likedAt: Instant? = null,
     @ColumnInfo(name = "album_position")
     val albumPosition: Int? = null,
+    @ColumnInfo(name = "downloaded_at")
+    val downloadedAt: Instant? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

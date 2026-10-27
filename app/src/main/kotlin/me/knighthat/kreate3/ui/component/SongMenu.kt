@@ -90,6 +90,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserArtistRepository
+import me.knighthat.kreate3.download.SongStorage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.Route
@@ -386,7 +387,7 @@ private fun rememberSongArtists(item: MediaItem): List<SongArtist> {
     return artists
 }
 
-/** The reactions and Share, at the top of the sheet. */
+/** The reactions, Share and the download button, at the top of the sheet. */
 @Composable
 private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) {
     val reaction = rememberSongReaction(item)
@@ -419,6 +420,9 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             // A link of the server can take a moment, the sheet stays until it is there
             onClick = { share.share { close {} } },
         )
+        SongDownloadAction(item) { icon, label, onClick ->
+            LabeledIconButton(icon = icon, label = label, enabled = true, onClick = onClick)
+        }
     }
 }
 
@@ -665,6 +669,34 @@ private fun SongMenuPreview() = PreviewTheme {
             ) {}
             MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio)) {}
             Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+/** The download button of the header in each stage, from nothing kept to downloaded. */
+@OptIn(ExperimentalMaterial3Api::class)
+@ComponentPreviews
+@Composable
+private fun SongMenuDownloadStagesPreview() = PreviewTheme {
+    Surface(color = BottomSheetDefaults.ContainerColor) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.width(420.dp),
+        ) {
+            listOf(
+                null,
+                SongStorage.DOWNLOADING,
+                SongStorage.PAUSED,
+                SongStorage.CACHED,
+                SongStorage.DOWNLOADED,
+            ).forEach { storage ->
+                LabeledIconButton(
+                    icon = storage.icon,
+                    label = stringResource(storage.labelRes),
+                    enabled = true,
+                    onClick = {},
+                )
+            }
         }
     }
 }
