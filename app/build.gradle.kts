@@ -182,6 +182,7 @@ dependencies {
     // Images, remote ones go through the Ktor client of their source
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
+    implementation(libs.vico.compose)
 
     // Networking
     implementation(libs.okhttp)

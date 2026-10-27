@@ -97,6 +97,39 @@ data object History : Route
 @Serializable
 data object Statistics : Route
 
+/** How the profile listens to the song [songId], opened from [Statistics]. */
+@Serializable
+data class SongStatistics(val songId: String) : Route {
+
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, songId) }
+
+    companion object {
+        const val ID = "songId"
+    }
+}
+
+/** How the profile listens to the songs of the album [albumId], opened from [Statistics]. */
+@Serializable
+data class AlbumStatistics(val albumId: String) : Route {
+
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, albumId) }
+
+    companion object {
+        const val ID = "albumId"
+    }
+}
+
+/** How the profile listens to the songs of the artist [artistId], opened from [Statistics]. */
+@Serializable
+data class ArtistStatistics(val artistId: String) : Route {
+
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, artistId) }
+
+    companion object {
+        const val ID = "artistId"
+    }
+}
+
 /** The songs the profile disliked, opened from [Account]. */
 @Serializable
 data object Disliked : Route

@@ -18,7 +18,10 @@
 
 package me.knighthat.kreate3
 
+import me.knighthat.kreate3.ui.screen.account.GroupStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.HistoryViewModel
+import me.knighthat.kreate3.ui.screen.account.SongStatisticsViewModel
+import me.knighthat.kreate3.ui.screen.account.StatisticsViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailViewModel
@@ -46,6 +49,9 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModelOf(::HomeSongsViewModel)
     viewModelOf(::HistoryViewModel)
+    viewModelOf(::StatisticsViewModel)
+    viewModelOf(::SongStatisticsViewModel)
+    viewModelOf(::GroupStatisticsViewModel)
     viewModelOf(::HomeAlbumsViewModel)
     viewModelOf(::HomeArtistsViewModel)
     viewModelOf(::HomePlaylistsViewModel)

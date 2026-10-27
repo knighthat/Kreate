@@ -27,8 +27,16 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
+import me.knighthat.kreate3.database.entity.AlbumEntity
+import me.knighthat.kreate3.database.entity.ArtistEntity
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
+import me.knighthat.kreate3.database.entity.SongArtistMapEntity
+import me.knighthat.kreate3.database.entity.UserAlbumEntity
+import me.knighthat.kreate3.database.entity.UserArtistEntity
+import me.knighthat.kreate3.database.view.UserAlbumViewEntity
+import me.knighthat.kreate3.database.view.UserArtistViewEntity
 import me.knighthat.kreate3.database.view.UserSongViewEntity
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Duration
 
 @Dao
@@ -47,6 +55,34 @@ internal interface PlaybackHistoryDao {
 
     @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
     fun observeSummaries(query: RoomRawQuery): Flow<List<PeriodSummaryRow>>
+
+    @Query("SELECT * FROM playback_history WHERE user_id = :userId AND song_id = :songId ORDER BY created_at")
+    fun songPlays(userId: String, songId: String): Flow<List<PlaybackHistoryEntity>>
+
+    // Statistics, see `StatisticsRepositoryImpl`
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class, SongArtistMapEntity::class])
+    fun observeListeningSummary(query: RoomRawQuery): Flow<ListeningSummaryRow>
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
+    fun observeTopSongs(query: RoomRawQuery): Flow<List<TopSongRow>>
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class, AlbumEntity::class, UserAlbumEntity::class])
+    fun observeTopAlbums(query: RoomRawQuery): Flow<List<TopAlbumRow>>
+
+    @RawQuery(
+        observedEntities = [
+            PlaybackHistoryEntity::class, UserSongViewEntity::class, SongArtistMapEntity::class,
+            ArtistEntity::class, UserArtistEntity::class,
+        ]
+    )
+    fun observeTopArtists(query: RoomRawQuery): Flow<List<TopArtistRow>>
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
+    fun observeOriginTimes(query: RoomRawQuery): Flow<List<OriginTimeRow>>
+
+    @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class, SongArtistMapEntity::class])
+    fun observePlays(query: RoomRawQuery): Flow<List<PlaybackHistoryEntity>>
 
     @RawQuery
     suspend fun listIds(query: RoomRawQuery): List<Long>
@@ -83,6 +119,46 @@ internal data class PeriodSummaryRow(
     val period: Int,
     val plays: Int,
     val songs: Int,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)
+
+/** @property timeSpent seconds */
+internal data class ListeningSummaryRow(
+    val plays: Int,
+    val songs: Int,
+    val artists: Int,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)
+
+/** @property timeSpent seconds */
+internal data class TopSongRow(
+    @Embedded val song: UserSongViewEntity,
+    val listens: Double,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)
+
+/** @property timeSpent seconds */
+internal data class TopAlbumRow(
+    @Embedded val album: UserAlbumViewEntity,
+    val listens: Double,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)
+
+/** @property timeSpent seconds */
+internal data class TopArtistRow(
+    @Embedded val artist: UserArtistViewEntity,
+    val listens: Double,
+    @ColumnInfo(name = "time_spent")
+    val timeSpent: Long,
+)
+
+/** @property timeSpent seconds */
+internal data class OriginTimeRow(
+    val origin: Origin,
     @ColumnInfo(name = "time_spent")
     val timeSpent: Long,
 )

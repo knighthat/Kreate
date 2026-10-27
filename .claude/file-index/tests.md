@@ -15,9 +15,10 @@ Tests mirror the main paths under `src/test/`.
   `MediaStoreScannerTest`, `CoverFilesTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`,
-  ui/screen/account/`HistoryBucketsTest`.
+  ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`.
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
-  repository/ `HistoryRepositoryTest`, `LocalCatalogRepositoryTest`, `MappersTest`,
+  repository/ `HistoryRepositoryTest`, `StatisticsRepositoryTest`, `LocalCatalogRepositoryTest`,
+  `MappersTest`,
   `PlaylistRepositoryTest`, `RemoteCatalogRepositoryTest`, `SearchPatternTest`,
   `SongRepositoryTest`, `UserLibraryRepositoryTest`, `UserRepositoryTest`, `UserScopeTest`.
 - preferences: `CodecTest`, `PreferencesBackupTest`, `DataStorePreferenceStorageTest`,

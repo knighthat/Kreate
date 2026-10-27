@@ -66,7 +66,9 @@ import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.navigation.Account
+import me.knighthat.kreate3.ui.navigation.AlbumStatistics
 import me.knighthat.kreate3.ui.navigation.Albums
+import me.knighthat.kreate3.ui.navigation.ArtistStatistics
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
@@ -91,6 +93,7 @@ import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
 import me.knighthat.kreate3.ui.navigation.SearchResults
 import me.knighthat.kreate3.ui.navigation.Settings
+import me.knighthat.kreate3.ui.navigation.SongStatistics
 import me.knighthat.kreate3.ui.navigation.Songs
 import me.knighthat.kreate3.ui.navigation.Statistics
 import me.knighthat.kreate3.ui.navigation.Tab
@@ -110,7 +113,10 @@ import me.knighthat.kreate3.ui.navigation.routeViewModel
 import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.screen.account.AccountPage
 import me.knighthat.kreate3.ui.screen.account.AccountScreen
+import me.knighthat.kreate3.ui.screen.account.GroupStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.HistoryScreen
+import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
+import me.knighthat.kreate3.ui.screen.account.StatisticsScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailScreen
@@ -351,10 +357,41 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 HistoryScreen(topLevel::pop, paddingModifier, contentPadding)
                             }
                             entry<Statistics> {
-                                AccountPage(
-                                    R.string.screen_title_statistics,
-                                    topLevel::pop,
-                                    paddingModifier
+                                StatisticsScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                    onOpenAlbum = { topLevel.push(AlbumStatistics(it.mediaId)) },
+                                    onOpenArtist = { topLevel.push(ArtistStatistics(it.mediaId)) },
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                )
+                            }
+                            entry<AlbumStatistics> {
+                                GroupStatisticsScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                    onOpenPage = { item -> topLevel.push(albumRoute(item)) },
+                                    viewModel = routeViewModel(it),
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                )
+                            }
+                            entry<ArtistStatistics> {
+                                GroupStatisticsScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                    onOpenPage = { item -> topLevel.push(artistRoute(item)) },
+                                    viewModel = routeViewModel(it),
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                )
+                            }
+                            entry<SongStatistics> {
+                                SongStatisticsScreen(
+                                    onBack = topLevel::pop,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                    viewModel = routeViewModel(it),
                                 )
                             }
                             entry<Disliked> {

@@ -52,6 +52,7 @@ import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.ArtistPictures
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.source.DeviceReactionsImpl
@@ -179,6 +180,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     // Stores songs fetched live once the user keeps something about them
                     single { SongStore(get(), get(), get(), get()) }
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
+                    // Pictures of artists stored from song credits, which carry none
+                    single { ArtistPictures(get(), get(), get()) }
                     single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }
                 },
                 databaseModule,

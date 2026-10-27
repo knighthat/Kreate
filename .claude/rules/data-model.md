@@ -42,6 +42,10 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
   when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it) or
   when synced as liked. A planned Import button will store a remote item only on an explicit user
   action.
+- Artists stored from the songs crediting them have no picture: credits carry only an id and a name.
+  `ArtistPictures.fillMissing` asks the artist's source (`Provider.artist`) once per run and stores
+  the picture, never over one already set; device artists have no source. Only Statistics calls it
+  so far, other screens show the placeholder until a row is filled.
 - Local album art is meant to be stored as the MediaStore album art id, with the `content://` URI
   built at render time (the stored URI form differs by Android version). Not done yet: don't build
   on the stored URI as if it were final.

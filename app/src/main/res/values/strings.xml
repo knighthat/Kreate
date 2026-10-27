@@ -27,6 +27,8 @@
     <string name="mib">%1$d MiB</string>
     <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
+    <string name="min">%1$d min</string>
+    <string name="h">%1$d h</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
     <string name="sleep_timer_to_end_of_song">Until the song ends</string>
@@ -346,6 +348,7 @@
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Semantic">-->
+    <string name="semantic_most_listened">Most listened to</string>
     <string name="semantic_add_to_queue">Add to queue</string>
     <string name="semantic_back">Back</string>
     <string name="semantic_bookmark">Bookmark</string>
@@ -592,6 +595,12 @@
 
     <!--<editor-fold defaultstate="collapsed" desc="Section headers">-->
     <string name="section_header_top_songs">Top songs</string>
+    <string name="section_header_top_albums">Top albums</string>
+    <string name="section_header_top_artists">Top artists</string>
+    <string name="section_header_listening_by_source">Listening by source</string>
+    <string name="section_header_listening_over_time">Listening over time</string>
+    <string name="section_header_listening_by_hour">By hour of the day</string>
+    <string name="section_header_listening_by_weekday">By day of the week</string>
     <string name="section_header_source">Source</string>
     <string name="section_header_look_for">Look for</string>
     <string name="section_header_suggested_searches">Suggested searches</string>
@@ -621,10 +630,34 @@
     <string name="screen_history_status_nothing_played">Nothing played yet</string>
     <string name="screen_history_status_no_matches">No plays match the filters</string>
     <string name="screen_history_status_paused">History is paused, new plays aren\'t added</string>
+    <string name="screen_statistics_status_nothing_played">Nothing played yet</string>
+    <string name="screen_statistics_status_nothing_this_month">Nothing played this month</string>
     <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>
     <string name="screen_player_status_timer_song_end">Pauses when the song ends</string>
     <string name="screen_player_status_timer_on_hold">On hold, %1$s left</string>
     <string name="screen_player_status_timer_running">Pauses in %1$s</string>
+    <!--</editor-fold>-->
+
+    <!--<editor-fold defaultstate="collapsed" desc="Statistics">-->
+    <string name="statistics_time_listened">Time listened</string>
+    <string name="statistics_change_vs_last_month">%1$s vs last month</string>
+    <string name="statistics_song_listens">Times completed</string>
+    <string name="statistics_song_plays">Plays</string>
+    <string name="statistics_song_time_listened">Time listened</string>
+    <string name="statistics_song_first_discovered">First discovered</string>
+    <string name="statistics_song_last_played">Last played</string>
+    <string name="statistics_album_listens">Times completed</string>
+    <string name="statistics_album_plays">Plays</string>
+    <string name="statistics_album_time_listened">Time listened</string>
+    <string name="statistics_album_songs_played">Songs played</string>
+    <string name="statistics_album_first_discovered">First discovered</string>
+    <string name="statistics_album_last_played">Last played</string>
+    <string name="statistics_artist_listens">Times completed</string>
+    <string name="statistics_artist_plays">Plays</string>
+    <string name="statistics_artist_time_listened">Time listened</string>
+    <string name="statistics_artist_songs_played">Songs played</string>
+    <string name="statistics_artist_first_discovered">First discovered</string>
+    <string name="statistics_artist_last_played">Last played</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Notifications">-->
@@ -673,6 +706,8 @@
     <string name="constant_history_range_last_7_days">Last 7 days</string>
     <string name="constant_history_range_last_30_days">Last 30 days</string>
     <string name="constant_history_range_this_year">This year</string>
+    <string name="constant_statistics_period_all_time">All time</string>
+    <string name="constant_statistics_period_this_month">This month</string>
     <string name="constant_theme_mode_light_dynamic">Light dynamic</string>
     <string name="constant_theme_mode_dark">Dark</string>
     <string name="constant_theme_mode_dark_dynamic">Dark dynamic</string>

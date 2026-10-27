@@ -31,6 +31,7 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.ui.screen.account.HistoryRangePreset
+import me.knighthat.kreate3.ui.screen.account.StatisticsPeriod
 
 /**
  * The texts of [options] for a choice, read from [res] once so a non-composable `label` can look
@@ -60,6 +61,13 @@ val HistoryRangePreset.labelRes: Int
         HistoryRangePreset.LAST_7_DAYS -> R.string.constant_history_range_last_7_days
         HistoryRangePreset.LAST_30_DAYS -> R.string.constant_history_range_last_30_days
         HistoryRangePreset.THIS_YEAR -> R.string.constant_history_range_this_year
+    }
+
+@get:StringRes
+val StatisticsPeriod.labelRes: Int
+    get() = when (this) {
+        StatisticsPeriod.ALL_TIME -> R.string.constant_statistics_period_all_time
+        StatisticsPeriod.THIS_MONTH -> R.string.constant_statistics_period_this_month
     }
 
 @get:StringRes

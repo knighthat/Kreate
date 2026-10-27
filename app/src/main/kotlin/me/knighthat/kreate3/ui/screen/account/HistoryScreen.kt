@@ -606,7 +606,7 @@ private val DATE_PICKER_HEIGHT = 480.dp
 private fun Resources.ago(plural: Int, count: Int): String = getQuantityString(plural, count, count)
 
 /** [time] in minutes, in hours and minutes from an hour, in seconds under a minute. */
-private fun Resources.timeSpent(time: Duration): String {
+internal fun Resources.timeSpent(time: Duration): String {
     if (time < 1.minutes) {
         val seconds = time.inWholeSeconds.toInt()
         return getQuantityString(R.plurals.second, seconds, seconds)

@@ -41,6 +41,14 @@
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>
     </plurals>
+    <plurals name="listen">
+        <item quantity="one">%1$d listen</item>
+        <item quantity="other">%1$d listens</item>
+    </plurals>
+    <plurals name="unit_play">
+        <item quantity="one">play</item>
+        <item quantity="other">plays</item>
+    </plurals>
     <plurals name="unit_song">
         <item quantity="one">song</item>
         <item quantity="other">songs</item>

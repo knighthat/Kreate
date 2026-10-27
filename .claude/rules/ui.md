@@ -5,7 +5,8 @@ paths:
 
 # UI conventions
 
-Strings: `strings.md`; previews: `previews.md`; covers: `covers.md`; full player: `player.md`.
+Strings: `strings.md`; previews: `previews.md`; covers: `covers.md`; full player: `player.md`;
+charts: `.claude/docs/charts.md`.
 
 ## Components
 

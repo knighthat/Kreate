@@ -20,7 +20,19 @@ ui/screen/
   `setupCompletedFile`.
 - account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics,
   Disliked, Downloaded, and Switch profile starts `ProfilesActivity`), `AccountPage.kt` (the empty
-  page Statistics, Disliked and Downloaded show for now). `HistoryScreen.kt` + `HistoryViewModel.kt`
+  page Disliked and Downloaded show for now). `StatisticsScreen.kt` + `StatisticsViewModel.kt`
+  (All time / This month chips, nothing kept; summary tiles with the change against last month up to
+  the same day (`monthToDate`), top 5 songs with minutes, 3 albums, 10 artists, time per source;
+  songs open `SongStatisticsScreen.kt` + `SongStatisticsViewModel.kt`, albums and artists
+  `GroupStatisticsScreen.kt` + `GroupStatisticsViewModel.kt` (one of each per `AlbumStatistics`/
+  `ArtistStatistics` route: header opening the real page, numbers, charts, top 10 songs opening
+  theirs), all of all time), `ListeningCharts.kt` (`ChartBar`, `ListeningCharts`, built from plays
+  by day/week/month, hour, weekday), `StatisticsDetail.kt` (parts the three detail screens share:
+  charts section, `NumberLines`, `MinutesText`, `playDate`, preview charts), `StatisticsCharts.kt`
+  (`TimeColumnChart`: Vico columns with a tap marker, every column labeled for Vico;
+  `ArtistColumns`: Compose columns by time under `Thumbnail` avatars, a crown on the first, a
+  `timeTicks` time axis with grid lines; `SourcesPie`: Vico donut + legend, a lone origin drawn as
+  two halves to dodge Vico's filled full ring). `HistoryScreen.kt` + `HistoryViewModel.kt`
   (paged `HistoryRepository.plays` over `HistoryBuckets.spans()` clipped to the range, large
   pages; every play is a `HistoryRow` with its time in `SongItem`'s `trailing`, the day too with
   a range; `insertSeparators` adds `HistoryHeader`s, sticky, with a superscript songs · time

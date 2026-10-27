@@ -31,6 +31,8 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `PeriodPlay` = a play
   in a period with its song, `PeriodSummary`; `HistoryRepository.plays`/
   `periodSummaries` group plays by periods given as a `UNION ALL` of spans in SQL),
+  `ListeningStats.kt` (`ListeningSummary`, `TopSong`/`TopAlbum`/`TopArtist` ranked by listens = time
+  spent over length, `OriginTime`),
   `PlaylistCover.kt` (cover of one of a
   playlist's songs; `UserPlaylist.covers` = up to 4 different covers of its most played songs,
   filled by `PlaylistRepository.all` only).
@@ -40,7 +42,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   page loads — the Songs tab missed the startup scan; PagingConfig), `Sorting.kt` (`SortOrder`,
   `*Sort` enums, `toOrderBy`).
 - repository/ — public interface + internal `*Impl` pairs: `Song`, `Album`, `Artist`, `Playlist`,
-  `History`, `Queue`, `User`, `UserSong` (likes/tri-state — `.claude/rules/data-model.md`;
+  `History`, `Statistics` (summary, top songs/albums/artists, time by origin, a song's plays; SQL in
+  `StatisticsRepositoryImpl`, rows in `PlaybackHistoryDao`), `Queue`, `User`, `UserSong`
+  (likes/tri-state — `.claude/rules/data-model.md`;
   `forgetThumbnail(uri, songId?)` takes a file cover off every user's rows: deleted when nothing
   else is kept, else `NULL`; `fileThumbnails()`; per-user downloads via `user_song.downloaded_at`:
   `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,

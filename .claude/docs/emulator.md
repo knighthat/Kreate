@@ -13,7 +13,14 @@ save which account or channel a device is signed in as.
 
 - Launcher activity: `adb shell am start -n me.knighthat.kreate3/.KreateActivity`.
 - Install your own build before judging a device result:
-  `./gradlew :app:installGithubUniversalDebug`.
+  `ANDROID_SERIAL=emulator-5554 ./gradlew :app:installGithubUniversalDebug`. Without
+  `ANDROID_SERIAL` Gradle installs on every attached device, a real phone included. Target the
+  emulator first; with no emulator attached, ask the maintainer before installing anywhere. The log
+  says how many devices got it ("Installed on 1 device").
+- After a fresh install and `am start`, the window can stay white or garbled while the UI tree
+  (`ui.sh dump`) is fine: the splash's exit animation is stuck (`dumpsys SurfaceFlinger --list`
+  shows an `animation-leash of starting_reveal`). Going home and `am start` again clears it. Not
+  traced; seen only on the emulator so far.
   The installed app may be an older Android Studio build (a `code_cache/.studio` agent in logcat).
 - After clearing data (`pm clear`, reinstall, deleted DB), skip the setup wizard with
   `adb shell am start -n me.knighthat.kreate3/.KreateActivity -a me.knighthat.kreate3.SETUP_WIZARD_SKIP_ACTION`

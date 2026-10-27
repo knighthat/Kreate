@@ -19,6 +19,10 @@ source/ (app-side glue for sources)
 - `SongStore.kt` — `SongStore.store(songId, origin)` (Koin single): makes sure a song is in the
   `song` table before the user keeps something about it (playlist, reaction); one fetched live is
   fetched with `songDetails` and stored with `savePlayedSong` (added to the library).
+- `ArtistPictures.kt` — `ArtistPictures.fillMissing` (Koin single): asks each shown stored artist
+  without a picture (not device ones) its source's `Provider.artist` once per run, in the
+  background, and stores the picture; artists stored from song credits come without one. Statistics
+  uses it.
 - `DeviceReactions.kt` — `DeviceReactions`/`DeviceReactionsImpl` (Koin single): album bookmarks
   and artist follows kept on the device for live items, storing the album/artist first when it
   isn't and removing the library entry again when taken back with nothing else kept
