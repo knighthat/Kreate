@@ -36,7 +36,7 @@ import me.knighthat.kreate3.model.LyricsProvider
  * them up.
  */
 @Composable
-fun <T> labelsOf(options: Iterable<T>, @StringRes res: (T) -> Int): (T) -> String {
+fun <T> labelsOf(options: Iterable<T>, res: (T) -> Int): (T) -> String {
     val labels = options.associateWith { stringResource(res(it)) }
     return { labels.getValue(it) }
 }

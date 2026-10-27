@@ -159,7 +159,7 @@ private suspend fun Context.importBackup(uri: Uri): String? =
     try {
         val input = withContext(Dispatchers.IO) { contentResolver.openInputStream(uri) }
             ?: throw FileNotFoundException()
-        Backup.stageWithoutRollback(this, input)
+        input.use { Backup.stageWithoutRollback(this, it) }
         null
     } catch (e: BackupException) {
         getString(e.messageRes)

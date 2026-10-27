@@ -98,7 +98,7 @@ class YouTubeArtistDetailViewModel(
             if (onDevice != null)
                 context.getString(if (on) R.string.error_follow_artist else R.string.error_unfollow_artist)
             else e.youTubeFailure(
-                context,
+                context.resources,
                 if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
             )
         },

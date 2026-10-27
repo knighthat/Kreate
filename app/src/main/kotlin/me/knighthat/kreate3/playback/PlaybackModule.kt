@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+@file:OptIn(UnstableApi::class)
 
 package me.knighthat.kreate3.playback
 
@@ -142,13 +143,11 @@ val playbackModule = module {
 private const val LOADING_CHECK_INTERVAL_BYTES = 128 * 1024
 
 /** Every song is a single file or stream, none is DASH, HLS or another manifest. */
-@OptIn(UnstableApi::class)
 private fun songMediaSourceFactory(songs: DataSource.Factory): MediaSource.Factory =
     ProgressiveMediaSource.Factory(songs)
         .setContinueLoadingCheckIntervalBytes(LOADING_CHECK_INTERVAL_BYTES)
 
 /** Loads [seconds] of the next song ahead, nothing when it isn't positive. */
-@OptIn(UnstableApi::class)
 internal fun preloadConfiguration(seconds: Int): ExoPlayer.PreloadConfiguration =
     if (seconds <= 0) ExoPlayer.PreloadConfiguration.DEFAULT
     else ExoPlayer.PreloadConfiguration(seconds.seconds.inWholeMicroseconds)

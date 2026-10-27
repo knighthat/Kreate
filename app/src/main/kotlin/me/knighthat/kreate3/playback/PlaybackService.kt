@@ -295,7 +295,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 .buildUpon()
                 .apply { SleepTimerCommands.all.forEach(::add) }
                 .build()
-            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session, controller)
                 .setAvailableSessionCommands(commands)
                 .build()
         }

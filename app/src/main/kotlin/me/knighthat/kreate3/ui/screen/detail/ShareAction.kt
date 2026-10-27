@@ -22,6 +22,7 @@ import android.content.ClipData
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.provider.MediaStore
 import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
@@ -84,17 +86,17 @@ internal fun Context.shareLink(title: String?, link: String) {
 }
 
 /** What to tell the user when no link could be made for a [kind], like the plural `album`. */
-internal fun Throwable.shareFailure(context: Context, @PluralsRes kind: Int): String {
-    val noun = context.resources.getQuantityString(kind, 1)
+internal fun Throwable.shareFailure(resources: Resources, @PluralsRes kind: Int): String {
+    val noun = resources.getQuantityString(kind, 1)
     return when ((this as? ServerException)?.check) {
         // The button only shows to an account that may share, so the server doesn't share this
-        is ServerCheck.Rejected -> context.getString(R.string.error_share_unsupported, noun)
+        is ServerCheck.Rejected -> resources.getString(R.string.error_share_unsupported, noun)
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> context.getString(R.string.error_share_unreachable)
+        is ServerCheck.CertificateChanged -> resources.getString(R.string.error_share_unreachable)
 
-        null -> message ?: context.getString(R.string.error_cant_share, noun)
-        else -> context.getString(R.string.error_cant_share, noun)
+        null -> message ?: resources.getString(R.string.error_cant_share, noun)
+        else -> resources.getString(R.string.error_cant_share, noun)
     }
 }
 
@@ -108,6 +110,7 @@ internal fun Throwable.shareFailure(context: Context, @PluralsRes kind: Int): St
 @Composable
 fun ShareAction(title: String?, @PluralsRes kind: Int, link: suspend () -> Result<String>) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     var sharing by remember { mutableStateOf(false) }
@@ -120,7 +123,12 @@ fun ShareAction(title: String?, @PluralsRes kind: Int, link: suspend () -> Resul
                 link()
                     .onSuccess { context.shareLink(title, it) }
                     .onFailure {
-                        notifier.post(Message(it.shareFailure(context, kind), MessageDuration.LONG))
+                        notifier.post(
+                            Message(
+                                it.shareFailure(resources, kind),
+                                MessageDuration.LONG
+                            )
+                        )
                     }
                 sharing = false
             }
@@ -151,6 +159,7 @@ fun rememberSongShare(
     openSubsonic: OpenSubsonicProvider = koinInject(),
 ): SongShare {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     val origin = item.origin
@@ -184,7 +193,7 @@ fun rememberSongShare(
                         .onFailure {
                             notifier.post(
                                 Message(
-                                    it.shareFailure(context, R.plurals.unit_song),
+                                    it.shareFailure(resources, R.plurals.unit_song),
                                     MessageDuration.LONG
                                 )
                             )

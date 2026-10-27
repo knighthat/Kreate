@@ -55,8 +55,9 @@ are two keys). An action can be several words (`action_sign_out`).
 
 - A message built from a text and an error (`Couldn't play "Song": its file is gone`): only the
   error is a string, the rest stays a literal for now. Code without a `Context` holds the error as
-  a `@StringRes` and its caller resolves it; code building a snackbar without one takes the
-  `Context` as a parameter (`PlaybackController.queue(context, …)`).
+  a `@StringRes` and its caller resolves it; code building a snackbar without one takes
+  `Resources` as a parameter (`PlaybackController.queue(resources, …)`), see `ui.md` for where
+  composables get it.
 - A view model takes `context: Context` as a constructor parameter (`viewModelOf` resolves it, a
   test passes `RuntimeEnvironment.getApplication()`). Only code with no constructor to put it in
   (a data builder, a lyrics source) uses `GlobalContext.get().get<Context>()`. Never call it while

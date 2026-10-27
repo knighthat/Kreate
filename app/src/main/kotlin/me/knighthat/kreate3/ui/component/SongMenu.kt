@@ -77,7 +77,7 @@ import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionOnScreen
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -433,7 +433,7 @@ private fun SongMenuActions(
 ) {
     val playback = koinInject<PlaybackController>()
     val notifier = LocalNotifier.current
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val willPlayNext = stringResource(R.string.snackbar_will_play_next_one)
     val navigator = LocalNavigator.current
     val playable = item.mediaMetadata.isPlayable == true
@@ -458,7 +458,7 @@ private fun SongMenuActions(
         stringResource(R.string.menu_add_to_queue),
         enabled = playable
     ) {
-        close { playback.queue(context, QueueAction.ENQUEUE, listOf(item))?.let(notifier::post) }
+        close { playback.queue(resources, QueueAction.ENQUEUE, listOf(item))?.let(notifier::post) }
     }
     MenuRow(
         icon = R.drawable.library_add,

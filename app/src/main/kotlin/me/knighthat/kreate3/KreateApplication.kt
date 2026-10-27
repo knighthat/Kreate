@@ -24,6 +24,7 @@ import android.content.Intent
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.network.NetworkFetcher
@@ -79,6 +80,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         Runtime.getRuntime().exit(0)
     }
 
+    @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
             .components {

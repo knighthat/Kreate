@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -81,6 +82,7 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
 
     val activity = LocalActivity.current
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     var asking by remember { mutableStateOf<Job?>(null) }
 
@@ -97,7 +99,7 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
             }
 
             else -> asking = scope.launch {
-                val message = context.getString(
+                val message = resources.getString(
                     if (swiped || context.usesGestureNavigation()) R.string.snackbar_exit_swipe
                     else R.string.snackbar_exit_press
                 )

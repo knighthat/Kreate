@@ -145,7 +145,7 @@ class LoudnessAnalyzer(private val context: Context) {
                 if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) break
             }
 
-            return meter?.integratedLufs()
+            return meter.integratedLufs()
         } finally {
             codec.release()
         }

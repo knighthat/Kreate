@@ -85,7 +85,7 @@ class OpenSubsonicAlbumDetailViewModel(
         },
         failure = { e, on ->
             e.serverFailure(
-                context,
+                context.resources,
                 if (on) R.string.snackbar_change_bookmark_album else R.string.snackbar_change_remove_bookmark
             )
         },

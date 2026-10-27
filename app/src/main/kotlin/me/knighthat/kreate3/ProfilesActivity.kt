@@ -57,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -90,10 +91,11 @@ class ProfilesActivity : ComponentActivity() {
         onDelete: () -> Unit,
     ) {
         val context = LocalContext.current
+        val resources = LocalResources.current
         // The active profile shows since when it is active, the others when they were last used
         val subtitle = if (isActive)
             user.activeSince?.let {
-                context.getString(
+                resources.getString(
                     R.string.screen_profiles_status_active_since,
                     DateUtils.formatDateTime(
                         context,
@@ -104,7 +106,7 @@ class ProfilesActivity : ComponentActivity() {
             }
         else
             user.lastSeen?.let {
-                context.getString(
+                resources.getString(
                     R.string.screen_profiles_status_last_seen,
                     DateUtils.getRelativeTimeSpanString(it.toEpochMilliseconds()),
                 )

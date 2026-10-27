@@ -99,7 +99,7 @@ class OpenSubsonicArtistDetailViewModel(
         },
         failure = { e, on ->
             e.serverFailure(
-                context,
+                context.resources,
                 if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
             )
         },

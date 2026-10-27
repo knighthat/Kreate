@@ -23,7 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
@@ -93,7 +93,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
     val playback = koinInject<PlaybackController>()
     val scope = koinInject<CoroutineScope>()
     val notifier = LocalNotifier.current
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val lookup by remember(library, songId) { library.find(songId).map(::Lookup) }
         .collectAsStateWithLifecycle(null)
 
@@ -131,9 +131,9 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
             throw e
         } catch (e: ServerException) {
             // The reaction is already taken back
-            notifier.post(Message(e.serverFailure(context, asked), MessageDuration.LONG))
+            notifier.post(Message(e.serverFailure(resources, asked), MessageDuration.LONG))
         } catch (e: YouTubeException) {
-            notifier.post(Message(e.youTubeFailure(context, asked), MessageDuration.LONG))
+            notifier.post(Message(e.youTubeFailure(resources, asked), MessageDuration.LONG))
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't save the reaction to $songId", e)
         }

@@ -21,10 +21,10 @@ package me.knighthat.kreate3.auto
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
-import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
@@ -364,10 +364,10 @@ internal class AutoLibrary(
                 .setIsBrowsable(true)
                 .setIsPlayable(false)
                 .setExtras(style?.let {
-                    bundleOf(
-                        MediaConstants.EXTRAS_KEY_CONTENT_STYLE_BROWSABLE to it,
-                        MediaConstants.EXTRAS_KEY_CONTENT_STYLE_PLAYABLE to it,
-                    )
+                    Bundle().apply {
+                        putInt(MediaConstants.EXTRAS_KEY_CONTENT_STYLE_BROWSABLE, it)
+                        putInt(MediaConstants.EXTRAS_KEY_CONTENT_STYLE_PLAYABLE, it)
+                    }
                 })
                 .build()
         )

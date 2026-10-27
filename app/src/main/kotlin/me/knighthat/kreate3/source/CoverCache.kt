@@ -20,6 +20,7 @@ package me.knighthat.kreate3.source
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.core.graphics.scale
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.disk.DiskCache
@@ -84,11 +85,9 @@ internal fun encodeCover(original: ByteArray, side: Int): ByteArray? {
     val bitmap = BitmapFactory.decodeByteArray(original, 0, original.size, decode) ?: return null
 
     val scale = side.toFloat() / maxOf(bitmap.width, bitmap.height)
-    val scaled = if (scale < 1f) Bitmap.createScaledBitmap(
-        bitmap,
+    val scaled = if (scale < 1f) bitmap.scale(
         (bitmap.width * scale).roundToInt().coerceAtLeast(1),
         (bitmap.height * scale).roundToInt().coerceAtLeast(1),
-        true,
     ) else bitmap
     val encoded = try {
         val format =

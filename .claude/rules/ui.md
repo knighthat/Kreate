@@ -25,6 +25,11 @@ Strings: `strings.md`; previews: `previews.md`; covers: `covers.md`; full player
   empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
   their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
   measures into the `MiniPlayerSpace` it's given.
+- A composable reads strings from `LocalResources.current` (`resources.getString`, or a helper
+  taking `Resources`), never through `LocalContext.current`: `LocalResources` changes with the
+  configuration (locale) and recomposes, the context doesn't. Keep `LocalContext` only for what
+  needs a `Context` (starting activities, image loaders). View models keep their `Context` and
+  pass `context.resources` to such helpers.
 - Text stays a literal (not in `strings.xml`) only for: the labels of a setting's values (not
   extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated), and
   preview-only text.

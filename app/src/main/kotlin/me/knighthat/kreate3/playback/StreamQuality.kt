@@ -21,7 +21,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.core.content.getSystemService
-import androidx.core.net.ConnectivityManagerCompat
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
@@ -50,7 +49,7 @@ internal suspend fun Context.streamQuality(
             Preferences.OPEN_SUBSONIC_QUALITY_WIFI to Preferences.OPEN_SUBSONIC_QUALITY_MOBILE
     }
     val metered = getSystemService<ConnectivityManager>()
-        ?.let(ConnectivityManagerCompat::isActiveNetworkMetered)
+        ?.isActiveNetworkMetered
         ?: false
     return (if (metered) mobile else wifi).value
 }

@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
-import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import androidx.annotation.StringRes
 import kotlinx.coroutines.CancellationException
@@ -98,37 +98,37 @@ class SourceToggle(
  * What to tell the user when the OpenSubsonic server didn't take a change, like "bookmark the
  * album" for [change].
  */
-internal fun Exception.serverFailure(context: Context, @StringRes change: Int): String {
-    val what = context.getString(change)
+internal fun Exception.serverFailure(resources: Resources, @StringRes change: Int): String {
+    val what = resources.getString(change)
     return when ((this as? ServerException)?.check) {
-        is ServerCheck.Rejected -> context.getString(R.string.error_server_change_refused, what)
+        is ServerCheck.Rejected -> resources.getString(R.string.error_server_change_refused, what)
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> context.getString(
+        is ServerCheck.CertificateChanged -> resources.getString(
             R.string.error_server_change_unreachable,
             what
         )
 
-        else -> context.getString(R.string.error_server_change_failed, what)
+        else -> resources.getString(R.string.error_server_change_failed, what)
     }
 }
 
 /**
  * What to tell the user when YouTube didn't take a change, like "save the album" for [change].
  */
-internal fun Exception.youTubeFailure(context: Context, @StringRes change: Int): String {
+internal fun Exception.youTubeFailure(resources: Resources, @StringRes change: Int): String {
     val e = this as? YouTubeException
-    val what = context.getString(change)
-    val youTube = context.getString(R.string.source_ytm)
+    val what = resources.getString(change)
+    val youTube = resources.getString(R.string.source_ytm)
     return when {
-        e == null -> context.getString(R.string.error_source_change_failed, what, youTube)
-        e.signedOut -> context.getString(R.string.error_source_change_signed_out, what, youTube)
-        e.status == null -> context.getString(
+        e == null -> resources.getString(R.string.error_source_change_failed, what, youTube)
+        e.signedOut -> resources.getString(R.string.error_source_change_signed_out, what, youTube)
+        e.status == null -> resources.getString(
             R.string.error_source_change_unreachable,
             what,
             youTube
         )
 
-        else -> context.getString(R.string.error_source_change_refused, what, youTube)
+        else -> resources.getString(R.string.error_source_change_refused, what, youTube)
     }
 }

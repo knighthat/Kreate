@@ -22,7 +22,6 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
@@ -96,7 +95,11 @@ data object YouTubeSignIn : Route
 @Serializable
 data class SearchResults(val query: String, val origin: Origin, val tab: Tab) : Route {
 
-    override val arguments: Bundle get() = bundleOf(QUERY to query, ORIGIN to origin.name)
+    override val arguments: Bundle
+        get() = Bundle().apply {
+            putString(QUERY, query)
+            putString(ORIGIN, origin.name)
+        }
 
     companion object {
         const val QUERY = "query"
@@ -107,7 +110,7 @@ data class SearchResults(val query: String, val origin: Origin, val tab: Tab) : 
 @Serializable
 data class LocalAlbum(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
 
     companion object {
         const val ID = "albumId"
@@ -117,7 +120,7 @@ data class LocalAlbum(val id: String) : Route {
 @Serializable
 data class LocalArtist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
 
     companion object {
         const val ID = "artistId"
@@ -127,7 +130,7 @@ data class LocalArtist(val id: String) : Route {
 @Serializable
 data class LocalPlaylist(val id: Long) : Route {
 
-    override val arguments: Bundle get() = bundleOf(ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putLong(ID, id) }
 
     companion object {
         const val ID = "playlistId"
@@ -141,7 +144,7 @@ data class LocalPlaylist(val id: Long) : Route {
 @Serializable
 data class OpenSubsonicAlbum(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalAlbum.ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(LocalAlbum.ID, id) }
 }
 
 /**
@@ -150,7 +153,7 @@ data class OpenSubsonicAlbum(val id: String) : Route {
 @Serializable
 data class OpenSubsonicArtist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(LocalArtist.ID, id) }
 }
 
 /**
@@ -159,7 +162,11 @@ data class OpenSubsonicArtist(val id: String) : Route {
 @Serializable
 data class OpenSubsonicArtistSongs(val id: String, val name: String?) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id, NAME to name)
+    override val arguments: Bundle
+        get() = Bundle().apply {
+            putString(LocalArtist.ID, id)
+            putString(NAME, name)
+        }
 
     companion object {
         const val NAME = "artistName"
@@ -172,7 +179,7 @@ data class OpenSubsonicArtistSongs(val id: String, val name: String?) : Route {
 @Serializable
 data class OpenSubsonicPlaylist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
 
     companion object {
         const val ID = "remotePlaylistId"
@@ -186,7 +193,7 @@ data class OpenSubsonicPlaylist(val id: String) : Route {
 @Serializable
 data class YouTubeAlbum(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalAlbum.ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(LocalAlbum.ID, id) }
 }
 
 /**
@@ -195,7 +202,7 @@ data class YouTubeAlbum(val id: String) : Route {
 @Serializable
 data class YouTubeArtist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(LocalArtist.ID, id) }
 }
 
 /**
@@ -204,7 +211,7 @@ data class YouTubeArtist(val id: String) : Route {
 @Serializable
 data class YouTubePlaylist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(ID to id)
+    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
 
     companion object {
         const val ID = "remotePlaylistId"
@@ -219,7 +226,11 @@ data class YouTubePlaylist(val id: String) : Route {
 data class YouTubeMore(val title: String, val browseId: String, val params: String?) : Route {
 
     override val arguments: Bundle
-        get() = bundleOf(TITLE to title, BROWSE_ID to browseId, PARAMS to params)
+        get() = Bundle().apply {
+            putString(TITLE, title)
+            putString(BROWSE_ID, browseId)
+            putString(PARAMS, params)
+        }
 
     companion object {
         const val TITLE = "title"

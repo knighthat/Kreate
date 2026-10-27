@@ -27,6 +27,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -97,6 +98,7 @@ class SearchViewModel(
     val text: StateFlow<String> = _text.asStateFlow()
 
     /** [text] without the spaces around it, once the user paused typing. */
+    @OptIn(FlowPreview::class)
     val query: StateFlow<String> = _text
         .debounce(QUERY_DELAY_MS)
         .map { it.trim() }

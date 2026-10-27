@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
-import android.content.Context
+import android.content.res.Resources
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -81,13 +81,13 @@ enum class QueueAction {
  * @return what to tell the user, `null` when the player shows the result
  */
 fun PlaybackController.queue(
-    context: Context,
+    resources: Resources,
     action: QueueAction,
     songs: List<MediaItem>
 ): String? {
     val playable = songs.filter { it.mediaMetadata.isPlayable == true }
     if (playable.isEmpty())
-        return context.getString(
+        return resources.getString(
             if (songs.isEmpty()) R.string.error_nothing_to_play else R.string.error_songs_not_playable
         )
 
@@ -98,16 +98,16 @@ fun PlaybackController.queue(
         QueueAction.PLAY_NEXT -> playNext(playable)
     }
     return when (action) {
-        QueueAction.ENQUEUE -> context.getString(
+        QueueAction.ENQUEUE -> resources.getString(
             R.string.snackbar_added_to_queue,
-            context.resources.getQuantityString(R.plurals.song, playable.size, playable.size),
+            resources.getQuantityString(R.plurals.song, playable.size, playable.size),
         )
 
         QueueAction.PLAY_NEXT ->
-            if (playable.size == 1) context.getString(R.string.snackbar_will_play_next_one)
-            else context.getString(
+            if (playable.size == 1) resources.getString(R.string.snackbar_will_play_next_one)
+            else resources.getString(
                 R.string.snackbar_will_play_next_many,
-                context.resources.getQuantityString(R.plurals.song, playable.size, playable.size),
+                resources.getQuantityString(R.plurals.song, playable.size, playable.size),
             )
 
         else -> null
@@ -122,12 +122,12 @@ fun PlaybackController.queue(
  * @return what to tell the user, `null` when the player shows the result
  */
 fun PlaybackController.playTapped(
-    context: Context,
+    resources: Resources,
     song: MediaItem,
     songs: List<MediaItem>,
     radio: Boolean,
 ): String? {
-    if (song.mediaMetadata.isPlayable != true) return context.getString(R.string.error_song_not_playable)
+    if (song.mediaMetadata.isPlayable != true) return resources.getString(R.string.error_song_not_playable)
 
     if (radio) {
         radio(song)
@@ -158,9 +158,9 @@ fun rememberSongTap(
     val scope = rememberCoroutineScope()
     val currentSongs by rememberUpdatedState(songs)
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
-    return remember(playback, notifier, scope, radio, context) {
+    return remember(playback, notifier, scope, radio, resources) {
         { song ->
             scope.launch {
                 val isRadio = radio?.value == true
@@ -168,7 +168,7 @@ fun rememberSongTap(
                 // The list can be a whole library, the controller can be called from any thread
                 withContext(Dispatchers.Default) {
                     playback.playTapped(
-                        context,
+                        resources,
                         song,
                         list,
                         isRadio
@@ -191,14 +191,14 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
     val scope = rememberCoroutineScope()
     val currentSongs by rememberUpdatedState(songs)
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
-    return remember(playback, notifier, scope, context) {
+    return remember(playback, notifier, scope, resources) {
         { action ->
             scope.launch {
                 val songs = currentSongs()
                 // The list can be a whole library, the controller can be called from any thread
-                withContext(Dispatchers.Default) { playback.queue(context, action, songs) }
+                withContext(Dispatchers.Default) { playback.queue(resources, action, songs) }
                     ?.let(notifier::post)
             }
         }
@@ -225,9 +225,9 @@ fun rememberQuickQueueActions(
     val currentShown by rememberUpdatedState(shown)
     val currentSongs by rememberUpdatedState(songs)
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
-    return remember(playback, notifier, scope, everySongFailed, context) {
+    return remember(playback, notifier, scope, everySongFailed, resources) {
         { action ->
             scope.launch {
                 val first = currentShown()
@@ -243,7 +243,7 @@ fun rememberQuickQueueActions(
                 }
                 // The list can be a whole library, the controller can be called from any thread
                 withContext(Dispatchers.Default) {
-                    if (first == null) return@withContext playback.queue(context, action, all)
+                    if (first == null) return@withContext playback.queue(resources, action, all)
 
                     val rest = all.filter {
                         it.mediaId != first.mediaId && it.mediaMetadata.isPlayable == true
