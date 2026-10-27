@@ -11,7 +11,9 @@ Root
   `internal fun Context.restart(configure)` (clear task, relaunch via the enabled launcher alias,
   `exit(0)`; used by wizard done/skip and backup restore).
 - `KreateActivity.kt` — main activity: splash (waits on prefs), setup-wizard gate,
-  `SETUP_WIZARD_SKIP_ACTION` handling, starts `LocalMusicScheduler`, hosts `KreateApp`.
+  `SETUP_WIZARD_SKIP_ACTION` handling, `OPEN_PLAYER_ACTION` (media notification tap, from onCreate
+  or onNewIntent) → `KreateApp` expands the player sheet (unless `NOTIFICATION_OPENS_PLAYER` is
+  off), starts `LocalMusicScheduler`, hosts `KreateApp`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
 - `AppIcon.kt` — launcher icon choice (BLACK default, GRADIENT): enables one manifest
   `activity-alias` of `KreateActivity`, state lives in PackageManager, not Preferences.

@@ -83,6 +83,8 @@
     <string name="setting_description_dont_exit_with_back">Going back from the first screen does nothing</string>
     <string name="setting_title_confirm_exit">Confirm exit</string>
     <string name="setting_description_confirm_exit">Go back twice from the first screen to exit</string>
+    <string name="setting_title_notification_opens_player">Open player from notification</string>
+    <string name="setting_description_notification_opens_player">Tapping the media notification opens the full player</string>
     <string name="setting_title_confirmation_time">Confirmation time</string>
     <string name="setting_description_confirmation_time">Wait for %1$s before dismissing confirmation</string>
 

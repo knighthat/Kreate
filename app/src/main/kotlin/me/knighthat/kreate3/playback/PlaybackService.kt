@@ -165,14 +165,17 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         )
 
         return MediaLibrarySession.Builder(this, player, SessionCallback(scope))
-            // Tapping the notification brings the app back instead of opening a second copy
+            // Tapping the notification brings the app back with the player open, instead of
+            // opening a second copy
             .setSessionActivity(
                 PendingIntent.getActivity(
                     this,
                     0,
-                    Intent(this, KreateActivity::class.java).addFlags(
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    ),
+                    Intent(this, KreateActivity::class.java)
+                        .setAction(KreateActivity.OPEN_PLAYER_ACTION)
+                        .addFlags(
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
                 )
             )

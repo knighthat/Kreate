@@ -37,7 +37,8 @@ import kotlin.math.roundToLong
 private const val MIB = 1024L * 1024
 
 /**
- * How the app behaves: scanning the device, keeping songs and images, and leaving the app.
+ * How the app behaves: scanning the device, keeping songs and images, leaving the app and
+ * opening it from the media notification.
  */
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -49,6 +50,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val exitDisabled by Preferences.BACK_EXIT_DISABLED.collectAsStateWithLifecycle()
     val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
+    val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
 
     GeneralSettingsContent(
         scanInterval = scanInterval,
@@ -59,6 +61,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         exitDisabled = exitDisabled,
         exitConfirmation = exitConfirmation,
         exitTimeout = exitTimeout,
+        notificationOpensPlayer = notificationOpensPlayer,
         onBack = onBack,
         modifier = modifier,
     )
@@ -78,6 +81,7 @@ private fun GeneralSettingsContent(
     exitDisabled: Boolean,
     exitConfirmation: Boolean,
     exitTimeout: Int,
+    notificationOpensPlayer: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -183,6 +187,12 @@ private fun GeneralSettingsContent(
                     },
                 )
         }
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_notification_opens_player),
+            checked = notificationOpensPlayer,
+            onCheckedChange = { Preferences.NOTIFICATION_OPENS_PLAYER.update(it) },
+            summary = stringResource(R.string.setting_description_notification_opens_player),
+        )
     }
 }
 
@@ -198,6 +208,7 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         exitDisabled = false,
         exitConfirmation = true,
         exitTimeout = 2,
+        notificationOpensPlayer = true,
         onBack = {},
     )
 }

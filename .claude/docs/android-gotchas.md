@@ -46,6 +46,15 @@ sources jar; not yet checked in Auto or the Desktop Head Unit):
 - Lint's `MissingIntentFilterForMediaSearch` fires once the app is an Auto media app; it's ignored
   in the manifest until voice search exists.
 
+## Intents that ask the UI to do something
+
+`KreateActivity` calls `setContent` in `onStart`, and an intent to a running activity reaches
+`onNewIntent` before `onRestart`/`onStart`. A one-shot event (a `Channel`, a consumed flag) that
+the old content takes is lost when `onStart` replaces the content and cancels its effect, e.g.
+mid-animation. Seen with the media notification's `OPEN_PLAYER_ACTION`: the app came back with the
+player collapsed. Keep the request as state until the UI has acted on it, then clear it from the
+UI (`KreateApp(openPlayer, onPlayerOpened)`).
+
 ## Media3 playback resumption
 
 Learned adding `onPlaybackResumption` (media3 1.11.1, read from the sources jar; not yet checked on

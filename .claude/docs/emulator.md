@@ -52,6 +52,11 @@ save which account or channel a device is signed in as.
   `adb shell run-as me.knighthat.kreate3 kill -9 $(adb shell pidof me.knighthat.kreate3)`; the
   service usually restarts (START_STICKY) and the queue comes back.
 - adb sometimes reports the emulator `offline` for a moment; retry.
+- Media notification tap: `adb shell cmd statusbar expand-notifications`, screenshot, tap the
+  card's title area. For the cold path, swipe the app away in recents first: the activity is gone
+  while `PlaybackService` keeps playing. `am start … -f 0x24000000` with the same action stands in
+  for the tap; its "Activity not started, its current task has been brought to the front" warning
+  doesn't mean the intent was dropped, `onNewIntent` still runs.
 
 ## Previews and animations
 

@@ -18,14 +18,18 @@
 
 package me.knighthat.kreate3
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
@@ -45,6 +49,9 @@ import org.koin.android.ext.android.inject
 class KreateActivity : ComponentActivity() {
 
     companion object {
+        /** Opens the full player, the media notification's tap sends it. */
+        const val OPEN_PLAYER_ACTION = "me.knighthat.kreate3.OPEN_PLAYER_ACTION"
+
         const val SETUP_WIZARD_DONE_ACTION = "me.knighthat.kreate3.SETUP_WIZARD_DONE_ACTION"
 
         // Add this to launch option '-a me.knighthat.kreate3.SETUP_WIZARD_SKIP_ACTION'
@@ -62,6 +69,10 @@ class KreateActivity : ComponentActivity() {
     private var isReady = false
 
     private val scope: CoroutineScope by inject()
+
+    // Pending until the player is open: a request taken while stopped can be cut off when
+    // onStart sets the content again, so it stays to be taken by the new content
+    private val openPlayer = MutableStateFlow(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
@@ -83,6 +94,10 @@ class KreateActivity : ComponentActivity() {
             isReady = true
             return
         }
+
+        // A recreated activity (rotation) keeps the player where it was instead
+        if (savedInstanceState == null && intent.action == OPEN_PLAYER_ACTION)
+            openPlayer.value = true
 
         // Made before a screen asks for them, off the main thread: their HTTP clients take long
         // to set up. A screen asking meanwhile waits for these instead of making its own.
@@ -131,11 +146,17 @@ class KreateActivity : ComponentActivity() {
         super.onStart()
 
         setContent {
-            if (isSetup)
-                KreateApp()
-            else
+            if (isSetup) {
+                val playerRequested by openPlayer.collectAsState()
+                KreateApp(playerRequested, onPlayerOpened = { openPlayer.value = false })
+            } else
                 SetupWizardScreen()
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.action == OPEN_PLAYER_ACTION) openPlayer.value = true
     }
 
     override fun onStop() {

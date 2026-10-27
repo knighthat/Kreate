@@ -33,13 +33,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import kotlinx.coroutines.flow.first
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.PlaybackController
@@ -114,6 +117,7 @@ import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
 import me.knighthat.kreate3.ui.screen.player.PlayerSheet
+import me.knighthat.kreate3.ui.screen.player.PlayerSheetValue
 import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
@@ -152,8 +156,13 @@ private val Route.hasMiniPlayer: Boolean
 private val Route.showsMessages: Boolean
     get() = this != Search && this !is SearchResults
 
+/**
+ * @param openPlayer whether the full player was asked to open, like by a tap on the media
+ * notification, unless [Preferences.NOTIFICATION_OPENS_PLAYER] is off; [onPlayerOpened] is called
+ * once it is open or the request is dropped
+ */
 @Composable
-fun KreateApp() {
+fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
@@ -170,6 +179,21 @@ fun KreateApp() {
 
     val playerSheet = rememberPlayerSheetState()
     val miniPlayer = rememberMiniPlayerSpace()
+    LaunchedEffect(openPlayer) {
+        if (!openPlayer) return@LaunchedEffect
+        Preferences.awaitLoaded()
+        if (!Preferences.NOTIFICATION_OPENS_PLAYER.value) {
+            onPlayerOpened()
+            return@LaunchedEffect
+        }
+        // On a cold start the queue and the player's size come after the request
+        snapshotFlow {
+            val anchors = playerSheet.draggable.anchors
+            playing.hasMiniPlayer && !anchors.positionOf(PlayerSheetValue.COLLAPSED).isNaN()
+        }.first { it }
+        playerSheet.expand()
+        onPlayerOpened()
+    }
     val currentRoute = topLevel.backStack.lastOrNull() as? Route
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
     val songMenu = remember { SongMenuHost() }

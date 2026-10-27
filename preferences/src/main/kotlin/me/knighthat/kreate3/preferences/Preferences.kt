@@ -105,6 +105,12 @@ object Preferences : KoinComponent {
     val BACK_EXIT_DISABLED by lazy { boolean("back_exit_disabled", false) }
 
     /**
+     * Tapping the media notification opens the full player, read by `KreateApp`; off, it only
+     * brings the app back.
+     */
+    val NOTIFICATION_OPENS_PLAYER by lazy { boolean("notification_opens_player", true) }
+
+    /**
      * Minutes between two scans of the device's music. The system runs periodic work
      * at most every 15 minutes, so smaller values behave like 15.
      */
