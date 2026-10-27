@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -59,17 +60,18 @@ import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import kotlin.math.roundToInt
 
 /**
- * The frame of a settings page: a top bar named [title] with a back button, and [content]
- * stacked in a column that scrolls.
+ * The frame of a settings page: a top bar named [title] with a back button and [actions], and
+ * [content] stacked in a column that scrolls.
  */
 @Composable
 fun SettingsPage(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    DetailScaffold(title, onBack, modifier) { padding: PaddingValues ->
+    DetailScaffold(title, onBack, modifier, actions = actions) { padding: PaddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -43,6 +43,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -173,6 +174,23 @@ fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boo
         Icon(
             painterResource(R.drawable.share),
             contentDescription = stringResource(R.string.semantic_share)
+        )
+    }
+
+/** Restarts the player, off while [enabled] is `false`. */
+@Composable
+fun RestartPlayerButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = MaterialTheme.colorScheme.tertiary
+        )
+    ) {
+        Icon(
+            painterResource(R.drawable.restart_alt),
+            contentDescription = stringResource(R.string.semantic_restart_the_player),
         )
     }
 

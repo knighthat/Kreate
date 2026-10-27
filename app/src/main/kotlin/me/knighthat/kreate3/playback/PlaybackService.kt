@@ -30,6 +30,7 @@ import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
@@ -68,6 +69,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -104,6 +106,10 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     // of the global scope. Once the session is released, it ends when the last write is done.
     private var writes: CompletableJob? = null
 
+    /** The player of the session, `null` while there is none. */
+    internal val player: Player?
+        get() = mediaSession?.player
+
     override fun onCreate() {
         super.onCreate()
 
@@ -126,7 +132,11 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         this.scope = scope
         this.writes = writes
 
-        val player = get<KreatePlayer>()
+        val build = PlayerBuild.now()
+        val player = get<KreatePlayer> { parametersOf(build) }
+        playbackLifecycle.playerMade(build)
+        // Before the saved queue would be restored, which is skipped then
+        playbackLifecycle.takeCarried()?.applyTo(player)
         // How much of the next song loads ahead follows the setting
         scope.launch {
             Preferences.PLAYBACK_PRELOAD_SECONDS.state.collect {
@@ -229,6 +239,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         scope = null
         session.player.release()
         session.release()
+        playbackLifecycle.playerReleased()
 
         // No more writes are started, the job ends with the last one
         return writes?.also { it.complete() }.also { writes = null }

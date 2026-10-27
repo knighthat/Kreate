@@ -157,7 +157,7 @@
     <string name="setting_title_load_ahead">Load ahead</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
-    <string name="setting_description_keep_what_was_played">Seeking back up to a minute doesn\'t load it again, from the next time the player starts</string>
+    <string name="setting_description_keep_what_was_played">Seeking back up to a minute doesn\'t load it again</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>
     <string name="setting_title_pause_history">Pause history</string>
@@ -254,6 +254,7 @@
     <string name="action_close">Close</string>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
     <string name="action_skip">Skip</string>
     <string name="action_forget">Forget</string>
     <string name="action_sign_out">Sign out</string>
@@ -366,6 +367,7 @@
     <string name="semantic_remove_from_the_queue">Remove from the queue</string>
     <string name="semantic_remove_like">Remove like</string>
     <string name="semantic_remove_songs">Remove songs</string>
+    <string name="semantic_restart_the_player">Restart the player</string>
     <string name="semantic_resume_the_sleep_timer">Resume the sleep timer</string>
     <string name="semantic_search">Search</string>
     <string name="semantic_search_the_lyrics_with_other_words">Search the lyrics with other words</string>
@@ -438,6 +440,9 @@
     <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
+    <string name="dialog_title_restart_the_player">Restart the player?</string>
+    <string name="dialog_body_restart_the_player_1">Playback stops for a moment, then goes on where it was with the new settings.</string>
+    <string name="dialog_body_restart_the_player_2">The sleep timer is on, it stops with the player.</string>
     <string name="dialog_title_restore_a_backup">Restore a backup?</string>
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>

@@ -18,11 +18,22 @@
 
 package me.knighthat.kreate3.ui.screen.settings.player
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.PlaybackFailureAction
@@ -30,9 +41,13 @@ import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.PlaybackLifecycle
+import me.knighthat.kreate3.playback.PlayerBuild
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.RestartPlayerButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
@@ -56,7 +71,11 @@ fun PlayerSettingsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     lyrics: LyricsFinder = koinInject(),
+    playback: PlaybackLifecycle = koinInject(),
+    controller: PlaybackController = koinInject(),
 ) {
+    val restartNeeded by playback.restartNeeded.collectAsStateWithLifecycle(false)
+    val sleepTimer by controller.sleepTimer.collectAsStateWithLifecycle()
     val historyPaused by Preferences.PLAYBACK_HISTORY_PAUSED.collectAsStateWithLifecycle()
     val historyMinSeconds by Preferences.PLAYBACK_HISTORY_MIN_SECONDS.collectAsStateWithLifecycle()
     val homeTapRadio by Preferences.HOME_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
@@ -106,6 +125,9 @@ fun PlayerSettingsScreen(
         autoAlbumTap = autoAlbumTap,
         autoArtistTap = autoArtistTap,
         autoPlaylistTap = autoPlaylistTap,
+        restartNeeded = restartNeeded,
+        sleepTimerOn = sleepTimer != null,
+        onRestartPlayer = { playback.restartPlayer() },
         onBack = onBack,
         modifier = modifier,
     )
@@ -114,6 +136,8 @@ fun PlayerSettingsScreen(
 /**
  * @param lyricsSource the provider used, one of [lyricsSources]
  * @param lyricsSources the name of each provider there is a source for, in the order they show
+ * @param restartNeeded whether a setting changed applies only to a new player, see [PlayerBuild]
+ * @param sleepTimerOn whether the sleep timer is on, a restart stops it
  */
 @Composable
 private fun PlayerSettingsContent(
@@ -141,10 +165,29 @@ private fun PlayerSettingsContent(
     autoAlbumTap: AutoTapAction,
     autoArtistTap: AutoTapAction,
     autoPlaylistTap: AutoTapAction,
+    restartNeeded: Boolean,
+    sleepTimerOn: Boolean,
+    onRestartPlayer: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SettingsPage(stringResource(R.string.screen_title_player), onBack, modifier) {
+    var confirmRestart by remember { mutableStateOf(false) }
+    if (confirmRestart)
+        RestartPlayerDialog(
+            sleepTimerOn = sleepTimerOn,
+            onRestart = {
+                confirmRestart = false
+                onRestartPlayer()
+            },
+            onDismiss = { confirmRestart = false },
+        )
+
+    SettingsPage(
+        title = stringResource(R.string.screen_title_player),
+        onBack = onBack,
+        modifier = modifier,
+        actions = { RestartPlayerButton({ confirmRestart = true }, enabled = restartNeeded) },
+    ) {
         SettingsSection(stringResource(R.string.setting_header_queue))
         SwitchSetting(
             title = stringResource(R.string.setting_title_radio_from_songs),
@@ -359,6 +402,32 @@ private fun PlayerSettingsContent(
     }
 }
 
+/**
+ * Asks whether to restart the player, with a warning while the sleep timer is on.
+ */
+@Composable
+private fun RestartPlayerDialog(
+    sleepTimerOn: Boolean,
+    onRestart: () -> Unit,
+    onDismiss: () -> Unit
+) =
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.dialog_title_restart_the_player)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.dialog_body_restart_the_player_1))
+                if (sleepTimerOn)
+                    Text(
+                        text = stringResource(R.string.dialog_body_restart_the_player_2),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+            }
+        },
+        confirmButton = { TextButton(onClick = onRestart) { Text(stringResource(R.string.action_ok)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
+    )
+
 @ScreenPreviews
 @Composable
 private fun PlayerSettingsPreview() = PreviewTheme {
@@ -387,6 +456,9 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         autoAlbumTap = AutoTapAction.OPEN,
         autoArtistTap = AutoTapAction.OPEN,
         autoPlaylistTap = AutoTapAction.OPEN,
+        restartNeeded = true,
+        sleepTimerOn = false,
+        onRestartPlayer = {},
         onBack = {},
     )
 }

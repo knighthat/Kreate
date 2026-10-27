@@ -83,11 +83,11 @@ val playbackModule = module {
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         )
     } bind PlaybackController::class
-    single { PlaybackLifecycle(get()) }
+    single { PlaybackLifecycle(get(), get()) }
 
     // Not a singleton: PlaybackService owns the player and releases it when the service ends,
     // a released player can't be used again. Screens talk to it through a MediaController.
-    factory {
+    factory { (build: PlayerBuild) ->
         val openSubsonic = get<OpenSubsonicProvider>()
         val youTube = get<YouTubeProvider>()
         KreatePlayer(
@@ -107,7 +107,7 @@ val playbackModule = module {
                 // Buffers by time, as the settings ask
                 .setLoadControl(
                     SongLoadControl(
-                        keptPlayedMs = if (Preferences.PLAYBACK_KEEP_PLAYED.value)
+                        keptPlayedMs = if (build.keepPlayed)
                             SongLoadControl.KEPT_PLAYED_MS
                         else
                             0

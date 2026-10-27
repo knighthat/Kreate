@@ -90,10 +90,16 @@ playback/
   `song` skipped on insert.
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,
   `PlaybackService.stop()` (session released, its write job joined, 5 s cap then cancelled), runs
-  the block, reconnects; service makes no session while `isStopped`.
+  the block, reconnects; service makes no session while `isStopped`. `restartPlayer()` (global
+  scope) does the same with no block, handing the queue to the next player as a `CarriedQueue`;
+  `restartNeeded` = the session's player was made with another `PlayerBuild` than now (Player
+  settings' top bar restart button).
+- `PlayerBuild.kt` — the settings a player is made with (`keepPlayed`), `now()` / `changes`.
+- `CarriedQueue.kt` — a player's queue, shuffled order, song + position, repeat, prepared and
+  playWhenReady, applied to the next player in `createSession` before `PersistentQueue` restores.
 - `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`;
   `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`,
-  `SongLoadControl` (back buffer from `PLAYBACK_KEEP_PLAYED` at build).
+  `SongLoadControl` (back buffer from the `PlayerBuild` parameter of the player factory).
 - `SongLoadControl.kt` — `DefaultLoadControl` buffering by time: min = max = 60 s ceiling, the
   buffer handed to the parent scaled to `PLAYBACK_BUFFER_AHEAD_SECONDS` (read each call; `0` =
   whole song, parent loads until its heap headroom check stops it);
