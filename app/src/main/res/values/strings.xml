@@ -130,7 +130,7 @@
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>
     <string name="setting_title_icon_only">Icon only</string>
-    <string name="setting_description_icon_only">Hide the text of the bottom bar, origin chips and quick actions</string>
+    <string name="setting_description_icon_only">Hide button labels</string>
     <string name="setting_title_playlist_initial">Playlist initial</string>
     <string name="setting_description_playlist_initial">Playlists without covers show the first letter of their name instead of an icon</string>
     <string name="setting_title_app_icon">App icon</string>

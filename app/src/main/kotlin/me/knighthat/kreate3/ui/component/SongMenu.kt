@@ -609,24 +609,26 @@ private fun ReactionToggle(
     @DrawableRes setIcon: Int,
     @DrawableRes unsetIcon: Int,
     label: String,
+    showLabel: Boolean = !LocalIconOnly.current,
     onClick: () -> Unit,
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
     IconToggleButton(checked = isSet, onCheckedChange = { onClick() }, enabled = enabled) {
         Icon(painterResource(if (isSet) setIcon else unsetIcon), contentDescription = label)
     }
-    ButtonLabel(label, enabled)
+    if (showLabel) ButtonLabel(label, enabled)
 }
 
 /**
  * A button of the row at the top of a menu sheet: [icon] over [label], dimmed and off unless
- * [enabled]. Without [showLabel] the label only describes the icon to screen readers.
+ * [enabled]. Without [showLabel] (off while [LocalIconOnly]) the label only describes the icon to
+ * screen readers.
  */
 @Composable
 internal fun LabeledIconButton(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean = true,
-    showLabel: Boolean = true,
+    showLabel: Boolean = !LocalIconOnly.current,
     onClick: () -> Unit,
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
     IconButton(onClick = onClick, enabled = enabled) {
@@ -692,6 +694,48 @@ private fun SongMenuPreview() = PreviewTheme {
             ) {}
             MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio)) {}
             Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+/** The header's buttons while [LocalIconOnly]: icons alone, the labels left to screen readers. */
+@OptIn(ExperimentalMaterial3Api::class)
+@ComponentPreviews
+@Composable
+private fun SongMenuIconOnlyPreview() = PreviewTheme {
+    CompositionLocalProvider(LocalIconOnly provides true) {
+        Surface(color = BottomSheetDefaults.ContainerColor) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.width(360.dp),
+            ) {
+                ReactionToggle(
+                    isSet = false,
+                    enabled = true,
+                    setIcon = R.drawable.thumb_down,
+                    unsetIcon = R.drawable.thumb_down_outline,
+                    label = stringResource(R.string.menu_dislike),
+                    onClick = {},
+                )
+                ReactionToggle(
+                    isSet = true,
+                    enabled = true,
+                    setIcon = R.drawable.thumb_up,
+                    unsetIcon = R.drawable.thumb_up_outline,
+                    label = stringResource(R.string.menu_like),
+                    onClick = {},
+                )
+                LabeledIconButton(
+                    icon = R.drawable.share,
+                    label = stringResource(R.string.menu_share),
+                    onClick = {},
+                )
+                LabeledIconButton(
+                    icon = (null as SongStorage?).icon,
+                    label = stringResource((null as SongStorage?).labelRes),
+                    onClick = {},
+                )
+            }
         }
     }
 }
