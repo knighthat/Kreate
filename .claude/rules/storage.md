@@ -20,6 +20,17 @@ Zip backup and restore: `backup.md`.
 - `Preferences` holds user settings only. Values derived at runtime (the `THUMBNAIL` theme seed
   color, anything computed from playback) are parameters or in-memory state, never preferences.
 
+## Failures
+
+- Every store writes through `retrying` (at once, 0.5 s, 1 s) and reports what failed to
+  `ProfileManager.reports` with its own `PreferenceFailure.Store`; each store and operation has a
+  `snackbar_*` text. A setting whose save keeps failing goes back to what is stored; a failed read
+  falls back to defaults.
+- A new DataStore passes `replaceDamaged` to `createPreferencesDataStore`, reporting the damage.
+  DataStore reads its file only when it opens and saves from memory after that, so damage is found
+  only then and nothing is remembered yet: an empty file, or what can be rebuilt (the profile list
+  from the `profiles/<id>/` folders).
+
 ## Secrets
 
 - Credentials never go in `Preferences`: passwords, API keys, tokens, cookies, usernames and

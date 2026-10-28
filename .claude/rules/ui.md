@@ -34,6 +34,9 @@ charts: `.claude/docs/charts.md`.
 - Text stays a literal (not in `strings.xml`) only for: the labels of a setting's values (not
   extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated), and
   preview-only text.
+- `Notifier` drops a message without a channel while no screen listens, and `ShowMessages`
+  starts listening a moment after the screen starts. Code that posts as the app opens (a failure
+  found at startup) calls `notifier.awaitScreen()` first, like `ShowPreferenceFailures`.
 
 ## Menus and hints
 
