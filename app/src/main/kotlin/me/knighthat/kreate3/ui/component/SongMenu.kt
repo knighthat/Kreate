@@ -416,7 +416,8 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             setIcon = R.drawable.thumb_down,
             unsetIcon = R.drawable.thumb_down_outline,
             label = stringResource(R.string.menu_dislike),
-            onClick = reaction.toggleDislike,
+            // Its message has an Undo the sheet would cover
+            onClick = { close(reaction.toggleDislike) },
         )
         ReactionToggle(
             isSet = reaction.reaction == Reaction.LIKED,

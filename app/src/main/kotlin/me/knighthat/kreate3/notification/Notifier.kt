@@ -32,6 +32,8 @@ enum class MessageDuration { SHORT, LONG, INDEFINITE }
 /**
  * What to tell the user, like "Added 3 songs to the queue".
  *
+ * @param duration how long it stays; one with an [actionLabel] stays at least
+ * [MessageDuration.LONG], so there's time to reach the button
  * @param dismissable whether it has a button to close it
  * @param actionLabel the button next to [text], like "Retry", `null` for none; tapping it runs
  * [onAction] and closes the message
@@ -49,12 +51,11 @@ data class Message(
 
 /**
  * [text] with an Undo button that runs [undo], on the main thread: it hands any slow work to a
- * scope that outlives the screen, the message can outlive it. Shown long, so there's time to
- * reach the button, and only on screen, never as a system notification.
+ * scope that outlives the screen, the message can outlive it. Only on screen, never as a system
+ * notification.
  */
 fun undoMessage(resources: Resources, text: String, undo: () -> Unit): Message = Message(
     text = text,
-    duration = MessageDuration.LONG,
     actionLabel = resources.getString(R.string.action_undo),
     onAction = undo,
 )

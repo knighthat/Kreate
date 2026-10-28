@@ -69,7 +69,10 @@ fun ShowMessages(notifier: Notifier, host: SnackbarHostState) {
                 actionLabel = message.actionLabel,
                 withDismissAction = message.dismissable,
                 duration = when (message.duration) {
-                    MessageDuration.SHORT -> SnackbarDuration.Short
+                    // A button needs time to be reached
+                    MessageDuration.SHORT ->
+                        if (message.actionLabel != null) SnackbarDuration.Long
+                        else SnackbarDuration.Short
                     MessageDuration.LONG -> SnackbarDuration.Long
                     MessageDuration.INDEFINITE -> SnackbarDuration.Indefinite
                 },
