@@ -23,6 +23,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Embedded
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
@@ -92,6 +93,20 @@ internal interface PlaybackHistoryDao {
 
     @Query("UPDATE playback_history SET time_spent = :timeSpent WHERE id = :id")
     suspend fun updateTimeSpent(id: Long, timeSpent: Duration)
+
+    /** Ids taken by another play since are left out, see `HistoryRepository.restorePlays`. */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(plays: List<PlaybackHistoryEntity>)
+
+    @Query("SELECT * FROM playback_history WHERE user_id = :userId AND id IN (:ids)")
+    suspend fun byIds(userId: String, ids: List<Long>): List<PlaybackHistoryEntity>
+
+    @Query("SELECT * FROM playback_history WHERE user_id = :userId")
+    suspend fun all(userId: String): List<PlaybackHistoryEntity>
+
+    /** Which of [songIds] are in the song table, a play needs its song. */
+    @Query("SELECT id FROM song WHERE id IN (:songIds)")
+    suspend fun existingSongs(songIds: List<String>): List<String>
 
     @Query("DELETE FROM playback_history WHERE user_id = :userId AND id IN (:ids)")
     suspend fun delete(userId: String, ids: List<Long>)

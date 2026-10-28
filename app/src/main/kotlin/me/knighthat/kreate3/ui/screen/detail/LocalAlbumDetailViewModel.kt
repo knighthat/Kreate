@@ -140,26 +140,50 @@ class LocalAlbumDetailViewModel(
     }
 
     /**
-     * Puts the songs back in the album's own order, [onDone] tells whether it worked. [arranged]
-     * loads again in that order.
+     * Puts the songs back in the album's own order, [onDone] tells whether it worked and gets how
+     * to put the user's order back, `null` when it failed or there was none. [arranged] loads
+     * again in that order.
      */
-    fun resetOrder(onDone: (Boolean) -> Unit) {
+    fun resetOrder(onDone: (reset: Boolean, undo: (() -> Unit)?) -> Unit) {
         viewModelScope.launch {
-            val reset = try {
+            val positions = try {
                 moves.withLock { songRepository.resetAlbumOrder(albumId) }
-                true
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Log.w(TAG, "Couldn't reset the order of album $albumId", e)
-                false
+                null
             }
-            if (_isReordering.value) {
-                arranging?.cancel()
-                arrange()
-            }
-            onDone(reset)
+            rearrange()
+            onDone(
+                positions != null,
+                positions?.takeIf { it.isNotEmpty() }?.let { { restoreOrder(it) } },
+            )
         }
+    }
+
+    /**
+     * Gives the songs the [positions] [resetOrder] took off, on the app's scope: the page may be
+     * gone by the time Undo is tapped.
+     */
+    private fun restoreOrder(positions: Map<String, Int>) {
+        scope.launch {
+            try {
+                moves.withLock { songRepository.restoreAlbumOrder(albumId, positions) }
+                rearrange()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't restore the order of album $albumId", e)
+            }
+        }
+    }
+
+    /** Loads [arranged] again while songs are moved, it's a copy of the order. */
+    private fun rearrange() {
+        if (!_isReordering.value) return
+        arranging?.cancel()
+        arrange()
     }
 
     /** Whether the album can be shared, it has a link. */

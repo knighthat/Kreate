@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -55,11 +56,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.clearUndoable
+import me.knighthat.kreate3.ui.component.stopUndoable
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -101,6 +105,9 @@ internal fun QueuePage(
     modifier: Modifier = Modifier,
 ) {
     val queue by controller.queue.collectAsStateWithLifecycle()
+    val notifier = LocalNotifier.current
+    val resources = LocalResources.current
+    val removedFromQueue = stringResource(R.string.snackbar_removed_from_queue)
     val shuffledOrder by controller.shuffledOrder.collectAsStateWithLifecycle()
     val queued = remember(queue) { queue.toEntries() }
     // An order that doesn't count the queue's songs is the one before the queue changed, the
@@ -177,6 +184,9 @@ internal fun QueuePage(
                                 val position = positionOf(entry)
                                 entries = entries.filterNot { it.key == entry.key }
                                 controller.remove(position)
+                                notifier.post(undoMessage(resources, removedFromQueue) {
+                                    controller.insert(position, listOf(entry.item))
+                                })
                             },
                         )
                     },
@@ -209,6 +219,7 @@ internal fun QueueButtons(
     modifier = modifier,
 ) {
     val notifier = LocalNotifier.current
+    val resources = LocalResources.current
     val turnShuffleOff = stringResource(R.string.snackbar_turn_shuffle_off)
     val reordering = mode == CoverEditMode.REORDER
     val removing = mode == CoverEditMode.REMOVE
@@ -256,7 +267,8 @@ internal fun QueueButtons(
                 confirmClear = false
                 onModeChange(CoverEditMode.NONE)
                 // Nothing is left to play then, the player closes by itself
-                if (removeCurrent) controller.stop() else controller.clear()
+                if (removeCurrent) controller.stopUndoable(resources, notifier)
+                else controller.clearUndoable(resources, notifier)
             },
         )
 }

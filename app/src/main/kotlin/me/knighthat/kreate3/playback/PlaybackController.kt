@@ -119,6 +119,25 @@ interface PlaybackController {
     fun playNext(items: List<MediaItem>)
 
     /**
+     * Takes back what [enqueue] or [playNext] added, [items] being the list it was given: the
+     * items where they were added, or the last copy of each song once the queue changed around
+     * them. Like [remove], taking the current item out moves on first.
+     */
+    fun unqueue(items: List<MediaItem>)
+
+    /**
+     * Puts [items] at [index] of [queue], in their order, at its end when it is shorter, without
+     * starting to play. With an empty queue they become the queue.
+     */
+    fun insert(index: Int, items: List<MediaItem>)
+
+    /**
+     * Replaces the queue with [items], at the item [index] from [positionMs], playing when
+     * [play], like putting back a queue [stop] emptied.
+     */
+    fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean)
+
+    /**
      * How far into the current item, from `0` to `1`; `0` when unknown. Cheap enough to read
      * every frame, but only from the main thread.
      */

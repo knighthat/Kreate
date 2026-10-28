@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.player
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
@@ -78,7 +80,8 @@ private class Lookup(val song: UserSongView?)
  *
  * A song that isn't in the library has no reaction, the first one adds it there, after storing a
  * song fetched live (see [SongStore]). A dislike also takes the song out of the queue, see
- * [PlaybackController.drop]; taking one back says so, since the song only reappears in lists.
+ * [PlaybackController.drop]. A dislike made or taken back says so with an Undo, since the song
+ * only leaves or reappears in lists; Undo puts back the reaction before, not the queue.
  */
 @Composable
 internal fun rememberSongReaction(item: MediaItem): SongReaction {
@@ -105,38 +108,62 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         else -> Reaction.LIKED
     }
 
+    /**
+     * Saves what [change] makes of the song's `likedAt`, at its source too. [asked] says what it
+     * does, for a message when the source doesn't take it.
+     *
+     * @return whether it was saved
+     */
+    suspend fun save(@StringRes asked: Int, change: (Instant?) -> Instant?): Boolean = try {
+        // Only a song in the database can be added to the library
+        if (song == null) songs.store(songId, origin)
+        when (origin) {
+            Origin.OPEN_SUBSONIC -> openSubsonic.react(songId, change)
+            Origin.YOUTUBE -> youTube.react(songId, change)
+            else -> library.update(songId) { it.copy(likedAt = change(it.likedAt)) }
+        }
+        true
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: ServerException) {
+        // The reaction is already taken back
+        notifier.post(Message(e.serverFailure(resources, asked), MessageDuration.LONG))
+        false
+    } catch (e: YouTubeException) {
+        notifier.post(Message(e.youTubeFailure(resources, asked), MessageDuration.LONG))
+        false
+    } catch (e: Exception) {
+        Log.w(TAG, "Couldn't save the reaction to $songId", e)
+        false
+    }
+
     fun set(to: Reaction, likedAt: () -> Instant) = scope.launch {
         // Tapping the reaction that is set takes it away
         val removing = reaction == to
-        val change = { _: Instant? -> if (removing) null else likedAt() }
-        // What was asked, for a message when the source doesn't take it
+        val before = song?.likedAt
         val asked = when {
             removing && to == Reaction.LIKED -> R.string.snackbar_change_remove_like
             removing -> R.string.snackbar_change_remove_dislike
             to == Reaction.LIKED -> R.string.snackbar_change_like_song
             else -> R.string.snackbar_change_dislike_song
         }
-        try {
-            // Only a song in the database can be added to the library
-            if (song == null) songs.store(songId, origin)
-            when (origin) {
-                Origin.OPEN_SUBSONIC -> openSubsonic.react(songId, change)
-                Origin.YOUTUBE -> youTube.react(songId, change)
-                else -> library.update(songId) { it.copy(likedAt = change(it.likedAt)) }
+        if (!save(asked) { if (removing) null else likedAt() }) return@launch
+        // The song leaves or rejoins the lists, a like only changes its button
+        if (to != Reaction.DISLIKED) return@launch
+
+        val text = resources.getString(
+            if (removing) R.string.snackbar_removed_from_dislike else R.string.snackbar_disliked
+        )
+        notifier.post(undoMessage(resources, text) {
+            scope.launch {
+                // The dislike back, it leaves the queue again
+                if (removing) playback.drop(songId)
+                save(
+                    if (removing) R.string.snackbar_change_dislike_song
+                    else R.string.snackbar_change_remove_dislike
+                ) { before }
             }
-            // The song shows up in the lists again, nothing on screen says so
-            if (removing && to == Reaction.DISLIKED)
-                notifier.post(Message(resources.getString(R.string.snackbar_removed_from_dislike)))
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: ServerException) {
-            // The reaction is already taken back
-            notifier.post(Message(e.serverFailure(resources, asked), MessageDuration.LONG))
-        } catch (e: YouTubeException) {
-            notifier.post(Message(e.youTubeFailure(resources, asked), MessageDuration.LONG))
-        } catch (e: Exception) {
-            Log.w(TAG, "Couldn't save the reaction to $songId", e)
-        }
+        })
     }
 
     return SongReaction(

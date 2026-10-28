@@ -52,6 +52,8 @@ import me.knighthat.kreate3.database.paging.SortDirection
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.source.SongStore
 import org.koin.compose.koinInject
 
@@ -89,19 +91,36 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         value = repository.list(NEWEST_FIRST, setOf(Origin.LOCAL))
     }
 
-    fun write(playlist: String, add: suspend () -> Boolean) = scope.launch {
+    /** Runs [undo] on the app's scope, the menu is long gone by the time it's tapped. */
+    fun undoing(playlist: String, undo: suspend () -> Unit): () -> Unit = {
+        scope.launch {
+            try {
+                undo()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't take ${item.mediaId} back out of $playlist", e)
+            }
+        }
+    }
+
+    /** @param add puts the song in, giving how to take it back out, `null` when it was in already */
+    fun write(playlist: String, add: suspend () -> (suspend () -> Unit)?) = scope.launch {
         val message = try {
             // The song has to be in the database before a playlist can have it
             songs.store(item.mediaId, item.origin)
-            resources.getString(
-                if (add()) R.string.snackbar_added_to else R.string.snackbar_already_in,
-                playlist,
+            val undo = add()
+            if (undo == null) Message(resources.getString(R.string.snackbar_already_in, playlist))
+            else undoMessage(
+                resources,
+                resources.getString(R.string.snackbar_added_to, playlist),
+                undoing(playlist, undo),
             )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't add ${item.mediaId} to $playlist", e)
-            resources.getString(R.string.snackbar_couldnt_add_to, playlist)
+            Message(resources.getString(R.string.snackbar_couldnt_add_to, playlist))
         }
         notifier.post(message)
     }
@@ -110,10 +129,8 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         playlists = playlists,
         add = { playlist ->
             write(playlist.name) {
-                repository.addSong(
-                    playlist.id,
-                    item.mediaId
-                )
+                if (!repository.addSong(playlist.id, item.mediaId)) null
+                else suspend { repository.removeSong(playlist.id, item.mediaId) }
             }
         },
         create = { name ->
@@ -122,6 +139,8 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
             write(trimmed) {
                 val id = repository.save(UserPlaylist(origin = Origin.LOCAL, name = trimmed))
                 repository.addSong(id, item.mediaId)
+                // Made for the song, it goes with it
+                suspend { repository.delete(id) }
             }
         },
     )

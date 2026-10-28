@@ -91,6 +91,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.download.SongStorage
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.Route
@@ -450,7 +451,6 @@ private fun SongMenuActions(
     val playback = koinInject<PlaybackController>()
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
-    val willPlayNext = stringResource(R.string.snackbar_will_play_next_one)
     val navigator = LocalNavigator.current
     val playable = item.mediaMetadata.isPlayable == true
     val album = remember(item, navigator?.current) {
@@ -465,8 +465,13 @@ private fun SongMenuActions(
         enabled = playable
     ) {
         close {
-            playback.playNext(listOf(item))
-            notifier.post(willPlayNext)
+            val items = listOf(item)
+            playback.playNext(items)
+            notifier.post(undoMessage(resources, willPlayNext(resources, 1)) {
+                playback.unqueue(
+                    items
+                )
+            })
         }
     }
     MenuRow(

@@ -18,11 +18,13 @@
 
 package me.knighthat.kreate3.notification
 
+import android.content.res.Resources
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
+import me.knighthat.kreate3.R
 
 /** How long a [Message] stays on screen. */
 enum class MessageDuration { SHORT, LONG, INDEFINITE }
@@ -43,6 +45,18 @@ data class Message(
     val actionLabel: String? = null,
     val onAction: () -> Unit = {},
     val channel: AppChannel? = null,
+)
+
+/**
+ * [text] with an Undo button that runs [undo], on the main thread: it hands any slow work to a
+ * scope that outlives the screen, the message can outlive it. Shown long, so there's time to
+ * reach the button, and only on screen, never as a system notification.
+ */
+fun undoMessage(resources: Resources, text: String, undo: () -> Unit): Message = Message(
+    text = text,
+    duration = MessageDuration.LONG,
+    actionLabel = resources.getString(R.string.action_undo),
+    onAction = undo,
 )
 
 /**

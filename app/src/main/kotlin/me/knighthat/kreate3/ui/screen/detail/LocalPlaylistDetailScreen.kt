@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
@@ -51,6 +52,8 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -83,6 +86,7 @@ fun LocalPlaylistDetailScreen(
     val mode by viewModel.editMode.collectAsState()
     val arranged by viewModel.arranged.collectAsState()
     val notifier = LocalNotifier.current
+    val resources = LocalResources.current
     val moveFailed = stringResource(R.string.error_move_song)
     val removeFailed = stringResource(R.string.error_playlist_remove_song)
 
@@ -108,12 +112,14 @@ fun LocalPlaylistDetailScreen(
                 if (!moved) notifier.post(moveFailed)
             }
         },
-        onRemoveSong = { song, fromMenu ->
-            viewModel.removeSong(song.mediaId) { removed ->
-                // A cover tapped in a row of covers to remove says nothing unless it failed
-                if (fromMenu || !removed) notifier.post(
-                    if (removed) removedFrom
-                    else removeFailed
+        onRemoveSong = { song ->
+            viewModel.removeSong(song.mediaId) { removed, undo ->
+                notifier.post(
+                    when {
+                        !removed -> Message(removeFailed)
+                        undo != null -> undoMessage(resources, removedFrom, undo)
+                        else -> Message(removedFrom)
+                    }
                 )
             }
         },
@@ -126,7 +132,7 @@ fun LocalPlaylistDetailScreen(
  * @param arranged every song in the playlist's order while they are moved, see
  * [LocalPlaylistDetailViewModel.arranged]
  * @param onMoveSong moves a song to right after another one, to the start after `null`
- * @param onRemoveSong takes a song out, `true` when it was picked in its menu
+ * @param onRemoveSong takes a song out
  */
 @Composable
 private fun LocalPlaylistDetailContent(
@@ -142,7 +148,7 @@ private fun LocalPlaylistDetailContent(
     onSongClick: (MediaItem) -> Unit,
     onModeChange: (CoverEditMode) -> Unit,
     onMoveSong: (song: MediaItem, after: MediaItem?) -> Unit,
-    onRemoveSong: (song: MediaItem, fromMenu: Boolean) -> Unit,
+    onRemoveSong: (song: MediaItem) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -218,7 +224,7 @@ private fun LocalPlaylistDetailContent(
                                 },
                             ),
                             onClick = { onSongClick(song) },
-                            onRemove = { onRemoveSong(song, it) },
+                            onRemove = { onRemoveSong(song) },
                             // Opaque, the songs it passes over don't show through it
                             modifier = if (isDragging) Modifier.background(lifted) else Modifier,
                         )
@@ -233,7 +239,7 @@ private fun LocalPlaylistDetailContent(
                             mode = if (mode == CoverEditMode.REORDER) CoverEditMode.NONE else mode,
                             handle = Modifier,
                             onClick = { onSongClick(song) },
-                            onRemove = { onRemoveSong(song, it) },
+                            onRemove = { onRemoveSong(song) },
                         )
                     }
                 }
@@ -245,7 +251,7 @@ private fun LocalPlaylistDetailContent(
 /**
  * A song of the playlist, its cover as [mode] says, see [CoverEditOverlay].
  *
- * @param onRemove takes it out, `true` when picked in its menu
+ * @param onRemove takes it out, from its menu or its cover
  */
 @Composable
 private fun PlaylistSong(
@@ -253,12 +259,12 @@ private fun PlaylistSong(
     mode: CoverEditMode,
     handle: Modifier,
     onClick: () -> Unit,
-    onRemove: (fromMenu: Boolean) -> Unit,
+    onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val removeLabel = stringResource(R.string.menu_remove_from_playlist)
     val remove = remember(item, onRemove, removeLabel) {
-        SongMenuAction(removeLabel, R.drawable.playlist_remove) { onRemove(true) }
+        SongMenuAction(removeLabel, R.drawable.playlist_remove, onRemove)
     }
     SongItem(
         item = item,
@@ -269,7 +275,7 @@ private fun PlaylistSong(
                 mode = mode,
                 handle = handle,
                 removeDescription = stringResource(R.string.semantic_remove_from_the_playlist),
-                onRemove = { onRemove(false) },
+                onRemove = onRemove,
             )
         },
         menuActions = listOf(remove),
@@ -346,6 +352,6 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         onSongClick = {},
         onModeChange = {},
         onMoveSong = { _, _ -> },
-        onRemoveSong = { _, _ -> },
+        onRemoveSong = {},
     )
 }

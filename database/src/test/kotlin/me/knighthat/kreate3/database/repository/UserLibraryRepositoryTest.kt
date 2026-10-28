@@ -411,9 +411,12 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
             runBlocking { songs.moveInAlbum("a1", "e", after = null) }
         }
 
-        songs.resetAlbumOrder("a1")
+        val taken = songs.resetAlbumOrder("a1")
         assertNull(database.userSongDao().get(USER, "a")?.albumPosition)
         assertEquals(listOf("c", "b", "d", "a"), songs.listOfAlbum("a1").map { it.songId })
+
+        songs.restoreAlbumOrder("a1", taken)
+        assertEquals(listOf("b", "c", "a", "d"), songs.listOfAlbum("a1").map { it.songId })
         Unit
     }
 

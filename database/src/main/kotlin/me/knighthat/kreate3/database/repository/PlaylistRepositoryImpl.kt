@@ -162,17 +162,23 @@ internal class PlaylistRepositoryImpl(
     override suspend fun delete(playlistId: Long) =
         playlistDao.delete(playlistId, scope.requireId())
 
-    override suspend fun addSong(playlistId: Long, songId: String): Boolean {
+    override suspend fun addSong(playlistId: Long, songId: String, position: Int?): Boolean {
         ownedBy(scope.requireId(), playlistId)
         return database.inTransaction {
-            val position = playlistDao.nextPosition(playlistId)
-            playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId, position)) != -1L
+            val at = position ?: playlistDao.nextPosition(playlistId)
+            // Taken when the songs were moved since, they're numbered again then
+            if (position != null && playlistDao.songAt(playlistId, position) != null)
+                playlistDao.shiftFrom(playlistId, position)
+            playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId, at)) != -1L
         }
     }
 
-    override suspend fun removeSong(playlistId: Long, songId: String) {
+    override suspend fun removeSong(playlistId: Long, songId: String): Int? {
         ownedBy(scope.requireId(), playlistId)
-        playlistDao.removeSong(playlistId, songId)
+        return database.inTransaction {
+            playlistDao.position(playlistId, songId)
+                ?.also { playlistDao.removeSong(playlistId, songId) }
+        }
     }
 
     override suspend fun moveSong(playlistId: Long, songId: String, after: String?) {

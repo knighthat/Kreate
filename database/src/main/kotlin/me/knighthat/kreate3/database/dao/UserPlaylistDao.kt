@@ -124,6 +124,18 @@ internal interface UserPlaylistDao {
     @Query("DELETE FROM song_playlist_map WHERE playlist_id = :playlistId AND song_id = :songId")
     suspend fun removeSong(playlistId: Long, songId: String)
 
+    /** Where the song is in the playlist, `null` when it isn't in it. */
+    @Query("SELECT position FROM song_playlist_map WHERE playlist_id = :playlistId AND song_id = :songId")
+    suspend fun position(playlistId: Long, songId: String): Int?
+
+    /** The song at [position] of the playlist, `null` when the position is free. */
+    @Query("SELECT song_id FROM song_playlist_map WHERE playlist_id = :playlistId AND position = :position LIMIT 1")
+    suspend fun songAt(playlistId: Long, position: Int): String?
+
+    /** Moves the songs from [position] on one place down, freeing [position]. */
+    @Query("UPDATE song_playlist_map SET position = position + 1 WHERE playlist_id = :playlistId AND position >= :position")
+    suspend fun shiftFrom(playlistId: Long, position: Int)
+
     /** The songs of the playlist in its order. */
     @Query("SELECT * FROM song_playlist_map WHERE playlist_id = :playlistId ORDER BY position, song_id")
     suspend fun songLinks(playlistId: Long): List<SongPlaylistMapEntity>

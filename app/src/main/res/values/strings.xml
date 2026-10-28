@@ -306,6 +306,7 @@
     <string name="action_create">Create</string>
     <string name="action_try_again">Try again</string>
     <string name="action_retry">Retry</string>
+    <string name="action_undo">Undo</string>
     <string name="action_reload">Reload</string>
     <string name="action_switch">Switch</string>
     <string name="action_delete">Delete</string>
@@ -643,6 +644,12 @@
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
+    <string name="snackbar_disliked">Disliked</string>
+    <string name="snackbar_removed_from_queue">Removed from the queue</string>
+    <string name="snackbar_queue_cleared">Queue cleared</string>
+    <string name="snackbar_playback_stopped">Playback stopped</string>
+    <string name="snackbar_removed_from_history">Removed from history</string>
+    <string name="snackbar_history_cleared">History cleared</string>
     <string name="snackbar_removed_from_dislike_count">%1$d removed from dislike</string>
     <string name="snackbar_removed_from_dislike_some_failed">%1$d removed from dislike, %2$d failed</string>
     <string name="snackbar_the_playlist">the playlist</string>

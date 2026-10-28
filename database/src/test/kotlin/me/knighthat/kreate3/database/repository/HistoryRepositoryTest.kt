@@ -29,6 +29,7 @@ import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds
@@ -313,6 +314,26 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         assertEquals(
             listOf(2_000L),
             repository.recentPlays(10).first().map { it.createdAt.toEpochMilliseconds() })
+    }
+
+    @Test
+    fun deletedPlaysComeBackAsTheyWere() = runBlocking {
+        librarySong("s1")
+        librarySong("s2")
+        playAt("s1", 1)
+        playAt("s2", 2)
+        val before = repository.recentPlays(10).first()
+
+        val one = repository.deletePlay(before.first().id)
+        assertEquals(before.first(), one)
+        assertNull(repository.deletePlay(before.first().id))
+        repository.restorePlays(listOfNotNull(one))
+        assertEquals(before, repository.recentPlays(10).first())
+
+        val all = repository.clearPlays()
+        assertEquals(0, repository.recentPlays(10).first().size)
+        repository.restorePlays(all)
+        assertEquals(before, repository.recentPlays(10).first())
     }
 
     @Test

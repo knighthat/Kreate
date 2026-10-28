@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +53,7 @@ class LocalPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: PlaylistRepository,
     private val songRepository: UserSongRepository,
+    private val scope: CoroutineScope,
 ) : ViewModel() {
 
     val playlistId: Long = checkNotNull(savedStateHandle[LocalPlaylist.ID]) {
@@ -128,19 +130,42 @@ class LocalPlaylistDetailViewModel(
         }
     }
 
-    /** Takes the song [songId] out of the playlist, [onDone] tells whether it worked. */
-    fun removeSong(songId: String, onDone: (Boolean) -> Unit) {
+    /**
+     * Takes the song [songId] out of the playlist, [onDone] tells whether it worked and gets how
+     * to put it back, `null` when it failed or the song wasn't in it.
+     */
+    fun removeSong(songId: String, onDone: (removed: Boolean, undo: (() -> Unit)?) -> Unit) {
         viewModelScope.launch {
-            val removed = try {
-                repository.removeSong(playlistId, songId)
-                true
+            val position = try {
+                Result.success(repository.removeSong(playlistId, songId))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Log.w(TAG, "Couldn't remove $songId from playlist $playlistId", e)
-                false
+                Result.failure(e)
             }
-            onDone(removed)
+            onDone(position.isSuccess, position.getOrNull()?.let { { putBack(songId, it) } })
+        }
+    }
+
+    /**
+     * Puts the song [songId] back at [position], where [removeSong] took it from, on the app's
+     * scope: the page may be gone by the time Undo is tapped.
+     */
+    private fun putBack(songId: String, position: Int) {
+        scope.launch {
+            try {
+                repository.addSong(playlistId, songId, position)
+                // Being moved, the songs dragged around are a copy
+                if (_editMode.value == CoverEditMode.REORDER) viewModelScope.launch {
+                    arranging?.cancel()
+                    arrange()
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't put $songId back in playlist $playlistId", e)
+            }
         }
     }
 }

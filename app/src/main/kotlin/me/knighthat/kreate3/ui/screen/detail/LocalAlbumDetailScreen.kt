@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,8 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.source.local.albumArtUri
 import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.DragHandle
@@ -95,6 +98,7 @@ fun LocalAlbumDetailScreen(
     val isReordering by viewModel.isReordering.collectAsState()
     val arranged by viewModel.arranged.collectAsState()
     val notifier = LocalNotifier.current
+    val resources = LocalResources.current
     val resetFailed = stringResource(R.string.error_album_reset_order)
     val moveFailed = stringResource(R.string.error_move_song)
     val orderReset = stringResource(R.string.snackbar_album_order_reset)
@@ -121,8 +125,14 @@ fun LocalAlbumDetailScreen(
         onSongClick = rememberSongTap(null, viewModel::allSongs),
         onReorder = viewModel::reorder,
         onResetOrder = {
-            viewModel.resetOrder { reset ->
-                notifier.post(if (reset) orderReset else resetFailed)
+            viewModel.resetOrder { reset, undo ->
+                notifier.post(
+                    when {
+                        !reset -> Message(resetFailed)
+                        undo != null -> undoMessage(resources, orderReset, undo)
+                        else -> Message(orderReset)
+                    }
+                )
             }
         },
         onMoveSong = { song, after ->

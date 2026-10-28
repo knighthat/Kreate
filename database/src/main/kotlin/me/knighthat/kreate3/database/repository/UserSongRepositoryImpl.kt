@@ -303,8 +303,29 @@ internal class UserSongRepositoryImpl(
         }
     }
 
-    override suspend fun resetAlbumOrder(albumId: String) =
-        userSongDao.clearAlbumPositions(scope.requireId(), albumId, clock.now())
+    override suspend fun resetAlbumOrder(albumId: String): Map<String, Int> {
+        val userId = scope.requireId()
+        return database.inTransaction {
+            val positions = userSongDao.onAlbum(userId, albumId)
+                .mapNotNull { row -> row.albumPosition?.let { row.songId to it } }
+                .toMap()
+            userSongDao.clearAlbumPositions(userId, albumId, clock.now())
+            positions
+        }
+    }
+
+    override suspend fun restoreAlbumOrder(albumId: String, positions: Map<String, Int>) {
+        if (positions.isEmpty()) return
+        val userId = scope.requireId()
+        database.inTransaction {
+            val now = clock.now()
+            val changed = userSongDao.onAlbum(userId, albumId).mapNotNull { row ->
+                positions[row.songId]?.takeIf { it != row.albumPosition }
+                    ?.let { row.copy(albumPosition = it, updatedAt = now) }
+            }
+            userSongDao.upsertAll(changed)
+        }
+    }
 
     private companion object {
 

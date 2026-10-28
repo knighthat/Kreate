@@ -175,8 +175,8 @@ fun HistoryScreen(
                     ?.let(notifier::post)
             }
         },
-        onDelete = viewModel::delete,
-        onClear = viewModel::clear,
+        onDelete = { viewModel.delete(it, notifier::post) },
+        onClear = { viewModel.clear(notifier::post) },
         modifier = modifier,
         contentPadding = contentPadding,
     )

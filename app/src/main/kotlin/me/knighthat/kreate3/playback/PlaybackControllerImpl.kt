@@ -70,6 +70,9 @@ class PlaybackControllerImpl(
     private var controller: MediaController? = null
     private var radioSearch: Job? = null
 
+    /** What the last [enqueue] or [playNext] added and where, for [unqueue]. */
+    private var lastAdded: Added? = null
+
     init {
         // Connects early so the state is known before anything is played
         connect()
@@ -227,6 +230,7 @@ class PlaybackControllerImpl(
 
     override fun enqueue(items: List<MediaItem>) = run("queue ${items.size} items") { controller ->
         val wasEmpty = controller.mediaItemCount == 0
+        lastAdded = Added(items, controller.mediaItemCount)
         controller.addMediaItems(items)
         // Ready to play, the user starts it
         if (wasEmpty) controller.prepare()
@@ -245,9 +249,48 @@ class PlaybackControllerImpl(
         run("queue ${items.size} items next") { controller ->
             val wasEmpty = controller.mediaItemCount == 0
             val index = if (wasEmpty) 0 else controller.currentMediaItemIndex + 1
+            lastAdded = Added(items, index)
             controller.addMediaItems(index, items)
             // Ready to play, the user starts it
             if (wasEmpty) controller.prepare()
+        }
+
+    override fun unqueue(items: List<MediaItem>) =
+        run("take back ${items.size} queued items") { controller ->
+            val ids = items.map(MediaItem::mediaId)
+            val start = lastAdded?.takeIf { it.items === items }?.index
+            lastAdded = null
+            val count = controller.mediaItemCount
+            val where = if (
+                start != null && start + ids.size <= count &&
+                ids.indices.all { controller.getMediaItemAt(start + it).mediaId == ids[it] }
+            ) (start until start + ids.size).toSet()
+            else {
+                // Moved or removed meanwhile, the copies added were the last ones
+                val found = HashSet<Int>()
+                for (id in ids) (count - 1 downTo 0)
+                    .firstOrNull { it !in found && controller.getMediaItemAt(it).mediaId == id }
+                    ?.let(found::add)
+                found
+            }
+            // From the end, the indexes before stay right
+            where.sortedDescending().forEach { controller.removeAt(it) }
+        }
+
+    override fun insert(index: Int, items: List<MediaItem>) =
+        run("put back ${items.size} items at $index") { controller ->
+            if (items.isEmpty()) return@run
+            val wasEmpty = controller.mediaItemCount == 0
+            controller.addMediaItems(index.coerceIn(0, controller.mediaItemCount), items)
+            if (wasEmpty) controller.prepare()
+        }
+
+    override fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean) =
+        run("restore ${items.size} items") { controller ->
+            if (items.isEmpty()) return@run
+            controller.setMediaItems(items, index.coerceIn(0, items.lastIndex), positionMs)
+            controller.prepare()
+            if (play) controller.play()
         }
 
     /**
@@ -373,6 +416,9 @@ class PlaybackControllerImpl(
         // With nothing else to play, removing it ends the queue
         removeMediaItem(index)
     }
+
+    /** [items] as given to [enqueue] or [playNext], added at [index] of the queue. */
+    private class Added(val items: List<MediaItem>, val index: Int)
 
     private fun ListenableFuture<MediaController>.isUsable(): Boolean =
         !isCancelled && runCatching { get().isConnected }.getOrDefault(false)

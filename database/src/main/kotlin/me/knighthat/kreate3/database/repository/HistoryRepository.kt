@@ -102,11 +102,30 @@ interface HistoryRepository {
      */
     suspend fun updatePlay(id: Long, timeSpent: Duration)
 
-    /** Removes the play [id] of the active user. */
-    suspend fun deletePlay(id: Long)
+    /**
+     * Removes the play [id] of the active user.
+     *
+     * @return the play removed, for [restorePlays], `null` when there was none
+     */
+    suspend fun deletePlay(id: Long): PlaybackHistory?
 
-    /** Removes the plays [plays] shows, plays of other users and other songs stay. */
-    suspend fun deletePlays(periods: List<PlayPeriod>, origins: Set<Origin>)
+    /**
+     * Removes the plays [plays] shows, plays of other users and other songs stay.
+     *
+     * @return the plays removed, for [restorePlays]
+     */
+    suspend fun deletePlays(periods: List<PlayPeriod>, origins: Set<Origin>): List<PlaybackHistory>
 
-    suspend fun clearPlays()
+    /**
+     * Removes every play of the active user.
+     *
+     * @return the plays removed, for [restorePlays]
+     */
+    suspend fun clearPlays(): List<PlaybackHistory>
+
+    /**
+     * Puts back plays a delete removed, with their ids and times, for the active user. Songs gone
+     * from the database since lose theirs.
+     */
+    suspend fun restorePlays(plays: List<PlaybackHistory>)
 }

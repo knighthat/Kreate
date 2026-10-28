@@ -20,6 +20,8 @@ package me.knighthat.kreate3.ui.screen.account
 
 import android.content.Context
 import android.text.format.DateUtils
+import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -27,6 +29,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.flatMap
 import androidx.paging.insertSeparators
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,13 +47,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.PeriodPlay
 import me.knighthat.kreate3.database.model.PeriodSummary
+import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.repository.HistoryRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.ui.component.toMediaItem
 import java.util.TimeZone
+
+private const val TAG = "HistoryViewModel"
 
 /**
  * The songs the active user played, in groups by how long ago, see [HistoryBuckets]. Disliked
@@ -157,9 +166,15 @@ class HistoryViewModel(
     suspend fun songsFrom(row: HistoryRow): List<MediaItem> =
         plays(row.period).dropWhile { it.first != row.playId }.map { it.second }
 
-    /** Takes the play of [row] out of the history. */
-    fun delete(row: HistoryRow) {
-        scope.launch { history.deletePlay(row.playId) }
+    /**
+     * Takes the play of [row] out of the history, then [onDone] gets a message whose Undo puts it
+     * back.
+     */
+    fun delete(row: HistoryRow, onDone: (Message) -> Unit) {
+        scope.launch {
+            val removed = history.deletePlay(row.playId) ?: return@launch
+            onDone(undoable(R.string.snackbar_removed_from_history, listOf(removed)))
+        }
     }
 
     /** The plays of the group [period] in its order by id, of every group when `null`. */
@@ -173,15 +188,35 @@ class HistoryViewModel(
         }
     }
 
-    /** Takes the plays shown out of the history, every play while nothing is filtered out. */
-    fun clear() {
+    /**
+     * Takes the plays shown out of the history, every play while nothing is filtered out, then
+     * [onDone] gets a message whose Undo puts them back.
+     */
+    fun clear(onDone: (Message) -> Unit) {
         val periods = spans.value.orEmpty().map(HistorySpan::period)
         val origins = _origins.value
         val filtered = isFiltered
         scope.launch {
-            if (filtered) history.deletePlays(periods, origins) else history.clearPlays()
+            val removed =
+                if (filtered) history.deletePlays(periods, origins) else history.clearPlays()
+            if (removed.isNotEmpty())
+                onDone(undoable(R.string.snackbar_history_cleared, removed))
         }
     }
+
+    /** [text] with an Undo that puts back [plays], on the app's scope. */
+    private fun undoable(@StringRes text: Int, plays: List<PlaybackHistory>): Message =
+        undoMessage(context.resources, context.getString(text)) {
+            scope.launch {
+                try {
+                    history.restorePlays(plays)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Log.w(TAG, "Couldn't put back ${plays.size} plays", e)
+                }
+            }
+        }
 
     /** @param withDate the play's date too, for a row with no header above it saying the day */
     private fun PeriodPlay.toRow(query: Int, withDate: Boolean): HistoryRow? =

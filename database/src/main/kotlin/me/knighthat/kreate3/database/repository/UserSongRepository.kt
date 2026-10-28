@@ -233,6 +233,16 @@ interface UserSongRepository {
      */
     suspend fun moveInAlbum(albumId: String, songId: String, after: String?)
 
-    /** Puts the songs of the album [albumId] back in the album's own order for the active user. */
-    suspend fun resetAlbumOrder(albumId: String)
+    /**
+     * Puts the songs of the album [albumId] back in the album's own order for the active user.
+     *
+     * @return the user's positions it took off, by song id, for [restoreAlbumOrder]
+     */
+    suspend fun resetAlbumOrder(albumId: String): Map<String, Int>
+
+    /**
+     * Gives the songs of the album [albumId] the user's [positions] again, by song id, like
+     * [resetAlbumOrder] gave them. Songs no longer in the library are left out.
+     */
+    suspend fun restoreAlbumOrder(albumId: String, positions: Map<String, Int>)
 }

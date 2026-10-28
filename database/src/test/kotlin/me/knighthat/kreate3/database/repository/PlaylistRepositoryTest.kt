@@ -34,6 +34,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -172,6 +173,25 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
         repository.addSong(id, "s2")
 
         assertEquals(listOf("s1", "s5", "s4", "s2"), orderOf(id))
+    }
+
+    @Test
+    fun aRemovedSongGoesBackToItsPlace() = runBlocking {
+        listOf("s1", "s2", "s3").forEach { addSong(it) }
+        val id = repository.save(playlist("Mix"))
+        listOf("s1", "s2", "s3").forEach { repository.addSong(id, it) }
+
+        val position = repository.removeSong(id, "s2")
+        assertEquals(1, position)
+        assertNull(repository.removeSong(id, "s2"))
+        repository.addSong(id, "s2", position)
+        assertEquals(listOf("s1", "s2", "s3"), orderOf(id))
+
+        // Moving numbers the songs again, the place it left is taken by then
+        repository.removeSong(id, "s1")
+        repository.moveSong(id, "s3", after = null)
+        repository.addSong(id, "s1", 0)
+        assertEquals(listOf("s1", "s3", "s2"), orderOf(id))
     }
 
     @Test

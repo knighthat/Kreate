@@ -168,6 +168,10 @@ private class PreviewController(
     override fun enqueue(items: List<MediaItem>) = Unit
     override fun follow(seed: MediaItem, items: List<MediaItem>) = Unit
     override fun playNext(items: List<MediaItem>) = Unit
+    override fun unqueue(items: List<MediaItem>) = Unit
+    override fun insert(index: Int, items: List<MediaItem>) = Unit
+    override fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean) =
+        Unit
     override fun progress(): Float = durationMs?.let { positionMs.toFloat() / it } ?: 0f
     override fun togglePlay() = Unit
     override fun position(): Long = positionMs

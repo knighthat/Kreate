@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -145,6 +146,8 @@ private fun PlaybackMiniPlayer(controller: PlaybackController) {
     val item = state.current?.takeIf { state.hasMiniPlayer } ?: return
     val sheet = LocalPlayerSheet.current
     val scope = rememberCoroutineScope()
+    val notifier = LocalNotifier.current
+    val resources = LocalResources.current
 
     // Re-read every frame while playing, drawing is the only place that depends on it
     var progress by remember { mutableFloatStateOf(controller.progress()) }
@@ -196,7 +199,7 @@ private fun PlaybackMiniPlayer(controller: PlaybackController) {
                         pulled = value
                     }
                     // Hidden by now, it goes away once the queue is empty
-                    if (stop) controller.stop()
+                    if (stop) controller.stopUndoable(resources, notifier)
                 },
             ),
         thumbnails = rememberSongThumbnails(item),

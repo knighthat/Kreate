@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,10 +45,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.DislikedSong
+import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
+import me.knighthat.kreate3.notification.undoMessage
+import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
@@ -78,6 +82,7 @@ class DislikedViewModel(
     private val songRepository: UserSongRepository,
     private val openSubsonicLibrary: OpenSubsonicLibrary,
     private val youTubeLibrary: YouTubeLibrary,
+    private val playback: PlaybackController,
     private val scope: CoroutineScope,
 ) : ViewModel() {
 
@@ -125,28 +130,58 @@ class DislikedViewModel(
     /**
      * Takes back the dislike of every song shown, of every disliked song while no origin is picked,
      * one after the other on the app's scope, so it lands even when the page closes right away.
-     * Once every song is done, [onDone] gets what to say, see [undislikedMessage].
+     * Once every song is done, [onDone] gets what to say, see [undislikedMessage], with an Undo
+     * that dislikes the songs done again, from the time they were disliked.
      */
     fun undislikeAll(onDone: (Message) -> Unit) {
         val origins = _origins.value
         scope.launch {
-            val failures = songRepository.listDisliked(origins)
-                .map { undislike(it.songId, it.origin) }
-            undislikedMessage(context.resources, failures)?.let(onDone)
+            val songs = songRepository.listDisliked(origins)
+            // Only a dislike goes, a like made meanwhile stays
+            val failures = songs.map { song ->
+                react(
+                    song.songId,
+                    song.origin,
+                    R.string.snackbar_change_remove_dislike
+                ) { likedAt ->
+                    likedAt?.takeUnless { it.toEpochMilliseconds() < 0 }
+                }
+            }
+            val done = songs.filterIndexed { index, _ -> failures[index] == null }
+            val undo = done.takeIf { it.isNotEmpty() }?.let { { dislikeAgain(it, onDone) } }
+            undislikedMessage(context.resources, failures, undo)?.let(onDone)
         }
     }
 
     /**
-     * Takes back the dislike of [songId], at its source too, like the song menu's Dislike does.
-     * A source that doesn't take it gets the dislike put back.
+     * Puts back the dislikes of [songs] as they were, taking them out of the queue again, unless
+     * a reaction was made meanwhile. [onFailed] gets the first failure.
+     */
+    private fun dislikeAgain(songs: List<UserSongView>, onFailed: (Message) -> Unit) {
+        scope.launch {
+            val failures = songs.mapNotNull { song ->
+                playback.drop(song.songId)
+                react(song.songId, song.origin, R.string.snackbar_change_dislike_song) {
+                    it ?: song.likedAt
+                }
+            }
+            failures.firstOrNull()?.let { onFailed(Message(it, MessageDuration.LONG)) }
+        }
+    }
+
+    /**
+     * Changes the reaction to [songId] to what [change] makes of it, at its source too, like the
+     * song menu does. A source that doesn't take it gets the reaction put back. [asked] says what
+     * it does, for the failure.
      *
      * @return what to say when it failed, `null` once it's done
      */
-    private suspend fun undislike(songId: String, origin: Origin): String? {
-        // Only a dislike goes, a like made meanwhile stays
-        val change = { likedAt: Instant? ->
-            likedAt?.takeUnless { it.toEpochMilliseconds() < 0 }
-        }
+    private suspend fun react(
+        songId: String,
+        origin: Origin,
+        @StringRes asked: Int,
+        change: (Instant?) -> Instant?,
+    ): String? {
         return try {
             when (origin) {
                 Origin.OPEN_SUBSONIC -> openSubsonicLibrary.react(songId, change)
@@ -157,14 +192,14 @@ class DislikedViewModel(
         } catch (e: CancellationException) {
             throw e
         } catch (e: ServerException) {
-            e.serverFailure(context.resources, R.string.snackbar_change_remove_dislike)
+            e.serverFailure(context.resources, asked)
         } catch (e: YouTubeException) {
-            e.youTubeFailure(context.resources, R.string.snackbar_change_remove_dislike)
+            e.youTubeFailure(context.resources, asked)
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't take back the dislike of $songId", e)
+            Log.w(TAG, "Couldn't change the reaction to $songId", e)
             context.resources.getString(
                 R.string.error_change_failed,
-                context.resources.getString(R.string.snackbar_change_remove_dislike),
+                context.resources.getString(asked),
             )
         }
     }
@@ -186,26 +221,32 @@ class DislikedViewModel(
 /**
  * What to say once the dislikes of some songs were taken back, [failures] holding each song's
  * failure, `null` for the ones done. One song: done, or why it failed. Several: how many were
- * done, and how many failed when some did. `null` when there was no song.
+ * done, and how many failed when some did. `null` when there was no song. With [undo], a message
+ * saying some were done has an Undo button running it.
  */
-internal fun undislikedMessage(resources: Resources, failures: List<String?>): Message? {
+internal fun undislikedMessage(
+    resources: Resources,
+    failures: List<String?>,
+    undo: (() -> Unit)? = null,
+): Message? {
     val failed = failures.count { it != null }
     val done = failures.size - failed
+    val text = when {
+        failures.isEmpty() -> return null
+        failures.size == 1 -> failures.single()
+            ?.let { return Message(it, MessageDuration.LONG) }
+            ?: resources.getString(R.string.snackbar_removed_from_dislike)
+
+        failed == 0 -> resources.getString(R.string.snackbar_removed_from_dislike_count, done)
+        else -> resources.getString(
+            R.string.snackbar_removed_from_dislike_some_failed,
+            done,
+            failed
+        )
+    }
     return when {
-        failures.isEmpty() -> null
-        failures.size == 1 -> failures.single()?.let { Message(it, MessageDuration.LONG) }
-            ?: Message(resources.getString(R.string.snackbar_removed_from_dislike))
-
-        failed == 0 -> Message(
-            resources.getString(
-                R.string.snackbar_removed_from_dislike_count,
-                done
-            )
-        )
-
-        else -> Message(
-            resources.getString(R.string.snackbar_removed_from_dislike_some_failed, done, failed),
-            MessageDuration.LONG,
-        )
+        undo != null -> undoMessage(resources, text, undo)
+        failed > 0 -> Message(text, MessageDuration.LONG)
+        else -> Message(text)
     }
 }

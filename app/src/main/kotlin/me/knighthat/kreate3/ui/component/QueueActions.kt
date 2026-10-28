@@ -53,6 +53,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
@@ -78,17 +81,20 @@ enum class QueueAction {
 /**
  * Does [action] with the songs of [songs] that can be played.
  *
- * @return what to tell the user, `null` when the player shows the result
+ * @return what to tell the user, with an Undo button for songs added to the queue, `null` when
+ * the player shows the result
  */
 fun PlaybackController.queue(
     resources: Resources,
     action: QueueAction,
     songs: List<MediaItem>
-): String? {
+): Message? {
     val playable = songs.filter { it.mediaMetadata.isPlayable == true }
     if (playable.isEmpty())
-        return resources.getString(
-            if (songs.isEmpty()) R.string.error_nothing_to_play else R.string.error_songs_not_playable
+        return Message(
+            resources.getString(
+                if (songs.isEmpty()) R.string.error_nothing_to_play else R.string.error_songs_not_playable
+            )
         )
 
     when (action) {
@@ -97,22 +103,61 @@ fun PlaybackController.queue(
         QueueAction.ENQUEUE -> enqueue(playable)
         QueueAction.PLAY_NEXT -> playNext(playable)
     }
-    return when (action) {
+    val text = when (action) {
         QueueAction.ENQUEUE -> resources.getString(
             R.string.snackbar_added_to_queue,
             resources.getQuantityString(R.plurals.song, playable.size, playable.size),
         )
 
-        QueueAction.PLAY_NEXT ->
-            if (playable.size == 1) resources.getString(R.string.snackbar_will_play_next_one)
-            else resources.getString(
-                R.string.snackbar_will_play_next_many,
-                resources.getQuantityString(R.plurals.song, playable.size, playable.size),
-            )
+        QueueAction.PLAY_NEXT -> willPlayNext(resources, playable.size)
 
-        else -> null
+        else -> return null
     }
+    return undoMessage(resources, text) { unqueue(playable) }
 }
+
+/**
+ * [PlaybackController.stop], posting to [notifier] a message whose Undo puts the queue back as it
+ * was: on the same song and spot, playing when it was. Only on the main thread, it reads where
+ * the song is.
+ */
+internal fun PlaybackController.stopUndoable(resources: Resources, notifier: Notifier) {
+    val items = queue.value
+    val state = state.value
+    val position = position()
+    stop()
+    if (items.isEmpty()) return
+    notifier.post(undoMessage(resources, resources.getString(R.string.snackbar_playback_stopped)) {
+        restore(items, state.index, position, state.isPlaying)
+    })
+}
+
+/**
+ * [PlaybackController.clear], posting to [notifier] a message whose Undo puts the songs taken
+ * out back around the one playing.
+ */
+internal fun PlaybackController.clearUndoable(resources: Resources, notifier: Notifier) {
+    val items = queue.value
+    val index = state.value.index
+    clear()
+    // Nothing but the current song, nothing was taken out
+    if (index !in items.indices || items.size == 1) return
+    val before = items.subList(0, index).toList()
+    val after = items.subList(index + 1, items.size).toList()
+    notifier.post(undoMessage(resources, resources.getString(R.string.snackbar_queue_cleared)) {
+        // In order, the second one counts the first one's songs
+        insert(0, before)
+        insert(before.size + 1, after)
+    })
+}
+
+/** "Will play next", or how many songs will when there are several. */
+internal fun willPlayNext(resources: Resources, songs: Int): String =
+    if (songs == 1) resources.getString(R.string.snackbar_will_play_next_one)
+    else resources.getString(
+        R.string.snackbar_will_play_next_many,
+        resources.getQuantityString(R.plurals.song, songs, songs),
+    )
 
 /**
  * Starts a new queue from [song], tapped in [songs]: with [radio] it plays [song] followed by

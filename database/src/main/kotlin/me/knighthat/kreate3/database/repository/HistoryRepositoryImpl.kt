@@ -165,23 +165,56 @@ internal class HistoryRepositoryImpl(
     override suspend fun updatePlay(id: Long, timeSpent: Duration) =
         playbackHistoryDao.updateTimeSpent(id, timeSpent)
 
-    override suspend fun deletePlay(id: Long) =
-        playbackHistoryDao.delete(scope.requireId(), listOf(id))
-
-    override suspend fun deletePlays(periods: List<PlayPeriod>, origins: Set<Origin>) {
-        if (periods.isEmpty()) return
+    override suspend fun deletePlay(id: Long): PlaybackHistory? {
         val userId = scope.requireId()
-        database.inTransaction {
+        return database.inTransaction {
+            playbackHistoryDao.byIds(userId, listOf(id)).singleOrNull()
+                ?.also { playbackHistoryDao.delete(userId, listOf(id)) }
+                ?.toModel()
+        }
+    }
+
+    override suspend fun deletePlays(
+        periods: List<PlayPeriod>,
+        origins: Set<Origin>,
+    ): List<PlaybackHistory> {
+        if (periods.isEmpty()) return emptyList()
+        val userId = scope.requireId()
+        return database.inTransaction {
             playbackHistoryDao.listIds(
                 RoomRawQuery(
                     sql = "SELECT h.id ${playsIn(periods, origins)}",
                     onBindStatement = { it.bindText(1, userId) },
                 )
-            ).chunked(MAX_IDS).forEach { playbackHistoryDao.delete(userId, it) }
+            ).chunked(MAX_IDS).flatMap { ids ->
+                playbackHistoryDao.byIds(userId, ids)
+                    .also { playbackHistoryDao.delete(userId, ids) }
+            }.map(PlaybackHistoryEntity::toModel)
         }
     }
 
-    override suspend fun clearPlays() = playbackHistoryDao.clear(scope.requireId())
+    override suspend fun clearPlays(): List<PlaybackHistory> {
+        val userId = scope.requireId()
+        return database.inTransaction {
+            playbackHistoryDao.all(userId)
+                .also { playbackHistoryDao.clear(userId) }
+                .map(PlaybackHistoryEntity::toModel)
+        }
+    }
+
+    override suspend fun restorePlays(plays: List<PlaybackHistory>) {
+        if (plays.isEmpty()) return
+        val userId = scope.requireId()
+        database.inTransaction {
+            val songs = plays.map(PlaybackHistory::songId).distinct()
+                .chunked(MAX_IDS).flatMap { playbackHistoryDao.existingSongs(it) }.toSet()
+            playbackHistoryDao.insertAll(
+                plays.filter { it.songId in songs }.map {
+                    PlaybackHistoryEntity(it.id, it.songId, userId, it.timeSpent, it.createdAt)
+                }
+            )
+        }
+    }
 
     /** Trimmed, with accents composed the same whatever the keyboard. */
     private fun String.normalized(): String = Normalizer.normalize(trim(), Normalizer.Form.NFC)
