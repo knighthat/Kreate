@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,9 +71,11 @@ fun SeekBar(item: MediaItem, isPlaying: Boolean, controller: PlaybackController)
     var position by remember { mutableLongStateOf(controller.position()) }
     var duration by remember { mutableStateOf(controller.duration()) }
     var dragged by remember { mutableStateOf<Float?>(null) }
+    val state by controller.state.collectAsStateWithLifecycle()
 
-    // Re-read every frame while playing, once when it pauses or the song changes
-    LaunchedEffect(item, isPlaying) {
+    // Re-read every frame while playing, once when it pauses, the song changes or the position
+    // jumps (previous restarting the song while paused)
+    LaunchedEffect(item, isPlaying, state.jumps) {
         while (true) {
             position = controller.position()
             duration = controller.duration()

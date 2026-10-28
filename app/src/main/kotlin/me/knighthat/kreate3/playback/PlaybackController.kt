@@ -47,6 +47,8 @@ enum class RepeatMode {
  * the app starts, or stopped by a failure, isn't ended.
  * @param isShuffled whether the queue plays in a random order. [PlaybackController.queue] keeps
  * its own order, [PlaybackController.shuffledOrder] is the one it plays in.
+ * @param jumps how many times the position jumped instead of moving on by itself (seeks, previous
+ * restarting the song, moving to another item), so a paused screen knows to read it again.
  */
 data class PlaybackState(
     val current: MediaItem? = null,
@@ -55,6 +57,7 @@ data class PlaybackState(
     val isEnded: Boolean = false,
     val repeatMode: RepeatMode = RepeatMode.OFF,
     val isShuffled: Boolean = false,
+    val jumps: Int = 0,
 )
 
 /**

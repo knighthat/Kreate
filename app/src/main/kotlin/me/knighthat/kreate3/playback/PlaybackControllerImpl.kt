@@ -320,7 +320,10 @@ class PlaybackControllerImpl(
                         if (events.contains(Player.EVENT_TIMELINE_CHANGED)) publishQueue(connected)
                         else if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED))
                             publishShuffledOrder(connected)
-                        publish(connected)
+                        publish(
+                            connected,
+                            jumped = events.contains(Player.EVENT_POSITION_DISCONTINUITY),
+                        )
                     }
                 })
                 publishQueue(connected)
@@ -335,7 +338,7 @@ class PlaybackControllerImpl(
         return future
     }
 
-    private fun publish(controller: MediaController) {
+    private fun publish(controller: MediaController, jumped: Boolean = false) {
         _state.value = PlaybackState(
             current = controller.currentMediaItem,
             index = if (controller.mediaItemCount > 0) controller.currentMediaItemIndex else -1,
@@ -343,6 +346,7 @@ class PlaybackControllerImpl(
             isEnded = controller.playbackState == Player.STATE_ENDED,
             repeatMode = controller.repeatMode.toRepeatMode(),
             isShuffled = controller.shuffleModeEnabled,
+            jumps = _state.value.jumps + if (jumped) 1 else 0,
         )
     }
 
