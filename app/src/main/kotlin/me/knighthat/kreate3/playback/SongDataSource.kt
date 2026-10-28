@@ -45,7 +45,8 @@ import okhttp3.OkHttpClient
  * other song is read from [SongCaches.downloads] first, then from [SongCaches.cache], and
  * only what neither has is streamed: [resolver] finds the address then, and what is streamed is
  * kept in [SongCaches.cache], never in the downloads. With [directPlay] on, a song of the server
- * skips [SongCaches.cache]: the downloads, then the stream.
+ * skips [SongCaches.cache]: the downloads, then the stream. So does every song while the cache
+ * is off ([SongCaches.caching]).
  *
  * [SongCaches.cache] keeps a copy of a song for each quality, [copies] picks the one read.
  *
@@ -95,6 +96,7 @@ fun songDataSourceFactory(
             direct = network.createDataSource(),
             copies = copies,
             downloaded = caches::downloaded,
+            caching = caches.caching,
             directPlay = directPlay,
         )
     }
@@ -166,7 +168,8 @@ private fun streamDataSourceFactory(
 /**
  * Reads a song of the device, or an address that isn't a queued song, with [direct], a
  * downloaded song with [uncached] from its download, a song of the server with [uncached] while
- * [directPlay] is on, and any other song with [cached], from the copy [copies] picked. The read
+ * [directPlay] is on or without [caching], and any other song with [cached], from the copy
+ * [copies] picked. The read
  * carries that copy as its key and its `customData`, [copies] hears when it ends.
  *
  * @param downloaded the quality a song is downloaded in, see [SongCaches.downloaded]
@@ -178,6 +181,7 @@ private class SongDataSource(
     private val direct: DataSource,
     private val copies: CacheCopies,
     private val downloaded: (QueuedSong) -> StreamQuality?,
+    private val caching: Boolean,
     private val directPlay: () -> Boolean,
 ) : DataSource {
 
@@ -204,6 +208,7 @@ private class SongDataSource(
         }
         val source = when {
             origin == null || origin == Origin.LOCAL -> direct
+            !caching -> uncached
             origin == Origin.OPEN_SUBSONIC && directPlay() -> uncached
             else -> cached
         }

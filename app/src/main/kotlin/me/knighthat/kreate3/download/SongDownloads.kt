@@ -492,6 +492,15 @@ class SongDownloads(
      */
     fun delete(origin: Origin, id: String) = leave(key(QueuedSong(origin, id)))
 
+    /**
+     * Deletes every download of every user, running ones stop. Each removed download takes its
+     * users' marks and cover with it (`onDownloadRemoved`), a mark left without one goes at the
+     * next start.
+     */
+    fun deleteAll() = scope.launch(Dispatchers.Main) {
+        DownloadService.sendRemoveAllDownloads(context, SongDownloadService::class.java, false)
+    }
+
     /** The song downloaded as [id], as it was given to [download]; `null` when it isn't known. */
     suspend fun item(id: String): MediaItem? = withContext(Dispatchers.IO) {
         manager.downloadIndex.getDownload(id)?.request?.songItem

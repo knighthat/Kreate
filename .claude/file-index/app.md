@@ -10,7 +10,8 @@ Root
   timeouts/retries, song cache + downloads sizes, image caches); `needed` = one of them changed
   since, lights the settings pages' restart-app button.
 - `KreateApplication.kt` — `startKoin` with every module; global `CoroutineScope` single;
-  `ProfileUserSync` bound as `ActiveUser`; Coil `ImageLoader` factory; `restartAfterPlayback()` (
+  `ProfileUserSync` bound as `ActiveUser`; Coil `ImageLoader` factory (disk cache size 0 = none, its
+  folder `imageCacheDir()` deleted); `restartAfterPlayback()` (
   restart inside `PlaybackLifecycle.restartAround`, so the player's writes finish first); member
   `internal fun restart(configure)` (clear task, relaunch via the enabled launcher alias,
   `exit(0)`; used by wizard done/skip and backup restore).
@@ -78,7 +79,8 @@ download/
   the app's run from the `DataSourceException` reason (`playbackReasonRes`),
   `DownloadPlan` (cached vs
   set quality, `movesCache`), `SongDownloads` (Koin single): `songs` map by song address (badges,
-  menu), `plan`/`download(item)`/`item(id)`/`delete`/`removeCached`, listens to the
+  menu), `plan`/`download(item)`/`item(id)`/`delete`/`deleteAll` (every user's, Media3 remove-all)/
+  `removeCached`, listens to the
   `DownloadManager` (notifications, drops cache copies on completion), applies
   `DOWNLOAD_PARALLEL_COUNT`/`DOWNLOAD_RETRY_COUNT` live, `DOWNLOAD_WIFI_ONLY` as
   `Requirements.NETWORK_UNMETERED`, `DOWNLOAD_ON_LOW_BATTERY` off → `pauseDownloads()` while the

@@ -50,6 +50,8 @@ import me.knighthat.kreate3.download.DownloadPlan
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.download.SongStorage
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import org.koin.compose.koinInject
 
 /**
@@ -88,18 +90,22 @@ fun StorageBadge(storage: SongStorage?, size: Dp = BADGE_SIZE) = when (storage) 
  *
  * Not kept: downloads it. Cached: asks whether to move the copy to the downloads (downloading
  * it again when it is worse than the quality set now) or remove it from the cache. Downloading
- * or downloaded: asks to stop or delete the download.
+ * or downloaded: asks to stop or delete the download. While downloads are off
+ * ([Preferences.MEDIA3_DOWNLOAD_SIZE] is `0`) the button is disabled for a song not kept, and a
+ * cached one can only be removed from the cache.
  */
 @Composable
 internal fun SongDownloadAction(
     item: MediaItem,
-    button: @Composable (icon: Int, label: String, onClick: () -> Unit) -> Unit,
+    button: @Composable (icon: Int, label: String, enabled: Boolean, onClick: () -> Unit) -> Unit,
 ) {
     val origin = item.origin?.takeIf { it != Origin.LOCAL } ?: return
     if (item.mediaMetadata.isPlayable != true) return
     val downloads = koinInject<SongDownloads>()
     val songs by downloads.songs.collectAsStateWithLifecycle()
     val storage = songs[SongDownloads.key(origin, item.mediaId)]
+    val downloadLimit by Preferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
+    val downloadsOff = downloadLimit <= 0
     val scope = rememberCoroutineScope()
     var plan by remember { mutableStateOf<DownloadPlan?>(null) }
     var deleting by remember { mutableStateOf(false) }
@@ -107,7 +113,7 @@ internal fun SongDownloadAction(
 
     fun download() = downloads.download(item)
 
-    button(storage.icon, stringResource(storage.labelRes)) {
+    button(storage.icon, stringResource(storage.labelRes), !downloadsOff || storage != null) {
         when (storage) {
             null -> download()
             SongStorage.CACHED -> scope.launch { plan = downloads.plan(origin, item.mediaId) }
@@ -119,10 +125,10 @@ internal fun SongDownloadAction(
         CachedSongDialog(
             plan = it,
             qualityLabel = { quality -> stringResource(quality.labelRes(origin)) },
-            onDownload = {
+            onDownload = if (downloadsOff) null else ({
                 plan = null
                 download()
-            },
+            }),
             onRemove = {
                 plan = null
                 downloads.removeCached(origin, item.mediaId)
@@ -182,7 +188,7 @@ private fun StreamQuality.labelRes(origin: Origin): Int =
 private fun CachedSongDialog(
     plan: DownloadPlan,
     qualityLabel: @Composable (StreamQuality) -> String,
-    onDownload: () -> Unit,
+    onDownload: (() -> Unit)?,
     onRemove: () -> Unit,
     onDismiss: () -> Unit,
 ) = AlertDialog(
@@ -209,14 +215,15 @@ private fun CachedSongDialog(
     },
     confirmButton = {
         DialogButtons(onDismiss) {
-            TextButton(onClick = onDownload) {
-                Text(
-                    stringResource(
-                        if (plan.movesCache) R.string.action_move_to_downloads
-                        else R.string.action_download
+            if (onDownload != null)
+                TextButton(onClick = onDownload) {
+                    Text(
+                        stringResource(
+                            if (plan.movesCache) R.string.action_move_to_downloads
+                            else R.string.action_download
+                        )
                     )
-                )
-            }
+                }
             TextButton(onClick = onRemove) {
                 Text(stringResource(R.string.action_remove_from_cache))
             }
@@ -299,6 +306,19 @@ private fun CachedSongDialogPreview() = PreviewTheme {
         plan = DownloadPlan(cached = StreamQuality.HIGH, quality = StreamQuality.HIGH),
         qualityLabel = { stringResource(it.youTubeLabelRes) },
         onDownload = {},
+        onRemove = {},
+        onDismiss = {},
+    )
+}
+
+/** Downloads are off, the song can only leave the cache. */
+@ComponentPreviews
+@Composable
+private fun CachedSongDownloadsOffDialogPreview() = PreviewTheme {
+    CachedSongDialog(
+        plan = DownloadPlan(cached = StreamQuality.HIGH, quality = StreamQuality.HIGH),
+        qualityLabel = { stringResource(it.youTubeLabelRes) },
+        onDownload = null,
         onRemove = {},
         onDismiss = {},
     )

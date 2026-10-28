@@ -42,8 +42,10 @@ import me.knighthat.kreate3.download.DownloadedFile
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.ui.component.storageUse
 import me.knighthat.kreate3.ui.component.toMediaItem
 
 /**
@@ -54,28 +56,6 @@ import me.knighthat.kreate3.ui.component.toMediaItem
  */
 @Immutable
 class DownloadedRow(val item: MediaItem, val file: String, val disliked: Boolean)
-
-/**
- * The room downloads take, as numbers and as text.
- *
- * @property userBytes the active user's, see [me.knighthat.kreate3.download.DownloadsOverview]
- * @property allBytes every user's, at most [limitBytes] apart from the last download
- * @property limitBytes [Preferences.MEDIA3_DOWNLOAD_SIZE]
- */
-@Immutable
-data class DownloadStorage(
-    val userBytes: Long,
-    val allBytes: Long,
-    val limitBytes: Long,
-    val user: String,
-    val all: String,
-    val limit: String,
-) {
-
-    /** Whether other users' downloads take room this user's don't. */
-    val shared: Boolean
-        get() = allBytes > userBytes
-}
 
 /**
  * The songs the active user downloaded whole, most recently downloaded first, with the room they
@@ -137,19 +117,18 @@ class DownloadedViewModel(
             }
         }.stateIn(viewModelScope, WHILE_SHOWN, null)
 
-    /** The room downloads take, `null` until known. */
-    val storage: StateFlow<DownloadStorage?> =
+    /**
+     * The room downloads take out of [Preferences.MEDIA3_DOWNLOAD_SIZE], the active user's and
+     * every user's (see [me.knighthat.kreate3.download.DownloadsOverview]), `null` until known.
+     */
+    val storage: StateFlow<StorageUse?> =
         combine(overview, Preferences.MEDIA3_DOWNLOAD_SIZE.state) { overview, limit ->
             overview ?: return@combine null
-            DownloadStorage(
-                userBytes = overview.userBytes,
-                allBytes = overview.allBytes,
-                limitBytes = limit,
-                user = size(overview.userBytes),
-                all = size(overview.allBytes),
-                limit = size(limit),
-            )
+            context.storageUse(overview.userBytes, overview.allBytes, limit) {
+                context.noBackupFilesDir.usableSpace
+            }
         }.distinctUntilChanged()
+            .flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, WHILE_SHOWN, null)
 
     fun toggleOrder() {

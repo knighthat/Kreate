@@ -39,4 +39,8 @@ internal interface LyricsDao {
 
     @Query("DELETE FROM lyrics WHERE song_id = :songId")
     suspend fun delete(songId: String)
+
+    /** The bytes the text of every stored lyrics takes, in UTF-8. */
+    @Query("SELECT COALESCE(SUM(LENGTH(CAST(lyrics AS BLOB))), 0) FROM lyrics")
+    fun bytes(): Flow<Long>
 }

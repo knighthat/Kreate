@@ -25,6 +25,7 @@
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
     <string name="mib">%1$d MiB</string>
+    <string name="gib">%1$d GiB</string>
     <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
@@ -35,7 +36,8 @@
     <!--<editor-fold defaultstate="collapsed" desc="Settings">-->
     <!-- pages and sections -->
     <string name="setting_header_library">Library</string>
-    <string name="setting_header_songs">Songs</string>
+    <string name="setting_header_storage">Storage</string>
+    <string name="setting_header_downloads">Downloads</string>
     <string name="setting_header_images">Images</string>
     <string name="setting_header_navigation">Navigation</string>
     <string name="setting_title_theme">Theme</string>
@@ -59,6 +61,7 @@
 
     <!-- what each page is about -->
     <string name="setting_description_general">How the app behaves</string>
+    <string name="setting_description_data">Caches, downloads and the room they take</string>
     <string name="setting_description_player">How songs play and what is kept of them</string>
     <string name="setting_description_ui">Theme and what you interact with</string>
     <string name="setting_description_network">Connections, your music server and %1$s account</string>
@@ -79,13 +82,18 @@
     <string name="setting_description_between">Between %1$d and %2$d</string>
     <string name="setting_description_restart_required">%1$s. Restart required</string>
 
+    <!-- data -->
+    <string name="setting_title_disk_cache">Disk cache</string>
+    <string name="setting_description_disk_cache">Seen images kept on the device to load faster. Restart required</string>
+    <string name="setting_title_song_cache">Song cache</string>
+    <string name="setting_description_song_cache">Streamed songs kept to play again, shared by every profile. Restart required</string>
+    <string name="setting_title_song_downloads">Song downloads</string>
+    <string name="setting_description_song_downloads">Songs kept to play offline, separate from the cache</string>
+    <string name="setting_title_size_in_mib">Size in MiB</string>
+
     <!-- general -->
     <string name="setting_title_scan_interval">Scan interval</string>
     <string name="setting_description_scan_interval">Search for new local media every %1$s</string>
-    <string name="setting_title_cache">Cache</string>
-    <string name="setting_description_cache">Cache up to %1$s of songs streamed remotely. Restart required</string>
-    <string name="setting_title_downloads">Downloads</string>
-    <string name="setting_description_downloads">%1$s. Songs kept to play offline, separate from the cache</string>
     <string name="setting_title_parallel_downloads">Downloads at once</string>
     <string name="setting_description_parallel_downloads">%1$s download at the same time, the others wait</string>
     <string name="setting_title_download_retries">Download retries</string>
@@ -96,8 +104,6 @@
     <string name="setting_description_download_on_low_battery">When off, downloads pause while the battery is low</string>
     <string name="setting_title_download_lyrics">Download lyrics</string>
     <string name="setting_description_download_lyrics">Keeps a song\'s lyrics from your lyrics source once it\'s fully downloaded</string>
-    <string name="setting_title_disk_cache">Disk cache</string>
-    <string name="setting_description_disk_cache">%1$s. Keep seen images in local storage for faster load time</string>
     <string name="setting_title_memory_cache">Memory cache</string>
     <string name="setting_description_memory_cache">%1$s of app memory. Keep recently seen images in even faster cache pool</string>
     <string name="setting_title_dont_exit_with_back">Don\'t exit with back</string>
@@ -228,6 +234,7 @@
     <string name="setting_title_replay_gain_reference">ReplayGain reference</string>
     <string name="setting_description_replay_gain_reference">%1$s, the loudness the server\'s ReplayGain tags bring songs to</string>
     <string name="setting_description_direct_play">Streams songs from the server without keeping them in the song cache</string>
+    <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from the server always stream directly</string>
     <string name="setting_title_account_status_signed_out">Signed out by %1$s</string>
     <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>
 
@@ -294,6 +301,8 @@
     <string name="action_less">Less</string>
     <string name="action_more">More</string>
     <string name="action_restart">Restart</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_apply_and_restart">Apply &amp; restart</string>
     <string name="action_reset">Reset</string>
     <string name="action_clear">Clear</string>
     <string name="action_undislike">Undislike</string>
@@ -336,6 +345,7 @@
     <string name="screen_title_terms_of_service">Terms of service</string>
     <string name="screen_title_settings">Settings</string>
     <string name="screen_title_general">General</string>
+    <string name="screen_title_data">Data</string>
     <string name="screen_title_player">Player</string>
     <string name="screen_title_ui">UI</string>
     <string name="screen_title_network">Network</string>
@@ -527,6 +537,19 @@
     <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
     <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
     <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
+    <string name="dialog_title_clear_image_cache">Clear the image cache?</string>
+    <string name="dialog_body_clear_image_cache_1">Every image kept on this device is removed, they load again when shown.</string>
+    <string name="dialog_body_clear_image_cache_2">Also clear images kept in memory</string>
+    <string name="dialog_title_clear_song_cache">Clear the song cache?</string>
+    <string name="dialog_body_clear_song_cache">Every streamed song kept on this device is removed, for every profile. Downloads stay.</string>
+    <string name="dialog_title_delete_every_download">Delete every profile\'s downloads?</string>
+    <string name="dialog_body_delete_every_download">Every downloaded song is removed from this device, for every profile. They can still be streamed.</string>
+    <string name="dialog_title_shrink_cache">Smaller than what\'s stored</string>
+    <string name="dialog_body_shrink_cache">%1$s is stored, more than %2$s. Once the app restarts, what doesn\'t fit is removed, what was used least recently first.</string>
+    <string name="dialog_title_turn_off">Turn it off?</string>
+    <string name="dialog_body_turn_off_cache">%1$s is stored. Once the app restarts, all of it is removed and nothing new is kept.</string>
+    <string name="dialog_body_turn_off_downloads">Downloads take %1$s. None are deleted, but no new song can be downloaded.</string>
+    <string name="dialog_body_shrink_downloads">Downloads take %1$s, more than %2$s. None are deleted, but new downloads are refused until there is room.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
@@ -693,6 +716,15 @@
     <string name="statistics_storage_all_users">All users</string>
     <string name="statistics_storage_of_limit">%1$s of %2$s</string>
     <string name="statistics_storage_file">%1$s · %2$s</string>
+    <string name="statistics_storage_with_status">%1$s · %2$s</string>
+    <string name="statistics_storage_device_used">%1$s of %2$s used</string>
+    <string name="statistics_storage_app_uses">%1$s uses %2$s</string>
+    <string name="statistics_storage_image_cache">Image cache</string>
+    <string name="statistics_storage_song_cache">Song cache</string>
+    <string name="statistics_storage_song_downloads">Song downloads</string>
+    <string name="statistics_storage_download_covers">Download covers</string>
+    <string name="statistics_storage_lyrics">Lyrics</string>
+    <string name="statistics_storage_other">Other apps and system</string>
     <string name="statistics_song_listens">Times completed</string>
     <string name="statistics_song_plays">Plays</string>
     <string name="statistics_song_time_listened">Time listened</string>

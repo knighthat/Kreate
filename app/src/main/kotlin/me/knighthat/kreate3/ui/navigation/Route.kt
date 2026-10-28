@@ -65,6 +65,10 @@ data object Settings : Route
 @Serializable
 data object GeneralSettings : Route
 
+/** Caches and downloads, the room they take and their sizes. */
+@Serializable
+data object DataSettings : Route
+
 @Serializable
 data object PlayerSettings : Route
 

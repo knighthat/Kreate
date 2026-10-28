@@ -432,8 +432,8 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             // A link of the server can take a moment, the sheet stays until it is there
             onClick = { share.share { close {} } },
         )
-        SongDownloadAction(item) { icon, label, onClick ->
-            LabeledIconButton(icon = icon, label = label, enabled = true, onClick = onClick)
+        SongDownloadAction(item) { icon, label, enabled, onClick ->
+            LabeledIconButton(icon = icon, label = label, enabled = enabled, onClick = onClick)
         }
     }
 }
@@ -690,7 +690,10 @@ private fun SongMenuPreview() = PreviewTheme {
     }
 }
 
-/** The download button of the header in each stage, from nothing kept to downloaded. */
+/**
+ * The download button of the header in each stage, from nothing kept to downloaded, and last
+ * disabled while downloads are off.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @ComponentPreviews
 @Composable
@@ -698,7 +701,7 @@ private fun SongMenuDownloadStagesPreview() = PreviewTheme {
     Surface(color = BottomSheetDefaults.ContainerColor) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.width(420.dp),
+            modifier = Modifier.width(500.dp),
         ) {
             listOf(
                 null,
@@ -714,6 +717,12 @@ private fun SongMenuDownloadStagesPreview() = PreviewTheme {
                     onClick = {},
                 )
             }
+            LabeledIconButton(
+                icon = (null as SongStorage?).icon,
+                label = stringResource((null as SongStorage?).labelRes),
+                enabled = false,
+                onClick = {},
+            )
         }
     }
 }

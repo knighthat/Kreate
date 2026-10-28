@@ -71,6 +71,7 @@ import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.ArtistStatistics
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
+import me.knighthat.kreate3.ui.navigation.DataSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
 import me.knighthat.kreate3.ui.navigation.DownloadQueue
 import me.knighthat.kreate3.ui.navigation.Downloaded
@@ -146,6 +147,7 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.about.AboutScreen
 import me.knighthat.kreate3.ui.screen.settings.about.OpenSourceLicensesScreen
 import me.knighthat.kreate3.ui.screen.settings.backup.BackupSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.data.DataSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.general.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.NetworkSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsScreen
@@ -165,7 +167,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
-        Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
+        Settings, GeneralSettings, DataSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
         OpenSubsonicSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
@@ -431,6 +433,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 )
                             }
                             entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
+                            entry<DataSettings> { DataSettingsScreen(topLevel::pop) }
                             entry<PlayerSettings> { PlayerSettingsScreen(topLevel::pop) }
                             entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
                             entry<NetworkSettings> {

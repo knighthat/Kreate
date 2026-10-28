@@ -20,7 +20,9 @@ package me.knighthat.kreate3
 
 import android.app.Application
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.os.Process
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -69,6 +71,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.io.File
+import kotlin.concurrent.thread
 
 class KreateApplication : Application(), SingletonImageLoader.Factory {
 
@@ -125,11 +129,20 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     .build()
             }
             .diskCache {
-                val directory = cacheDir.resolve("coil3_image_cache").toOkioPath()
+                val directory = imageCacheDir()
+                val size = AppRestart.readOnce(Preferences.IMAGE_DISK_CACHE)
+                if (size <= 0) {
+                    // Turned off, what it kept goes
+                    thread(name = "ImageCacheClear") {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+                        directory.deleteRecursively()
+                    }
+                    return@diskCache null
+                }
 
                 DiskCache.Builder()
-                    .directory(directory)
-                    .maxSizeBytes(AppRestart.readOnce(Preferences.IMAGE_DISK_CACHE))
+                    .directory(directory.toOkioPath())
+                    .maxSizeBytes(size)
                     .build()
             }
             .build()
@@ -199,3 +212,6 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         get<CoroutineScope>().launch { get<CoverFiles>().forgetMissing(get()) }
     }
 }
+
+/** The folder of the image loader's disk cache, see [Preferences.IMAGE_DISK_CACHE]. */
+internal fun Context.imageCacheDir(): File = cacheDir.resolve("coil3_image_cache")

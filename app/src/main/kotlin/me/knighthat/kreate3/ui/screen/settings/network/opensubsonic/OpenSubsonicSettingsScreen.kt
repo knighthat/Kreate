@@ -233,6 +233,7 @@ fun OpenSubsonicSettingsScreen(
     val serverCheck by viewModel.server.collectFlowAsState()
     val allowSelfSigned by Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.collectAsStateWithLifecycle()
     val directPlay by Preferences.OPEN_SUBSONIC_DIRECT_PLAY.collectAsStateWithLifecycle()
+    val songCacheSize by Preferences.MEDIA3_CACHE_SIZE.collectAsStateWithLifecycle()
     val replayGainLufs by Preferences.OPEN_SUBSONIC_REPLAY_GAIN_LUFS.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
     val certificate by Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.collectAsStateWithLifecycle()
@@ -261,6 +262,7 @@ fun OpenSubsonicSettingsScreen(
         apiKey = apiKey,
         credentialsCheck = credentialsCheck,
         directPlay = directPlay,
+        songCacheOff = songCacheSize <= 0,
         replayGainLufs = replayGainLufs,
         syncSongs = syncSongs,
         syncPlaylists = syncPlaylists,
@@ -314,6 +316,7 @@ private fun OpenSubsonicSettingsContent(
     apiKey: String,
     credentialsCheck: CheckState,
     directPlay: Boolean,
+    songCacheOff: Boolean,
     replayGainLufs: Int,
     syncSongs: Boolean,
     syncPlaylists: Boolean,
@@ -432,9 +435,14 @@ private fun OpenSubsonicSettingsContent(
         SettingsSection(stringResource(R.string.setting_header_playback))
         SwitchSetting(
             title = stringResource(R.string.setting_title_direct_play),
-            summary = stringResource(R.string.setting_description_direct_play),
+            // Without the cache every song streams directly, the setting waits for it
+            summary = stringResource(
+                if (songCacheOff) R.string.setting_description_direct_play_status_cache_off
+                else R.string.setting_description_direct_play
+            ),
             checked = directPlay,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_DIRECT_PLAY.update(it) },
+            enabled = !songCacheOff,
         )
         quality()
         NumberSetting(
@@ -485,7 +493,17 @@ private fun OpenSubsonicSettingsContent(
 
 @ScreenPreviews
 @Composable
-private fun OpenSubsonicSettingsPreview() = PreviewTheme {
+private fun OpenSubsonicSettingsPreview() = PreviewTheme { OpenSubsonicSettingsSample(false) }
+
+/** The song cache is off, Direct play is disabled. */
+@ScreenPreviews
+@Composable
+private fun OpenSubsonicSettingsCacheOffPreview() = PreviewTheme {
+    OpenSubsonicSettingsSample(songCacheOff = true)
+}
+
+@Composable
+private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
     val online = CheckState.Done(
         ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
     )
@@ -502,6 +520,7 @@ private fun OpenSubsonicSettingsPreview() = PreviewTheme {
         apiKey = "",
         credentialsCheck = online,
         directPlay = false,
+        songCacheOff = songCacheOff,
         replayGainLufs = -18,
         syncSongs = true,
         syncPlaylists = true,

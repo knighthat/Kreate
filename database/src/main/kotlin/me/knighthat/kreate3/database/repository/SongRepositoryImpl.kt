@@ -94,6 +94,8 @@ internal class SongRepositoryImpl(
 
     override suspend fun deleteLyrics(songId: String) = lyricsDao.delete(songId)
 
+    override fun lyricsBytes(): Flow<Long> = lyricsDao.bytes()
+
     override suspend fun update(songId: String, transform: (Song) -> Song) {
         database.inTransaction {
             val current = requireNotNull(songDao.get(songId)) { "Song $songId doesn't exist" }

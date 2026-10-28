@@ -18,21 +18,15 @@
 
 package me.knighthat.kreate3.ui.screen.account
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,8 +39,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,6 +60,8 @@ import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SortOrderButton
+import me.knighthat.kreate3.ui.component.StorageUsage
+import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.previewItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
@@ -136,7 +130,7 @@ private fun DownloadedContent(
     newestFirst: Boolean,
     showDisliked: Boolean,
     hidesDisliked: Boolean,
-    storage: DownloadStorage?,
+    storage: StorageUse?,
     unfinished: List<UnfinishedRow>,
     waitingFor: DownloadWait?,
     onBack: () -> Unit,
@@ -192,7 +186,11 @@ private fun DownloadedContent(
             ),
             modifier = Modifier.fillMaxSize(),
         ) {
-            storage?.let { item(key = "storage") { StorageHeader(it) } }
+            storage?.let {
+                item(key = "storage") {
+                    StorageUsage(it, Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                }
+            }
 
             if (unfinished.isNotEmpty()) {
                 // The ones downloaded and the next in line, the rest are on the queue's own screen
@@ -289,65 +287,6 @@ private fun DownloadedToolbar(
     }
 }
 
-/**
- * The room the downloads take out of their limit: this user's and every user's when other users'
- * downloads take more, this user's alone otherwise.
- */
-@Composable
-private fun StorageHeader(storage: DownloadStorage) = Column(
-    Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-) {
-    val resources = LocalResources.current
-    val ofLimit = { used: String ->
-        resources.getString(R.string.statistics_storage_of_limit, used, storage.limit)
-    }
-    val userColor = MaterialTheme.colorScheme.primary
-    val othersColor = MaterialTheme.colorScheme.secondary
-
-    if (storage.shared)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "${stringResource(R.string.statistics_storage_this_user)} ${storage.user}",
-                style = MaterialTheme.typography.labelLarge,
-                color = userColor,
-                modifier = Modifier.weight(1f),
-            )
-            Text(
-                "${stringResource(R.string.statistics_storage_all_users)} ${ofLimit(storage.all)}",
-                style = MaterialTheme.typography.labelLarge,
-                color = othersColor,
-            )
-        }
-    else Text(ofLimit(storage.user), style = MaterialTheme.typography.labelLarge)
-
-    Spacer(Modifier.height(8.dp))
-
-    // This user's part over every user's, both out of the limit
-    val limit = storage.limitBytes.coerceAtLeast(1).toFloat()
-    val all = (storage.allBytes / limit).coerceIn(0f, 1f)
-    val user = (storage.userBytes / limit).coerceIn(0f, all)
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(8.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-    ) {
-        Box(
-            Modifier
-                .fillMaxWidth(all)
-                .fillMaxHeight()
-                .background(othersColor)
-        )
-        Box(
-            Modifier
-                .fillMaxWidth(user)
-                .fillMaxHeight()
-                .background(userColor)
-        )
-    }
-}
-
 @Composable
 private fun DeleteAllDownloadsDialog(
     filtered: Boolean,
@@ -376,21 +315,27 @@ private fun DeleteAllDownloadsDialog(
 @Composable
 private fun DownloadedPreview() = PreviewTheme {
     DownloadedSample(
-        DownloadStorage(1_400_000_000, 2_900_000_000, 4_000_000_000, "1.4 GB", "2.9 GB", "4.0 GB")
+        StorageUse(
+            1_400_000_000, 2_900_000_000, 4_000_000_000, 4_000_000_000,
+            "1.4 GB", "2.9 GB", "4.0 GB",
+        )
     )
 }
 
-/** Only this user's downloads take room, see [DownloadStorage.shared]. */
+/** Only this user's downloads take room, see [StorageUse.shared]. */
 @ScreenPreviews
 @Composable
 private fun DownloadedAloneProfilePreview() = PreviewTheme {
     DownloadedSample(
-        DownloadStorage(1_400_000_000, 1_400_000_000, 4_000_000_000, "1.4 GB", "1.4 GB", "4.0 GB")
+        StorageUse(
+            1_400_000_000, 1_400_000_000, 4_000_000_000, 4_000_000_000,
+            "1.4 GB", "1.4 GB", "4.0 GB",
+        )
     )
 }
 
 @Composable
-private fun DownloadedSample(storage: DownloadStorage) {
+private fun DownloadedSample(storage: StorageUse) {
     val files = listOf("8.4 MB · High", "6.1 MB · High", "3.2 MB · Low", "41 MB · Original")
     val rows = (previewSongs() + previewSongs(Origin.YOUTUBE)).mapIndexed { index, item ->
         // A disliked song shows only with its toggle on, marked by its badge

@@ -48,6 +48,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -159,7 +160,8 @@ fun SettingsItem(
 }
 
 /**
- * A setting that is on or off, a tap anywhere on the row flips it.
+ * A setting that is on or off, a tap anywhere on the row flips it. While not [enabled] the row is
+ * dimmed and taps do nothing, the setting keeps its value.
  */
 @Composable
 fun SwitchSetting(
@@ -168,15 +170,19 @@ fun SwitchSetting(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     summary: String? = null,
+    enabled: Boolean = true,
 ) {
     SettingsItem(
         title = title,
-        modifier = modifier,
+        modifier = if (enabled) modifier else modifier.alpha(DISABLED_ALPHA),
         summary = summary,
-        onClick = { onCheckedChange(!checked) },
+        onClick = if (enabled) ({ onCheckedChange(!checked) }) else null,
         trailing = { Switch(checked = checked, onCheckedChange = null) },
     )
 }
+
+/** How opaque a disabled row is, Material's disabled content. */
+private const val DISABLED_ALPHA = .38f
 
 /**
  * The switch at the top of a page that turns on what the page sets up, set apart from the

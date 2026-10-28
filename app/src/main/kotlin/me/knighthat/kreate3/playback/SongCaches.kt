@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.playback
 
 import android.content.Context
+import android.os.Process
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -35,6 +36,7 @@ import me.knighthat.kreate3.AppRestart
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import java.io.File
+import kotlin.concurrent.thread
 
 /**
  * Where the songs of a server or YouTube are kept on the device, shared by every profile. Songs
@@ -43,7 +45,8 @@ import java.io.File
  *
  * Their index is the database `exoplayer_internal.db`, left out of backups like the files.
  *
- * @param cacheSize bytes [cache] keeps at most, see [Preferences.MEDIA3_CACHE_SIZE]
+ * @param cacheSize bytes [cache] keeps at most, see [Preferences.MEDIA3_CACHE_SIZE], `0` turns it
+ * off ([caching])
  */
 @OptIn(UnstableApi::class)
 class SongCaches internal constructor(context: Context, cacheSize: Long) {
@@ -52,6 +55,12 @@ class SongCaches internal constructor(context: Context, cacheSize: Long) {
         context,
         AppRestart.readOnce(Preferences.MEDIA3_CACHE_SIZE),
     )
+
+    /**
+     * Whether what is streamed is kept in [cache]. While it is off, songs are streamed every time
+     * and what [cache] kept from before is deleted.
+     */
+    val caching: Boolean = cacheSize > 0
 
     /** The database of both, the downloader keeps its list of downloads in it too. */
     internal val database = StandaloneDatabaseProvider(context)
@@ -87,6 +96,14 @@ class SongCaches internal constructor(context: Context, cacheSize: Long) {
         NoOpCacheEvictor(),
         database,
     )
+
+    init {
+        // The evictor only drops songs when one is written, nothing is while the cache is off
+        if (!caching) thread(name = "SongCacheClear") {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+            clear()
+        }
+    }
 
     /** Size in bytes of the file [cache] keeps parts of for [song], `null` when unknown. */
     fun cachedLength(song: QueuedSong): Long? =
@@ -149,6 +166,15 @@ class SongCaches internal constructor(context: Context, cacheSize: Long) {
     fun dropAll(song: QueuedSong) {
         StreamQuality.entries.forEach { cache.removeResource(song.copy(quality = it).cacheKey) }
         changed(song)
+    }
+
+    /**
+     * Drops everything [cache] keeps, every copy of every song. It goes through the whole cache,
+     * keep it off the main thread. Parts being read stay until they're let go.
+     */
+    fun clear() = cache.keys.forEach { key ->
+        cache.removeResource(key)
+        QueuedSong.ofCacheKey(key)?.let(::changed)
     }
 
     /** Tells [changed] that the copies of [song] in [cache] may have changed. */

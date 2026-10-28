@@ -30,6 +30,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.BackupSettings
+import me.knighthat.kreate3.ui.navigation.DataSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
@@ -72,6 +73,11 @@ private fun SettingsContent(
             title = stringResource(R.string.screen_title_general),
             summary = stringResource(R.string.setting_description_general),
             onClick = { onOpen(GeneralSettings) },
+        )
+        SettingsItem(
+            title = stringResource(R.string.screen_title_data),
+            summary = stringResource(R.string.setting_description_data),
+            onClick = { onOpen(DataSettings) },
         )
         SettingsItem(
             title = stringResource(R.string.screen_title_player),

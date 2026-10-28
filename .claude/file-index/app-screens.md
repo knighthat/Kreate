@@ -21,9 +21,10 @@ ui/screen/
 - account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Disliked,
   Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
   `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`
-  kept to `DownloadsOverview.files`, row `trailing` = size · quality; storage header = this user's
-  and all users' bytes against `MEDIA3_DOWNLOAD_SIZE` as one stacked bar, one figure while no other
-  user's downloads take room; In progress section shows the running downloads and the next in line
+  kept to `DownloadsOverview.files`, row `trailing` = size · quality; storage header =
+  `StorageUsage`
+  of this user's and all users' bytes against `MEDIA3_DOWNLOAD_SIZE`; In progress section shows the
+  running downloads and the next in line
   (else the first one), its See more opens the rest; a toolbar row like home's: origin chips
   (Disliked's
   `OriginChips`), then a show-disliked toggle (`UserSongRepository.downloaded` includes disliked
@@ -127,7 +128,15 @@ ui/screen/
   Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
-  call. `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
+  call. `general/GeneralSettingsScreen.kt` (library scan, navigation), `data/DataSettingsScreen.kt`
+  + `DataSettingsViewModel.kt` (Storage: `DeviceStorageUsage.kt` bar of the device with the app's
+    parts (`StoragePart`: image cache, song cache, downloads, download covers, lyrics) and other
+    apps, then image disk cache, song cache, song downloads as `StorageUsage` bars, polled every 2
+    s; a tap opens a MiB field + slider of presets from Off to Unlimited, a size below what is
+    stored asks first (Turn it off? / Smaller…, Apply, Apply & restart for caches, Cancel); default
+    profile only: Clear / Delete each, confirmed (`SongCaches.clear`, Coil `diskCache.clear` +
+    memory cache when ticked, `SongDownloads.deleteAll`); then Downloads and Images (memory cache)
+    settings), `player/PlayerSettingsScreen.kt` (player behavior/UI
   only: Queue incl. preload slider, failure action + stall limit, Sound (even out loudness switch,
   target loudness slider), Buffering (load ahead incl.
   Unlimited / before
@@ -139,7 +148,8 @@ ui/screen/
   page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
   `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, sign-in
-  checks, direct play, quality sliders, ReplayGain reference (LUFS), library), `backup/` (
+    checks, direct play (disabled while the song cache is Off, value kept), quality sliders,
+    ReplayGain reference (LUFS), library), `backup/` (
   `BackupSettingsScreen.kt` +
   `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
   licenses row; `OpenSourceLicensesScreen.kt` + `OpenSourceLicensesViewModel.kt`: libraries read

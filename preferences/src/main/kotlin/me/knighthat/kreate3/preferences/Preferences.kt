@@ -29,39 +29,6 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
-import me.knighthat.kreate3.preferences.Preferences.AUTO_ALBUM_TAP
-import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
-import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
-import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
-import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
-import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_TAP_RADIO
-import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
-import me.knighthat.kreate3.preferences.Preferences.LYRICS_SOURCE
-import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
-import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
-import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_ENABLED
-import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_HOST
-import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_PORT
-import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_TYPE
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_ENABLED
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_HOST
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_PORT
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_TYPE
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
-import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
-import me.knighthat.kreate3.preferences.Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS
-import me.knighthat.kreate3.preferences.Preferences.PLAYBACK_STALL_SECONDS
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_ENABLED
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_HOST
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_PORT
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_TYPE
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
-import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_SONGS
-import me.knighthat.kreate3.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -388,7 +355,9 @@ object Preferences : KoinComponent {
     //<editor-fold defaultstate="collapsed" desc="Playback">
     /**
      * Largest size, in bytes, the cache of streamed songs may grow to. The default is 1 GiB.
-     * Downloads don't count, they have no limit.
+     * `0` turns the cache off: songs are streamed every time and what it kept is deleted when the
+     * app starts. [Long.MAX_VALUE] has no limit. Downloads don't count, see
+     * [MEDIA3_DOWNLOAD_SIZE].
      *
      * The size is fixed when the player starts, so a new value applies from the next launch.
      * A smaller value drops the songs read least recently once the next song is cached.
@@ -398,7 +367,8 @@ object Preferences : KoinComponent {
     /**
      * Largest size, in bytes, the downloaded songs may take together. The default is 4 GiB.
      * It is separate from [MEDIA3_CACHE_SIZE], downloads are never dropped to make room: once
-     * they take this much, new downloads are refused. Read when a download starts.
+     * they take this much, new downloads are refused. `0` refuses every new download,
+     * [Long.MAX_VALUE] has no limit. Read when a download starts.
      */
     val MEDIA3_DOWNLOAD_SIZE by lazy { long("song_downloads", 4L * 1024 * 1024 * 1024) }
 
@@ -567,6 +537,7 @@ object Preferences : KoinComponent {
     //<editor-fold defaultstate="collapsed" desc="Coil3">
     /**
      * Largest size, in bytes, the image disk cache may grow to. The default is 128 MiB.
+     * `0` turns it off (its files are deleted when the app starts), [Long.MAX_VALUE] has no limit.
      *
      * The size is fixed when the image loader is built, so a new value applies from the next
      * launch. A smaller value does not shrink the files already stored, the cache trims

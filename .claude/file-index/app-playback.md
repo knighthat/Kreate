@@ -69,8 +69,9 @@ playback/
   cache → ResolvingDataSource → `StreamDataSource` (app/OpenSubsonic OkHttp, 403 → `refused`, server
   Content-Type → `answered`); router sets the `CacheCopies` copy as DataSpec key + customData,
   OpenSubsonic direct play skips the cache.
-- `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in
-  noBackupFilesDir, no eviction); `copies(song)` (quality → whole?), `cached`, `cachedSongs`,
+- `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in noBackupFilesDir,
+  no eviction); `caching` (size 0 = off: the router streams without the cache, what it kept is
+  cleared at start), `clear()`; `copies(song)` (quality → whole?), `cached`, `cachedSongs`,
   `downloaded`, `drop`/`dropAll`, `cachedLength`, `changed` flow (copy whole/dropped, for badges).
   `SongDataSource.kt` also has `downloadDataSourceFactory` (the downloader's upstream).
 - `ReadOnlyCache.kt` — `Cache` delegate whose writes/removals/release throw; playback reads

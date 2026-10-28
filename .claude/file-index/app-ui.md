@@ -94,6 +94,9 @@ ui/navigation/
   Press/Swipe again to exit" for `EXIT_CONFIRMATION_TIMEOUT` s (swipe = progress events or
   navigation_mode 2), second back moves the task back (API 31+) or finishes. Settings: General →
   Navigation.
+- `StorageUsage.kt` — `StorageUse` (user/all/limit bytes and texts, `shared`, `limited`; off = 0,
+  unlimited = `Long.MAX_VALUE` drawn against used + free room), `Context.storageUse`,
+  `StorageUsage` (this user's and all users' text over one stacked bar); Downloaded and Data.
 
 ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ThumbnailSeed.kt` (
 `rememberThumbnailSeed`, runtime-only — `.claude/rules/storage.md`), `Type.kt` (Inter typography),

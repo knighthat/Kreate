@@ -32,26 +32,14 @@ import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
-import kotlin.math.roundToLong
-
-private const val MIB = 1024L * 1024
 
 /**
- * How the app behaves: scanning the device, keeping songs and images, leaving the app and
- * opening it from the media notification.
+ * How the app behaves: scanning the device, leaving the app and opening it from the media
+ * notification. What is kept on the device is on the Data page.
  */
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val scanInterval by Preferences.LOCAL_SCAN_INTERVAL.collectAsStateWithLifecycle()
-    val songCache by Preferences.MEDIA3_CACHE_SIZE.collectAsStateWithLifecycle()
-    val songDownloads by Preferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
-    val parallelDownloads by Preferences.DOWNLOAD_PARALLEL_COUNT.collectAsStateWithLifecycle()
-    val downloadRetries by Preferences.DOWNLOAD_RETRY_COUNT.collectAsStateWithLifecycle()
-    val downloadWifiOnly by Preferences.DOWNLOAD_WIFI_ONLY.collectAsStateWithLifecycle()
-    val downloadOnLowBattery by Preferences.DOWNLOAD_ON_LOW_BATTERY.collectAsStateWithLifecycle()
-    val downloadLyrics by Preferences.DOWNLOAD_LYRICS.collectAsStateWithLifecycle()
-    val diskCache by Preferences.IMAGE_DISK_CACHE.collectAsStateWithLifecycle()
-    val memoryCache by Preferences.IMAGE_MEMORY_CACHE_PERCENT.collectAsStateWithLifecycle()
     val exitDisabled by Preferences.BACK_EXIT_DISABLED.collectAsStateWithLifecycle()
     val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
@@ -59,15 +47,6 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     GeneralSettingsContent(
         scanInterval = scanInterval,
-        songCache = songCache,
-        songDownloads = songDownloads,
-        parallelDownloads = parallelDownloads,
-        downloadRetries = downloadRetries,
-        downloadWifiOnly = downloadWifiOnly,
-        downloadOnLowBattery = downloadOnLowBattery,
-        downloadLyrics = downloadLyrics,
-        diskCache = diskCache,
-        memoryCache = memoryCache,
         exitDisabled = exitDisabled,
         exitConfirmation = exitConfirmation,
         exitTimeout = exitTimeout,
@@ -77,22 +56,9 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     )
 }
 
-/**
- * @param songCache in bytes, like [songDownloads] and [diskCache]
- * @param memoryCache the part of the app's memory, `0.15` for 15%
- */
 @Composable
 private fun GeneralSettingsContent(
     scanInterval: Int,
-    songCache: Long,
-    songDownloads: Long,
-    parallelDownloads: Int,
-    downloadRetries: Int,
-    downloadWifiOnly: Boolean,
-    downloadOnLowBattery: Boolean,
-    downloadLyrics: Boolean,
-    diskCache: Long,
-    memoryCache: Double,
     exitDisabled: Boolean,
     exitConfirmation: Boolean,
     exitTimeout: Int,
@@ -100,12 +66,7 @@ private fun GeneralSettingsContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SettingsPage(
-        stringResource(R.string.screen_title_general),
-        onBack,
-        modifier,
-        restartApp = true
-    ) {
+    SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_library))
         NumberSetting(
             title = stringResource(R.string.setting_title_scan_interval),
@@ -117,107 +78,6 @@ private fun GeneralSettingsContent(
                 stringResource(
                     R.string.setting_description_scan_interval,
                     pluralStringResource(R.plurals.minute, it.toInt(), it)
-                )
-            },
-        )
-
-        SettingsSection(stringResource(R.string.setting_header_songs))
-        NumberSetting(
-            title = stringResource(R.string.setting_title_cache),
-            value = songCache / MIB,
-            min = 128,
-            max = 32 * 1024,
-            onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it * MIB) },
-            note = {
-                stringResource(
-                    R.string.setting_description_cache,
-                    stringResource(R.string.mib, it),
-                    stringResource(R.string.source_ytm)
-                )
-            },
-        )
-        NumberSetting(
-            title = stringResource(R.string.setting_title_downloads),
-            value = songDownloads / MIB,
-            min = 128,
-            max = 256 * 1024,
-            onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it * MIB) },
-            note = {
-                stringResource(
-                    R.string.setting_description_downloads,
-                    stringResource(R.string.mib, it),
-                )
-            },
-        )
-        NumberSetting(
-            title = stringResource(R.string.setting_title_parallel_downloads),
-            value = parallelDownloads.toLong(),
-            min = 1,
-            max = 6,
-            onSave = { Preferences.DOWNLOAD_PARALLEL_COUNT.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_parallel_downloads,
-                    pluralStringResource(R.plurals.song, it.toInt(), it),
-                )
-            },
-        )
-        NumberSetting(
-            title = stringResource(R.string.setting_title_download_retries),
-            value = downloadRetries.toLong(),
-            min = 0,
-            max = 20,
-            onSave = { Preferences.DOWNLOAD_RETRY_COUNT.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_download_retries,
-                    pluralStringResource(R.plurals.time, it.toInt(), it),
-                )
-            },
-        )
-        SwitchSetting(
-            title = stringResource(R.string.setting_title_download_wifi_only),
-            checked = downloadWifiOnly,
-            onCheckedChange = { Preferences.DOWNLOAD_WIFI_ONLY.update(it) },
-            summary = stringResource(R.string.setting_description_download_wifi_only),
-        )
-        SwitchSetting(
-            title = stringResource(R.string.setting_title_download_on_low_battery),
-            checked = downloadOnLowBattery,
-            onCheckedChange = { Preferences.DOWNLOAD_ON_LOW_BATTERY.update(it) },
-            summary = stringResource(R.string.setting_description_download_on_low_battery),
-        )
-        SwitchSetting(
-            title = stringResource(R.string.setting_title_download_lyrics),
-            checked = downloadLyrics,
-            onCheckedChange = { Preferences.DOWNLOAD_LYRICS.update(it) },
-            summary = stringResource(R.string.setting_description_download_lyrics),
-        )
-
-        SettingsSection(stringResource(R.string.setting_header_images))
-        NumberSetting(
-            title = stringResource(R.string.setting_title_disk_cache),
-            value = diskCache / MIB,
-            min = 16,
-            max = 4096,
-            onSave = { Preferences.IMAGE_DISK_CACHE.update(it * MIB) },
-            note = {
-                stringResource(
-                    R.string.setting_description_disk_cache,
-                    stringResource(R.string.mib, it)
-                )
-            },
-        )
-        NumberSetting(
-            title = stringResource(R.string.setting_title_memory_cache),
-            value = (memoryCache * 100).roundToLong(),
-            min = 5,
-            max = 50,
-            onSave = { Preferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
-            note = {
-                stringResource(
-                    R.string.setting_description_memory_cache,
-                    stringResource(R.string.percent, it)
                 )
             },
         )
@@ -265,15 +125,6 @@ private fun GeneralSettingsContent(
 private fun GeneralSettingsPreview() = PreviewTheme {
     GeneralSettingsContent(
         scanInterval = 30,
-        songCache = 1024 * MIB,
-        songDownloads = 4096 * MIB,
-        parallelDownloads = 2,
-        downloadRetries = 5,
-        downloadWifiOnly = false,
-        downloadOnLowBattery = true,
-        downloadLyrics = false,
-        diskCache = 128 * MIB,
-        memoryCache = 0.15,
         exitDisabled = false,
         exitConfirmation = true,
         exitTimeout = 2,
