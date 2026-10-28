@@ -329,10 +329,10 @@ private fun GroupHeader(
     val label = when (bucket.period) {
         HistoryPeriod.TODAY -> resources.getString(R.string.section_header_today)
         HistoryPeriod.YESTERDAY -> resources.getString(R.string.section_header_yesterday)
-        HistoryPeriod.DAYS -> resources.ago(R.plurals.section_header_days_ago, bucket.count)
-        HistoryPeriod.WEEKS -> resources.ago(R.plurals.section_header_weeks_ago, bucket.count)
-        HistoryPeriod.MONTHS -> resources.ago(R.plurals.section_header_months_ago, bucket.count)
-        HistoryPeriod.YEARS -> resources.ago(R.plurals.section_header_years_ago, bucket.count)
+        HistoryPeriod.DAYS -> resources.ago(R.plurals.day, bucket.count)
+        HistoryPeriod.WEEKS -> resources.ago(R.plurals.week, bucket.count)
+        HistoryPeriod.MONTHS -> resources.ago(R.plurals.month, bucket.count)
+        HistoryPeriod.YEARS -> resources.ago(R.plurals.year, bucket.count)
     }
     // Known once its query answers, the group's songs may not all be loaded
     val played = summary?.let {
@@ -591,7 +591,8 @@ private fun SheetHeader(title: String) =
 /** Height of the calendar in the [HistorySheet], a few weeks of a month and its headline. */
 private val DATE_PICKER_HEIGHT = 480.dp
 
-private fun Resources.ago(plural: Int, count: Int): String = getQuantityString(plural, count, count)
+private fun Resources.ago(plural: Int, count: Int): String =
+    getString(R.string.status_ago, getQuantityString(plural, count, count))
 
 /** [time] in minutes, in hours and minutes from an hour, in seconds under a minute. */
 internal fun Resources.timeSpent(time: Duration): String {

@@ -303,6 +303,7 @@
     <string name="status_off">Off</string>
     <string name="status_unlimited">Unlimited</string>
     <string name="status_not_set">Not set</string>
+    <string name="status_ago">%1$s ago</string>
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>
     <string name="status_no_playlists_yet">No playlists yet</string>

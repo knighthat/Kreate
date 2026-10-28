@@ -49,6 +49,9 @@ are two keys). An action can be several words (`action_sign_out`).
   shown in singular or plural (not a `tab_*` or `screen_title_*`) is a plural `unit_{noun}`
   (`unit_album`), never cut from another string. A plural with no number in its text is still a
   plural (`menu_go_to_artist`).
+- Time ago is `status_ago` (`%1$s ago`) with a counted plural (`day`, `week`, `month`, `year`) as
+  its argument, never a plural per unit (`*_ago`). The maintainer's choice, though languages that
+  inflect the noun after "ago" (German "vor 3 Tagen") may need per-unit plurals once translated.
 - An origin or a lyrics provider is named only by its source: `Origin.sourceRes`,
   `LyricsProvider.sourceRes`, never from the enum value's name.
 
