@@ -80,7 +80,21 @@ class Preference<T> internal constructor(
      * What goes to the storage. Defaults are not stored (`null` removes the entry),
      * so that changing a default later reaches users that never touched the setting.
      */
-    internal fun encoded(): Any? = if (value == default) null else codec.encode(value)
+    internal fun encoded(): Any? = encode(value)
 
-    private fun decode(snapshot: Snapshot): T = snapshot.values[name]?.let(codec.decode) ?: default
+    /**
+     * Goes back to [stored] (`null` for the default) without saving, unless the value changed
+     * since [failed] couldn't be saved; that change is saved on its own.
+     */
+    internal fun revert(failed: Any?, stored: Any?) {
+        val current = _state.value
+        if (encode(current) == failed)
+            _state.compareAndSet(current, decode(stored))
+    }
+
+    private fun encode(value: T): Any? = if (value == default) null else codec.encode(value)
+
+    private fun decode(stored: Any?): T = stored?.let(codec.decode) ?: default
+
+    private fun decode(snapshot: Snapshot): T = decode(snapshot.values[name])
 }

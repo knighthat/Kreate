@@ -25,6 +25,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 import java.nio.file.Files
 
 class DataStorePreferenceStorageTest {
@@ -110,5 +111,21 @@ class DataStorePreferenceStorageTest {
         assertFalse(directory.exists())
         // The store is opened anew, empty
         assertEquals(emptyMap<String, Any>(), storage.read("p"))
+    }
+
+    @Test
+    fun aDamagedFileIsReplacedWithAnEmptyOne() = runBlocking {
+        var damaged = false
+        val storage = DataStorePreferenceStorage(root) { damaged = true }
+        File(Profile.directory(root, "p"), DataStorePreferenceStorage.PROFILE_FILE_NAME).apply {
+            parentFile!!.mkdirs()
+            // Not a protobuf message
+            writeBytes(byteArrayOf(-1, -1, -1, -1))
+        }
+
+        assertEquals(emptyMap<String, Any>(), storage.read("p"))
+        assertTrue(damaged)
+        storage.write("p", mapOf("a" to 1))
+        assertEquals(mapOf("a" to 1), storage.read("p"))
     }
 }

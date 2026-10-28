@@ -59,8 +59,8 @@ class ProfileSwitcher(
         try {
             playback.restartAround {
                 LocalMusicScheduler.cancelScans(context)
-                profileManager.switchTo(profileId)
-                awaitInUse(profileId)
+                // Not saved, it stays on the active profile; the failure is reported
+                if (profileManager.switchTo(profileId)) awaitInUse(profileId)
             }
         } finally {
             resumeScans()

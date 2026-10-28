@@ -128,4 +128,26 @@ class ProfileManagerTest {
         assertFalse(profiles.delete("ghost"))
         assertTrue(storage.deleted.isEmpty())
     }
+
+    @Test
+    fun aDamagedGlobalFileIsRebuiltFromTheProfileFolders() = runBlocking {
+        val damagedRoot = Files.createTempDirectory("damaged").toFile()
+        Profile.directory(damagedRoot, "work").mkdirs()
+        // Not a protobuf message
+        File(damagedRoot, ProfileManager.GLOBAL_FILE_NAME).writeBytes(byteArrayOf(-1, -1, -1, -1))
+        try {
+            val damaged = ProfileManager(scope, damagedRoot, storage)
+
+            val failure = withTimeout(5_000) { damaged.reports.failures.first() }
+            assertEquals(PreferenceFailure.Store.PROFILES, failure.store)
+            assertFalse(failure.saving)
+            assertEquals(PreferenceFailure.Reason.DAMAGED, failure.reason)
+            assertEquals(setOf(Profile.DEFAULT_ID, "work"), damaged.ids.first())
+            assertEquals(Profile.DEFAULT_ID, damaged.activeId.first { it != null })
+            // Replaced, so it saves again
+            assertTrue(damaged.switchTo("work"))
+        } finally {
+            damagedRoot.deleteRecursively()
+        }
+    }
 }

@@ -18,24 +18,42 @@
 
 package me.knighthat.kreate3.preferences
 
+import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.CoroutineScope
 import java.io.File
+import java.io.IOException
+
+/**
+ * Why a read or an edit of a DataStore failed.
+ */
+internal fun failureReasonOf(error: Exception): PreferenceFailure.Reason = when (error) {
+    // A subclass of IOException, comes first
+    is CorruptionException -> PreferenceFailure.Reason.DAMAGED
+    is IOException -> PreferenceFailure.Reason.STORAGE
+    else -> PreferenceFailure.Reason.UNKNOWN
+}
 
 /**
  * Creates a [DataStore] backed by the file at the path returned by [produceFile].
  *
  * Only one instance may be active per file, hold on to the returned store.
  * Cancelling [scope] shuts the store down.
+ *
+ * @param replaceDamaged what a damaged file is replaced with, called once when the file is read
+ * at opening. The store reads its file only then, later changes are saved from what it holds.
  */
 internal fun createPreferencesDataStore(
     scope: CoroutineScope,
     steps: List<SchemaStep>,
+    replaceDamaged: () -> Preferences,
     produceFile: () -> File,
 ): DataStore<Preferences> =
     PreferenceDataStoreFactory.create(
+        corruptionHandler = ReplaceFileCorruptionHandler { replaceDamaged() },
         scope = scope,
         migrations = listOf(SchemaMigration(steps)),
         produceFile = produceFile,

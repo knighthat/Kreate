@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
@@ -43,6 +44,12 @@ import org.koin.core.component.inject
 object Preferences : KoinComponent {
 
     private val engine: PreferenceEngine by inject()
+
+    /**
+     * Settings that couldn't be loaded or saved, for the app to tell the user. Each one is
+     * delivered once, to one collector.
+     */
+    val failures: Flow<PreferenceFailure> get() = engine.failures
 
     val THEME_MODE by lazy { enum("theme_mode", ThemeMode.THUMBNAIL) }
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }

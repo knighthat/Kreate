@@ -99,13 +99,18 @@ class ProfileUserSync(
      * Creates a profile named [name]. The user is stored before the id is registered,
      * so the profile never shows up without its name.
      *
-     * @return the id of the new profile
+     * @return the id of the new profile, `null` when it couldn't be saved
      */
-    suspend fun createProfile(name: String): String {
+    suspend fun createProfile(name: String): String? {
         val id = Uuid.random().toString()
         userRepository.save(User(id, name))
         synced += id
-        return profileManager.add(id)
+        if (profileManager.add(id) != null) return id
+
+        // The failure is reported, the user goes so no profile is half made
+        synced -= id
+        userRepository.delete(id)
+        return null
     }
 
     /**

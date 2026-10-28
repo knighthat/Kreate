@@ -625,11 +625,20 @@
     <string name="error_source_change_signed_out">Sign in to %2$s again to %1$s</string>
     <string name="error_source_change_unreachable">Can\'t reach %2$s to %1$s</string>
     <string name="error_source_change_refused">%2$s refused to %1$s</string>
+    <string name="error_file_unavailable">storage is full or unavailable</string>
+    <string name="error_file_damaged">the file was damaged</string>
+    <string name="error_file_unknown">unknown error</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Snack bar messages">-->
     <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
     <string name="snackbar_this_song">this song</string>
+    <string name="snackbar_couldnt_load_settings">Couldn\'t load settings: %1$s, using defaults</string>
+    <string name="snackbar_couldnt_save_settings">Couldn\'t save settings: %1$s, change undone</string>
+    <string name="snackbar_couldnt_load_credentials">Couldn\'t load credentials: %1$s, sign in again</string>
+    <string name="snackbar_couldnt_save_credentials">Couldn\'t save credentials: %1$s</string>
+    <string name="snackbar_couldnt_load_profiles">Couldn\'t load profiles: %1$s, using the default profile</string>
+    <string name="snackbar_couldnt_change_profiles">Couldn\'t change profiles: %1$s</string>
     <string name="snackbar_nothing_to_pick">No %1$s to pick from</string>
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>

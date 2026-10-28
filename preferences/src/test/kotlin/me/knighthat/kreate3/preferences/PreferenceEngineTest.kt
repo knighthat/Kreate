@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -31,9 +32,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * [PreferenceEngine] together with the [Preference]s it serves.
@@ -46,12 +49,18 @@ class PreferenceEngineTest {
             Collections.synchronizedList(mutableListOf())
         var failReads = false
 
+        /** How many write attempts fail from now on */
+        val failingWrites = AtomicInteger()
+        val writeAttempts = AtomicInteger()
+
         override suspend fun read(profileId: String): Map<String, Any> {
             if (failReads) throw IllegalStateException("Unreadable")
             return profiles[profileId].orEmpty()
         }
 
         override suspend fun write(profileId: String, changes: Map<String, Any?>) {
+            writeAttempts.incrementAndGet()
+            if (failingWrites.getAndDecrement() > 0) throw IOException("Full")
             writes += profileId to changes
             val current = profiles[profileId].orEmpty().toMutableMap()
             changes.forEach { (name, value) ->
@@ -63,6 +72,9 @@ class PreferenceEngineTest {
         override suspend fun delete(profileId: String) {
             profiles -= profileId
         }
+
+        override fun reasonOf(error: Exception): PreferenceFailure.Reason =
+            if (error is IOException) PreferenceFailure.Reason.STORAGE else PreferenceFailure.Reason.UNKNOWN
     }
 
     private lateinit var root: File
@@ -76,6 +88,9 @@ class PreferenceEngineTest {
     }
 
     private fun volume() = Preference("volume", 5, codec<Int, Int>({ it }, { it }), engine)
+
+    private fun nextFailure(): PreferenceFailure =
+        runBlocking { withTimeout(5_000) { engine.failures.first() } }
 
     private fun start() {
         profiles = ProfileManager(scope, root, storage)
@@ -117,6 +132,62 @@ class PreferenceEngineTest {
         start()
 
         assertEquals(5, volume().value)
+    }
+
+    @Test
+    fun anUnreadableFileIsReported() {
+        storage.failReads = true
+        start()
+
+        val failure = nextFailure()
+        assertEquals(PreferenceFailure.Store.SETTINGS, failure.store)
+        assertEquals(false, failure.saving)
+        assertEquals(PreferenceFailure.Reason.UNKNOWN, failure.reason)
+    }
+
+    @Test
+    fun aFailedWriteIsTriedAgain() {
+        start()
+        val volume = volume()
+        storage.failingWrites.set(2)
+
+        volume.update(8)
+        runBlocking { engine.flush() }
+
+        assertEquals(3, storage.writeAttempts.get())
+        assertEquals(8, volume.value)
+        assertEquals(mapOf("volume" to 8), storage.profiles[Profile.DEFAULT_ID])
+    }
+
+    @Test
+    fun aWriteFailingEveryAttemptGoesBackToTheStoredValue() {
+        storage.profiles[Profile.DEFAULT_ID] = mapOf("volume" to 7)
+        start()
+        val volume = volume()
+        storage.failingWrites.set(Int.MAX_VALUE)
+
+        volume.update(8)
+        val failure = nextFailure()
+
+        assertEquals(true, failure.saving)
+        assertEquals(PreferenceFailure.Reason.STORAGE, failure.reason)
+        assertEquals(3, storage.writeAttempts.get())
+        assertEquals(7, volume.value)
+    }
+
+    @Test
+    fun aChangeMadeWhileAWriteFailsIsKept() {
+        storage.profiles[Profile.DEFAULT_ID] = mapOf("volume" to 7)
+        start()
+        val volume = volume()
+        storage.failingWrites.set(Int.MAX_VALUE)
+
+        volume.update(8)
+        eventually { storage.writeAttempts.get() > 0 }
+        volume.update(9)
+        nextFailure()
+
+        assertEquals(9, volume.value)
     }
 
     @Test

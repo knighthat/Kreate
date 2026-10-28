@@ -41,4 +41,9 @@ internal interface PreferenceStorage {
      * Removes everything stored for the profile.
      */
     suspend fun delete(profileId: String)
+
+    /**
+     * Why [error], thrown by [read] or [write], happened.
+     */
+    fun reasonOf(error: Exception): PreferenceFailure.Reason = PreferenceFailure.Reason.UNKNOWN
 }

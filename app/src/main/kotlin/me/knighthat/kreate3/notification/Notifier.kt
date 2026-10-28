@@ -22,6 +22,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 
 /** How long a [Message] stays on screen. */
 enum class MessageDuration { SHORT, LONG, INDEFINITE }
@@ -62,6 +63,14 @@ class Notifier(private val system: SystemNotifications? = null) {
 
     /** Every [Message] posted from now on, for a screen to show. */
     val messages: SharedFlow<Message> = _messages.asSharedFlow()
+
+    /**
+     * Suspends until a screen shows messages, see ShowMessages. A message posted before that
+     * without a [Message.channel] is dropped.
+     */
+    suspend fun awaitScreen() {
+        _messages.subscriptionCount.first { it > 0 }
+    }
 
     /** Shows [message]. Safe to call from any thread, it never waits. */
     fun post(message: Message) {

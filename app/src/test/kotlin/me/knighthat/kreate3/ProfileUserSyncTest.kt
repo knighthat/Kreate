@@ -132,7 +132,7 @@ class ProfileUserSyncTest {
     @Test
     fun switchingEndsOneProfileAndStartsTheOther() {
         start()
-        val other = runBlocking { sync.createProfile("Work") }
+        val other = runBlocking { sync.createProfile("Work")!! }
         users.calls.clear()
 
         runBlocking { profiles.switchTo(other) }
@@ -146,7 +146,7 @@ class ProfileUserSyncTest {
     fun aCreatedProfileHasItsNameAndIsNotActive() = runBlocking {
         start()
 
-        val id = sync.createProfile("Work")
+        val id = sync.createProfile("Work")!!
 
         assertEquals("Work", users.users.value[id]?.name)
         assertTrue(id in profiles.ids.first())
@@ -168,7 +168,7 @@ class ProfileUserSyncTest {
     @Test
     fun deletingAProfileDeletesItsUser() = runBlocking {
         start()
-        val id = sync.createProfile("Work")
+        val id = sync.createProfile("Work")!!
 
         assertTrue(sync.deleteProfile(id))
 

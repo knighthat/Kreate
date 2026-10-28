@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -158,7 +159,7 @@ class SecretStoreTest {
         password.update("default")
         eventually { password.value == "default" }
 
-        val other = runBlocking { profiles.add("other") }
+        val other = runBlocking { profiles.add("other")!! }
         runBlocking { profiles.switchTo(other) }
         eventually { profiles.activeId.value == other }
         eventually { password.value.isEmpty() }
@@ -174,7 +175,7 @@ class SecretStoreTest {
     @Test
     fun deletingAProfileDeletesItsSecrets() {
         val password = store.secret("password")
-        val other = runBlocking { profiles.add("other") }
+        val other = runBlocking { profiles.add("other")!! }
         runBlocking { profiles.switchTo(other) }
         eventually { profiles.activeId.value == other }
         password.update("other")
@@ -233,5 +234,25 @@ class SecretStoreTest {
 
         movedScope.cancel()
         movedRoot.deleteRecursively()
+    }
+
+    @Test
+    fun aDamagedFileIsReportedAndReplaced() {
+        secretsFile(Profile.DEFAULT_ID).apply {
+            parentFile!!.mkdirs()
+            // Not a protobuf message
+            writeBytes(byteArrayOf(-1, -1, -1, -1))
+        }
+        restart()
+        val password = store.secret("password")
+
+        assertEquals("", runBlocking { password.current() })
+        val failure = runBlocking { withTimeout(5_000) { profiles.reports.failures.first() } }
+        assertEquals(PreferenceFailure.Store.SECRETS, failure.store)
+        assertFalse(failure.saving)
+        assertEquals(PreferenceFailure.Reason.DAMAGED, failure.reason)
+
+        password.update("saved")
+        assertEquals("saved", runBlocking { password.current() })
     }
 }

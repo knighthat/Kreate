@@ -24,6 +24,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -42,8 +43,13 @@ import java.io.File
  * Keeps one [DataStore] per profile, files are `<root>/profiles/<id>/preferences.preferences_pb`.
  *
  * This class is the only owner of the profile files, a file must never be opened elsewhere.
+ *
+ * @param onDamaged called when a damaged profile file was replaced with an empty one
  */
-internal class DataStorePreferenceStorage(private val rootDirectory: File) : PreferenceStorage {
+internal class DataStorePreferenceStorage(
+    private val rootDirectory: File,
+    private val onDamaged: () -> Unit = {},
+) : PreferenceStorage {
 
     private class OpenStore(val scope: CoroutineScope, val dataStore: DataStore<Preferences>)
 
@@ -73,13 +79,20 @@ internal class DataStorePreferenceStorage(private val rootDirectory: File) : Pre
         Unit
     }
 
+    override fun reasonOf(error: Exception): PreferenceFailure.Reason = failureReasonOf(error)
+
     private suspend fun storeOf(profileId: String): DataStore<Preferences> = mutex.withLock {
         openStores.getOrPut(profileId) {
             // Separate scope per store, so it can be cancelled alone when the profile is deleted
             val storeScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-            val dataStore = createPreferencesDataStore(storeScope, PROFILE_STEPS) {
-                File(profileDirectory(profileId), PROFILE_FILE_NAME)
-            }
+            val dataStore = createPreferencesDataStore(
+                storeScope,
+                PROFILE_STEPS,
+                replaceDamaged = {
+                    onDamaged()
+                    emptyPreferences()
+                },
+            ) { File(profileDirectory(profileId), PROFILE_FILE_NAME) }
             OpenStore(storeScope, dataStore)
         }.dataStore
     }

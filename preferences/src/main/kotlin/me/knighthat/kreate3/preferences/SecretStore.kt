@@ -22,6 +22,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -38,7 +39,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import me.knighthat.kreate3.preferences.SecretStore.Companion.MOVED_FROM_PREFERENCES
+import me.knighthat.kreate3.preferences.PreferenceFailure.Store.SECRETS
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -84,7 +85,7 @@ internal class SecretStore(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
-                    // TODO(knighthat): report failed reads and writes
+                    // Tasks report their own failures, this only keeps the queue going
                 }
             }
         }
@@ -136,26 +137,32 @@ internal class SecretStore(
         val profileId = profiles.activeId.value ?: return
 
         tasks.trySend {
-            storeOf(profileId).edit {
-                val key = stringPreferencesKey(name)
-                if (value.isEmpty()) it.remove(key) else it[key] = value
+            val error = retrying {
+                storeOf(profileId).edit {
+                    val key = stringPreferencesKey(name)
+                    if (value.isEmpty()) it.remove(key) else it[key] = value
+                }
             }
-            if (profiles.activeId.value == profileId) state.value = value
+            // The state shows what is on disk, a failed write leaves it as it was
+            if (error != null)
+                profiles.reports.report(SECRETS, saving = true, failureReasonOf(error))
+            else if (profiles.activeId.value == profileId)
+                state.value = value
         }
     }
 
     /**
      * Saves the values of [MOVED_FROM_PREFERENCES] found in each profile's preferences file as
      * secrets, then takes them out of that file. A profile whose move fails keeps its values
-     * there and is tried again at the next start.
+     * there and is tried again at the next start, it isn't reported.
      */
     private suspend fun moveFromPreferences() {
         for (profileId in profiles.ids.first()) {
-            try {
+            retrying {
                 val moved = profiles.storage.read(profileId)
                     .filterKeys { it in MOVED_FROM_PREFERENCES }
                     .mapValues { it.value.toString() }
-                if (moved.isEmpty()) continue
+                if (moved.isEmpty()) return@retrying
 
                 storeOf(profileId).edit { secrets ->
                     moved.forEach { (name, value) ->
@@ -165,10 +172,6 @@ internal class SecretStore(
                 }
                 // Only once they're saved here, so a failure loses nothing
                 profiles.storage.write(profileId, moved.mapValues { null })
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                // TODO(knighthat): report failed moves
             }
         }
     }
@@ -176,8 +179,17 @@ internal class SecretStore(
     private fun load(profileId: String, name: String, state: MutableStateFlow<String>) {
         tasks.trySend {
             // A profile switched meanwhile has nothing to show
-            if (profiles.activeId.value == profileId)
-                state.value = storeOf(profileId).data.first()[stringPreferencesKey(name)].orEmpty()
+            if (profiles.activeId.value != profileId) return@trySend
+
+            state.value = try {
+                storeOf(profileId).data.first()[stringPreferencesKey(name)].orEmpty()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Not set meanwhile, like a missing value
+                profiles.reports.report(SECRETS, saving = false, failureReasonOf(e))
+                ""
+            }
         }
     }
 
@@ -187,9 +199,18 @@ internal class SecretStore(
             // Child of the scope, so stopping the store releases its files
             val storeScope =
                 CoroutineScope(scope.coroutineContext + Dispatchers.IO + SupervisorJob(scope.coroutineContext.job))
-            val dataStore = createPreferencesDataStore(storeScope, SECRET_STEPS) {
-                File(Profile.directory(rootDirectory, profileId), FILE_NAME)
-            }
+            val dataStore = createPreferencesDataStore(
+                storeScope,
+                SECRET_STEPS,
+                replaceDamaged = {
+                    profiles.reports.report(
+                        SECRETS,
+                        saving = false,
+                        PreferenceFailure.Reason.DAMAGED
+                    )
+                    emptyPreferences()
+                },
+            ) { File(Profile.directory(rootDirectory, profileId), FILE_NAME) }
             OpenStore(storeScope, dataStore)
         }.dataStore
 

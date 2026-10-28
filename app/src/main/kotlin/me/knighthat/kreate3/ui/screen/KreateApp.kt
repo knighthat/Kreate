@@ -34,19 +34,27 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.SongDownloads
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.preferences.PreferenceFailure
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalIconOnly
@@ -203,6 +211,7 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
     val notifier = koinInject<Notifier>()
     val messages = remember { SnackbarHostState() }
     ShowMessages(notifier, messages)
+    ShowPreferenceFailures(notifier)
 
     val playerSheet = rememberPlayerSheetState()
     val miniPlayer = rememberMiniPlayerSpace()
@@ -592,6 +601,46 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                 PlayerSheet(playerSheet, controller = playback)
                 SongMenuOverlay(songMenu)
             }
+        }
+    }
+}
+
+/**
+ * Tells the user about settings that couldn't be loaded or saved, see [Preferences.failures].
+ * Like [ShowMessages] it listens only while the app is on screen, failures meanwhile wait.
+ */
+@Composable
+private fun ShowPreferenceFailures(notifier: Notifier) {
+    val state by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    if (!state.isAtLeast(Lifecycle.State.STARTED)) return
+
+    val resources = LocalResources.current
+    LaunchedEffect(notifier, resources) {
+        // Failures stay queued until a screen shows them, a post before that is dropped
+        notifier.awaitScreen()
+        Preferences.failures.collect { failure ->
+            val reason = resources.getString(
+                when (failure.reason) {
+                    PreferenceFailure.Reason.STORAGE -> R.string.error_file_unavailable
+                    PreferenceFailure.Reason.DAMAGED -> R.string.error_file_damaged
+                    PreferenceFailure.Reason.UNKNOWN -> R.string.error_file_unknown
+                }
+            )
+            val message = when (failure.store) {
+                PreferenceFailure.Store.SETTINGS ->
+                    if (failure.saving) R.string.snackbar_couldnt_save_settings
+                    else R.string.snackbar_couldnt_load_settings
+
+                PreferenceFailure.Store.SECRETS ->
+                    if (failure.saving) R.string.snackbar_couldnt_save_credentials
+                    else R.string.snackbar_couldnt_load_credentials
+
+                PreferenceFailure.Store.PROFILES ->
+                    if (failure.saving) R.string.snackbar_couldnt_change_profiles
+                    else R.string.snackbar_couldnt_load_profiles
+            }
+            val text = resources.getString(message, reason)
+            notifier.post(Message(text, MessageDuration.LONG, dismissable = true))
         }
     }
 }

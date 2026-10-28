@@ -15,7 +15,10 @@ on
   /preferences), path check, `restore`, schema versions.
 - `preferences/ProfileManager.kt` — profile ids, active profile, file layout. `Profile.kt` —
   constants.
-- `preferences/PreferenceEngine.kt` (active-profile snapshot), `PreferenceStorage.kt` +
+- `preferences/PreferenceEngine.kt` (active-profile snapshot, write retries/revert),
+  `PreferenceFailure.kt` (load/save failure + reason, `FailureReports` owned by `ProfileManager`,
+  `retrying` for every store; `Preferences.failures`, shown by `KreateApp`),
+  `PreferenceStorage.kt` +
   `DataStorePreferenceStorage.kt` (per-profile DataStore), `PreferencesDataStore.kt`, `Codec.kt`,
   `SchemaMigration.kt` (GLOBAL/PROFILE/SECRET steps), `PreferencesModule.kt`.
 - constant/ — `ThemeMode`, `ContrastLevel`, `OpenSubsonicAuth`, `StreamQuality` (

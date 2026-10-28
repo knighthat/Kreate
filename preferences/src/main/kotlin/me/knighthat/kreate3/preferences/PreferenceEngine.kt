@@ -22,6 +22,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,7 +46,8 @@ internal class Snapshot(val values: Map<String, Any>, val profileId: String? = n
  * Writes and profile switches go through a single queue, so a change made before
  * a switch is always saved to the profile it was made in, and a profile is never
  * loaded before its pending writes are saved. Writes are batched, rapid changes of
- * one setting end up as a single write.
+ * one setting end up as a single write. A write that keeps failing puts its settings back to
+ * what is stored.
  */
 internal class PreferenceEngine(
     private val profiles: ProfileManager,
@@ -62,10 +64,18 @@ internal class PreferenceEngine(
     private val loaded = CompletableDeferred<Unit>()
     private val mutableSnapshot = MutableStateFlow(Snapshot(emptyMap()))
 
+    /** What is in the file of the active profile, only [process] touches it */
+    private val saved = mutableMapOf<String, Any>()
+
     /**
      * Values of the active profile, empty until [awaitLoaded] returns.
      */
     val snapshot: StateFlow<Snapshot> = mutableSnapshot.asStateFlow()
+
+    /**
+     * See [FailureReports.failures], those of the secrets and the profile list included.
+     */
+    val failures: Flow<PreferenceFailure> = profiles.reports.failures
 
     init {
         scope.launch {
@@ -133,30 +143,46 @@ internal class PreferenceEngine(
     private suspend fun write(profileId: String?, dirty: MutableSet<Preference<*>>) {
         if (profileId == null || dirty.isEmpty()) return
 
-        val changes = dirty.associate { it.name to it.encoded() }
+        val batch = dirty.toList()
         dirty.clear()
+        val changes = batch.associate { it.name to it.encoded() }
 
-        try {
-            profiles.storage.write(profileId, changes)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            // TODO(knighthat): report failed writes
+        val error = retrying { profiles.storage.write(profileId, changes) }
+        if (error == null) {
+            changes.forEach { (name, value) ->
+                if (value == null) saved -= name else saved[name] = value
+            }
+            return
         }
+
+        // A setting changed again meanwhile is in the queue, it keeps that change
+        batch.forEach { it.revert(failed = changes[it.name], stored = saved[it.name]) }
+        report(saving = true, error)
     }
 
     private suspend fun load(profileId: String) {
+        saved.clear()
         try {
-            mutableSnapshot.value = Snapshot(profiles.storage.read(profileId), profileId)
+            val values = profiles.storage.read(profileId)
+            saved += values
+            mutableSnapshot.value = Snapshot(values, profileId)
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            // TODO(knighthat): handle unreadable files, defaults are used meanwhile
+        } catch (e: Exception) {
+            // Defaults are used meanwhile
             mutableSnapshot.value = Snapshot(emptyMap(), profileId)
+            report(saving = false, e)
         } finally {
             loaded.complete(Unit)
         }
     }
+
+    private fun report(saving: Boolean, error: Exception) =
+        profiles.reports.report(
+            PreferenceFailure.Store.SETTINGS,
+            saving,
+            profiles.storage.reasonOf(error)
+        )
 
     private companion object {
 
