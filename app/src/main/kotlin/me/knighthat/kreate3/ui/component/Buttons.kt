@@ -302,6 +302,28 @@ fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.tune, stringResource(R.string.semantic_config), onClick, modifier)
 
+/** Newest first or oldest first, a tap turns it around. */
+@Composable
+fun SortOrderButton(newestFirst: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(
+        if (newestFirst) R.drawable.arrow_downward else R.drawable.arrow_upward,
+        stringResource(
+            if (newestFirst) R.string.semantic_newest_first else R.string.semantic_oldest_first
+        ),
+        onClick,
+        modifier,
+    )
+
+/** Takes back the dislike of every song shown. */
+@Composable
+fun UndislikeAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(
+        R.drawable.thumb_down_outline,
+        stringResource(R.string.semantic_undislike_all),
+        onClick,
+        modifier,
+    )
+
 /** Plays every song of a list, see [QueueAction.PLAY]. */
 @Composable
 fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

@@ -225,7 +225,7 @@ internal class StatisticsRepositoryImpl(
         /**
          * `FROM` the plays of the user `?1` in [period], every play for `null` (aliased `h`), of
          * songs the library keeps and aren't disliked (aliased `v`), narrowed by [of]. A like is
-         * a time, -1 is a dislike. The period's numbers are written into the query, never the
+         * a time, a dislike is negative. The period's numbers are written into the query, never the
          * user's input.
          */
         fun playsIn(period: PlayPeriod?, of: Of = Of.All): String {

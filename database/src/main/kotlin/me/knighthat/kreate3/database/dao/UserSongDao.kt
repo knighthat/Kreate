@@ -20,7 +20,9 @@ package me.knighthat.kreate3.database.dao
 
 import android.net.Uri
 import androidx.paging.PagingSource
+import androidx.room.ColumnInfo
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -45,6 +47,10 @@ internal interface UserSongDao {
     @Query("SELECT DISTINCT origin FROM user_song_view WHERE user_id = :userId")
     fun origins(userId: String): Flow<List<Origin>>
 
+    /** The origins of the songs the user disliked, a negative `liked_at`. */
+    @Query("SELECT DISTINCT origin FROM user_song_view WHERE user_id = :userId AND liked_at < 0")
+    fun dislikedOrigins(userId: String): Flow<List<Origin>>
+
     /**
      * Every song in [query] at once, which must select from `user_song_view`.
      */
@@ -57,13 +63,20 @@ internal interface UserSongDao {
     @Query("SELECT * FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun get(userId: String, songId: String): UserSongEntity?
 
-    /** Ids of the songs the user disliked, a `liked_at` of -1. */
-    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at = -1")
+    /** Ids of the songs the user disliked, a negative `liked_at`. */
+    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at < 0")
     fun dislikedIds(userId: String): Flow<List<String>>
 
     /** [dislikedIds] right now. */
-    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at = -1")
+    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at < 0")
     suspend fun listDislikedIds(userId: String): List<String>
+
+    /**
+     * One page at a time of the disliked songs in [query], which must select from
+     * `user_song_view` with `-liked_at AS disliked_at`.
+     */
+    @RawQuery(observedEntities = [UserSongViewEntity::class])
+    fun pagedDisliked(query: RoomRawQuery): PagingSource<Int, DislikedSongRow>
 
     @Upsert
     suspend fun upsert(song: UserSongEntity)
@@ -168,3 +181,14 @@ internal interface UserSongDao {
     @Query("SELECT DISTINCT thumbnail FROM user_song WHERE thumbnail LIKE 'file:%'")
     suspend fun fileThumbnails(): List<Uri>
 }
+
+/**
+ * A disliked song with when it was disliked, see `UserSongRepository.disliked`.
+ *
+ * @property dislikedAt epoch millis
+ */
+internal data class DislikedSongRow(
+    @Embedded val song: UserSongViewEntity,
+    @ColumnInfo(name = "disliked_at")
+    val dislikedAt: Long,
+)

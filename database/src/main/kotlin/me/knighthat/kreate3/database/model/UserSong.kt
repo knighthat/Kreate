@@ -29,7 +29,8 @@ import kotlin.time.Instant
  * @property name title preferred by the user, `null` to use the shared one
  * @property artists artist names preferred by the user, `null` to use the shared ones
  * @property thumbnail image preferred by the user, `null` to use the shared one
- * @property likedAt when the user liked the song, `null` if not liked
+ * @property likedAt when the user liked the song, `null` if neither liked nor disliked; a dislike
+ * is the time it was made, made negative
  * @property albumPosition where the user put the song in its album, lowest first, `null` to use
  * the shared position
  * @property downloadedAt when the user downloaded the song, `null` if they didn't

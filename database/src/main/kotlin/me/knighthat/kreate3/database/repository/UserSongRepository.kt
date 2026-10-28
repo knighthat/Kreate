@@ -21,6 +21,7 @@ package me.knighthat.kreate3.database.repository
 import android.net.Uri
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import me.knighthat.kreate3.database.model.DislikedSong
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
@@ -125,6 +126,20 @@ interface UserSongRepository {
 
     /** [dislikedIds] right now, once a user is active. */
     suspend fun listDislikedIds(): Set<String>
+
+    /**
+     * The songs the user disliked, a page at a time, most recently disliked first unless
+     * [newestFirst] is false. It follows changes in the database.
+     *
+     * @param origins only the songs from these, every song when empty
+     */
+    fun disliked(origins: Set<Origin>, newestFirst: Boolean): Flow<PagingData<DislikedSong>>
+
+    /** The origins the disliked songs are from. It follows changes in the database. */
+    fun dislikedOrigins(): Flow<Set<Origin>>
+
+    /** Every song of [disliked] right now, all at once. */
+    suspend fun listDisliked(origins: Set<Origin>): List<UserSongView>
 
     /**
      * Songs of the library whose title, artists or album contain [query], a page at a time.

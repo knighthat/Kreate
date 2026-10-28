@@ -13,14 +13,16 @@ Sync and reactions sent to servers: `sync.md`; Room schema and paging: `database
 ## Reactions are tri-state
 
 `likedAt` (songs), `bookmarkedAt` (albums) and `followSince` (artists) are `Instant?`:
-`null` = neutral, epoch millis `-1` = disliked, any other value (including `0`) = positive, the
-value being when it happened. Never treat `!= null` as "liked"; check `-1` first. Anything mapping
+`null` = neutral, negative epoch millis = disliked, any other value (including `0`) = positive, the
+value being when it happened. A song's dislike is its time made negative (the Disliked page shows
+it), albums and artists still write `-1`; old `-1` song rows stay dislikes. Check the sign (`< 0`,
+`>= 0`), never `== -1`, and never treat `!= null` as "liked". Anything mapping
 them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `ThumbRating`, not
 `HeartRating`).
 
-Disliked songs are hidden everywhere, always (no setting; the maintainer plans a screen of hidden
-songs to take dislikes back). `UserSongRepositoryImpl.query` leaves them out of every library list,
-`find` still gives them. Lists fetched live drop the ids of `UserSongRepository.dislikedIds` where
+Disliked songs are hidden everywhere, always (no setting; Account's Disliked page takes them back).
+`UserSongRepositoryImpl.query` leaves them out of every library list, `find` still gives them. Lists
+fetched live drop the ids of `UserSongRepository.dislikedIds` where
 they're built (`source/DislikedSongs.kt` helpers; `LiveDetailViewModel` re-filters its state, so a
 song disliked while shown goes at once; paged lists combine after `cachedIn`). Radio and Android
 Auto use `listDislikedIds`. A new list of songs, local or live, must do the same.

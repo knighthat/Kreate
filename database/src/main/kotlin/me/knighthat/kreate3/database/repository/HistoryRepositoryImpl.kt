@@ -208,7 +208,7 @@ internal class HistoryRepositoryImpl(
 
     private companion object {
 
-        // A like is a time, -1 is a dislike
+        // A like is a time, a dislike is negative
         const val NOT_DISLIKED = "AND (v.liked_at IS NULL OR v.liked_at >= 0)"
 
         /** Ids bound in one statement at most, under SQLite's limit of variables. */

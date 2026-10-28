@@ -200,4 +200,4 @@ class LocalAlbumDetailViewModel(
 
 /** Whether a reaction holds a positive one, not a dislike or nothing, see `UserAlbum`. */
 internal val Instant?.isPositive: Boolean
-    get() = this != null && toEpochMilliseconds() != -1L
+    get() = this != null && toEpochMilliseconds() >= 0

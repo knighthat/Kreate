@@ -17,8 +17,10 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `Converters.kt` — Instant/Duration/list/Uri.
 - entity/ — shared tables `Song`, `Album`, `Artist`, `SongFormat` (gain), `Lyrics`, `SongArtistMap`,
   `SongPlaylistMap` (`position` = playlist order, gaps left by removals); per-user `User`,
-  `UserSong` (`album_position` = the user's album order over `song.album_position`, set for
-  every song of the album by `UserSongRepository.moveInAlbum`, cleared by `resetAlbumOrder`),
+  `UserSong` (`album_position` = the user's album order over `song.album_position`, set for every
+  song of the album by `UserSongRepository.moveInAlbum`, cleared by `resetAlbumOrder`;
+  `UserSongRepository.disliked` reads a dislike's time from its negative `liked_at`,
+  `DislikedSongRow` in `UserSongDao`),
   `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:

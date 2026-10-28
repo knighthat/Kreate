@@ -27,8 +27,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
+import me.knighthat.kreate3.database.dao.DislikedSongRow
 import me.knighthat.kreate3.database.dao.UserSongDao
 import me.knighthat.kreate3.database.inTransaction
+import me.knighthat.kreate3.database.model.DislikedSong
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -59,7 +61,7 @@ internal class UserSongRepositoryImpl(
     override suspend fun list(order: SortOrder<UserSongSort>, origins: Set<Origin>) =
         listed(order.toOrderBy(), filter = originFilter(origins))
 
-    // A like is a time, -1 is a dislike
+    // A like is a time, a dislike is negative
     override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
         paged(order.toOrderBy(), filter = "AND liked_at >= 0")
 
@@ -106,6 +108,34 @@ internal class UserSongRepositoryImpl(
     override suspend fun listDislikedIds(): Set<String> =
         userSongDao.listDislikedIds(scope.awaitId()).toSet()
 
+    override fun disliked(
+        origins: Set<Origin>,
+        newestFirst: Boolean,
+    ): Flow<PagingData<DislikedSong>> =
+        scope.observe(PagingData.empty()) { userId ->
+            database.pagedFlow(DislikedSongRow::toModel, "user_song_view") {
+                userSongDao.pagedDisliked(
+                    RoomRawQuery(
+                        sql = "$DISLIKED ${originFilter(origins)} " +
+                                "ORDER BY disliked_at ${if (newestFirst) "DESC" else "ASC"}, song_id",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
+        }
+
+    override fun dislikedOrigins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId ->
+            userSongDao.dislikedOrigins(userId).map { it.toSet() }
+        }.distinctUntilChanged()
+
+    override suspend fun listDisliked(origins: Set<Origin>): List<UserSongView> =
+        listed(
+            orderBy = "",
+            filter = "AND liked_at < 0 ${originFilter(origins)}",
+            includeDisliked = true,
+        )
+
     /**
      * The user's songs that [filter] keeps, disliked ones are always left out.
      *
@@ -131,9 +161,10 @@ internal class UserSongRepositoryImpl(
     private suspend fun listed(
         orderBy: String,
         filter: String,
+        includeDisliked: Boolean = false,
         bind: (SQLiteStatement) -> Unit = {},
     ): List<UserSongView> =
-        userSongDao.list(query(scope.awaitId(), orderBy, filter, bind))
+        userSongDao.list(query(scope.awaitId(), orderBy, filter, bind, includeDisliked))
             .map(UserSongViewEntity::toModel)
 
     /** @param includeDisliked keeps the disliked songs, which no list shows */
@@ -296,8 +327,14 @@ internal class UserSongRepositoryImpl(
             LIMIT ?3
         """
 
-        // A like is a time, -1 is a dislike
+        // A like is a time, a dislike its time made negative
         const val NOT_DISLIKED = "AND (liked_at IS NULL OR liked_at >= 0)"
+
+        // ?1 user; a dislike is the time it was made, made negative
+        const val DISLIKED = """
+            SELECT *, -liked_at AS disliked_at FROM user_song_view
+            WHERE user_id = ?1 AND liked_at < 0
+        """
 
         const val OF_ALBUM = "AND album_id = ?"
         const val OF_ARTIST =

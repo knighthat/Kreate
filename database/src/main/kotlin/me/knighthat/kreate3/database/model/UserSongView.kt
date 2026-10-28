@@ -39,7 +39,8 @@ import kotlin.time.Instant
  * @property albumName title of the album as the user sees it
  * @property albumPosition position of the song in its album
  * @property unavailableSince when a scan first missed the song, `null` while it is available
- * @property likedAt when the user liked the song, `null` if not liked
+ * @property likedAt when the user liked the song, `null` if neither liked nor disliked; a dislike
+ * is the time it was made, made negative
  */
 data class UserSongView(
     val songId: String,

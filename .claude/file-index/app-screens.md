@@ -20,7 +20,13 @@ ui/screen/
   `setupCompletedFile`.
 - account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics,
   Disliked, Downloaded, and Switch profile starts `ProfilesActivity`), `AccountPage.kt` (the empty
-  page Disliked and Downloaded show for now). `StatisticsScreen.kt` + `StatisticsViewModel.kt`
+  page Downloaded shows for now). `DislikedScreen.kt` + `DislikedViewModel.kt` (paged
+  `UserSongRepository.disliked`, each row's `trailing` says how long ago it was disliked; origin
+  chips under the bar (only sources with dislikes), newest/oldest toggle and Undislike all (confirm
+  dialog, only what's shown while filtered, one song at a time, then one message from
+  `undislikedMessage`: done, the reason, or counts with failures; the song menu's Dislike takes one
+  back); tap plays the song alone; undislikes go through the song's source like the song menu, on
+  the app scope; nothing is kept). `StatisticsScreen.kt` + `StatisticsViewModel.kt`
   (All time / This month chips, nothing kept; summary tiles with the change against last month up to
   the same day (`monthToDate`), top 5 songs with minutes, 3 albums, 10 artists, time per source;
   songs open `SongStatisticsScreen.kt` + `SongStatisticsViewModel.kt`, albums and artists

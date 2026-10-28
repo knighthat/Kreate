@@ -89,10 +89,5 @@ class DeviceReactionsImpl(
 
     /** Whether a reaction holds a positive one, not a dislike or nothing. */
     private val Instant?.isPositive: Boolean
-        get() = this != null && toEpochMilliseconds() != DISLIKED
-
-    private companion object {
-        /** Stored as the reaction of a dislike, see `UserAlbum.bookmarkedAt`. */
-        const val DISLIKED = -1L
-    }
+        get() = this != null && toEpochMilliseconds() >= 0
 }

@@ -286,6 +286,7 @@
     <string name="action_restart">Restart</string>
     <string name="action_reset">Reset</string>
     <string name="action_clear">Clear</string>
+    <string name="action_undislike">Undislike</string>
     <string name="action_grant">Grant</string>
     <string name="action_go_back">Go back</string>
     <string name="action_next">Next</string>
@@ -396,6 +397,7 @@
     <string name="semantic_oldest_first">Oldest first</string>
     <string name="semantic_remove_bookmark">Remove bookmark</string>
     <string name="semantic_remove_dislike">Remove dislike</string>
+    <string name="semantic_undislike_all">Undislike all</string>
     <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>
     <string name="semantic_remove_from_the_queue">Remove from the queue</string>
     <string name="semantic_remove_like">Remove like</string>
@@ -501,6 +503,9 @@
     <string name="dialog_title_clear_history">Clear history?</string>
     <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
     <string name="dialog_body_clear_history_shown">The plays shown are taken out of the history, the others stay.</string>
+    <string name="dialog_title_undislike_all">Undislike all?</string>
+    <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
+    <string name="dialog_body_undislike_all_shown">The disliked songs shown show up in the lists again, the others stay hidden.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
@@ -558,6 +563,7 @@
     <string name="error_server_change_refused">The server refused to %1$s</string>
     <string name="error_server_change_unreachable">Can\'t reach the server to %1$s</string>
     <string name="error_server_change_failed">Couldn\'t %1$s on the server</string>
+    <string name="error_change_failed">Couldn\'t %1$s</string>
     <string name="error_source_change_failed">Couldn\'t %1$s on %2$s</string>
     <string name="error_source_change_signed_out">Sign in to %2$s again to %1$s</string>
     <string name="error_source_change_unreachable">Can\'t reach %2$s to %1$s</string>
@@ -570,6 +576,9 @@
     <string name="snackbar_nothing_to_pick">No %1$s to pick from</string>
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>
+    <string name="snackbar_removed_from_dislike">Removed from dislike</string>
+    <string name="snackbar_removed_from_dislike_count">%1$d removed from dislike</string>
+    <string name="snackbar_removed_from_dislike_some_failed">%1$d removed from dislike, %2$d failed</string>
     <string name="snackbar_the_playlist">the playlist</string>
     <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
     <string name="snackbar_will_play_next_one">Will play next</string>
@@ -630,6 +639,8 @@
     <string name="screen_history_status_nothing_played">Nothing played yet</string>
     <string name="screen_history_status_no_matches">No plays match the filters</string>
     <string name="screen_history_status_paused">History is paused, new plays aren\'t added</string>
+    <string name="screen_disliked_status_nothing_disliked">No disliked songs</string>
+    <string name="screen_disliked_status_no_matches">No disliked songs match the filters</string>
     <string name="screen_statistics_status_nothing_played">Nothing played yet</string>
     <string name="screen_statistics_status_nothing_this_month">Nothing played this month</string>
     <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>

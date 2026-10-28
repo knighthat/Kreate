@@ -204,6 +204,48 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun dislikedSongsComeInTheOrderTheyWereDisliked() = runBlocking {
+        addSong("old", origin = Origin.LOCAL)
+        addSong("new", origin = Origin.YOUTUBE)
+        addSong("liked", origin = Origin.OPEN_SUBSONIC)
+        librarySong("liked", likedAt = Instant.fromEpochMilliseconds(5_000))
+        // A dislike is the time it was made, made negative
+        librarySong("old", likedAt = Instant.fromEpochMilliseconds(-2_000))
+        librarySong("new", likedAt = Instant.fromEpochMilliseconds(-3_000))
+
+        assertEquals(
+            listOf("new", "old"),
+            songs.disliked(emptySet(), newestFirst = true).asList().map { it.song.songId },
+        )
+        val oldestFirst = songs.disliked(emptySet(), newestFirst = false).asList()
+        assertEquals(listOf("old", "new"), oldestFirst.map { it.song.songId })
+        assertEquals(Instant.fromEpochMilliseconds(3_000), oldestFirst.last().dislikedAt)
+        assertEquals(
+            listOf("new"),
+            songs.disliked(setOf(Origin.YOUTUBE), newestFirst = true).asList()
+                .map { it.song.songId },
+        )
+        assertEquals(listOf("old"), songs.listDisliked(setOf(Origin.LOCAL)).map { it.songId })
+        assertEquals(setOf("old", "new"), songs.listDislikedIds())
+        assertEquals(listOf("liked"), songs.liked().asList().map { it.songId })
+        // The liked song's origin has no dislike
+        assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), songs.dislikedOrigins().first())
+    }
+
+    @Test
+    fun theOldMinusOneIsStillADislike() = runBlocking {
+        addSong("s1")
+        librarySong("s1", DISLIKED)
+
+        assertEquals(setOf("s1"), songs.listDislikedIds())
+        assertTrue(songs.all().asList().isEmpty())
+        assertEquals(
+            listOf("s1"),
+            songs.disliked(emptySet(), newestFirst = true).asList().map { it.song.songId },
+        )
+    }
+
+    @Test
     fun songsAreFilteredByOrigin() = runBlocking {
         addSong("local", origin = Origin.LOCAL)
         addSong("tube", origin = Origin.YOUTUBE)

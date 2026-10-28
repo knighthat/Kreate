@@ -47,7 +47,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SelectableDates
@@ -104,6 +103,7 @@ import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SongMenuAction
+import me.knighthat.kreate3.ui.component.SortOrderButton
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.playTapped
@@ -314,18 +314,6 @@ private fun HistoryContent(
         }
     }
 }
-
-/** Newest first or oldest first, a tap turns it around. */
-@Composable
-private fun SortOrderButton(newestFirst: Boolean, onClick: () -> Unit) =
-    IconButton(onClick = onClick) {
-        Icon(
-            painterResource(if (newestFirst) R.drawable.arrow_downward else R.drawable.arrow_upward),
-            contentDescription = stringResource(
-                if (newestFirst) R.string.semantic_newest_first else R.string.semantic_oldest_first
-            ),
-        )
-    }
 
 /**
  * How long ago [bucket] is, with how many plays and songs and for how long of [summary] in small raised text

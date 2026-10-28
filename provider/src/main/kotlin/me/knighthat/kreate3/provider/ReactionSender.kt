@@ -99,11 +99,8 @@ internal class ReactionSender(private val userSongs: UserSongRepository) {
 
 /** Whether a reaction holds a like, not a dislike or nothing, see `UserSong.likedAt`. */
 internal val Instant?.isLike: Boolean
-    get() = this != null && toEpochMilliseconds() != DISLIKED
+    get() = this != null && toEpochMilliseconds() >= 0
 
 /** Whether a reaction holds a dislike, see `UserSong.likedAt`. */
 internal val Instant?.isDislike: Boolean
-    get() = this?.toEpochMilliseconds() == DISLIKED
-
-/** Stored as the reaction of a dislike, see `UserSong.likedAt`. */
-private const val DISLIKED = -1L
+    get() = this != null && toEpochMilliseconds() < 0

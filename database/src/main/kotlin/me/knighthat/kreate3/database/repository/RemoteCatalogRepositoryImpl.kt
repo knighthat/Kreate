@@ -168,7 +168,7 @@ internal class RemoteCatalogRepositoryImpl(
 
     /** Whether a reaction column holds a like, not a dislike or nothing. */
     private val Instant?.isLike: Boolean
-        get() = this != null && toEpochMilliseconds() != DISLIKED
+        get() = this != null && toEpochMilliseconds() >= 0
 
     private fun requireOrigin(origin: Origin, origins: List<Origin>) =
         require(origins.all { it == origin }) { "Every item must be from $origin" }
@@ -176,8 +176,5 @@ internal class RemoteCatalogRepositoryImpl(
     private companion object {
 
         const val ACTIVE_USER_TIMEOUT = 10_000L
-
-        /** Stored in a reaction column for a dislike, see `UserSong.likedAt`. */
-        const val DISLIKED = -1L
     }
 }

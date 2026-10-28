@@ -89,12 +89,12 @@ private fun List<String>.joined(): String? = takeIf { it.isNotEmpty() }?.joinToS
 private inline fun extras(block: Bundle.() -> Unit): Bundle = Bundle().apply(block)
 
 /**
- * The reaction kept in a timestamp: `null` is neutral, epoch millis `-1` is a dislike and any
- * other value is a like, follow or bookmark.
+ * The reaction kept in a timestamp: `null` is neutral, negative epoch millis are a dislike and
+ * any other value is a like, follow or bookmark.
  */
 private fun Instant?.toRating(): Rating = when {
     this == null -> ThumbRating()
-    toEpochMilliseconds() == -1L -> ThumbRating(false)
+    toEpochMilliseconds() < 0 -> ThumbRating(false)
     else -> ThumbRating(true)
 }
 

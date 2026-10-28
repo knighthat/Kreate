@@ -113,6 +113,7 @@ import me.knighthat.kreate3.ui.navigation.routeViewModel
 import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.screen.account.AccountPage
 import me.knighthat.kreate3.ui.screen.account.AccountScreen
+import me.knighthat.kreate3.ui.screen.account.DislikedScreen
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.HistoryScreen
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
@@ -395,10 +396,10 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 )
                             }
                             entry<Disliked> {
-                                AccountPage(
-                                    R.string.screen_title_disliked,
-                                    topLevel::pop,
-                                    paddingModifier
+                                DislikedScreen(
+                                    onBack = topLevel::pop,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                 )
                             }
                             entry<Downloaded> {

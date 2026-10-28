@@ -52,9 +52,6 @@ import kotlin.time.Instant
 
 private const val TAG = "SongReaction"
 
-/** Kept in `liked_at` for a dislike, see `UserSong.likedAt`. */
-private const val DISLIKED = -1L
-
 /** What the user thinks of a song. */
 enum class Reaction { NEUTRAL, LIKED, DISLIKED }
 
@@ -81,7 +78,7 @@ private class Lookup(val song: UserSongView?)
  *
  * A song that isn't in the library has no reaction, the first one adds it there, after storing a
  * song fetched live (see [SongStore]). A dislike also takes the song out of the queue, see
- * [PlaybackController.drop].
+ * [PlaybackController.drop]; taking one back says so, since the song only reappears in lists.
  */
 @Composable
 internal fun rememberSongReaction(item: MediaItem): SongReaction {
@@ -104,7 +101,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         // Until the library answers, and for a song nothing says where it comes from
         lookup == null || origin == null -> null
         likedAt == null -> Reaction.NEUTRAL
-        likedAt.toEpochMilliseconds() == DISLIKED -> Reaction.DISLIKED
+        likedAt.toEpochMilliseconds() < 0 -> Reaction.DISLIKED
         else -> Reaction.LIKED
     }
 
@@ -127,6 +124,9 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
                 Origin.YOUTUBE -> youTube.react(songId, change)
                 else -> library.update(songId) { it.copy(likedAt = change(it.likedAt)) }
             }
+            // The song shows up in the lists again, nothing on screen says so
+            if (removing && to == Reaction.DISLIKED)
+                notifier.post(Message(resources.getString(R.string.snackbar_removed_from_dislike)))
         } catch (e: CancellationException) {
             throw e
         } catch (e: ServerException) {
@@ -145,7 +145,10 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         toggleDislike = {
             // A song the user dislikes isn't worth finishing, nor hearing again
             if (reaction != Reaction.DISLIKED) playback.drop(songId)
-            set(Reaction.DISLIKED) { Instant.fromEpochMilliseconds(DISLIKED) }
+            // Its time made negative, so the Disliked page can say when
+            set(Reaction.DISLIKED) {
+                Instant.fromEpochMilliseconds(-Clock.System.now().toEpochMilliseconds())
+            }
         },
     )
 }
