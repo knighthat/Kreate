@@ -98,6 +98,8 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.sourceRes
+import me.knighthat.kreate3.ui.theme.chartColors
+import me.knighthat.kreate3.ui.theme.onChart
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.roundToInt
@@ -362,18 +364,14 @@ internal fun SourcesPie(origins: List<OriginTime>) {
     if (origins.isEmpty()) return
 
     val resources = LocalResources.current
-    val colors = MaterialTheme.colorScheme
+    val colors = MaterialTheme.chartColors
     fun colorOf(origin: Origin) = when (origin) {
-        Origin.YOUTUBE -> colors.primary
-        Origin.OPEN_SUBSONIC -> colors.tertiary
-        Origin.LOCAL -> colors.secondary
+        Origin.YOUTUBE -> colors.orange
+        Origin.OPEN_SUBSONIC -> colors.blue
+        Origin.LOCAL -> colors.aqua
     }
 
-    fun onColorOf(origin: Origin) = when (origin) {
-        Origin.YOUTUBE -> colors.onPrimary
-        Origin.OPEN_SUBSONIC -> colors.onTertiary
-        Origin.LOCAL -> colors.onSecondary
-    }
+    fun onColorOf(origin: Origin) = colorOf(origin).onChart()
 
     val total = origins.fold(Duration.ZERO) { sum, it -> sum + it.timeSpent }
     val shares = origins.map {

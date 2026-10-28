@@ -21,8 +21,14 @@ module: every chart passes the theme's colors itself. Statistics' charts live in
 
 ## Conventions
 
-- One series in the theme's primary; a color follows the entity, never its rank (`SourcesPie`
-  maps each origin to a fixed color). Names and values beside a color, never color alone.
+- One series in the theme's primary (other users' part of a size bar: the same color fainter).
+- Parts that stand for different things take fixed colors from `MaterialTheme.chartColors`
+  (`ui/theme/ChartColors.kt`), never the theme's primary/secondary/tertiary: those share one seed
+  and are all white in pitch black. Light and dark have their own steps, checked against
+  color-blindness in their order (neighbors apart); text on a part uses `Color.onChart()`. A color
+  follows the entity, never its rank (`SourcesPie`: YouTube orange, OpenSubsonic blue, local aqua;
+  the device storage bar: its parts in `StoragePart` order take the palette in order, 2dp gaps,
+  legend in two equal columns). Names and values beside a color, never color alone.
 - Columns: rounded data ends (4dp), small gaps, faint grid and axis lines (`outlineVariant`).
 - A tap shows a column's value (Vico marker with `rememberToggleOnTap`, or the row's own text).
 - A time axis steps evenly by round minutes or hours (`timeTicks`); bars must keep a linear scale.

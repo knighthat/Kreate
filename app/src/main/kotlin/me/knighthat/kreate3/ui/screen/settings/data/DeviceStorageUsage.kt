@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.ComponentPreviews
 import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.theme.ChartColors
+import me.knighthat.kreate3.ui.theme.chartColors
 
 /** What the app keeps on the device, a part of [DeviceStorage]. */
 enum class StoragePart { IMAGE_CACHE, SONG_CACHE, SONG_DOWNLOADS, DOWNLOAD_COVERS, LYRICS }
@@ -84,6 +85,7 @@ data class DeviceStorage(
 internal fun DeviceStorageUsage(storage: DeviceStorage, modifier: Modifier = Modifier) =
     Column(modifier) {
         val colors = MaterialTheme.colorScheme
+        val chartColors = MaterialTheme.chartColors
         val other = colors.onSurfaceVariant.copy(alpha = .4f)
 
         Text(
@@ -102,10 +104,12 @@ internal fun DeviceStorageUsage(storage: DeviceStorage, modifier: Modifier = Mod
 
         Spacer(Modifier.height(8.dp))
 
-        // Each part as wide as its share, a part with any room at least a sliver to be seen
+        // Each part as wide as its share, a part with any room at least a sliver to be seen, a
+        // gap between parts so neighbors don't run together
         val total = storage.totalBytes.coerceAtLeast(1).toFloat()
         Row(
-            Modifier
+            horizontalArrangement = Arrangement.spacedBy(PART_GAP),
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(12.dp)
                 .clip(CircleShape)
@@ -116,7 +120,7 @@ internal fun DeviceStorageUsage(storage: DeviceStorage, modifier: Modifier = Mod
                     Modifier
                         .weight((it.bytes / total).coerceAtLeast(MIN_SHARE))
                         .fillMaxHeight()
-                        .background(it.part.color(colors))
+                        .background(it.part.color(chartColors))
                 )
             }
             if (storage.otherBytes > 0)
@@ -132,21 +136,33 @@ internal fun DeviceStorageUsage(storage: DeviceStorage, modifier: Modifier = Mod
 
         Spacer(Modifier.height(8.dp))
 
+        // Two columns of equal width, so the second one lines up whatever the first one's labels
         FlowRow(
+            maxItemsInEachRow = 2,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             storage.parts.forEach {
-                Legend(it.part.color(colors), stringResource(it.part.labelRes), it.size)
+                Legend(
+                    it.part.color(chartColors),
+                    stringResource(it.part.labelRes),
+                    it.size,
+                    Modifier.weight(1f),
+                )
             }
-            Legend(other, stringResource(R.string.statistics_storage_other), null)
+            Legend(
+                other,
+                stringResource(R.string.statistics_storage_other),
+                null,
+                Modifier.weight(1f),
+            )
         }
     }
 
 /** A dot of [color], the [label] of what it stands for and its [size]. */
 @Composable
-private fun Legend(color: Color, label: String, size: String?) =
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun Legend(color: Color, label: String, size: String?, modifier: Modifier = Modifier) =
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Box(
             Modifier
                 .size(8.dp)
@@ -163,13 +179,16 @@ private fun Legend(color: Color, label: String, size: String?) =
 /** The smallest share a part with any room is drawn with. */
 private const val MIN_SHARE = .005f
 
-/** A part keeps its color whatever its size, its covers are the downloads' lighter one. */
-private fun StoragePart.color(colors: ColorScheme): Color = when (this) {
-    StoragePart.SONG_DOWNLOADS -> colors.primary
-    StoragePart.DOWNLOAD_COVERS -> colors.primary.copy(alpha = .55f)
-    StoragePart.SONG_CACHE -> colors.secondary
-    StoragePart.IMAGE_CACHE -> colors.tertiary
-    StoragePart.LYRICS -> colors.tertiary.copy(alpha = .55f)
+/** The gap between two parts of the bar. */
+private val PART_GAP = 2.dp
+
+/** A part keeps its color whatever its size, in the bar's order so neighbors stay apart. */
+private fun StoragePart.color(colors: ChartColors): Color = when (this) {
+    StoragePart.IMAGE_CACHE -> colors.blue
+    StoragePart.SONG_CACHE -> colors.orange
+    StoragePart.SONG_DOWNLOADS -> colors.aqua
+    StoragePart.DOWNLOAD_COVERS -> colors.yellow
+    StoragePart.LYRICS -> colors.pink
 }
 
 private val StoragePart.labelRes: Int

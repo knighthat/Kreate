@@ -154,21 +154,21 @@ fun StorageUsage(storage: StorageUse, modifier: Modifier = Modifier) = Column(mo
             storage.limit,
         )
     }
+    // One thing out of a limit: other users' part is a fainter step of this user's color
     val userColor = MaterialTheme.colorScheme.primary
-    val othersColor = MaterialTheme.colorScheme.secondary
+    val othersColor = userColor.copy(alpha = .4f)
 
     if (storage.shared)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "${stringResource(R.string.statistics_storage_this_user)} ${storage.user}",
                 style = MaterialTheme.typography.labelLarge,
-                color = userColor,
                 modifier = Modifier.weight(1f),
             )
             Text(
                 "${stringResource(R.string.statistics_storage_all_users)} ${ofLimit(storage.all)}",
                 style = MaterialTheme.typography.labelLarge,
-                color = othersColor,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     else Text(ofLimit(storage.user), style = MaterialTheme.typography.labelLarge)

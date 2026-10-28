@@ -99,6 +99,7 @@ ui/navigation/
   `Resources.fileSize` (every size shown in the app, KiB/MiB or kB/MB by `BINARY_SIZES`),
   `StorageUsage` (this user's and all users' text over one stacked bar); Downloaded and Data.
 
-ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ThumbnailSeed.kt` (
+ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ChartColors.kt` (fixed chart
+palette per light/dark, `MaterialTheme.chartColors`, `Color.onChart()`), `ThumbnailSeed.kt` (
 `rememberThumbnailSeed`, runtime-only — `.claude/rules/storage.md`), `Type.kt` (Inter typography),
 `KreateThemePreview.kt`.
