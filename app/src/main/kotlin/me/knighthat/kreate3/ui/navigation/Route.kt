@@ -85,6 +85,14 @@ data object OpenSubsonicSettings : Route
 @Serializable
 data object BackupSettings : Route
 
+/** The app's version and license, the last of the settings pages. */
+@Serializable
+data object About : Route
+
+/** The libraries the app is built with, opened from [About]. */
+@Serializable
+data object OpenSourceLicenses : Route
+
 /** What the active profile has done and kept, opened from the profile button. */
 @Serializable
 data object Account : Route

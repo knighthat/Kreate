@@ -141,4 +141,6 @@ ui/screen/
   `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, sign-in
   checks, direct play, quality sliders, ReplayGain reference (LUFS), library), `backup/` (
   `BackupSettingsScreen.kt` +
-  `BackupViewModel.kt`, SAF export/restore).
+  `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
+  licenses row; `OpenSourceLicensesScreen.kt` + `OpenSourceLicensesViewModel.kt`: libraries read
+  from AboutLibraries' generated `R.raw.aboutlibraries`, search, license text sheet).

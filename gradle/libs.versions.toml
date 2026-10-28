@@ -36,6 +36,7 @@ navigation3 = "1.2.0"
 robolectric = "4.17"
 reorderable = "3.1.0"
 vico = "3.3.1"
+aboutlibraries = "15.3.0"
 
 [libraries]
 # Core
@@ -64,6 +65,7 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
 
 # Networking
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -132,3 +134,4 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+aboutlibraries-android = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutlibraries" }

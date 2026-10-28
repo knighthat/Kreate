@@ -64,6 +64,7 @@ import me.knighthat.kreate3.ui.component.SongMenuOverlay
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
+import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.Account
 import me.knighthat.kreate3.ui.navigation.AlbumStatistics
 import me.knighthat.kreate3.ui.navigation.Albums
@@ -82,6 +83,7 @@ import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 import me.knighthat.kreate3.ui.navigation.Navigator
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
+import me.knighthat.kreate3.ui.navigation.OpenSourceLicenses
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
@@ -141,6 +143,8 @@ import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.about.AboutScreen
+import me.knighthat.kreate3.ui.screen.settings.about.OpenSourceLicensesScreen
 import me.knighthat.kreate3.ui.screen.settings.backup.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.general.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.NetworkSettingsScreen
@@ -162,7 +166,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
         Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
-        OpenSubsonicSettings, BackupSettings, YouTubeSignIn, Search -> false
+        OpenSubsonicSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
+        Search -> false
 
         is SearchResults -> false
         else -> true
@@ -442,6 +447,13 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                             }
                             entry<OpenSubsonicSettings> { OpenSubsonicSettingsScreen(topLevel::pop) }
                             entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
+                            entry<About> {
+                                AboutScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenLicenses = { topLevel.push(OpenSourceLicenses) },
+                                )
+                            }
+                            entry<OpenSourceLicenses> { OpenSourceLicensesScreen(topLevel::pop) }
                             entry<YouTubeSignIn> {
                                 YouTubeSignInScreen(
                                     onBack = topLevel::pop,

@@ -28,6 +28,7 @@ import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
@@ -96,6 +97,11 @@ private fun SettingsContent(
                 summary = stringResource(R.string.setting_description_backup),
                 onClick = { onOpen(BackupSettings) },
             )
+        SettingsItem(
+            title = stringResource(R.string.screen_title_about),
+            summary = stringResource(R.string.setting_description_about),
+            onClick = { onOpen(About) },
+        )
     }
 }
 

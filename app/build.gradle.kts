@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.aboutlibraries.android)
 }
 
 android {
@@ -148,6 +149,13 @@ androidComponents {
     }
 }
 
+aboutLibraries {
+    // Fixes for libraries whose POM lacks details, InnerTubeX's (JitPack) names no SPDX license
+    collect.configPath = file("aboutlibraries")
+    // Only what the open source licenses page shows goes in the APK
+    export.excludeFields.addAll("description", "funding", "scm")
+}
+
 dependencies {
     implementation(project(":model"))
     implementation(project(":database"))
@@ -183,6 +191,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.vico.compose)
+    implementation(libs.aboutlibraries.core)
 
     // Networking
     implementation(libs.okhttp)

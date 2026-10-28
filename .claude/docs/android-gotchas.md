@@ -132,3 +132,11 @@ thread (`Studio:ins_io0`): native SIGSEGV in `prepare` (the DB got recreated) an
 same steps never crash. On such a report, check logcat for `StudioInspectors`/`Studio:ins_io0`
 before suspecting app code. Workarounds: close the inspector while testing, or use
 `AndroidSQLiteDriver` in debug builds (not applied).
+
+## Opening links
+
+Compose's `UriHandler.openUri` throws `IllegalArgumentException` ("Can't open …"), not
+`ActivityNotFoundException`, when no app can open the link; uncaught it crashes the app. The
+`Pixel_6a_GPlay` emulator has no browser, so every link tap hits it there. Open links through
+`rememberOpenLink()` (`settings/about/AboutScreen.kt`), which catches it and posts
+`error_no_browser`; move it to `ui/component` once a screen outside `about/` needs it.

@@ -134,5 +134,7 @@ Compose.
 utils/ — `PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
 `Modifier.verticalScrollbar`).
 
-res: `res/raw/terms_of_service.txt`, `res/font/inter.ttf`; source SVGs for launcher/splash in
+res: `res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated
+`raw/aboutlibraries` through resource shrinking; overrides for POMs lacking details in
+`app/aboutlibraries/licenses/`), `res/font/inter.ttf`; source SVGs for launcher/splash in
 repo-root `assets/`.
