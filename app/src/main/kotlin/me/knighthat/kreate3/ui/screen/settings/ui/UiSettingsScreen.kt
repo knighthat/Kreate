@@ -50,6 +50,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
     val playlistInitial by Preferences.PLAYLIST_INITIAL.collectAsStateWithLifecycle()
+    val binarySizes by Preferences.BINARY_SIZES.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
@@ -58,6 +59,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         contrastLevel = contrastLevel,
         iconOnly = iconOnly,
         playlistInitial = playlistInitial,
+        binarySizes = binarySizes,
         appIcon = appIcon,
         onAppIconChange = {
             it.apply(context)
@@ -74,6 +76,7 @@ private fun UiSettingsContent(
     contrastLevel: ContrastLevel,
     iconOnly: Boolean,
     playlistInitial: Boolean,
+    binarySizes: Boolean,
     appIcon: AppIcon,
     onAppIconChange: (AppIcon) -> Unit,
     onBack: () -> Unit,
@@ -109,6 +112,12 @@ private fun UiSettingsContent(
             onCheckedChange = { Preferences.PLAYLIST_INITIAL.update(it) },
             summary = stringResource(R.string.setting_description_playlist_initial),
         )
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_binary_sizes),
+            checked = binarySizes,
+            onCheckedChange = { Preferences.BINARY_SIZES.update(it) },
+            summary = stringResource(R.string.setting_description_binary_sizes),
+        )
 
         SettingsSection(stringResource(R.string.setting_header_launcher))
         ChoiceSetting(
@@ -129,6 +138,7 @@ private fun UiSettingsPreview() = PreviewTheme {
         contrastLevel = ContrastLevel.NORMAL,
         iconOnly = false,
         playlistInitial = true,
+        binarySizes = true,
         appIcon = AppIcon.BLACK,
         onAppIconChange = {},
         onBack = {},

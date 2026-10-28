@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.account
 
 import android.content.Context
-import android.text.format.Formatter
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -43,6 +42,7 @@ import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.StorageUse
+import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.storageUse
@@ -79,7 +79,8 @@ class DownloadedViewModel(
             _newestFirst.flatMapLatest(songRepository::downloaded),
             // The overview comes again every second while a download runs, its files don't
             overview.filterNotNull().map { it.files }.distinctUntilChanged(),
-        ) { songs, files -> songs.mapNotNull { it.toRow(files) } }
+            Preferences.BINARY_SIZES.state,
+        ) { songs, files, binary -> songs.mapNotNull { it.toRow(files, binary) } }
             .flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, WHILE_SHOWN, null)
 
@@ -122,9 +123,13 @@ class DownloadedViewModel(
      * every user's (see [me.knighthat.kreate3.download.DownloadsOverview]), `null` until known.
      */
     val storage: StateFlow<StorageUse?> =
-        combine(overview, Preferences.MEDIA3_DOWNLOAD_SIZE.state) { overview, limit ->
+        combine(
+            overview,
+            Preferences.MEDIA3_DOWNLOAD_SIZE.state,
+            Preferences.BINARY_SIZES.state,
+        ) { overview, limit, binary ->
             overview ?: return@combine null
-            context.storageUse(overview.userBytes, overview.allBytes, limit) {
+            context.storageUse(overview.userBytes, overview.allBytes, limit, binary) {
                 context.noBackupFilesDir.usableSpace
             }
         }.distinctUntilChanged()
@@ -151,12 +156,17 @@ class DownloadedViewModel(
         }
     }
 
-    private fun size(bytes: Long): String = Formatter.formatShortFileSize(context, bytes)
-
-    /** A row for a song whose download is whole, `null` for one that isn't yet. */
-    private fun DownloadedSong.toRow(files: Map<String, DownloadedFile>): DownloadedRow? {
+    /**
+     * A row for a song whose download is whole, `null` for one that isn't yet.
+     *
+     * @param binary the units of its size, see [fileSize]
+     */
+    private fun DownloadedSong.toRow(
+        files: Map<String, DownloadedFile>,
+        binary: Boolean,
+    ): DownloadedRow? {
         val file = files[song.songId] ?: return null
-        val size = size(file.bytes)
+        val size = context.resources.fileSize(file.bytes, binary)
         return DownloadedRow(
             item = song.toMediaItem() ?: return null,
             file = file.quality?.let {

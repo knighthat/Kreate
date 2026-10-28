@@ -21,7 +21,6 @@ package me.knighthat.kreate3.ui.screen.settings.data
 import android.content.Context
 import android.os.Environment
 import android.os.StatFs
-import android.text.format.Formatter
 import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,6 +49,7 @@ import me.knighthat.kreate3.playback.SongCaches
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.ui.component.StorageUse
+import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.component.storageUse
 import me.knighthat.kreate3.ui.screen.account.WHILE_SHOWN
 import java.io.File
@@ -91,16 +91,24 @@ class DataSettingsViewModel(
 
     /** The image disk cache out of [Preferences.IMAGE_DISK_CACHE], `null` until known. */
     val imageCache: StateFlow<StorageUse?> =
-        combine(ticks, Preferences.IMAGE_DISK_CACHE.state) { _, limit ->
+        combine(
+            ticks,
+            Preferences.IMAGE_DISK_CACHE.state,
+            Preferences.BINARY_SIZES.state,
+        ) { _, limit, binary ->
             val used = loader.diskCache?.size ?: imageCacheFiles()
-            context.storageUse(used, used, limit) { context.cacheDir.usableSpace }
+            context.storageUse(used, used, limit, binary) { context.cacheDir.usableSpace }
         }.watched()
 
     /** The song cache out of [Preferences.MEDIA3_CACHE_SIZE], `null` until known. */
     val songCache: StateFlow<StorageUse?> =
-        combine(ticks, Preferences.MEDIA3_CACHE_SIZE.state) { _, limit ->
+        combine(
+            ticks,
+            Preferences.MEDIA3_CACHE_SIZE.state,
+            Preferences.BINARY_SIZES.state,
+        ) { _, limit, binary ->
             val used = caches.cache.cacheSpace
-            context.storageUse(used, used, limit) { context.cacheDir.usableSpace }
+            context.storageUse(used, used, limit, binary) { context.cacheDir.usableSpace }
         }.watched()
 
     /**
@@ -108,8 +116,12 @@ class DataSettingsViewModel(
      * user's, `null` until known.
      */
     val songDownloads: StateFlow<StorageUse?> =
-        combine(overview, Preferences.MEDIA3_DOWNLOAD_SIZE.state) { overview, limit ->
-            context.storageUse(overview.userBytes, overview.allBytes, limit) {
+        combine(
+            overview,
+            Preferences.MEDIA3_DOWNLOAD_SIZE.state,
+            Preferences.BINARY_SIZES.state,
+        ) { overview, limit, binary ->
+            context.storageUse(overview.userBytes, overview.allBytes, limit, binary) {
                 context.noBackupFilesDir.usableSpace
             }
         }.watched()
@@ -119,7 +131,12 @@ class DataSettingsViewModel(
      * device takes; `null` until known.
      */
     val deviceStorage: StateFlow<DeviceStorage?> =
-        combine(ticks, overview, songs.lyricsBytes()) { _, overview, lyrics ->
+        combine(
+            ticks,
+            overview,
+            songs.lyricsBytes(),
+            Preferences.BINARY_SIZES.state,
+        ) { _, overview, lyrics, binary ->
             val device = StatFs(Environment.getDataDirectory().path)
             val parts = mapOf(
                 StoragePart.IMAGE_CACHE to (loader.diskCache?.size ?: imageCacheFiles()),
@@ -128,7 +145,7 @@ class DataSettingsViewModel(
                 StoragePart.DOWNLOAD_COVERS to covers.downloads.filesSize(),
                 StoragePart.LYRICS to lyrics,
             )
-            val size = { bytes: Long -> Formatter.formatShortFileSize(context, bytes) }
+            val size = { bytes: Long -> context.resources.fileSize(bytes, binary) }
             val used = device.totalBytes - device.availableBytes
             DeviceStorage(
                 totalBytes = device.totalBytes,

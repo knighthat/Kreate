@@ -19,7 +19,7 @@
 package me.knighthat.kreate3.ui.component
 
 import android.content.Context
-import android.text.format.Formatter
+import android.content.res.Resources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.preferences.Preferences
 
 /**
  * The room something takes on the device out of its limit, as numbers and as text.
@@ -76,15 +77,17 @@ data class StorageUse(
 /**
  * A [StorageUse] of [allBytes] out of [limitBytes], [userBytes] of them the active user's.
  *
+ * @param binary the units of the texts, see [fileSize]
  * @param freeBytes the room left where it is kept, asked only without a limit
  */
 internal fun Context.storageUse(
     userBytes: Long,
     allBytes: Long,
     limitBytes: Long,
+    binary: Boolean,
     freeBytes: () -> Long,
 ): StorageUse {
-    val size = { bytes: Long -> Formatter.formatShortFileSize(this, bytes) }
+    val size = { bytes: Long -> resources.fileSize(bytes, binary) }
     return StorageUse(
         userBytes = userBytes,
         allBytes = allBytes,
@@ -102,6 +105,38 @@ internal fun Context.storageUse(
             else -> size(limitBytes)
         },
     )
+}
+
+/** Unit strings of [fileSize] from bytes up, in units of 1024. */
+private val BINARY_UNITS = intArrayOf(
+    R.string.bytes, R.string.kib, R.string.mib, R.string.gib, R.string.tib, R.string.pib,
+)
+
+/** Unit strings of [fileSize] from bytes up, in units of 1000. */
+private val DECIMAL_UNITS = intArrayOf(
+    R.string.bytes, R.string.kb, R.string.mb, R.string.gb, R.string.tb, R.string.pb,
+)
+
+/**
+ * [bytes] as a short size, in units of 1024 (KiB, MiB…) when [binary], of 1000 (kB, MB…)
+ * otherwise. Like Android's short file sizes: past 900 it goes to the next unit, and it keeps two
+ * digits under 1, one under 10, none above.
+ */
+fun Resources.fileSize(bytes: Long, binary: Boolean = Preferences.BINARY_SIZES.value): String {
+    val units = if (binary) BINARY_UNITS else DECIMAL_UNITS
+    val base = if (binary) 1024.0 else 1000.0
+    var value = bytes.toDouble()
+    var unit = 0
+    while (value > 900 && unit < units.lastIndex) {
+        value /= base
+        unit++
+    }
+    val format = when {
+        unit == 0 || value >= 10 -> "%.0f"
+        value < 1 -> "%.2f"
+        else -> "%.1f"
+    }
+    return getString(units[unit], format.format(configuration.locales[0], value))
 }
 
 /**

@@ -79,6 +79,13 @@ object Preferences : KoinComponent {
     val NOTIFICATION_OPENS_PLAYER by lazy { boolean("notification_opens_player", true) }
 
     /**
+     * Sizes of files and storage show in units of 1024 (1024 MiB make 1 GiB); off, in units of
+     * 1000 (1000 MB make 1 GB). Read by `fileSize` and the size dialog of the data settings; set
+     * in the UI settings.
+     */
+    val BINARY_SIZES by lazy { boolean("binary_sizes", true) }
+
+    /**
      * Minutes between two scans of the device's music. The system runs periodic work
      * at most every 15 minutes, so smaller values behave like 15.
      */

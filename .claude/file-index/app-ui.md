@@ -96,6 +96,7 @@ ui/navigation/
   Navigation.
 - `StorageUsage.kt` — `StorageUse` (user/all/limit bytes and texts, `shared`, `limited`; off = 0,
   unlimited = `Long.MAX_VALUE` drawn against used + free room), `Context.storageUse`,
+  `Resources.fileSize` (every size shown in the app, KiB/MiB or kB/MB by `BINARY_SIZES`),
   `StorageUsage` (this user's and all users' text over one stacked bar); Downloaded and Data.
 
 ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ThumbnailSeed.kt` (

@@ -24,8 +24,17 @@
     <string name="source_better_lyrics" translatable="false">Better Lyrics</string>
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
-    <string name="mib">%1$d MiB</string>
-    <string name="gib">%1$d GiB</string>
+    <string name="bytes">%1$s B</string>
+    <string name="kib">%1$s KiB</string>
+    <string name="mib">%1$s MiB</string>
+    <string name="gib">%1$s GiB</string>
+    <string name="tib">%1$s TiB</string>
+    <string name="pib">%1$s PiB</string>
+    <string name="kb">%1$s kB</string>
+    <string name="mb">%1$s MB</string>
+    <string name="gb">%1$s GB</string>
+    <string name="tb">%1$s TB</string>
+    <string name="pb">%1$s PB</string>
     <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
@@ -90,6 +99,9 @@
     <string name="setting_title_song_downloads">Song downloads</string>
     <string name="setting_description_song_downloads">Songs kept to play offline, separate from the cache</string>
     <string name="setting_title_size_in_mib">Size in MiB</string>
+    <string name="setting_title_size_in_mb">Size in MB</string>
+    <string name="setting_title_binary_sizes">Binary units</string>
+    <string name="setting_description_binary_sizes">Sizes count 1024 MiB in 1 GiB; off, 1000 MB in 1 GB</string>
 
     <!-- general -->
     <string name="setting_title_scan_interval">Scan interval</string>

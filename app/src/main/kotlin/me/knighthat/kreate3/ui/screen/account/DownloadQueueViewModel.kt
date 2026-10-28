@@ -19,13 +19,13 @@
 package me.knighthat.kreate3.ui.screen.account
 
 import android.content.Context
-import android.text.format.Formatter
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -35,6 +35,8 @@ import me.knighthat.kreate3.download.DownloadWait
 import me.knighthat.kreate3.download.DownloadsOverview
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.download.UnfinishedDownload
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.origin
 
@@ -64,7 +66,9 @@ open class DownloadQueueViewModel(
 
     /** In the order they were asked for, failed ones last, see [DownloadsOverview.unfinished]. */
     val unfinished: StateFlow<List<UnfinishedRow>> =
-        overview.map { it?.unfinished.orEmpty().toRows() }
+        combine(overview, Preferences.BINARY_SIZES.state) { overview, binary ->
+            overview?.unfinished.orEmpty().toRows(binary)
+        }
             .flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, WHILE_SHOWN, emptyList())
 
@@ -88,52 +92,56 @@ open class DownloadQueueViewModel(
         downloads.delete(download.item.origin ?: return, download.item.mediaId)
     }
 
-    private fun List<UnfinishedDownload>.toRows(): List<UnfinishedRow> {
+    /** @param binary the units of the sizes, see [fileSize] */
+    private fun List<UnfinishedDownload>.toRows(binary: Boolean): List<UnfinishedRow> {
+        val size = { bytes: Long -> context.resources.fileSize(bytes, binary) }
         var queued = 0
         return map { download ->
             val place = if (download.stage == DownloadStage.QUEUED) ++queued else 0
-            UnfinishedRow(download, download.status(place))
+            UnfinishedRow(download, download.status(place, size))
         }
     }
 
-    /** See [UnfinishedRow.status]; [place] is its place among the queued ones, from 1. */
-    private fun UnfinishedDownload.status(place: Int): String = when (stage) {
-        DownloadStage.DOWNLOADING -> {
-            val bytes = size(bytes)
-            totalBytes?.let {
-                context.getString(
-                    R.string.status_download_progress,
-                    bytes,
-                    size(it)
-                )
+    /**
+     * See [UnfinishedRow.status]; [place] is its place among the queued ones, from 1, [size] writes
+     * a size.
+     */
+    private fun UnfinishedDownload.status(place: Int, size: (Long) -> String): String =
+        when (stage) {
+            DownloadStage.DOWNLOADING -> {
+                val bytes = size(bytes)
+                totalBytes?.let {
+                    context.getString(
+                        R.string.status_download_progress,
+                        bytes,
+                        size(it)
+                    )
+                }
+                    ?: bytes
             }
-                ?: bytes
-        }
 
-        DownloadStage.QUEUED -> context.getString(
-            when (place) {
-                1 -> R.string.status_download_next_in_line
-                2 -> R.string.status_download_in_line_2
-                3 -> R.string.status_download_in_line_3
-                4 -> R.string.status_download_in_line_4
-                5 -> R.string.status_download_in_line_5
-                else -> stage.labelRes
-            }
-        )
-
-        DownloadStage.PAUSED -> percent?.let {
-            context.getString(
-                R.string.status_download_paused_at,
-                context.getString(R.string.percent, it),
+            DownloadStage.QUEUED -> context.getString(
+                when (place) {
+                    1 -> R.string.status_download_next_in_line
+                    2 -> R.string.status_download_in_line_2
+                    3 -> R.string.status_download_in_line_3
+                    4 -> R.string.status_download_in_line_4
+                    5 -> R.string.status_download_in_line_5
+                    else -> stage.labelRes
+                }
             )
-        } ?: context.getString(stage.labelRes)
 
-        // The reasons are written to follow a song's name, lowercase
-        DownloadStage.FAILED -> failure?.let {
-            context.getString(it).replaceFirstChar(Char::uppercase)
+            DownloadStage.PAUSED -> percent?.let {
+                context.getString(
+                    R.string.status_download_paused_at,
+                    context.getString(R.string.percent, it),
+                )
+            } ?: context.getString(stage.labelRes)
+
+            // The reasons are written to follow a song's name, lowercase
+            DownloadStage.FAILED -> failure?.let {
+                context.getString(it).replaceFirstChar(Char::uppercase)
+            }
+                ?: context.getString(R.string.error_download_failed)
         }
-            ?: context.getString(R.string.error_download_failed)
-    }
-
-    private fun size(bytes: Long): String = Formatter.formatShortFileSize(context, bytes)
 }

@@ -142,7 +142,8 @@ ui/screen/
   Unlimited / before
   playing sliders, keep played switch), History; Android Auto section with
   the three
-  `AUTO_*_TAP` choices), `ui/UiSettingsScreen.kt`,
+    `AUTO_*_TAP` choices), `ui/UiSettingsScreen.kt` (theme, contrast; Layout: icon only, playlist
+    initial, binary units; app icon),
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
   page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,

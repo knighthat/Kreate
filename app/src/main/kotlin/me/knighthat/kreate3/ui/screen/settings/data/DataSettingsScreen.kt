@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.settings.data
 
 import android.content.res.Resources
-import android.text.format.Formatter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +57,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
+import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -72,22 +71,31 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPr
 private const val MIB = 1024L * 1024
 private const val GIB = 1024 * MIB
 
-/** The largest size that can be typed, in MiB. */
-private const val MAX_MIB = 4L * 1024 * 1024
+/** Bytes in a MiB while [binary], in a MB otherwise, see [Preferences.BINARY_SIZES]. */
+private fun mega(binary: Boolean): Long = if (binary) MIB else 1_000_000
+
+/** Bytes in a GiB while [binary], in a GB otherwise. */
+private fun giga(binary: Boolean): Long = if (binary) GIB else 1_000_000_000
+
+/** The largest size that can be typed, in MiB or MB: 4 TiB or 4 TB. */
+private fun maxMega(binary: Boolean): Long = (giga(binary) / mega(binary)).let { 4 * it * it }
 
 /** The sizes the image disk cache's slider stops at, it is small. */
-private val IMAGE_CACHE_SIZES =
-    listOf(0L, 32 * MIB, 64 * MIB, 128 * MIB, 256 * MIB, 512 * MIB, GIB, Long.MAX_VALUE)
+private fun imageCacheSizes(binary: Boolean): List<Long> {
+    val mega = mega(binary)
+    return listOf(
+        0L, 32 * mega, 64 * mega, 128 * mega, 256 * mega, 512 * mega, giga(binary), Long.MAX_VALUE,
+    )
+}
 
 /** The sizes the song cache's slider stops at. */
-private val SONG_CACHE_SIZES =
-    listOf(0L, GIB, 2 * GIB, 4 * GIB, 8 * GIB, 16 * GIB, 32 * GIB, 64 * GIB, Long.MAX_VALUE)
+private fun songCacheSizes(binary: Boolean): List<Long> =
+    listOf(0L) + listOf(1, 2, 4, 8, 16, 32, 64).map { it * giga(binary) } + Long.MAX_VALUE
 
 /** The sizes the song downloads' slider stops at. */
-private val SONG_DOWNLOAD_SIZES = listOf(
-    0L, GIB, 2 * GIB, 4 * GIB, 8 * GIB, 16 * GIB, 32 * GIB, 64 * GIB, 128 * GIB, 256 * GIB,
-    Long.MAX_VALUE,
-)
+private fun songDownloadSizes(binary: Boolean): List<Long> =
+    listOf(0L) + listOf(1, 2, 4, 8, 16, 32, 64, 128, 256).map { it * giga(binary) } +
+            Long.MAX_VALUE
 
 /**
  * What the app keeps on the device: how full the device is and the app's part of it, the room the
@@ -115,6 +123,7 @@ fun DataSettingsScreen(
     val downloadOnLowBattery by Preferences.DOWNLOAD_ON_LOW_BATTERY.collectPreference()
     val downloadLyrics by Preferences.DOWNLOAD_LYRICS.collectPreference()
     val memoryCache by Preferences.IMAGE_MEMORY_CACHE_PERCENT.collectPreference()
+    val binarySizes by Preferences.BINARY_SIZES.collectPreference()
 
     // The caches and downloads hold every profile's songs, only the default one may wipe them
     val wipes = activeId == Profile.DEFAULT_ID
@@ -132,6 +141,7 @@ fun DataSettingsScreen(
         downloadOnLowBattery = downloadOnLowBattery,
         downloadLyrics = downloadLyrics,
         memoryCache = memoryCache,
+        binarySizes = binarySizes,
         onClearImageCache = if (wipes) ({ viewModel.clearImageCache(it) }) else null,
         onClearSongCache = if (wipes) ({ viewModel.clearSongCache() }) else null,
         onDeleteAllDownloads = if (wipes) viewModel::deleteAllDownloads else null,
@@ -144,6 +154,7 @@ fun DataSettingsScreen(
 /**
  * @param imageCacheSize in bytes, like [songCacheSize] and [songDownloadsSize]
  * @param memoryCache the part of the app's memory, `0.15` for 15%
+ * @param binarySizes [Preferences.BINARY_SIZES]
  * @param onClearImageCache `null` while the profile may not wipe, like [onClearSongCache] and
  * [onDeleteAllDownloads]; given whether to clear the memory cache too
  * @param onRestart restarts the app, for a smaller cache to apply
@@ -163,6 +174,7 @@ private fun DataSettingsContent(
     downloadOnLowBattery: Boolean,
     downloadLyrics: Boolean,
     memoryCache: Double,
+    binarySizes: Boolean,
     onClearImageCache: ((memory: Boolean) -> Unit)?,
     onClearSongCache: (() -> Unit)?,
     onDeleteAllDownloads: (() -> Unit)?,
@@ -177,8 +189,7 @@ private fun DataSettingsContent(
         restartApp = true
     ) {
         val resources = LocalResources.current
-        val context = LocalContext.current
-        val size = { bytes: Long -> Formatter.formatShortFileSize(context, bytes) }
+        val size = { bytes: Long -> resources.fileSize(bytes, binarySizes) }
         val cacheWarning = { used: String, bytes: Long ->
             if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_cache, used)
             else resources.getString(R.string.dialog_body_shrink_cache, used, size(bytes))
@@ -192,7 +203,8 @@ private fun DataSettingsContent(
             title = stringResource(R.string.setting_title_disk_cache),
             description = stringResource(R.string.setting_description_disk_cache),
             size = imageCacheSize,
-            sizes = IMAGE_CACHE_SIZES,
+            sizes = imageCacheSizes(binarySizes),
+            binary = binarySizes,
             storage = imageCache,
             onSave = { Preferences.IMAGE_DISK_CACHE.update(it) },
             shrinkWarning = cacheWarning,
@@ -211,7 +223,8 @@ private fun DataSettingsContent(
             title = stringResource(R.string.setting_title_song_cache),
             description = stringResource(R.string.setting_description_song_cache),
             size = songCacheSize,
-            sizes = SONG_CACHE_SIZES,
+            sizes = songCacheSizes(binarySizes),
+            binary = binarySizes,
             storage = songCache,
             onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it) },
             shrinkWarning = cacheWarning,
@@ -229,7 +242,8 @@ private fun DataSettingsContent(
             title = stringResource(R.string.setting_title_song_downloads),
             description = stringResource(R.string.setting_description_song_downloads),
             size = songDownloadsSize,
-            sizes = SONG_DOWNLOAD_SIZES,
+            sizes = songDownloadSizes(binarySizes),
+            binary = binarySizes,
             storage = songDownloads,
             onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it) },
             // Downloads apply at once, nothing to restart for
@@ -332,6 +346,7 @@ private class Wipe(
  *
  * @param size in bytes, `0` while it is off, [Long.MAX_VALUE] without a limit
  * @param sizes the sizes the slider stops at, from off to unlimited
+ * @param binary [Preferences.BINARY_SIZES], typed in MiB while on, in MB otherwise
  * @param shrinkWarning the warning for a size smaller than what is kept: what is kept as text and
  * the new size in bytes, `0` to turn it off
  */
@@ -341,6 +356,7 @@ private fun StorageSetting(
     description: String,
     size: Long,
     sizes: List<Long>,
+    binary: Boolean,
     storage: StorageUse?,
     onSave: (Long) -> Unit,
     shrinkWarning: (used: String, size: Long) -> String,
@@ -376,6 +392,7 @@ private fun StorageSetting(
             title = title,
             size = size,
             sizes = sizes,
+            binary = binary,
             onSave = { picked ->
                 editing = false
                 val used = storage?.allBytes ?: 0
@@ -454,8 +471,9 @@ private fun StorageSetting(
 }
 
 /**
- * Picks a size: typed in MiB, or slid to one of [sizes], from off to unlimited. Typing moves the
- * slider to the largest of [sizes] not above the number, sliding writes the size in the field.
+ * Picks a size: typed in MiB (MB unless [binary]), or slid to one of [sizes], from off to
+ * unlimited. Typing moves the slider to the largest of [sizes] not above the number, sliding
+ * writes the size in the field.
  *
  * @param size in bytes, see [StorageSetting]
  */
@@ -464,15 +482,22 @@ private fun SizeDialog(
     title: String,
     size: Long,
     sizes: List<Long>,
+    binary: Boolean,
     onSave: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val resources = LocalResources.current
+    val mega = mega(binary)
+    val max = maxMega(binary)
+    // A size not of whole units (1 GiB in MB) is cut in the field, kept as it was until edited
+    val shown = if (size == Long.MAX_VALUE) "" else (size / mega).toString()
     var unlimited by remember { mutableStateOf(size == Long.MAX_VALUE) }
-    var text by remember { mutableStateOf(if (unlimited) "" else (size / MIB).toString()) }
-    val picked: Long? =
-        if (unlimited) Long.MAX_VALUE
-        else text.toLongOrNull()?.takeIf { it in 0..MAX_MIB }?.times(MIB)
+    var text by remember { mutableStateOf(shown) }
+    val picked: Long? = when {
+        unlimited -> Long.MAX_VALUE
+        text == shown && size != Long.MAX_VALUE -> size
+        else -> text.toLongOrNull()?.takeIf { it in 0..max }?.times(mega)
+    }
     // Where the typed size falls between the stops, the slider moves it to a stop
     var position by remember(picked) {
         val index = when (picked) {
@@ -494,15 +519,22 @@ private fun SizeDialog(
                         text = typed.filter(Char::isDigit)
                         unlimited = false
                     },
-                    label = { Text(stringResource(R.string.setting_title_size_in_mib)) },
+                    label = {
+                        Text(
+                            stringResource(
+                                if (binary) R.string.setting_title_size_in_mib
+                                else R.string.setting_title_size_in_mb
+                            )
+                        )
+                    },
                     placeholder = { Text(stringResource(R.string.status_unlimited)) },
                     singleLine = true,
                     isError = picked == null,
                     supportingText = {
                         Text(
                             if (picked == null)
-                                stringResource(R.string.setting_description_between, 0, MAX_MIB)
-                            else sizeLabel(resources, picked)
+                                stringResource(R.string.setting_description_between, 0, max)
+                            else sizeLabel(resources, picked, binary)
                         )
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -513,7 +545,7 @@ private fun SizeDialog(
                         position = it
                         val stop = sizes[it.roundToInt().coerceIn(sizes.indices)]
                         unlimited = stop == Long.MAX_VALUE
-                        text = if (unlimited) "" else (stop / MIB).toString()
+                        text = if (unlimited) "" else (stop / mega).toString()
                     },
                     valueRange = 0f..sizes.lastIndex.toFloat(),
                     steps = (sizes.size - 2).coerceAtLeast(0),
@@ -532,12 +564,24 @@ private fun SizeDialog(
     )
 }
 
-/** [bytes] as a size setting reads: off, unlimited, whole GiB or MiB. */
-private fun sizeLabel(resources: Resources, bytes: Long): String = when {
-    bytes <= 0 -> resources.getString(R.string.status_off)
-    bytes == Long.MAX_VALUE -> resources.getString(R.string.status_unlimited)
-    bytes % GIB == 0L -> resources.getString(R.string.gib, (bytes / GIB).toInt())
-    else -> resources.getString(R.string.mib, (bytes / MIB).toInt())
+/**
+ * [bytes] as a size setting reads: off, unlimited, whole GiB or MiB (GB or MB unless [binary]),
+ * or a short size when it isn't of whole units.
+ */
+private fun sizeLabel(resources: Resources, bytes: Long, binary: Boolean): String {
+    val giga = giga(binary)
+    val mega = mega(binary)
+    return when {
+        bytes <= 0 -> resources.getString(R.string.status_off)
+        bytes == Long.MAX_VALUE -> resources.getString(R.string.status_unlimited)
+        bytes % giga == 0L ->
+            resources.getString(if (binary) R.string.gib else R.string.gb, "${bytes / giga}")
+
+        bytes % mega == 0L ->
+            resources.getString(if (binary) R.string.mib else R.string.mb, "${bytes / mega}")
+
+        else -> resources.fileSize(bytes, binary)
+    }
 }
 
 @ScreenPreviews
@@ -574,6 +618,7 @@ private fun DataSettingsSample(defaultProfile: Boolean) {
         downloadOnLowBattery = true,
         downloadLyrics = false,
         memoryCache = 0.15,
+        binarySizes = true,
         onClearImageCache = if (defaultProfile) ({}) else null,
         onClearSongCache = if (defaultProfile) ({}) else null,
         onDeleteAllDownloads = if (defaultProfile) ({}) else null,
