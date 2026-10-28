@@ -10,8 +10,11 @@ module: every chart passes the theme's colors itself. Statistics' charts live in
   (`IllegalStateException` while measuring) and the app crashes. Label every x and pick which labels
   show with `HorizontalAxis.ItemPlacer.aligned(spacing = …)`.
 - A pie slice that goes all the way round (one entry) fills the donut's hole: the slice path is
-  copied without its even-odd fill. `SourcesPie` draws a lone entry as two halves of one color with
-  no spacing.
+  copied without its even-odd fill. A donut with a lone entry has to draw it as two halves of one
+  color with no spacing (`SourcesPie` is a whole pie, so it doesn't).
+- `PieChart.SliceLabel.Inside` sits at half the ring's thickness, never turns, and ellipsizes to the
+  slice's chord there (`9…`). `SourcesPie` draws its labels itself (`drawSliceLabels`): across, else
+  along the slice's middle, else left out.
 - A pie chart has no tap or marker; give it a legend with the names and values.
 - Vico draws its own components on a canvas, never a composable: covers can't go through
   `Thumbnail` (`covers.md`), so a chart with pictures (top artists) is drawn in Compose instead.
@@ -23,3 +26,5 @@ module: every chart passes the theme's colors itself. Statistics' charts live in
 - Columns: rounded data ends (4dp), small gaps, faint grid and axis lines (`outlineVariant`).
 - A tap shows a column's value (Vico marker with `rememberToggleOnTap`, or the row's own text).
 - A time axis steps evenly by round minutes or hours (`timeTicks`); bars must keep a linear scale.
+  Its ticks are plain numbers; the unit (`unit_minute`/`unit_hour`) reads vertically beside them.
+- A pie shows each share on its slice; its legend gives the name and value, not the share.

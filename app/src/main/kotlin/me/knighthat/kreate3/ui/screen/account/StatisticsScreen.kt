@@ -279,12 +279,13 @@ private fun SummaryTile(
     modifier = modifier,
 ) {
     Column(Modifier.padding(12.dp)) {
-        Text(value, style = MaterialTheme.typography.titleLarge)
         Text(
             caption,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Spacer(Modifier.height(4.dp))
+        Text(value, style = MaterialTheme.typography.titleLarge)
         if (change != null)
             Text(
                 change,

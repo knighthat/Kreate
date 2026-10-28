@@ -46,17 +46,26 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -89,7 +98,10 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.sourceRes
+import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -174,7 +186,7 @@ internal fun TimeColumnChart(
 
 /**
  * The [artists] as columns as tall as the time they were listened to, on a time axis of even
- * steps with faint lines across. The first, the most listened to, wears a crown. Each column
+ * steps with faint lines across, its unit written up its side. The first, the most listened to, wears a crown. Each column
  * stands under the artist's picture; a tap on it opens the artist.
  */
 @Composable
@@ -192,6 +204,8 @@ internal fun ArtistColumns(artists: List<RankedItem>, onOpen: (MediaItem) -> Uni
             .padding(horizontal = 16.dp)
             .height(BAR_HEIGHT + PICTURE_ROOM),
     ) {
+        TimeAxisTitle(ticks, Modifier.align(Alignment.Bottom))
+        Spacer(Modifier.width(4.dp))
         TimeAxis(ticks, top)
         Spacer(Modifier.width(8.dp))
         Box(
@@ -255,20 +269,51 @@ internal fun ArtistColumns(artists: List<RankedItem>, onOpen: (MediaItem) -> Uni
     }
 }
 
+/** Whether [ticks] count hours rather than minutes, a step of an hour or more. */
+private fun inHours(ticks: List<Duration>) = ticks.getOrNull(1)?.let { it >= 1.hours } == true
+
 /**
- * The labels of [ticks] up the left of a chart, each centered on the height its time takes of
- * [BAR_HEIGHT] against [top], from the bottom.
+ * The unit of [ticks], minutes or hours, read bottom to top along [BAR_HEIGHT].
+ */
+@Composable
+private fun TimeAxisTitle(ticks: List<Duration>, modifier: Modifier = Modifier) {
+    val top = ticks.last()
+    val title =
+        if (inHours(ticks)) top.inWholeHours.toInt()
+            .let { pluralStringResource(R.plurals.unit_hour, it) }
+        else top.inWholeMinutes.toInt().let { pluralStringResource(R.plurals.unit_minute, it) }
+    Box(contentAlignment = Alignment.Center, modifier = modifier.height(BAR_HEIGHT)) {
+        Text(
+            title.replaceFirstChar { it.titlecase() },
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            modifier = Modifier.layout { measurable, constraints ->
+                // Measured lying down, as long as the axis is tall, then turned a quarter left
+                val text = measurable.measure(Constraints(maxWidth = constraints.maxHeight))
+                layout(text.height, text.width) {
+                    text.placeWithLayer(
+                        (text.height - text.width) / 2,
+                        (text.width - text.height) / 2,
+                    ) { rotationZ = -90f }
+                }
+            },
+        )
+    }
+}
+
+/**
+ * The numbers of [ticks] up the left of a chart, each centered on the height its time takes of
+ * [BAR_HEIGHT] against [top], from the bottom. [TimeAxisTitle] names their unit.
  */
 @Composable
 private fun TimeAxis(ticks: List<Duration>, top: Duration) {
-    val resources = LocalResources.current
-    val inHours = ticks.getOrNull(1)?.let { it >= 1.hours } == true
+    val inHours = inHours(ticks)
     Layout(
         content = {
             ticks.forEach { tick ->
                 Text(
-                    if (inHours) resources.getString(R.string.h, tick.inWholeHours.toInt())
-                    else resources.getString(R.string.min, tick.inWholeMinutes.toInt()),
+                    "${if (inHours) tick.inWholeHours else tick.inWholeMinutes}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -309,8 +354,8 @@ private val TIME_STEPS: List<Duration> =
 private const val MAX_STEPS = 4
 
 /**
- * The share of the time listened of each origin as a ring, the total in its middle, with a legend
- * naming each origin, its time and share. An origin keeps its color whatever its rank.
+ * The share of the time listened of each origin as a pie, each slice with its percentage, and a
+ * legend naming each origin and its time. An origin keeps its color whatever its rank.
  */
 @Composable
 internal fun SourcesPie(origins: List<OriginTime>) {
@@ -324,42 +369,54 @@ internal fun SourcesPie(origins: List<OriginTime>) {
         Origin.LOCAL -> colors.secondary
     }
 
-    val total = origins.fold(Duration.ZERO) { sum, it -> sum + it.timeSpent }
+    fun onColorOf(origin: Origin) = when (origin) {
+        Origin.YOUTUBE -> colors.onPrimary
+        Origin.OPEN_SUBSONIC -> colors.onTertiary
+        Origin.LOCAL -> colors.onSecondary
+    }
 
-    // Vico 3.3.1 fills the hole of a slice that goes all the way round, so a lone origin is drawn
-    // as two halves of its color, with no gap to cut the ring
-    val lone = origins.size == 1
+    val total = origins.fold(Duration.ZERO) { sum, it -> sum + it.timeSpent }
+    val shares = origins.map {
+        if (total.isPositive()) (it.timeSpent / total * 100).roundToInt() else 0
+    }
+    val labels = shares.map { resources.getString(R.string.percent, it) }
+
     val slices = origins.map { PieChart.Slice(fill = Fill(colorOf(it.origin))) }
     val chart = rememberPieChart(
         sliceProvider = remember(slices) { PieChart.SliceProvider.series(slices) },
-        spacing = if (lone) 0.dp else SLICE_GAP,
+        spacing = if (origins.size == 1) 0.dp else SLICE_GAP,
         outerSize = PieSize.Outer.fixed(PIE_SIZE),
-        innerSize = PieSize.Inner.fixed(PIE_HOLE),
     )
+
+    // Vico's labels ellipsize what doesn't fit, these are left out instead
+    val measurer = rememberTextMeasurer()
+    val labelStyle = MaterialTheme.typography.labelSmall
+    val texts = remember(labels, labelStyle, colors) {
+        origins.mapIndexed { i, it ->
+            measurer.measure(labels[i], labelStyle.copy(color = onColorOf(it.origin)), maxLines = 1)
+        }
+    }
     val model = remember(origins) {
-        val values = origins.map { it.timeSpent.inWholeSeconds.toFloat() }
-        PieChartModel.build(*(if (lone) values + values else values).toTypedArray())
+        PieChartModel.build(*origins.map { it.timeSpent.inWholeSeconds.toFloat() }.toTypedArray())
     }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(PIE_SIZE)) {
-            PieChartHost(chart, model, Modifier.size(PIE_SIZE))
-            Text(
-                resources.timeSpent(total),
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 2,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(PIE_HOLE - 16.dp),
-            )
-        }
+        PieChartHost(
+            chart,
+            model,
+            Modifier
+                .size(PIE_SIZE)
+                .drawWithContent {
+                    drawContent()
+                    drawSliceLabels(texts, origins.map { it.timeSpent.inWholeSeconds.toFloat() })
+                },
+        )
         Spacer(Modifier.width(24.dp))
         Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.weight(1f)) {
             origins.forEach { origin ->
-                val share =
-                    if (total.isPositive()) (origin.timeSpent / total * 100).roundToInt() else 0
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         Modifier
@@ -382,8 +439,7 @@ internal fun SourcesPie(origins: List<OriginTime>) {
                             overflow = TextOverflow.Ellipsis,
                         )
                         Text(
-                            "${resources.timeSpent(origin.timeSpent)} · " +
-                                    stringResource(R.string.percent, share),
+                            resources.timeSpent(origin.timeSpent),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -391,6 +447,77 @@ internal fun SourcesPie(origins: List<OriginTime>) {
                 }
             }
         }
+    }
+}
+
+/**
+ * Draws each of [texts] in the slice of the pie its value of [values] takes, as the pie is drawn
+ * from the top clockwise: across where it fits, else along the slice's middle, else not at all.
+ */
+private fun DrawScope.drawSliceLabels(texts: List<TextLayoutResult>, values: List<Float>) {
+    val sum = values.sum()
+    if (sum <= 0f) return
+    val radius = size.minDimension / 2
+    val center = this.center
+    val margin = LABEL_MARGIN.toPx()
+    var start = -90f
+    texts.forEachIndexed { i, text ->
+        val sweep = values[i] / sum * 360f
+        val middle = start + sweep / 2
+        // Turned along the middle, the text reads outward on the right half, inward on the left
+        val along = if (middle > 90f && middle < 270f) middle + 180f else middle
+        val place = sequenceOf(0.6f, 0.5f, 0.7f)
+            .flatMap { at -> sequenceOf(at to 0f, at to along) }
+            .firstOrNull { (at, turn) ->
+                fitsSlice(text.size, radius * at, middle, turn, start, sweep, radius, margin)
+            }
+        if (place != null) {
+            val (at, turn) = place
+            val angle = Math.toRadians(middle.toDouble())
+            val x = center.x + radius * at * cos(angle).toFloat()
+            val y = center.y + radius * at * sin(angle).toFloat()
+            rotate(turn, Offset(x, y)) {
+                drawText(
+                    text,
+                    topLeft = Offset(x - text.size.width / 2f, y - text.size.height / 2f)
+                )
+            }
+        }
+        start += sweep
+    }
+}
+
+/**
+ * Whether a box of [box] centered [distance] from the pie's center at [middle] degrees, turned by
+ * [turn] degrees, keeps [margin] inside the circle of [radius] and the slice from [start] degrees
+ * over [sweep].
+ */
+private fun fitsSlice(
+    box: IntSize,
+    distance: Float,
+    middle: Float,
+    turn: Float,
+    start: Float,
+    sweep: Float,
+    radius: Float,
+    margin: Float,
+): Boolean {
+    val angle = Math.toRadians(middle.toDouble())
+    val cx = distance * cos(angle)
+    val cy = distance * sin(angle)
+    val t = Math.toRadians(turn.toDouble())
+    val startEdge = Math.toRadians(start.toDouble())
+    val endEdge = Math.toRadians((start + sweep).toDouble())
+    return listOf(-1 to -1, -1 to 1, 1 to -1, 1 to 1).all { (sx, sy) ->
+        val dx = sx * box.width / 2.0
+        val dy = sy * box.height / 2.0
+        val x = cx + dx * cos(t) - dy * sin(t)
+        val y = cy + dx * sin(t) + dy * cos(t)
+        val inCircle = hypot(x, y) <= radius - margin
+        // Past half the pie a corner can't cross out of the slice from where the label sits
+        inCircle && (sweep >= 180f ||
+                (cos(startEdge) * y - sin(startEdge) * x >= margin &&
+                        x * sin(endEdge) - y * cos(endEdge) >= margin))
     }
 }
 
@@ -407,8 +534,10 @@ private val PICTURE_SIZE = 40.dp
 private val PICTURE_ROOM = PICTURE_SIZE + CROWN_SIZE + 8.dp
 
 private val PIE_SIZE = 140.dp
-private val PIE_HOLE = 96.dp
 private val SLICE_GAP = 2.dp
+
+/** Room kept between a slice's label and the slice's sides. */
+private val LABEL_MARGIN = 3.dp
 
 /** Shortest share of a bar drawn, so a small value still shows. */
 private const val MIN_BAR = 0.04f

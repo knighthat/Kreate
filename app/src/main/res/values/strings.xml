@@ -27,8 +27,6 @@
     <string name="mib">%1$d MiB</string>
     <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
-    <string name="min">%1$d min</string>
-    <string name="h">%1$d h</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
     <string name="sleep_timer_to_end_of_song">Until the song ends</string>
