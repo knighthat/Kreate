@@ -158,7 +158,12 @@ private fun NetworkSettingsContent(
     modifier: Modifier = Modifier,
     proxy: @Composable () -> Unit,
 ) {
-    SettingsPage(stringResource(R.string.screen_title_network), onBack, modifier) {
+    SettingsPage(
+        stringResource(R.string.screen_title_network),
+        onBack,
+        modifier,
+        restartApp = true
+    ) {
         SettingsSection(stringResource(R.string.setting_header_requests))
         NumberSetting(
             title = stringResource(R.string.setting_title_connect_timeout),

@@ -100,7 +100,12 @@ private fun GeneralSettingsContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
+    SettingsPage(
+        stringResource(R.string.screen_title_general),
+        onBack,
+        modifier,
+        restartApp = true
+    ) {
         SettingsSection(stringResource(R.string.setting_header_library))
         NumberSetting(
             title = stringResource(R.string.setting_title_scan_interval),

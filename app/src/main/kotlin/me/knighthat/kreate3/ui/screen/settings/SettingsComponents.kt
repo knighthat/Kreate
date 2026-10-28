@@ -65,9 +65,11 @@ import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import kotlin.math.roundToInt
 
 /**
- * The frame of a settings page: a top bar named [title] with a back button, [actions] and a
- * button that restarts the app once confirmed, on while a setting needs it (see [AppRestart]),
- * and [content] stacked in a column that scrolls.
+ * The frame of a settings page: a top bar named [title] with a back button, [actions] and, with
+ * [restartApp], a button that restarts the app once confirmed, on while a setting needs it (see
+ * [AppRestart]), and [content] stacked in a column that scrolls.
+ *
+ * @param restartApp whether the page has settings read with [AppRestart.readOnce]
  */
 @Composable
 fun SettingsPage(
@@ -75,6 +77,7 @@ fun SettingsPage(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
+    restartApp: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -95,7 +98,7 @@ fun SettingsPage(
         modifier = modifier,
         actions = {
             actions()
-            RestartAppButton({ confirmRestart = true }, enabled = restartNeeded)
+            if (restartApp) RestartAppButton({ confirmRestart = true }, enabled = restartNeeded)
         },
     ) { padding: PaddingValues ->
         Column(
