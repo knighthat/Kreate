@@ -18,9 +18,25 @@ ui/screen/
   has no origin. A dislike also calls `PlaybackController.drop`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
-- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics,
-  Disliked, Downloaded, and Switch profile starts `ProfilesActivity`), `AccountPage.kt` (the empty
-  page Downloaded shows for now). `DislikedScreen.kt` + `DislikedViewModel.kt` (paged
+- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Disliked,
+  Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
+  `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`
+  kept to `DownloadsOverview.files`, row `trailing` = size · quality; storage header = this user's
+  and all users' bytes against `MEDIA3_DOWNLOAD_SIZE` as one stacked bar, one figure while no other
+  user's downloads take room; In progress section shows the running downloads and the next in line
+  (else the first one), its See more opens the rest; a toolbar row like home's: origin chips
+  (Disliked's
+  `OriginChips`), then a show-disliked toggle (`UserSongRepository.downloaded` includes disliked
+  songs, hidden by default, marked with a thumb when shown), Play/Shuffle/⋮ Add to queue;
+  newest/oldest toggle, Delete all (confirm, only what's shown); tap plays the list from the song;
+  nothing kept). `DownloadQueueScreen.kt` + `DownloadQueueViewModel.kt`
+  (every unfinished download in the order asked for, failed last: state over the darkened cover
+  (ring + percent, hourglass, faded ring + pause, warning), `UnfinishedRow.status` above the title
+  (bytes of total, "Nth in line" for the first 5, "Paused at x%", the failure reason in the error
+  color), tap pauses/resumes/retries, only Cancel at the end, no badges here; waiting-for line;
+  `UnfinishedItem`, `WaitingLine`, `unfinishedActions` are shared with Downloaded, whose view model
+  extends this one; flows stop 5 s after the screen, `WHILE_SHOWN`).
+  `DislikedScreen.kt` + `DislikedViewModel.kt` (paged
   `UserSongRepository.disliked`, each row's `trailing` says how long ago it was disliked; origin
   chips under the bar (only sources with dislikes), newest/oldest toggle and Undislike all (confirm
   dialog, only what's shown while filtered, one song at a time, then one message from

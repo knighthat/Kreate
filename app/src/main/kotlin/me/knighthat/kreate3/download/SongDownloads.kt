@@ -27,10 +27,13 @@ import android.os.Build
 import android.os.Parcel
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaLibraryInfo
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSourceException
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadRequest
@@ -39,7 +42,9 @@ import androidx.media3.exoplayer.scheduler.Requirements
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,19 +54,19 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.repository.UserSongRepository
-import me.knighthat.kreate3.download.SongDownloads.Companion.STOP_REASON_PAUSED
-import me.knighthat.kreate3.download.SongDownloads.Companion.key
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.DownloadNotifications
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.QueuedSong
 import me.knighthat.kreate3.playback.SongCaches
+import me.knighthat.kreate3.playback.playbackReasonRes
 import me.knighthat.kreate3.playback.streamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -82,6 +87,78 @@ enum class SongStorage {
     /** Kept until the user deletes it. */
     DOWNLOADED,
 }
+
+/** Where an unfinished download stands, see [UnfinishedDownload]. */
+enum class DownloadStage {
+    /** Being downloaded now. */
+    DOWNLOADING,
+
+    /** Waiting for its turn, or for what the downloads wait for ([DownloadsOverview.waitingFor]). */
+    QUEUED,
+
+    /** Paused by the user, see [SongDownloads.resume]. */
+    PAUSED,
+
+    /** Gave up after its retries, see [SongDownloads.retry]. */
+    FAILED,
+}
+
+/** What every download waits for, see [DownloadsOverview.waitingFor]. */
+enum class DownloadWait {
+    /** [Preferences.DOWNLOAD_WIFI_ONLY] and no Wi-Fi. */
+    WIFI,
+
+    /** [SongDownloads.pausedForBattery]. */
+    BATTERY,
+}
+
+/**
+ * A download of the active user that isn't whole yet.
+ *
+ * @property item the song as it was given to [SongDownloads.download]
+ * @property percent how much of it is there while it's downloaded or paused, `null` when not
+ * known
+ * @property bytes how much of it is there
+ * @property totalBytes its size, `null` when not known
+ * @property failure why it failed, `null` when it didn't or that isn't known (the reason isn't
+ * kept past the app's run)
+ */
+data class UnfinishedDownload(
+    val item: MediaItem,
+    val stage: DownloadStage,
+    val percent: Int? = null,
+    val bytes: Long = 0,
+    val totalBytes: Long? = null,
+    @param:StringRes val failure: Int? = null,
+)
+
+/**
+ * The file of a whole download.
+ *
+ * @property bytes its size
+ * @property quality the quality it is in, the best any user asked for
+ */
+data class DownloadedFile(val bytes: Long, val quality: StreamQuality?)
+
+/**
+ * The downloads of the active user right now, see [SongDownloads.overview].
+ *
+ * @property files the whole downloads by song id
+ * @property unfinished the others, in the order they were asked for, failed ones last: a row
+ * doesn't move when it's paused or resumed
+ * @property waitingFor what every download waits for, `null` for nothing
+ * @property userBytes room the active user's downloads take, a file shared with other users in
+ * full: leaving it frees nothing while they keep it
+ * @property allBytes room the downloads of every user take, what [Preferences.MEDIA3_DOWNLOAD_SIZE]
+ * limits
+ */
+data class DownloadsOverview(
+    val files: Map<String, DownloadedFile>,
+    val unfinished: List<UnfinishedDownload>,
+    val waitingFor: DownloadWait?,
+    val userBytes: Long,
+    val allBytes: Long,
+)
 
 /**
  * What a download of a song would be, for the user to decide on.
@@ -138,7 +215,19 @@ class SongDownloads(
     /** The ids of the songs the active user downloaded. */
     private var mine = emptySet<String>()
 
+    /** Why each download failed, by its id, for this run of the app. */
+    private val failures = mutableMapOf<String, Int>()
+
+    /** The songs of the downloads, as [DownloadRequest.songItem] gives them, by download id. */
+    private val items = mutableMapOf<String, MediaItem>()
+
     private val _songs = MutableStateFlow<Map<String, SongStorage>>(emptyMap())
+
+    /**
+     * Counts every change of a download or the cache, for [overview]: [songs] stays the same when
+     * a download the user already left is removed.
+     */
+    private val revision = MutableStateFlow(0L)
 
     /**
      * Where each song is kept for the active user, by its key ([key]), a song kept nowhere is
@@ -180,6 +269,9 @@ class SongDownloads(
 
                     Download.STATE_FAILED -> {
                         Log.w(TAG, "Couldn't download ${download.request.id}", finalException)
+                        finalException?.failureRes()?.let {
+                            synchronized(this@SongDownloads) { failures[download.request.id] = it }
+                        }
                         notifications.failed(download)
                     }
                 }
@@ -414,6 +506,126 @@ class SongDownloads(
         }
     }
 
+    /** Pauses the download of the song of [origin] with [id], for every user. */
+    fun pause(origin: Origin, id: String) = scope.launch(Dispatchers.Main) {
+        DownloadService.sendSetStopReason(
+            context,
+            SongDownloadService::class.java,
+            key(QueuedSong(origin, id)),
+            STOP_REASON_PAUSED,
+            false,
+        )
+    }
+
+    /** Downloads the song of [origin] with [id] again after it failed, once more with its retries. */
+    fun retry(origin: Origin, id: String) = scope.launch {
+        val request = withContext(Dispatchers.IO) {
+            manager.downloadIndex.getDownload(key(QueuedSong(origin, id)))?.request
+        } ?: return@launch
+        withContext(Dispatchers.Main) {
+            DownloadService.sendAddDownload(context, SongDownloadService::class.java, request, true)
+        }
+    }
+
+    /**
+     * The active user's downloads, again about every second while one runs or waits, and when
+     * one changes.
+     */
+    @kotlin.OptIn(ExperimentalCoroutinesApi::class)
+    fun overview(): Flow<DownloadsOverview> =
+        combine(revision, pausedForBattery, ::Pair).transformLatest {
+            while (true) {
+                val overview = overviewNow()
+                emit(overview)
+                val waits = overview.unfinished.any {
+                    it.stage == DownloadStage.DOWNLOADING || it.stage == DownloadStage.QUEUED
+                }
+                if (!waits) break
+                delay(OVERVIEW_INTERVAL)
+            }
+        }
+
+    private suspend fun overviewNow(): DownloadsOverview {
+        // The manager is the main thread's, the running downloads' progress is only there
+        val (current, notMet) = withContext(Dispatchers.Main) {
+            manager.currentDownloads to manager.notMetRequirements
+        }
+        return withContext(Dispatchers.IO) {
+            val finished = buildList {
+                manager.downloadIndex
+                    .getDownloads(Download.STATE_COMPLETED, Download.STATE_FAILED)
+                    .use { cursor -> while (cursor.moveToNext()) add(cursor.download) }
+            }
+            val ours = synchronized(this@SongDownloads) { mine }
+            // Those being removed are going, their room with them
+            val everyone = (current + finished).filter { it.state != Download.STATE_REMOVING }
+            val downloads = everyone.filter { QueuedSong.ofCacheKey(it.request.id)?.id in ours }
+
+            val files = downloads.filter { it.state == Download.STATE_COMPLETED }
+                .mapNotNull { download ->
+                    val song = QueuedSong.ofCacheKey(download.request.id) ?: return@mapNotNull null
+                    val quality = download.request.customCacheKey
+                        ?.let(QueuedSong::ofCacheKey)?.quality
+                    song.id to DownloadedFile(download.bytesDownloaded, quality)
+                }.toMap()
+            val unfinished = downloads.mapNotNull { download ->
+                val stage = when (download.state) {
+                    Download.STATE_DOWNLOADING -> DownloadStage.DOWNLOADING
+                    Download.STATE_QUEUED, Download.STATE_RESTARTING -> DownloadStage.QUEUED
+                    Download.STATE_STOPPED -> DownloadStage.PAUSED
+                    Download.STATE_FAILED -> DownloadStage.FAILED
+                    else -> return@mapNotNull null
+                }
+                val percent = download.percentDownloaded
+                    .takeIf {
+                        (stage == DownloadStage.DOWNLOADING || stage == DownloadStage.PAUSED)
+                                && it != C.PERCENTAGE_UNSET.toFloat()
+                    }
+                    ?.toInt()
+                val item = itemOf(download) ?: return@mapNotNull null
+                UnfinishedDownload(
+                    item = item,
+                    stage = stage,
+                    percent = percent,
+                    bytes = download.bytesDownloaded,
+                    totalBytes = download.contentLength.takeIf { it != C.LENGTH_UNSET.toLong() },
+                    failure = if (stage == DownloadStage.FAILED)
+                        synchronized(this@SongDownloads) { failures[download.request.id] }
+                    else null,
+                )
+            }
+            synchronized(this@SongDownloads) {
+                val ids = downloads.map { it.request.id }.toSet()
+                items.keys.retainAll(ids)
+                failures.keys.retainAll(downloads.filter { it.state == Download.STATE_FAILED }
+                    .map { it.request.id }.toSet())
+            }
+
+            // The cache counts a part once it's written whole, a running download's only later
+            val allBytes = maxOf(caches.downloads.cacheSpace, everyone.sumOf { it.bytesDownloaded })
+            DownloadsOverview(
+                files = files,
+                unfinished = unfinished,
+                waitingFor = when {
+                    pausedForBattery.value -> DownloadWait.BATTERY
+                    notMet and Requirements.NETWORK_UNMETERED != 0 -> DownloadWait.WIFI
+                    else -> null
+                },
+                userBytes = downloads.sumOf { it.bytesDownloaded }.coerceAtMost(allBytes),
+                allBytes = allBytes,
+            )
+        }
+    }
+
+    /** The song of [download], read from its request once. */
+    private fun itemOf(download: Download): MediaItem? {
+        val id = download.request.id
+        synchronized(this) { items[id] }?.let { return it }
+        val item = download.request.songItem ?: return null
+        synchronized(this) { items[id] = item }
+        return item
+    }
+
     /** Drops every copy the cache keeps of the song of [origin] with [id]. */
     fun removeCached(origin: Origin, id: String) = scope.launch(Dispatchers.IO) {
         caches.dropAll(QueuedSong(origin, id))
@@ -440,10 +652,14 @@ class SongDownloads(
             }
         }
         _songs.update { stored }
+        revision.update { it + 1 }
     }
 
     companion object {
         private const val TAG = "SongDownloads"
+
+        /** How often [overview] looks again while a download runs or waits. */
+        private const val OVERVIEW_INTERVAL = 1000L
 
         /** The stop reason of a download the user paused. */
         const val STOP_REASON_PAUSED = 1
@@ -459,6 +675,17 @@ class SongDownloads(
                 || state == Download.STATE_RESTARTING
     }
 }
+
+/**
+ * Why a download failed, in words for the user, from the reason a data source gave on the way;
+ * `null` when none said more than that it failed.
+ */
+@StringRes
+private fun Exception.failureRes(): Int? =
+    generateSequence<Throwable>(this) { it.cause }
+        .firstNotNullOfOrNull { (it as? DataSourceException)?.reason }
+        ?.let(::playbackReasonRes)
+        ?.takeIf { it != R.string.error_playback_unknown }
 
 /** The song as a download keeps it, without its address, which the player adds. */
 @OptIn(UnstableApi::class)

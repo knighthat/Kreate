@@ -9,7 +9,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
-  PlayPause/SeeMore/Config/SortOrder (newest/oldest first)/UndislikeAll
+  PlayPause/SeeMore/Config/SortOrder (newest/oldest first)/UndislikeAll/DeleteAllDownloads
   buttons, `FilterIconButton` (a filter as its icon alone, origin chips while Icon only),
   `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
   big icon+title+subtitle tile with busy spinner; wizard restore, Backup

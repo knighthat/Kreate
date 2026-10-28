@@ -335,6 +335,7 @@
     <string name="screen_title_statistics">Statistics</string>
     <string name="screen_title_disliked">Disliked</string>
     <string name="screen_title_downloaded">Downloaded</string>
+    <string name="screen_title_download_queue">Download queue</string>
     <string name="screen_title_switch_profile">Switch profile</string>
     <!--</editor-fold>-->
 
@@ -359,6 +360,8 @@
     <string name="semantic_copy_the_lyrics">Copy the lyrics</string>
     <string name="semantic_create_playlist">Create playlist</string>
     <string name="semantic_dislike">Dislike</string>
+    <string name="semantic_disliked">Disliked</string>
+    <string name="semantic_show_disliked_songs">Show disliked songs</string>
     <string name="semantic_drag_to_move">Drag to move</string>
     <string name="semantic_equalizer">Equalizer</string>
     <string name="semantic_explicit">Explicit</string>
@@ -398,6 +401,8 @@
     <string name="semantic_remove_bookmark">Remove bookmark</string>
     <string name="semantic_remove_dislike">Remove dislike</string>
     <string name="semantic_undislike_all">Undislike all</string>
+    <string name="semantic_delete_all_downloads">Delete all downloads</string>
+    <string name="semantic_cancel_download">Cancel the download</string>
     <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>
     <string name="semantic_remove_from_the_queue">Remove from the queue</string>
     <string name="semantic_remove_like">Remove like</string>
@@ -506,6 +511,9 @@
     <string name="dialog_title_undislike_all">Undislike all?</string>
     <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
     <string name="dialog_body_undislike_all_shown">The disliked songs shown show up in the lists again, the others stay hidden.</string>
+    <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
+    <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
+    <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
@@ -619,6 +627,7 @@
     <string name="section_header_yesterday">Yesterday</string>
     <string name="section_header_date_range">Date range</string>
     <string name="section_header_summary">%1$s · %2$s · %3$s</string>
+    <string name="section_header_in_progress">In progress</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Screen texts">-->
@@ -641,6 +650,18 @@
     <string name="screen_history_status_paused">History is paused, new plays aren\'t added</string>
     <string name="screen_disliked_status_nothing_disliked">No disliked songs</string>
     <string name="screen_disliked_status_no_matches">No disliked songs match the filters</string>
+    <string name="screen_downloaded_status_nothing_downloaded">No downloaded songs</string>
+    <string name="screen_downloaded_status_no_matches">No downloaded songs match the filters</string>
+    <string name="status_downloads_waiting_for_wifi">Waiting for Wi-Fi</string>
+    <string name="status_downloads_waiting_for_battery">Waiting, the battery is low</string>
+    <string name="status_download_progress">%1$s of %2$s</string>
+    <string name="status_download_next_in_line">Next in line</string>
+    <string name="status_download_in_line_2">2nd in line</string>
+    <string name="status_download_in_line_3">3rd in line</string>
+    <string name="status_download_in_line_4">4th in line</string>
+    <string name="status_download_in_line_5">5th in line</string>
+    <string name="status_download_paused_at">Paused at %1$s</string>
+    <string name="screen_download_queue_status_nothing">Nothing is being downloaded</string>
     <string name="screen_statistics_status_nothing_played">Nothing played yet</string>
     <string name="screen_statistics_status_nothing_this_month">Nothing played this month</string>
     <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>
@@ -652,6 +673,10 @@
     <!--<editor-fold defaultstate="collapsed" desc="Statistics">-->
     <string name="statistics_time_listened">Time listened</string>
     <string name="statistics_change_vs_last_month">%1$s vs last month</string>
+    <string name="statistics_storage_this_user">This user</string>
+    <string name="statistics_storage_all_users">All users</string>
+    <string name="statistics_storage_of_limit">%1$s of %2$s</string>
+    <string name="statistics_storage_file">%1$s · %2$s</string>
     <string name="statistics_song_listens">Times completed</string>
     <string name="statistics_song_plays">Plays</string>
     <string name="statistics_song_time_listened">Time listened</string>
@@ -749,6 +774,14 @@
     <string name="constant_stream_quality_opensubsonic_medium">Medium, up to 128 kbps</string>
     <string name="constant_stream_quality_opensubsonic_high">High, up to 320 kbps, lossless songs are converted</string>
     <string name="constant_stream_quality_opensubsonic_original">Original, the file as it is</string>
+    <string name="constant_stream_quality_low">Low</string>
+    <string name="constant_stream_quality_medium">Medium</string>
+    <string name="constant_stream_quality_high">High</string>
+    <string name="constant_stream_quality_original">Original</string>
+    <string name="constant_download_stage_downloading">Downloading</string>
+    <string name="constant_download_stage_queued">Queued</string>
+    <string name="constant_download_stage_paused">Paused</string>
+    <string name="constant_download_stage_failed">Failed</string>
     <string name="constant_lyrics_sync_word">Word by word</string>
     <string name="constant_lyrics_sync_line">Line by line</string>
     <string name="constant_lyrics_sync_none">Plain text</string>

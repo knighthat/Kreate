@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -56,6 +57,9 @@ private class RowAnchor {
  *
  * @param menuActions what the menu offers for the list the song is in, after the song's own
  * @param trailing what the row shows at the end in place of the length
+ * @param overline shown above the title in place of the album, in [overlineColor]
+ * @param showBadges whether the icons above the title show
+ * @param showDisliked whether a disliked song is marked among them, `false` where every song is
  */
 @Composable
 fun SongItem(
@@ -68,6 +72,10 @@ fun SongItem(
     hasMenu: Boolean = true,
     menuActions: List<SongMenuAction> = emptyList(),
     trailing: (@Composable () -> Unit)? = null,
+    overline: String? = null,
+    overlineColor: Color = Color.Unspecified,
+    showBadges: Boolean = true,
+    showDisliked: Boolean = true,
 ) {
     val host = LocalSongMenuHost.current
     val anchor = remember { RowAnchor() }
@@ -83,6 +91,10 @@ fun SongItem(
         showAlbum = showAlbum,
         thumbnailOverlay = thumbnailOverlay,
         trailing = trailing,
+        overline = overline,
+        overlineColor = overlineColor,
+        showBadges = showBadges,
+        showDisliked = showDisliked,
         onLongClick = if (hasMenu && host != null) {
             {
                 anchor.coordinates?.takeIf { it.isAttached }?.let {
@@ -94,6 +106,10 @@ fun SongItem(
                         showAlbum = showAlbum,
                         actions = menuActions,
                         trailing = trailing,
+                        overline = overline,
+                        overlineColor = overlineColor,
+                        showBadges = showBadges,
+                        showDisliked = showDisliked,
                     )
                 }
             }
@@ -112,6 +128,10 @@ internal fun SongRow(
     thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    overline: String? = null,
+    overlineColor: Color = Color.Unspecified,
+    showBadges: Boolean = true,
+    showDisliked: Boolean = true,
 ) {
     val duration = formatDuration(item.mediaMetadata.durationMs)
 
@@ -120,12 +140,15 @@ internal fun SongRow(
         onClick = onClick,
         modifier = modifier,
         showThumbnail = showThumbnail,
-        overlineEnd = item.mediaMetadata.albumTitle?.toString()?.takeIf { showAlbum },
+        overlineEnd = overline ?: item.mediaMetadata.albumTitle?.toString()?.takeIf { showAlbum },
         thumbnailOverlay = thumbnailOverlay,
         trailing = trailing ?: duration?.let {
             { Text(it, style = MaterialTheme.typography.labelSmall) }
         },
         onLongClick = onLongClick,
+        showBadges = showBadges,
+        overlineColor = overlineColor,
+        showDisliked = showDisliked,
     )
 }
 

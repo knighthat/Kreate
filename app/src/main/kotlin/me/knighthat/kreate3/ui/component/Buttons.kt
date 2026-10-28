@@ -324,6 +324,16 @@ fun UndislikeAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
         modifier,
     )
 
+/** Deletes the download of every song shown. */
+@Composable
+fun DeleteAllDownloadsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(
+        R.drawable.delete,
+        stringResource(R.string.semantic_delete_all_downloads),
+        onClick,
+        modifier,
+    )
+
 /** Plays every song of a list, see [QueueAction.PLAY]. */
 @Composable
 fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

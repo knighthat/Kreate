@@ -43,7 +43,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.Notifier
@@ -72,6 +71,7 @@ import me.knighthat.kreate3.ui.navigation.ArtistStatistics
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
+import me.knighthat.kreate3.ui.navigation.DownloadQueue
 import me.knighthat.kreate3.ui.navigation.Downloaded
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
@@ -111,9 +111,10 @@ import me.knighthat.kreate3.ui.navigation.playlistRoute
 import me.knighthat.kreate3.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate3.ui.navigation.routeViewModel
 import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
-import me.knighthat.kreate3.ui.screen.account.AccountPage
 import me.knighthat.kreate3.ui.screen.account.AccountScreen
 import me.knighthat.kreate3.ui.screen.account.DislikedScreen
+import me.knighthat.kreate3.ui.screen.account.DownloadQueueScreen
+import me.knighthat.kreate3.ui.screen.account.DownloadedScreen
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.HistoryScreen
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
@@ -403,10 +404,18 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                 )
                             }
                             entry<Downloaded> {
-                                AccountPage(
-                                    R.string.screen_title_downloaded,
-                                    topLevel::pop,
-                                    paddingModifier
+                                DownloadedScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenQueue = { topLevel.push(DownloadQueue) },
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                )
+                            }
+                            entry<DownloadQueue> {
+                                DownloadQueueScreen(
+                                    onBack = topLevel::pop,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                 )
                             }
 

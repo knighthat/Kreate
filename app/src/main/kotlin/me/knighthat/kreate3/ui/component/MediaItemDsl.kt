@@ -118,7 +118,7 @@ private fun Duration?.toMillis(): Long? = this?.inWholeMilliseconds
  * Whether [ItemBadges] has anything to show for the item.
  */
 val MediaItem.hasBadges: Boolean
-    get() = origin != null || isExplicit || isLiked || isBookmarked || isFollowed
+    get() = origin != null || isExplicit || isLiked || isDisliked || isBookmarked || isFollowed
 
 /**
  * Whether the item was marked explicit, see [toMediaItem].
@@ -136,6 +136,14 @@ private fun MediaItem.isRatedUp(mediaType: Int): Boolean =
  */
 val MediaItem.isLiked: Boolean
     get() = isRatedUp(MediaMetadata.MEDIA_TYPE_MUSIC)
+
+/**
+ * Whether the user disliked the song, see [toMediaItem]. Lists hide these songs, only the pages
+ * that show them anyway mark them.
+ */
+val MediaItem.isDisliked: Boolean
+    get() = mediaMetadata.mediaType == MediaMetadata.MEDIA_TYPE_MUSIC
+            && (mediaMetadata.userRating as? ThumbRating)?.let { it.isRated && !it.isThumbsUp } == true
 
 /**
  * Whether the user bookmarked the album, see [UserAlbumView.toMediaItem].

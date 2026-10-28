@@ -29,6 +29,7 @@ import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.ui.screen.account.HistoryRangePreset
 import me.knighthat.kreate3.ui.screen.account.StatisticsPeriod
@@ -128,6 +129,25 @@ val PlaybackFailureAction.labelRes: Int
         PlaybackFailureAction.RETRY_THEN_SKIP -> R.string.constant_playback_failure_action_retry_then_skip
         PlaybackFailureAction.RETRY_THEN_STOP -> R.string.constant_playback_failure_action_retry_then_stop
         PlaybackFailureAction.STOP -> R.string.constant_playback_failure_action_stop
+    }
+
+/** How good a song is, in a word, see [youTubeLabelRes] for what it means there. */
+@get:StringRes
+val StreamQuality.labelRes: Int
+    get() = when (this) {
+        StreamQuality.LOW -> R.string.constant_stream_quality_low
+        StreamQuality.MEDIUM -> R.string.constant_stream_quality_medium
+        StreamQuality.HIGH -> R.string.constant_stream_quality_high
+        StreamQuality.ORIGINAL -> R.string.constant_stream_quality_original
+    }
+
+@get:StringRes
+val DownloadStage.labelRes: Int
+    get() = when (this) {
+        DownloadStage.DOWNLOADING -> R.string.constant_download_stage_downloading
+        DownloadStage.QUEUED -> R.string.constant_download_stage_queued
+        DownloadStage.PAUSED -> R.string.constant_download_stage_paused
+        DownloadStage.FAILED -> R.string.constant_download_stage_failed
     }
 
 /** How good a song of YouTube is, what each quality means there. */

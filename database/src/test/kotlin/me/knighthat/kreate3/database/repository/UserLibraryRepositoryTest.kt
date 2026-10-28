@@ -117,6 +117,36 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun downloadedSongsComeInTheOrderTheyWereDownloaded() = runBlocking {
+        addUser("other")
+        addSong("old")
+        addSong("new")
+        addSong("disliked")
+        addSong("theirs")
+        songs.save(UserSong("old", downloadedAt = Instant.fromEpochMilliseconds(1_000)))
+        songs.save(UserSong("new", downloadedAt = Instant.fromEpochMilliseconds(2_000)))
+        songs.save(
+            UserSong(
+                "disliked",
+                likedAt = Instant.fromEpochMilliseconds(-3_000),
+                downloadedAt = Instant.fromEpochMilliseconds(3_000),
+            )
+        )
+        activeUser.id.value = "other"
+        songs.save(UserSong("theirs", downloadedAt = Instant.fromEpochMilliseconds(4_000)))
+        activeUser.id.value = USER
+
+        // Disliked songs are in it, another user's downloads aren't
+        val newestFirst = songs.downloaded(newestFirst = true).first()
+        assertEquals(listOf("disliked", "new", "old"), newestFirst.map { it.song.songId })
+        assertEquals(Instant.fromEpochMilliseconds(3_000), newestFirst.first().downloadedAt)
+        assertEquals(
+            listOf("old", "new", "disliked"),
+            songs.downloaded(newestFirst = false).first().map { it.song.songId },
+        )
+    }
+
+    @Test
     fun forgetDownloadOfEveryUserAndDownloadersUpdate() = runBlocking {
         val cover = Uri.parse("file:///data/download_covers/a-1440.jpg")
         addUser("other")

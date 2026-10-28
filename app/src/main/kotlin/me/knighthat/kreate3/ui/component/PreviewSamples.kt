@@ -71,6 +71,7 @@ fun PreviewTheme(content: @Composable () -> Unit) =
  *
  * @param mediaType what the item is, like `MediaMetadata.MEDIA_TYPE_MUSIC`
  * @param rated liked, bookmarked or followed, as [mediaType] says
+ * @param disliked disliked, a song's thumbs down
  */
 @OptIn(UnstableApi::class)
 fun previewItem(
@@ -82,6 +83,7 @@ fun previewItem(
     album: String? = null,
     mediaType: Int? = null,
     rated: Boolean = false,
+    disliked: Boolean = false,
 ): MediaItem =
     MediaItem.Builder()
         .setMediaId("${origin?.name}:$title")
@@ -92,7 +94,13 @@ fun previewItem(
                 .setAlbumTitle(album)
                 .setDurationMs(durationMs)
                 .setMediaType(mediaType)
-                .setUserRating(if (rated) ThumbRating(true) else ThumbRating())
+                .setUserRating(
+                    when {
+                        disliked -> ThumbRating(false)
+                        rated -> ThumbRating(true)
+                        else -> ThumbRating()
+                    }
+                )
                 .setExtras(Bundle().apply {
                     origin?.let { putString(EXTRA_ORIGIN, it.name) }
                     putBoolean(MediaConstants.EXTRAS_KEY_IS_EXPLICIT, explicit)

@@ -22,6 +22,7 @@ import android.net.Uri
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.DislikedSong
+import me.knighthat.kreate3.database.model.DownloadedSong
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
@@ -196,6 +197,13 @@ interface UserSongRepository {
 
     /** The songs the active user downloaded, see [UserSong.downloadedAt]. */
     fun downloadedIds(): Flow<Set<String>>
+
+    /**
+     * The songs the active user downloaded, whole or not yet, most recently downloaded first
+     * unless [newestFirst] is false. Disliked songs are in it, unlike in other lists: the page
+     * showing it can show them. It follows changes in the database.
+     */
+    fun downloaded(newestFirst: Boolean): Flow<List<DownloadedSong>>
 
     /** The songs any user downloaded. */
     suspend fun downloadedByAnyone(): Set<String>

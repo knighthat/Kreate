@@ -20,7 +20,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `UserSong` (`album_position` = the user's album order over `song.album_position`, set for every
   song of the album by `UserSongRepository.moveInAlbum`, cleared by `resetAlbumOrder`;
   `UserSongRepository.disliked` reads a dislike's time from its negative `liked_at`,
-  `DislikedSongRow` in `UserSongDao`),
+  `DislikedSongRow` in `UserSongDao`; `downloaded` joins `user_song.downloaded_at` onto the view,
+  disliked songs included,
+  `DownloadedSongRow`),
   `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:

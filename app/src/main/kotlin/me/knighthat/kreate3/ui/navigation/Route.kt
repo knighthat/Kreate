@@ -134,9 +134,13 @@ data class ArtistStatistics(val artistId: String) : Route {
 @Serializable
 data object Disliked : Route
 
-/** The songs downloaded to this device, opened from [Account]. */
+/** The songs the profile downloaded to this device, opened from [Account]. */
 @Serializable
 data object Downloaded : Route
+
+/** The profile's downloads that aren't whole yet, opened from [Downloaded]. */
+@Serializable
+data object DownloadQueue : Route
 
 /** Google's sign in page, the session it leaves is kept for YouTube. */
 @Serializable

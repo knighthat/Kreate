@@ -50,7 +50,14 @@ fun cantPlayMessage(context: Context, item: MediaItem?, @StringRes reason: Int):
 
 /** Why a song failed to play, in words for the user. */
 @StringRes
-fun PlaybackException.reasonRes(): Int = when (errorCode) {
+fun PlaybackException.reasonRes(): Int = playbackReasonRes(errorCode)
+
+/**
+ * Why reading a song failed, in words for the user, from a [PlaybackException] error code, like
+ * a `DataSourceException`'s reason. Downloads say it too.
+ */
+@StringRes
+fun playbackReasonRes(errorCode: Int): Int = when (errorCode) {
     PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> R.string.error_playback_file_missing
 
     PlaybackException.ERROR_CODE_IO_NO_PERMISSION -> R.string.error_playback_permission_denied

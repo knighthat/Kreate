@@ -57,6 +57,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -287,13 +288,14 @@ fun ItemBadge(
 
 /**
  * The badges that apply to [item]: where it comes from, explicit content, a downloaded or cached
- * song, a liked song, a bookmarked album, a followed artist.
+ * song, a liked or disliked song, a bookmarked album, a followed artist.
  *
  * @param reserveHeight keep the height of the badges when there are none, so items next to each
  * other in a grid keep their titles on the same line
  * @param horizontalArrangement where the badges sit in the width they are given
  * @param showReactions whether the user's like, bookmark or follow shows, `false` where buttons
  * show it already
+ * @param showDisliked whether a disliked song is marked, `false` where every song is
  * @param size the edge of each badge, larger where the item is shown large like in the player
  */
 @Composable
@@ -303,6 +305,7 @@ fun ItemBadges(
     reserveHeight: Boolean = false,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(4.dp),
     showReactions: Boolean = true,
+    showDisliked: Boolean = true,
     size: Dp = BADGE_SIZE,
 ) {
     val hasBadges = if (showReactions) item.hasBadges else item.origin != null || item.isExplicit
@@ -318,6 +321,12 @@ fun ItemBadges(
         StorageBadge(item.storage, size)
         if (!showReactions) return@Row
         if (item.isLiked) ItemBadge(R.drawable.favorite, "Favorite", size = size)
+        if (showDisliked && item.isDisliked)
+            ItemBadge(
+                R.drawable.thumb_down,
+                stringResource(R.string.semantic_disliked),
+                size = size
+            )
         if (item.isBookmarked) ItemBadge(R.drawable.bookmark, "Bookmarked", size = size)
         if (item.isFollowed) ItemBadge(R.drawable.notifications, "Following", size = size)
     }
@@ -364,6 +373,9 @@ fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
  * @param thumbnailOverlay drawn over the cover, in a box of its size; alone in that box when the
  * cover is left out
  * @param onLongClick what a long press does, nothing when `null`
+ * @param showBadges whether the line above the title shows the item's badges
+ * @param overlineColor the color of [overlineEnd], the muted one by default
+ * @param showDisliked whether a disliked song's badge shows, see [ItemBadges]
  */
 @Composable
 fun ItemRow(
@@ -376,6 +388,9 @@ fun ItemRow(
     thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    showBadges: Boolean = true,
+    overlineColor: Color = Color.Unspecified,
+    showDisliked: Boolean = true,
 ) {
     val metadata = item.mediaMetadata
     val subtitle = metadata.subtitle ?: metadata.artist
@@ -402,20 +417,24 @@ fun ItemRow(
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it
         Column(modifier = Modifier.weight(1f)) {
-            if (item.hasBadges || overlineEnd != null)
+            if ((showBadges && item.hasBadges) || overlineEnd != null)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     // Keeps the line as tall as with badges when there is only the text
-                    ItemBadges(item, reserveHeight = true)
+                    if (showBadges)
+                        ItemBadges(item, reserveHeight = true, showDisliked = showDisliked)
                     if (overlineEnd != null)
                         Text(
                             text = overlineEnd,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.End,
+                            color = overlineColor.takeOrElse {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            // Without badges it starts the line
+                            textAlign = if (showBadges) TextAlign.End else TextAlign.Start,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f),
@@ -496,6 +515,7 @@ private fun ItemBadgesPreview() = PreviewTheme {
     val items = Origin.entries.map { previewItem(it.name, "", origin = it) } + listOf(
         previewItem("Explicit", "", explicit = true),
         previewItem("Liked", "", mediaType = MediaMetadata.MEDIA_TYPE_MUSIC, rated = true),
+        previewItem("Disliked", "", mediaType = MediaMetadata.MEDIA_TYPE_MUSIC, disliked = true),
         previewItem("Bookmarked", "", mediaType = MediaMetadata.MEDIA_TYPE_ALBUM, rated = true),
         previewItem("Followed", "", mediaType = MediaMetadata.MEDIA_TYPE_ARTIST, rated = true),
         previewItem(

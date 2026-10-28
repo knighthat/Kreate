@@ -19,6 +19,8 @@
 package me.knighthat.kreate3
 
 import me.knighthat.kreate3.ui.screen.account.DislikedViewModel
+import me.knighthat.kreate3.ui.screen.account.DownloadQueueViewModel
+import me.knighthat.kreate3.ui.screen.account.DownloadedViewModel
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.HistoryViewModel
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsViewModel
@@ -51,6 +53,8 @@ val viewModelModule = module {
     viewModelOf(::HomeSongsViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::DislikedViewModel)
+    viewModelOf(::DownloadedViewModel)
+    viewModelOf(::DownloadQueueViewModel)
     viewModelOf(::StatisticsViewModel)
     viewModelOf(::SongStatisticsViewModel)
     viewModelOf(::GroupStatisticsViewModel)

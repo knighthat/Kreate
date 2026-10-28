@@ -205,6 +205,8 @@ private fun DislikedContent(
                         SongItem(
                             item = row.item,
                             onClick = { onPlay(row) },
+                            // Every song here is disliked
+                            showDisliked = false,
                             trailing = {
                                 Text(row.time, style = MaterialTheme.typography.labelMedium)
                             },
@@ -218,14 +220,15 @@ private fun DislikedContent(
 
 /** A chip for each origin of [choices], scrolling sideways when they don't fit. */
 @Composable
-private fun OriginChips(
+internal fun OriginChips(
     choices: List<Origin>,
     selected: Set<Origin>,
     onToggleOrigin: (Origin) -> Unit,
+    modifier: Modifier = Modifier,
 ) = Row(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
+    modifier = modifier
         .fillMaxWidth()
         .horizontalScroll(rememberScrollState())
         .padding(horizontal = 16.dp),

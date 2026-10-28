@@ -71,6 +71,11 @@ notification/
 download/
 
 - `SongDownloads.kt` — `SongStorage` (CACHED/DOWNLOADING/PAUSED/DOWNLOADED; `resume`),
+  `overview()` (`DownloadsOverview`: the active user's whole files with size and quality, unfinished
+  downloads as `UnfinishedDownload`/`DownloadStage`, `DownloadWait`, this user's and all users'
+  bytes; polls the main-thread `currentDownloads` every second while one runs or waits),
+  `pause`/`retry` (the notification's actions from the app); failure reasons kept per download for
+  the app's run from the `DataSourceException` reason (`playbackReasonRes`),
   `DownloadPlan` (cached vs
   set quality, `movesCache`), `SongDownloads` (Koin single): `songs` map by song address (badges,
   menu), `plan`/`download(item)`/`item(id)`/`delete`/`removeCached`, listens to the

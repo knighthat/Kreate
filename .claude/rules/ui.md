@@ -41,6 +41,8 @@ charts: `.claude/docs/charts.md`.
   lifts out of the list and hovers above the bottom sheet as a card, and the sheet's first button
   row is its header with no divider (`SongMenu.kt`). Menus for albums, artists and playlists reuse
   this pattern. Ask before changing the gesture.
+- A new `SongItem` option that changes how the row looks goes into `SongMenuRequest` too, or the row
+  lifted above the menu draws without it.
 - Selection menus put the check mark **before** the label; unchecked rows keep an empty 24dp
   `leadingIcon` so labels line up.
 - Hint text that names a button shows its icon inline (`appendInlineContent` +

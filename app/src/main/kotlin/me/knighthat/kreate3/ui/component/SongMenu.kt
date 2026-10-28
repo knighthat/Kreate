@@ -136,6 +136,11 @@ internal class SongMenuRequest(
     val actions: List<SongMenuAction>,
     /** What the row shows at the end in place of the length, see [SongItem]. */
     val trailing: (@Composable () -> Unit)?,
+    /** The line above the title and the badges as the row shows them, see [SongItem]. */
+    val overline: String? = null,
+    val overlineColor: Color = Color.Unspecified,
+    val showBadges: Boolean = true,
+    val showDisliked: Boolean = true,
 )
 
 /**
@@ -321,6 +326,10 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
                 showThumbnail = request.showThumbnail,
                 showAlbum = request.showAlbum,
                 trailing = request.trailing,
+                overline = request.overline,
+                overlineColor = request.overlineColor,
+                showBadges = request.showBadges,
+                showDisliked = request.showDisliked,
                 modifier = Modifier
                     .layout { measurable, _ ->
                         val progress = placement.progress

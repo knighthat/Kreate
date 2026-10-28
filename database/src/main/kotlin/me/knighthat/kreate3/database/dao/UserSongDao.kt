@@ -162,6 +162,13 @@ internal interface UserSongDao {
     @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND downloaded_at IS NOT NULL")
     fun downloadedIds(userId: String): Flow<List<String>>
 
+    /**
+     * The downloaded songs in [query], which must select from `user_song_view` with the user's
+     * `downloaded_at`. It follows changes in the database.
+     */
+    @RawQuery(observedEntities = [UserSongViewEntity::class])
+    fun observeDownloaded(query: RoomRawQuery): Flow<List<DownloadedSongRow>>
+
     /** The songs downloaded by any user. */
     @Query("SELECT DISTINCT song_id FROM user_song WHERE downloaded_at IS NOT NULL")
     suspend fun downloadedByAnyone(): List<String>
@@ -191,4 +198,15 @@ internal data class DislikedSongRow(
     @Embedded val song: UserSongViewEntity,
     @ColumnInfo(name = "disliked_at")
     val dislikedAt: Long,
+)
+
+/**
+ * A downloaded song with when it was downloaded, see `UserSongRepository.downloaded`.
+ *
+ * @property downloadedAt epoch millis
+ */
+internal data class DownloadedSongRow(
+    @Embedded val song: UserSongViewEntity,
+    @ColumnInfo(name = "downloaded_at")
+    val downloadedAt: Long,
 )

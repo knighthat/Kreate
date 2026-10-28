@@ -28,9 +28,11 @@ import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.DislikedSongRow
+import me.knighthat.kreate3.database.dao.DownloadedSongRow
 import me.knighthat.kreate3.database.dao.UserSongDao
 import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.DislikedSong
+import me.knighthat.kreate3.database.model.DownloadedSong
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -237,6 +239,17 @@ internal class UserSongRepositoryImpl(
             userSongDao.downloadedIds(userId).map { it.toSet() }
         }.distinctUntilChanged()
 
+    override fun downloaded(newestFirst: Boolean): Flow<List<DownloadedSong>> =
+        scope.observe(emptyList()) { userId ->
+            userSongDao.observeDownloaded(
+                RoomRawQuery(
+                    sql = "$DOWNLOADED ORDER BY downloaded_at " +
+                            "${if (newestFirst) "DESC" else "ASC"}, v.song_id",
+                    onBindStatement = { it.bindText(1, userId) },
+                )
+            ).map { rows -> rows.map(DownloadedSongRow::toModel) }
+        }
+
     override suspend fun downloadedByAnyone(): Set<String> =
         userSongDao.downloadedByAnyone().toSet()
 
@@ -334,6 +347,13 @@ internal class UserSongRepositoryImpl(
         const val DISLIKED = """
             SELECT *, -liked_at AS disliked_at FROM user_song_view
             WHERE user_id = ?1 AND liked_at < 0
+        """
+
+        // ?1 user; the view has no download time, the user's row has
+        const val DOWNLOADED = """
+            SELECT v.*, us.downloaded_at AS downloaded_at FROM user_song_view v
+            JOIN user_song us ON us.user_id = v.user_id AND us.song_id = v.song_id
+            WHERE v.user_id = ?1 AND us.downloaded_at IS NOT NULL
         """
 
         const val OF_ALBUM = "AND album_id = ?"

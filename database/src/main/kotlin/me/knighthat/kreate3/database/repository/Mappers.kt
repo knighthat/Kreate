@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import me.knighthat.kreate3.database.dao.DislikedSongRow
+import me.knighthat.kreate3.database.dao.DownloadedSongRow
 import me.knighthat.kreate3.database.dao.PeriodPlayRow
 import me.knighthat.kreate3.database.dao.PeriodSummaryRow
 import me.knighthat.kreate3.database.dao.UserPlaylistRow
@@ -42,6 +43,7 @@ import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.DislikedSong
+import me.knighthat.kreate3.database.model.DownloadedSong
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.PeriodPlay
 import me.knighthat.kreate3.database.model.PeriodSummary
@@ -218,5 +220,8 @@ internal fun PeriodPlayRow.toModel() = PeriodPlay(
 
 internal fun DislikedSongRow.toModel() =
     DislikedSong(song.toModel(), Instant.fromEpochMilliseconds(dislikedAt))
+
+internal fun DownloadedSongRow.toModel() =
+    DownloadedSong(song.toModel(), Instant.fromEpochMilliseconds(downloadedAt))
 
 internal fun PeriodSummaryRow.toModel() = PeriodSummary(period, plays, songs, timeSpent.seconds)
