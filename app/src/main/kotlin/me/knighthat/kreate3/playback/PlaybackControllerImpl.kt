@@ -21,6 +21,8 @@ package me.knighthat.kreate3.playback
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.C
@@ -39,6 +41,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.coroutines.resume
 import kotlin.time.Duration
 
 /**
@@ -72,6 +78,10 @@ class PlaybackControllerImpl(
 
     /** What the last [enqueue] or [playNext] added and where, for [unqueue]. */
     private var lastAdded: Added? = null
+
+    /** Held by an action of [run], so one that waits doesn't let the next start meanwhile. */
+    private val running = Mutex()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     init {
         // Connects early so the state is known before anything is played
@@ -297,10 +307,10 @@ class PlaybackControllerImpl(
      * Runs [action] with the connected controller. It waits for the connection, the actions of
      * calls made meanwhile run in the order of the calls.
      */
-    private fun run(what: String, action: (MediaController) -> Unit) {
+    private fun run(what: String, action: suspend (MediaController) -> Unit) {
         scope.launch {
             try {
-                action(connect().await())
+                running.withLock { action(connect().await()) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -404,17 +414,30 @@ class PlaybackControllerImpl(
     }
 
     /** Takes the item at [index] out of the queue, moving on first when it is the current one. */
-    private fun MediaController.removeAt(index: Int) {
+    private suspend fun MediaController.removeAt(index: Int) {
         if (index !in 0 until mediaItemCount) return
         if (index == currentMediaItemIndex) {
             // Counts repeating one as not repeating, and wraps around when repeating all
             val next = nextMediaItemIndex
             // Moving on first, removing the current item while repeating one would end the queue
             // even with items after it: the player looks for what follows it by repeating it
-            if (next != C.INDEX_UNSET && next != index) seekToNextMediaItem()
+            if (next != C.INDEX_UNSET && next != index) {
+                seekToNextMediaItem()
+                // The player's analytics hand out the events of a main thread turn together, by
+                // kind rather than time: with the removal among them, the seek's older events
+                // end the song's play before it began, a crash in PlaybackStatsListener
+                awaitMainTurn()
+            }
         }
         // With nothing else to play, removing it ends the queue
         removeMediaItem(index)
+    }
+
+    /** Suspends until what the main thread has queued so far has run. */
+    private suspend fun awaitMainTurn() = suspendCancellableCoroutine { continuation ->
+        val resume = Runnable { continuation.resume(Unit) }
+        mainHandler.post(resume)
+        continuation.invokeOnCancellation { mainHandler.removeCallbacks(resume) }
     }
 
     /** [items] as given to [enqueue] or [playNext], added at [index] of the queue. */
