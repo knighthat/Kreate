@@ -62,7 +62,7 @@
     <string name="setting_header_sleep_timer">Sleep timer</string>
     <string name="setting_header_history">History</string>
     <string name="setting_header_lyrics">Lyrics</string>
-    <string name="setting_header_android_auto">Android Auto</string>
+    <string name="setting_header_android_auto" translatable="false">Android Auto</string>
     <string name="setting_header_proxy">Proxy</string>
     <string name="setting_title_account">Account</string>
     <string name="setting_header_playback">Playback</string>
