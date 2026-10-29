@@ -18,7 +18,7 @@
   -->
 <resources>
     <string name="app_name">Kreate</string>
-    <string name="source_local">On device</string>
+    <string name="source_local">Sur l\'appareil</string>
     <string name="bytes">%1$s B</string>
     <string name="kib">%1$s KiB</string>
     <string name="mib">%1$s MiB</string>
@@ -32,44 +32,44 @@
     <string name="pb">%1$s PB</string>
     <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
-    <string name="name">Name</string>
-    <string name="quoted">\"%1$s\"</string>
-    <string name="sleep_timer_to_end_of_song">Until the song ends</string>
-    <string name="playlist_type_monthly">Monthly</string>
+    <string name="name">Nom</string>
+    <string name="quoted">« %1$s »</string>
+    <string name="sleep_timer_to_end_of_song">Jusqu\'à la fin du morceau</string>
+    <string name="playlist_type_monthly">Mensuel</string>
     <!--<editor-fold defaultstate="collapsed" desc="Settings">-->
     <!-- pages and sections -->
-    <string name="setting_header_library">Library</string>
-    <string name="setting_header_storage">Storage</string>
-    <string name="setting_header_downloads">Downloads</string>
+    <string name="setting_header_library">Bibliothèque</string>
+    <string name="setting_header_storage">Stockage</string>
+    <string name="setting_header_downloads">Téléchargements</string>
     <string name="setting_header_images">Images</string>
     <string name="setting_header_navigation">Navigation</string>
-    <string name="setting_title_theme">Theme</string>
-    <string name="setting_title_language">Language</string>
-    <string name="setting_title_region">Region</string>
-    <string name="setting_header_layout">Layout</string>
-    <string name="setting_header_launcher">Launcher</string>
-    <string name="setting_header_requests">Requests</string>
+    <string name="setting_title_theme">Thème</string>
+    <string name="setting_title_language">Langue</string>
+    <string name="setting_title_region">Région</string>
+    <string name="setting_header_layout">Mise en page</string>
+    <string name="setting_header_launcher">Lanceur</string>
+    <string name="setting_header_requests">Demandes</string>
     <string name="setting_header_sources">Sources</string>
-    <string name="setting_header_queue">Queue</string>
-    <string name="setting_header_sound">Sound</string>
-    <string name="setting_header_buffering">Buffering</string>
-    <string name="setting_header_sleep_timer">Sleep timer</string>
-    <string name="setting_header_history">History</string>
-    <string name="setting_header_lyrics">Lyrics</string>
+    <string name="setting_header_queue">File d\'attente</string>
+    <string name="setting_header_sound">Son</string>
+    <string name="setting_header_buffering">Mise en mémoire tampon</string>
+    <string name="setting_header_sleep_timer">Minuterie de mise en veille</string>
+    <string name="setting_header_history">Historique</string>
+    <string name="setting_header_lyrics">Paroles</string>
     <string name="setting_header_android_auto">Android Auto</string>
     <string name="setting_header_proxy">Proxy</string>
-    <string name="setting_title_account">Account</string>
-    <string name="setting_header_playback">Playback</string>
-    <string name="setting_title_server">Server</string>
-    <string name="setting_header_sign_in_with">Sign in with</string>
-    <string name="setting_header_server_library">Server library</string>
+    <string name="setting_title_account">Compte</string>
+    <string name="setting_header_playback">Lecture</string>
+    <string name="setting_title_server">Serveur</string>
+    <string name="setting_header_sign_in_with">Se connecter avec</string>
+    <string name="setting_header_server_library">Bibliothèque serveur</string>
     <!-- what each page is about -->
-    <string name="setting_description_general">How the app behaves</string>
-    <string name="setting_description_data">Caches, downloads and the room they take</string>
-    <string name="setting_description_player">How songs play and what is kept of them</string>
-    <string name="setting_description_ui">Theme, language and what you interact with</string>
-    <string name="setting_description_network">Connections, your music server and %1$s account</string>
-    <string name="setting_description_backup">Save or restore your profiles, settings and library</string>
+    <string name="setting_description_general">Fonctionnement de l\'application</string>
+    <string name="setting_description_data">Les caches, les téléchargements et l\'espace qu\'ils occupent</string>
+    <string name="setting_description_player">Comment les chansons sont diffusées et ce qu\'il en reste</string>
+    <string name="setting_description_ui">Thème, langue et éléments avec lesquels vous interagissez</string>
+    <string name="setting_description_network">Connexions, votre serveur musical et votre compte %1$s</string>
+    <string name="setting_description_backup">Enregistrer ou restaurer vos profils, vos paramètres et votre bibliothèque</string>
     <string name="setting_description_about">Version, license and the open source libraries used</string>
     <!-- About -->
     <string name="setting_title_version">Version</string>
