@@ -40,14 +40,14 @@ import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val scanInterval by Preferences.LOCAL_SCAN_INTERVAL.collectAsStateWithLifecycle()
-    val exitDisabled by Preferences.BACK_EXIT_DISABLED.collectAsStateWithLifecycle()
+    val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
     val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
     val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
 
     GeneralSettingsContent(
         scanInterval = scanInterval,
-        exitDisabled = exitDisabled,
+        exitOnBack = exitOnBack,
         exitConfirmation = exitConfirmation,
         exitTimeout = exitTimeout,
         notificationOpensPlayer = notificationOpensPlayer,
@@ -59,7 +59,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun GeneralSettingsContent(
     scanInterval: Int,
-    exitDisabled: Boolean,
+    exitOnBack: Boolean,
     exitConfirmation: Boolean,
     exitTimeout: Int,
     notificationOpensPlayer: Boolean,
@@ -84,32 +84,35 @@ private fun GeneralSettingsContent(
 
         SettingsSection(stringResource(R.string.setting_header_navigation))
         SwitchSetting(
-            title = stringResource(R.string.setting_title_dont_exit_with_back),
-            checked = exitDisabled,
-            onCheckedChange = { Preferences.BACK_EXIT_DISABLED.update(it) },
-            summary = stringResource(R.string.setting_description_dont_exit_with_back),
+            title = stringResource(R.string.setting_title_exit_on_back),
+            checked = exitOnBack,
+            onCheckedChange = { Preferences.EXIT_ON_BACK.update(it) },
+            summary = stringResource(
+                if (exitOnBack) R.string.setting_description_exit_on_back_on
+                else R.string.setting_description_exit_on_back_off
+            ),
         )
-        if (!exitDisabled) {
+        if (exitOnBack) {
             SwitchSetting(
                 title = stringResource(R.string.setting_title_confirm_exit),
                 checked = exitConfirmation,
                 onCheckedChange = { Preferences.EXIT_CONFIRMATION.update(it) },
                 summary = stringResource(R.string.setting_description_confirm_exit),
             )
-            if (exitConfirmation)
-                NumberSetting(
-                    title = stringResource(R.string.setting_title_confirmation_time),
-                    value = exitTimeout.toLong(),
-                    min = 1,
-                    max = 10,
-                    onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
-                    note = {
-                        stringResource(
-                            R.string.setting_description_confirmation_time,
-                            pluralStringResource(R.plurals.second, it.toInt(), it)
-                        )
-                    },
-                )
+            NumberSetting(
+                title = stringResource(R.string.setting_title_confirmation_time),
+                value = exitTimeout.toLong(),
+                min = 1,
+                max = 10,
+                onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
+                note = {
+                    stringResource(
+                        R.string.setting_description_confirmation_time,
+                        pluralStringResource(R.plurals.second, it.toInt(), it)
+                    )
+                },
+                enabled = exitConfirmation,
+            )
         }
         SwitchSetting(
             title = stringResource(R.string.setting_title_notification_opens_player),
@@ -125,7 +128,7 @@ private fun GeneralSettingsContent(
 private fun GeneralSettingsPreview() = PreviewTheme {
     GeneralSettingsContent(
         scanInterval = 30,
-        exitDisabled = false,
+        exitOnBack = true,
         exitConfirmation = true,
         exitTimeout = 2,
         notificationOpensPlayer = true,

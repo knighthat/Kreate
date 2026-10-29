@@ -44,6 +44,7 @@ import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.PlayerBuild
+import me.knighthat.kreate3.playback.SongLoadControl
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -297,7 +298,12 @@ private fun PlayerSettingsContent(
             title = stringResource(R.string.setting_title_keep_what_was_played),
             checked = keepPlayed,
             onCheckedChange = { Preferences.PLAYBACK_KEEP_PLAYED.update(it) },
-            summary = stringResource(R.string.setting_description_keep_what_was_played),
+            summary = SongLoadControl.KEPT_PLAYED_MS.div(1000).let {
+                stringResource(
+                    R.string.setting_description_keep_what_was_played,
+                    pluralStringResource(R.plurals.second, it, it)
+                )
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_sleep_timer))
@@ -325,7 +331,10 @@ private fun PlayerSettingsContent(
             title = stringResource(R.string.setting_title_pause_history),
             checked = historyPaused,
             onCheckedChange = { Preferences.PLAYBACK_HISTORY_PAUSED.update(it) },
-            summary = stringResource(R.string.setting_description_pause_history),
+            summary = stringResource(
+                if (historyPaused) R.string.setting_description_pause_history_on
+                else R.string.setting_description_pause_history_off
+            ),
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_minimum_play_time),

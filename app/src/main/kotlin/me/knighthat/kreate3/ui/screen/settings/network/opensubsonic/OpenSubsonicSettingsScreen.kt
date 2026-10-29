@@ -63,6 +63,10 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import me.knighthat.kreate3.ui.screen.settings.TextSetting
+import me.knighthat.kreate3.ui.screen.settings.syncModeDescription
+import me.knighthat.kreate3.ui.screen.settings.syncPlaylistsDescription
+import me.knighthat.kreate3.ui.screen.settings.syncSongsDescription
+import me.knighthat.kreate3.ui.screen.settings.syncTitle
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -73,7 +77,7 @@ private fun CheckState.serverSummary(): String? = when (this) {
     CheckState.Checking -> stringResource(R.string.setting_description_server_status_checking)
     is CheckState.Done -> when (val result = result) {
         is ServerCheck.Success -> listOfNotNull(
-            stringResource(R.string.setting_description_server_status_online),
+            stringResource(R.string.status_online),
             result.server.type?.replaceFirstChar { it.uppercase() },
             result.server.serverVersion,
         ).joinToString(" · ")
@@ -98,7 +102,7 @@ private fun CheckState.credentialsSummary(): String? = when (this) {
     CheckState.Idle -> null
     CheckState.Checking -> stringResource(R.string.setting_description_sign_in_status_checking)
     is CheckState.Done -> when (val result = result) {
-        is ServerCheck.Success -> stringResource(R.string.setting_description_sign_in_status_signed_in)
+        is ServerCheck.Success -> stringResource(R.string.status_signed_in)
         is ServerCheck.Rejected -> when (result.code) {
             40 -> stringResource(R.string.setting_description_sign_in_status_wrong_credentials)
             44 -> stringResource(R.string.setting_description_sign_in_status_invalid_api_key)
@@ -108,12 +112,12 @@ private fun CheckState.credentialsSummary(): String? = when (this) {
         }
 
         is ServerCheck.Unreachable ->
-            stringResource(R.string.setting_description_sign_in_status_unreachable, result.reason)
+            stringResource(R.string.setting_description_server_status_unreachable, result.reason)
 
         is ServerCheck.UntrustedCertificate -> stringResource(R.string.setting_description_sign_in_status_certificate_untrusted)
         is ServerCheck.CertificateChanged -> stringResource(R.string.setting_description_sign_in_status_certificate_changed)
         ServerCheck.NotSubsonic -> stringResource(
-            R.string.setting_description_sign_in_status_not_opensubsonic,
+            R.string.setting_description_server_status_not_opensubsonic,
             stringResource(R.string.source_opensubsonicapi)
         )
         ServerCheck.Disabled, ServerCheck.NotConfigured -> null
@@ -337,10 +341,7 @@ private fun OpenSubsonicSettingsContent(
 
     SettingsPage(stringResource(R.string.source_opensubsonicapi), onBack, modifier) {
         MainSwitch(
-            title = stringResource(
-                R.string.setting_title_use_opensubsonic,
-                stringResource(R.string.source_opensubsonicapi)
-            ),
+            title = stringResource(R.string.source_opensubsonicapi),
             summary = stringResource(R.string.setting_description_use_opensubsonic),
             checked = enabled,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_ENABLED.update(it) },
@@ -460,31 +461,34 @@ private fun OpenSubsonicSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
+        val server = stringResource(R.string.setting_description_the_server)
         SwitchSetting(
-            title = stringResource(R.string.setting_title_sync_liked_songs),
-            summary = stringResource(R.string.setting_description_sync_songs_server),
+            title = syncTitle(R.plurals.unit_song),
+            summary = syncSongsDescription(syncSongs, server),
             checked = syncSongs,
             onCheckedChange = onSongSyncChange,
         )
         SwitchSetting(
-            title = stringResource(R.string.setting_title_show_playlists),
-            summary = stringResource(R.string.setting_description_show_playlists_server),
+            title = syncTitle(R.plurals.unit_playlist),
+            summary = syncPlaylistsDescription(syncPlaylists, server),
             checked = syncPlaylists,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.update(it) },
         )
         ChoiceSetting(
-            title = stringResource(R.string.setting_title_show_albums),
+            title = syncTitle(R.plurals.unit_album),
             value = syncAlbums,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.update(it) },
+            summary = syncModeDescription(syncAlbums, R.plurals.unit_album),
         )
         ChoiceSetting(
-            title = stringResource(R.string.setting_title_show_artists),
+            title = syncTitle(R.plurals.unit_artist),
             value = syncArtists,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.update(it) },
+            summary = syncModeDescription(syncArtists, R.plurals.unit_artist),
         )
 
         proxy()

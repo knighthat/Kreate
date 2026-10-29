@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.AppIcon
@@ -114,7 +115,7 @@ private fun UiSettingsContent(
 
         SettingsSection(stringResource(R.string.setting_title_language))
         // Each language in its own words, "null" follows the device
-        val system = stringResource(R.string.setting_description_language_status_system)
+        val system = stringResource(R.string.status_system)
         ChoiceSetting(
             title = stringResource(R.string.setting_title_language),
             value = language,
@@ -140,7 +141,7 @@ private fun UiSettingsContent(
             title = stringResource(R.string.setting_title_binary_sizes),
             checked = binarySizes,
             onCheckedChange = { Preferences.BINARY_SIZES.update(it) },
-            summary = stringResource(R.string.setting_description_binary_sizes),
+            summary = binarySizesSummary(binarySizes),
         )
 
         SettingsSection(stringResource(R.string.setting_header_launcher))
@@ -170,4 +171,23 @@ private fun UiSettingsPreview() = PreviewTheme {
         onLanguageChange = {},
         onBack = {},
     )
+}
+
+/** How [binary] sizes are counted: 1024 MiB as 1 GiB, or 1000 MB as 1 GB. */
+@Composable
+private fun binarySizesSummary(binary: Boolean): String {
+    val locale = LocalResources.current.configuration.locales[0]
+    val count = { n: Int -> "%d".format(locale, n) }
+    return if (binary)
+        stringResource(
+            R.string.setting_description_binary_sizes,
+            stringResource(R.string.mib, count(1024)),
+            stringResource(R.string.gib, count(1)),
+        )
+    else
+        stringResource(
+            R.string.setting_description_binary_sizes,
+            stringResource(R.string.mb, count(1000)),
+            stringResource(R.string.gb, count(1)),
+        )
 }

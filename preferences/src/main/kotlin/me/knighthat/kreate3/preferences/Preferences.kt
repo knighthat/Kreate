@@ -69,15 +69,15 @@ object Preferences : KoinComponent {
 
     /**
      * Going back from the first screen asks to go back again before the app closes, see
-     * [EXIT_CONFIRMATION_TIMEOUT]. [BACK_EXIT_DISABLED] wins over it.
+     * [EXIT_CONFIRMATION_TIMEOUT]. Only while [EXIT_ON_BACK] is on.
      */
     val EXIT_CONFIRMATION by lazy { boolean("exit_confirmation", true) }
 
     /** Seconds [EXIT_CONFIRMATION] waits for the second time, it asks again after. */
     val EXIT_CONFIRMATION_TIMEOUT by lazy { int("exit_confirmation_timeout", 2) }
 
-    /** Going back from the first screen does nothing, the app is never closed that way. */
-    val BACK_EXIT_DISABLED by lazy { boolean("back_exit_disabled", false) }
+    /** Going back from the first screen closes the app; while off it does nothing there. */
+    val EXIT_ON_BACK by lazy { boolean("exit_on_back", true) }
 
     /**
      * Tapping the media notification opens the full player, read by `KreateApp`; off, it only

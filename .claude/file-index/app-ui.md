@@ -90,7 +90,7 @@ ui/navigation/
 - `TopLevelBackStack.kt` — one back stack per Tab.
 - `RouteViewModel.kt` — `routeExtras`: route args → ViewModel `SavedStateHandle`.
 - `ExitConfirmation.kt` — PredictiveBackHandler at the bottom of the stack (composed before
-  NavDisplay in `KreateApp`): `BACK_EXIT_DISABLED` swallows back; `EXIT_CONFIRMATION` shows "
+  NavDisplay in `KreateApp`): `EXIT_ON_BACK` off swallows back; on, `EXIT_CONFIRMATION` shows "
   Press/Swipe again to exit" for `EXIT_CONFIRMATION_TIMEOUT` s (swipe = progress events or
   navigation_mode 2), second back moves the task back (API 31+) or finishes. Settings: General →
   Navigation.

@@ -39,6 +39,7 @@ import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.songTitle
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
@@ -151,9 +152,13 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         // The song leaves or rejoins the lists, a like only changes its button
         if (to != Reaction.DISLIKED) return@launch
 
-        val text = resources.getString(
-            if (removing) R.string.snackbar_removed_from_dislike else R.string.snackbar_disliked
-        )
+        val text = if (removing)
+            resources.getString(R.string.snackbar_removed_from_dislike)
+        else {
+            val title = item.songTitle()?.let { resources.getString(R.string.quoted, it) }
+                ?: resources.getString(R.string.snackbar_this_song)
+            resources.getString(R.string.snackbar_disliked, title)
+        }
         notifier.post(undoMessage(resources, text) {
             scope.launch {
                 // The dislike back, it leaves the queue again

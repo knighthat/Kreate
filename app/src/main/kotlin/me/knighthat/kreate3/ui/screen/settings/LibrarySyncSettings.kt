@@ -18,15 +18,52 @@
 
 package me.knighthat.kreate3.ui.screen.settings
 
+import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
 
+/** "Sync songs" and the like, [plural] naming what is synced. */
+@Composable
+internal fun syncTitle(@PluralsRes plural: Int): String =
+    stringResource(R.string.setting_title_sync, pluralStringResource(plural, 2))
+
+/** What [mode] does to the albums or artists [plural] names. */
+@Composable
+internal fun syncModeDescription(mode: SyncMode, @PluralsRes plural: Int): String =
+    stringResource(
+        when (mode) {
+            SyncMode.OFF -> R.string.setting_description_sync_status_off
+            SyncMode.LIKED -> R.string.setting_description_sync_status_liked
+            SyncMode.ALL -> R.string.setting_description_sync_status_all
+        },
+        pluralStringResource(plural, 2),
+    )
+
+/** Liked songs on [source] are synced while [on]. */
+@Composable
+internal fun syncSongsDescription(on: Boolean, source: String): String = stringResource(
+    if (on) R.string.setting_description_sync_liked_songs_on
+    else R.string.setting_description_sync_liked_songs_off,
+    source,
+)
+
+/** The playlists on [source] are synced while [on]. */
+@Composable
+internal fun syncPlaylistsDescription(on: Boolean, source: String): String = stringResource(
+    if (on) R.string.setting_description_sync_playlists_on
+    else R.string.setting_description_sync_playlists_off,
+    source,
+)
+
 /**
- * A switch for each [LibrarySection] of YouTube: the liked songs are synced, the others show.
+ * A switch for each [LibrarySection] of YouTube: the liked songs, saved albums, followed artists
+ * and playlists.
  *
  * @param setting the setting of a section, like `youTubeSyncSetting`
  */
@@ -47,35 +84,26 @@ internal fun LibrarySyncSettings(
     syncs: Map<LibrarySection, Boolean>,
     onSyncChange: (LibrarySection, Boolean) -> Unit,
 ) = LibrarySection.entries.forEach { section ->
+    val source = stringResource(R.string.source_ytm)
+    val checked = syncs.getValue(section)
+    val mode = if (checked) SyncMode.LIKED else SyncMode.OFF
     val (title, summary) = when (section) {
         LibrarySection.SONGS ->
-            stringResource(R.string.setting_title_sync_liked_songs) to stringResource(
-                R.string.setting_description_sync_songs_youtube,
-                stringResource(R.string.source_ytm)
-            )
+            syncTitle(R.plurals.unit_song) to syncSongsDescription(checked, source)
 
         LibrarySection.ALBUMS ->
-            stringResource(R.string.setting_title_show_albums) to stringResource(
-                R.string.setting_description_show_albums_youtube,
-                stringResource(R.string.source_ytm)
-            )
+            syncTitle(R.plurals.unit_album) to syncModeDescription(mode, R.plurals.unit_album)
 
         LibrarySection.ARTISTS ->
-            stringResource(R.string.setting_title_show_artists) to stringResource(
-                R.string.setting_description_show_artists_youtube,
-                stringResource(R.string.source_ytm)
-            )
+            syncTitle(R.plurals.unit_artist) to syncModeDescription(mode, R.plurals.unit_artist)
 
         LibrarySection.PLAYLISTS ->
-            stringResource(R.string.setting_title_show_playlists) to stringResource(
-                R.string.setting_description_show_playlists_youtube,
-                stringResource(R.string.source_ytm)
-            )
+            syncTitle(R.plurals.unit_playlist) to syncPlaylistsDescription(checked, source)
     }
     SwitchSetting(
         title = title,
         summary = summary,
-        checked = syncs.getValue(section),
+        checked = checked,
         onCheckedChange = { onSyncChange(section, it) },
     )
 }

@@ -234,7 +234,7 @@ internal fun QueueButtons(
     ModeButton(
         icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
         description = when {
-            isShuffled -> stringResource(R.string.semantic_turn_shuffle_off_to_move_songs)
+            isShuffled -> stringResource(R.string.snackbar_turn_shuffle_off)
             reordering -> stringResource(R.string.semantic_lock_the_order)
             else -> stringResource(R.string.semantic_unlock_to_move_songs)
         },

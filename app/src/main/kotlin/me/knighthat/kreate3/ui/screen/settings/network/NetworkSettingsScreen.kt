@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 @Composable
 private fun YouTubeAccountState.summary(): String = when (this) {
     YouTubeAccountState.SignedOut -> stringResource(R.string.setting_description_configure_youtube_status_not_signed_in)
-    YouTubeAccountState.Checking -> stringResource(R.string.setting_description_configure_youtube_status_checking)
+    YouTubeAccountState.Checking -> stringResource(R.string.status_checking)
     is YouTubeAccountState.SignedIn ->
         stringResource(
             R.string.setting_description_configure_youtube_status_signed_in_as,
@@ -69,13 +69,13 @@ private fun YouTubeAccountState.summary(): String = when (this) {
 /** The server's name and version, or why they are unknown, for the row that opens its page. */
 @Composable
 private fun CheckState.serverName(): String = when (this) {
-    CheckState.Idle, CheckState.Checking -> stringResource(R.string.setting_description_configure_opensubsonic_status_checking)
+    CheckState.Idle, CheckState.Checking -> stringResource(R.string.setting_description_server_status_checking)
     is CheckState.Done -> when (val result = result) {
         is ServerCheck.Success -> listOfNotNull(
             result.server.type?.replaceFirstChar { it.uppercase() },
             result.server.serverVersion,
         ).joinToString(" ")
-            .ifEmpty { stringResource(R.string.setting_description_configure_opensubsonic_status_online) }
+            .ifEmpty { stringResource(R.string.status_online) }
 
         is ServerCheck.Unreachable -> stringResource(R.string.setting_description_configure_opensubsonic_status_unreachable)
         is ServerCheck.UntrustedCertificate -> stringResource(R.string.setting_description_configure_opensubsonic_status_certificate_untrusted)
@@ -86,7 +86,7 @@ private fun CheckState.serverName(): String = when (this) {
         )
         // Not what a ping returns
         ServerCheck.Disabled, ServerCheck.NotConfigured, is ServerCheck.Rejected ->
-            stringResource(R.string.setting_description_configure_opensubsonic_status_online)
+            stringResource(R.string.status_online)
     }
 }
 
@@ -210,7 +210,7 @@ private fun NetworkSettingsContent(
         SettingsSection(stringResource(R.string.setting_header_sources))
         SettingsItem(
             title = stringResource(
-                R.string.setting_title_configure_youtube,
+                R.string.setting_title_configure_source,
                 stringResource(R.string.source_ytm)
             ),
             summary = if (youtubeEnabled) youtubeAccount.summary() else stringResource(R.string.status_off),
@@ -218,7 +218,7 @@ private fun NetworkSettingsContent(
         )
         SettingsItem(
             title = stringResource(
-                R.string.setting_title_configure_opensubsonic,
+                R.string.setting_title_configure_source,
                 stringResource(R.string.source_opensubsonicapi)
             ),
             summary = when {

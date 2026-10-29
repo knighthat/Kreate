@@ -144,7 +144,8 @@ private fun YouTubeSettingsContent(
                 stringResource(R.string.source_ytm)
             ),
             summary = stringResource(
-                R.string.setting_description_use_youtube_account,
+                if (enabled) R.string.setting_description_use_youtube_account_on
+                else R.string.setting_description_use_youtube_account_off,
                 stringResource(R.string.source_ytm)
             ),
             checked = enabled,
@@ -165,13 +166,13 @@ private fun YouTubeSettingsContent(
                 YouTubeAccountState.Checking ->
                     SettingsItem(
                         title = stringResource(R.string.setting_title_account),
-                        summary = stringResource(R.string.setting_description_account_status_checking)
+                        summary = stringResource(R.string.status_checking)
                     )
 
                 is YouTubeAccountState.SignedIn -> SettingsItem(
                     title = state.account.name,
                     summary = state.account.handle
-                        ?: stringResource(R.string.setting_description_account_status_signed_in),
+                        ?: stringResource(R.string.status_signed_in),
                     onClick = if (canSwitch) ({ pickChannel = true }) else null,
                     trailing = if (canSwitch) ({
                         Icon(
@@ -275,7 +276,7 @@ private fun RegionSetting(region: String) {
         val collator = Collator.getInstance(locale)
         listOf("") + YOUTUBE_REGIONS.sortedWith(compareBy(collator) { name(it, locale) })
     }
-    val system = stringResource(R.string.setting_description_region_status_system)
+    val system = stringResource(R.string.status_system)
     ChoiceSetting(
         title = stringResource(R.string.setting_title_region),
         value = region,

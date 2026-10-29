@@ -299,7 +299,10 @@ private fun DataSettingsContent(
             title = stringResource(R.string.setting_title_download_on_low_battery),
             checked = downloadOnLowBattery,
             onCheckedChange = { Preferences.DOWNLOAD_ON_LOW_BATTERY.update(it) },
-            summary = stringResource(R.string.setting_description_download_on_low_battery),
+            summary = stringResource(
+                if (downloadOnLowBattery) R.string.setting_description_download_on_low_battery_on
+                else R.string.setting_description_download_on_low_battery_off
+            ),
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_download_lyrics),

@@ -245,6 +245,8 @@ fun <T> RadioSetting(
 
 /**
  * A setting with a few values to pick one from, in a dialog.
+ *
+ * @param summary shown under the title, defaults to the [label] of the [value]
  */
 @Composable
 fun <T> ChoiceSetting(
@@ -254,10 +256,11 @@ fun <T> ChoiceSetting(
     label: (T) -> String,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    summary: String = label(value),
 ) {
     var open by remember { mutableStateOf(false) }
 
-    SettingsItem(title, modifier, summary = label(value), onClick = { open = true })
+    SettingsItem(title, modifier, summary = summary, onClick = { open = true })
 
     if (open)
         AlertDialog(
@@ -339,6 +342,7 @@ fun <T> SliderSetting(
  * @param summary shown under the title, defaults to the [value]
  * @param validate the reason the text is not acceptable, `null` when it is
  * @param hidden whether the text shows as dots, for passwords
+ * @param enabled while not, the row is dimmed and taps do nothing
  */
 @Composable
 fun TextSetting(
@@ -350,15 +354,16 @@ fun TextSetting(
     placeholder: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     hidden: Boolean = false,
+    enabled: Boolean = true,
     validate: (String) -> String? = { null },
 ) {
     var open by remember { mutableStateOf(false) }
 
     SettingsItem(
         title = title,
-        modifier = modifier,
+        modifier = if (enabled) modifier else modifier.alpha(DISABLED_ALPHA),
         summary = summary.ifEmpty { stringResource(R.string.status_not_set) },
-        onClick = { open = true },
+        onClick = if (enabled) ({ open = true }) else null,
     )
 
     if (open) {
@@ -403,6 +408,7 @@ fun TextSetting(
  * A whole number typed in a dialog, between [min] and [max].
  *
  * @param note extra line under the title, like when a change applies
+ * @param enabled while not, the row is dimmed and taps do nothing
  */
 @Composable
 fun NumberSetting(
@@ -413,6 +419,7 @@ fun NumberSetting(
     onSave: (Long) -> Unit,
     modifier: Modifier = Modifier,
     note: @Composable (Long) -> String? = { null },
+    enabled: Boolean = true,
 ) {
     val outOfRange = stringResource(R.string.setting_description_between, min, max)
 
@@ -423,6 +430,7 @@ fun NumberSetting(
         onSave = { onSave(it.toLong()) },
         modifier = modifier,
         keyboardType = KeyboardType.Number,
+        enabled = enabled,
         validate = {
             val number = it.toLongOrNull()
             if (number == null || number !in min..max) outOfRange else null

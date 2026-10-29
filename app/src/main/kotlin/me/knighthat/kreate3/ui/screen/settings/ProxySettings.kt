@@ -151,14 +151,14 @@ fun ProxySettings(
     if (!on) return
 
     ChoiceSetting(
-        title = stringResource(R.string.setting_title_type),
+        title = stringResource(R.string.setting_proxy_title_type),
         value = kind,
         options = ProxyType.entries,
         label = ProxyType::label,
         onSelect = onTypeChange,
     )
     TextSetting(
-        title = stringResource(R.string.setting_title_host),
+        title = stringResource(R.string.setting_proxy_title_host),
         value = address,
         placeholder = "proxy.example.com",
         keyboardType = KeyboardType.Uri,
@@ -166,7 +166,7 @@ fun ProxySettings(
         onSave = { onHostChange(it.trim()) },
     )
     TextSetting(
-        title = stringResource(R.string.setting_title_port),
+        title = stringResource(R.string.setting_proxy_title_port),
         value = if (number == 0) "" else number.toString(),
         keyboardType = KeyboardType.Number,
         validate = { validatePort(it.trim()) },

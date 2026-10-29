@@ -128,7 +128,7 @@ class ProfilesActivity : ComponentActivity() {
                         TextButton(
                             onClick = onSwitch,
                             enabled = !isActive
-                        ) { Text(stringResource(R.string.action_switch)) }
+                        ) { Text(stringResource(R.string.action_account_switch)) }
                         // The default profile can't be deleted
                         TextButton(
                             onClick = onDelete,

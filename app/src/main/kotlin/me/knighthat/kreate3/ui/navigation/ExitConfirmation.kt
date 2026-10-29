@@ -67,8 +67,8 @@ private fun Activity.exit() {
 /**
  * Handles going back from the first screen, where it would close the app, when [atBottom].
  *
- * With [Preferences.BACK_EXIT_DISABLED] going back there does nothing. Otherwise, with
- * [Preferences.EXIT_CONFIRMATION], the first time shows a message on [snackbar] for
+ * While [Preferences.EXIT_ON_BACK] is off going back there does nothing. While on, without
+ * [Preferences.EXIT_CONFIRMATION] the app closes at once; with it, the first time shows a message on [snackbar] for
  * [Preferences.EXIT_CONFIRMATION_TIMEOUT] seconds and going back again meanwhile leaves the app.
  * Once the message is gone, the next time asks again.
  *
@@ -76,7 +76,7 @@ private fun Activity.exit() {
  */
 @Composable
 fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
-    val exitDisabled by Preferences.BACK_EXIT_DISABLED.collectAsStateWithLifecycle()
+    val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
     val confirm by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val timeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
 
@@ -86,13 +86,13 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
     val scope = rememberCoroutineScope()
     var asking by remember { mutableStateOf<Job?>(null) }
 
-    PredictiveBackHandler(enabled = atBottom && (exitDisabled || confirm)) { progress ->
+    PredictiveBackHandler(enabled = atBottom && (!exitOnBack || confirm)) { progress ->
         // A swipe reports its progress, a button press goes back at once
         var swiped = false
         progress.collect { swiped = true }
 
         when {
-            exitDisabled -> Unit
+            !exitOnBack -> Unit
             asking?.isActive == true -> {
                 asking?.cancel()
                 activity?.exit()
