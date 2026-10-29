@@ -51,6 +51,7 @@
     <string name="setting_header_navigation">Navigation</string>
     <string name="setting_title_theme">Theme</string>
     <string name="setting_title_language">Language</string>
+    <string name="setting_title_region">Region</string>
     <string name="setting_header_layout">Layout</string>
     <string name="setting_header_launcher">Launcher</string>
     <string name="setting_header_requests">Requests</string>
@@ -131,6 +132,7 @@
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>
     <string name="setting_description_language_status_system">System</string>
+    <string name="setting_description_region_status_system">System</string>
     <string name="setting_title_icon_only">Icon only</string>
     <string name="setting_description_icon_only">Hide button labels</string>
     <string name="setting_title_playlist_initial">Playlist initial</string>

@@ -42,9 +42,6 @@ import me.knighthat.kreate3.provider.youtube.YouTubeItem.AlbumItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.ArtistItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.PlaylistItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.SongItem
-import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.LIBRARY_PAGES
-import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.PLAYLIST_PAGES
-import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.SEARCH_PAGES
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.util.Locale
@@ -545,6 +542,7 @@ class YouTubeProvider internal constructor(
             client,
             json,
             Locale::getDefault,
+            ::youTubeRegion,
             cookies,
             pageId = pageId,
             poTokens = context?.let { WebPoTokenProvider(it, client) },

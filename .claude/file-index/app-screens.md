@@ -146,7 +146,7 @@ ui/screen/
     initial, binary units; app icon),
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
-  page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,
+    page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
   `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, sign-in
     checks, direct play (disabled while the song cache is Off, value kept), quality sliders,

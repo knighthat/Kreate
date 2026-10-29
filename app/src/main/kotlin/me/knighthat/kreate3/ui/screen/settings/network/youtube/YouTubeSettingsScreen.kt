@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
@@ -36,6 +37,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.youtube.YOUTUBE_REGIONS
 import me.knighthat.kreate3.provider.youtube.YouTubeAccount
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
@@ -43,6 +45,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.youTubeLabelRes
+import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.LibrarySyncSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
@@ -52,12 +55,14 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
 import org.koin.androidx.compose.koinViewModel
+import java.text.Collator
+import java.util.Locale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /**
- * Whether the YouTube account is used, who is signed in, with a way to sign in or out, how good
- * the songs streamed are and the proxy. Only the switch, the quality and the proxy show while the
- * account is off.
+ * Whether the YouTube account is used, who is signed in, with a way to sign in or out, the region
+ * of the catalog, how good the songs streamed are and the proxy. Only the switch, the region, the
+ * quality and the proxy show while the account is off.
  */
 @Composable
 fun YouTubeSettingsScreen(
@@ -70,12 +75,14 @@ fun YouTubeSettingsScreen(
     val channels by viewModel.channels.collectFlowAsState()
     val pageId by viewModel.pageId.collectFlowAsState()
     val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
+    val region by Preferences.YOUTUBE_REGION.collectAsStateWithLifecycle()
 
     YouTubeSettingsContent(
         enabled = enabled,
         account = account,
         channels = channels,
         pageId = pageId,
+        region = region,
         onEnabledChange = viewModel::setEnabled,
         onSignIn = onSignIn,
         onRetry = viewModel::retry,
@@ -102,6 +109,7 @@ fun YouTubeSettingsScreen(
 
 /**
  * @param pageId page id of the channel acted as now, empty for the account's own
+ * @param region country code of the catalog, empty for the device's region
  * @param library what of the account's library is synced, see [LibrarySyncSettings]
  * @param quality the stream quality, with Original while someone is signed in
  * @param proxy YouTube's proxy, see [ProxySettings]
@@ -112,6 +120,7 @@ private fun YouTubeSettingsContent(
     account: YouTubeAccountState,
     channels: List<YouTubeChannel>,
     pageId: String,
+    region: String,
     onEnabledChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onRetry: () -> Unit,
@@ -243,6 +252,10 @@ private fun YouTubeSettingsContent(
                 )
         }
 
+        // Signed out requests are sent with it too
+        SettingsSection(stringResource(R.string.setting_title_region))
+        RegionSetting(region)
+
         // YouTube plays signed out too, only Original needs the account
         SettingsSection(stringResource(R.string.setting_header_playback))
         quality(enabled && account is YouTubeAccountState.SignedIn)
@@ -250,6 +263,30 @@ private fun YouTubeSettingsContent(
         proxy()
     }
 }
+
+/**
+ * The country of the catalog, each named in the app's language and sorted by that name, after
+ * System (empty) which follows the device.
+ */
+@Composable
+private fun RegionSetting(region: String) {
+    val locale = LocalResources.current.configuration.locales[0]
+    val regions = remember(locale) {
+        val collator = Collator.getInstance(locale)
+        listOf("") + YOUTUBE_REGIONS.sortedWith(compareBy(collator) { name(it, locale) })
+    }
+    val system = stringResource(R.string.setting_description_region_status_system)
+    ChoiceSetting(
+        title = stringResource(R.string.setting_title_region),
+        value = region,
+        options = regions,
+        label = { if (it.isEmpty()) system else name(it, locale) },
+        onSelect = { Preferences.YOUTUBE_REGION.update(it) },
+    )
+}
+
+private fun name(region: String, locale: Locale): String =
+    Locale("", region).getDisplayCountry(locale)
 
 /**
  * The settings of while someone is [signedIn], with Original, or of while nobody is. Each keeps
@@ -279,6 +316,7 @@ private fun YouTubeSettingsPreview() = PreviewTheme {
         account = YouTubeAccountState.SignedIn(YouTubeAccount("Neon Coast", "@neoncoast", null)),
         channels = emptyList(),
         pageId = "",
+        region = "VN",
         onEnabledChange = {},
         onSignIn = {},
         onRetry = {},

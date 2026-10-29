@@ -140,3 +140,12 @@ Compose's `UriHandler.openUri` throws `IllegalArgumentException` ("Can't open â€
 `Pixel_6a_GPlay` emulator has no browser, so every link tap hits it there. Open links through
 `rememberOpenLink()` (`settings/about/AboutScreen.kt`), which catches it and posts
 `error_no_browser`; move it to `ui/component` once a screen outside `about/` needs it.
+
+## The device's locale while the app has its own language
+
+With a language picked in the app, `Locale.getDefault()` (and `LocaleList.getDefault()`, the app's
+`Resources`) give the app's language, not the device's: Android 13+ sets it from the per-app locale,
+older versions get it from `AppLanguage.wrap` (`Locale.setDefault`). For the device's own language
+or region read `Resources.getSystem().configuration.locales[0]`, which keeps the system
+configuration (`youTubeRegion()` in `YouTubeRegion.kt` does this for System). Only checked by
+reading the code, not on a device.

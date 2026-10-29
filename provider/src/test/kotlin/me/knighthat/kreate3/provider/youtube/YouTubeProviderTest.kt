@@ -48,10 +48,12 @@ class YouTubeProviderTest {
         javaClass.getResource("/youtube/$name.json")!!.readText()
 
     /**
+     * @param region the chosen one, `null` takes the country of [locale]
      * @param cookies of the session, none for nobody signed in
      */
     private fun provider(
         locale: Locale = Locale.US,
+        region: String? = null,
         status: HttpStatusCode = HttpStatusCode.OK,
         cookies: String = "",
         respond: (endpoint: String, body: JsonObject) -> String = { _, _ -> fixture("empty") },
@@ -73,6 +75,7 @@ class YouTubeProviderTest {
                 { client },
                 Json { ignoreUnknownKeys = true },
                 locale = { locale },
+                region = { region ?: locale.youTubeGl },
                 cookies = { cookies },
             ),
             YouTubeParser { null },
@@ -150,6 +153,15 @@ class YouTubeProviderTest {
         assertEquals("CA", body.string("context", "client", "gl"))
         assertEquals("MPREb_BQHrCwSBM37", body.string("browseId"))
         assertNull(body.string("context", "client", "visitorData"))
+    }
+
+    @Test
+    fun theChosenRegionIsSentInPlaceOfTheCountryOfTheLanguage() = runBlocking {
+        provider(Locale.CANADA_FRENCH, region = "VN").albumPage("MPREb_BQHrCwSBM37")
+
+        val body = requests.single().json()
+        assertEquals("fr-CA", body.string("context", "client", "hl"))
+        assertEquals("VN", body.string("context", "client", "gl"))
     }
 
     @Test

@@ -322,6 +322,13 @@ object Preferences : KoinComponent {
     val YOUTUBE_SYNC_PLAYLISTS by lazy { boolean("youtube_sync_playlists", true) }
 
     /**
+     * Country code of the catalog YouTube answers from (`VN`), sent as `gl` with every request,
+     * streams too; empty follows the device's region. Read by `youTubeRegion` in `:provider`;
+     * set in the YouTube settings, from `YOUTUBE_REGIONS`.
+     */
+    val YOUTUBE_REGION by lazy { string("youtube_region", "") }
+
+    /**
      * How good the YouTube songs streamed on Wi-Fi and other networks that aren't metered are,
      * while nobody is signed in or [YOUTUBE_ACCOUNT_ENABLED] is off. [StreamQuality.HIGH] by
      * default. [StreamQuality.ORIGINAL] isn't offered, it plays as [StreamQuality.HIGH].

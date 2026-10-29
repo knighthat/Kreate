@@ -29,7 +29,9 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   hidden WebView, page in `provider/src/main/assets/po_token.html`), `YouTubeParser.kt` (InnerTube
   JSON → models), `YouTubeJson.kt` (JSON path helpers), `YouTubeModels.kt` (`YouTubeItem`,
   page/section/account/channel models, `YouTubeSearchFilter`, `YouTubeStream`),
-  `YouTubeLibrary.kt` (liked-song sync both ways: pulls "Liked Music", `react` sends like,
+  `YouTubeRegion.kt` (`YOUTUBE_REGIONS` from YouTube's location picker, `youTubeRegion()`: the
+  `gl` sent, chosen or the device's), `YouTubeLibrary.kt` (liked-song sync both ways: pulls "Liked
+  Music", `react` sends like,
   dislike or neither while signed in; `youTubeSyncSetting`), `YouTubeLinks.kt` (share links,
   `resizeArtwork`).
 - test resources: `provider/src/test/resources/youtube/*.json` (captured InnerTube responses),

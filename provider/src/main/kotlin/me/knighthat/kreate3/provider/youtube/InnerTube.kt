@@ -131,8 +131,8 @@ internal class YouTubeSession private constructor(
  * like the home page, only hand out their next part to the same visitor. It is kept for the run
  * of the app only, and replaced when another session starts.
  *
- * @param locale gives the language of the texts and the country of the catalog, read at each
- * request
+ * @param locale gives the language of the texts, read at each request
+ * @param region gives the country of the catalog, read at each request
  * @param cookies gives the cookies of the signed in session as a `Cookie` header, empty while
  * nobody is signed in. Read at each request, so signing in or out applies at once.
  * @param pageId gives the page id of the channel the signed in user acts as, empty for their
@@ -144,6 +144,7 @@ internal class InnerTube(
     private val client: suspend () -> HttpClient,
     private val json: Json,
     private val locale: () -> Locale,
+    private val region: () -> String = { locale().youTubeGl },
     private val cookies: suspend () -> String = { "" },
     private val clock: Clock = Clock.System,
     private val pageId: suspend () -> String = { "" },
@@ -182,7 +183,9 @@ internal class InnerTube(
     private suspend fun streams(): YouTubeStreams {
         val client = client()
         streams?.takeIf { it.client === client }?.let { return it.streams }
-        return YouTubeStreams(client, locale, poTokens).also { streams = Streams(client, it) }
+        return YouTubeStreams(client, locale, region, poTokens).also {
+            streams = Streams(client, it)
+        }
     }
 
     /** The session requests are sent in now, `null` while nobody is signed in. */
@@ -312,9 +315,8 @@ internal class InnerTube(
                 putJsonObject("client") {
                     put("clientName", CLIENT_NAME)
                     put("clientVersion", CLIENT_VERSION)
-                    val locale = locale()
-                    put("hl", locale.youTubeHl)
-                    put("gl", locale.youTubeGl)
+                    put("hl", locale().youTubeHl)
+                    put("gl", region())
                     visitor?.let { put("visitorData", it) }
                 }
                 session?.pageId?.let { putJsonObject("user") { put("onBehalfOfUser", it) } }

@@ -49,11 +49,14 @@ import com.metrolist.innertubex.InnerTube as InnerTubeX
  * it ships with are used instead.
  *
  * @param client needs JSON content negotiation, the library sends and reads objects
+ * @param locale gives the language of the texts, read at each extraction
+ * @param region gives the country of the catalog, read at each extraction
  * @param poTokens makes PO tokens, `null` leaves out the clients that need one
  */
 internal class YouTubeStreams(
     client: HttpClient,
     private val locale: () -> Locale,
+    private val region: () -> String,
     poTokens: TokenProvider? = null,
 ) {
 
@@ -109,8 +112,7 @@ internal class YouTubeStreams(
         cookies: String?,
     ): YouTubeStream? {
         val innerTube = if (inSession) sessionInnerTube else innerTube
-        val locale = locale()
-        innerTube.locale = YouTubeLocale(gl = locale.youTubeGl, hl = locale.youTubeHl)
+        innerTube.locale = YouTubeLocale(gl = region(), hl = locale().youTubeHl)
         // The same cookies change nothing, other ones start another session in the library
         if (inSession) innerTube.cookie = cookies
         val hints = ContentHints().withStreamCapabilities(allowHls = false, allowSabr = false)
