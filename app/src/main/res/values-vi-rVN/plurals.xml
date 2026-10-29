@@ -38,9 +38,6 @@
     <plurals name="listen">
         <item quantity="other">%1$d lần nghe</item>
     </plurals>
-    <plurals name="unit_play">
-        <item quantity="other">plays</item>
-    </plurals>
     <plurals name="unit_minute">
         <item quantity="other">phút</item>
     </plurals>
