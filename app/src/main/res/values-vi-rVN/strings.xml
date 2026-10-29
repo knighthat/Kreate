@@ -17,7 +17,6 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-    <string name="app_name">Kreate</string>
     <string name="source_local">Trên thiết bị</string>
     <string name="bytes">%1$s B</string>
     <string name="kib">%1$s KiB</string>
@@ -30,7 +29,6 @@
     <string name="gb">%1$s GB</string>
     <string name="tb">%1$s TB</string>
     <string name="pb">%1$s PB</string>
-    <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Tên</string>
     <string name="quoted">\"%1$s\"</string>
@@ -56,7 +54,6 @@
     <string name="setting_header_sleep_timer">Hẹn giờ tắt</string>
     <string name="setting_header_history">Lịch sử phát</string>
     <string name="setting_header_lyrics">Lời bài hát</string>
-    <string name="setting_header_android_auto">Android Auto</string>
     <string name="setting_header_proxy">Proxy</string>
     <string name="setting_title_account">Tài khoản</string>
     <string name="setting_header_playback">Trình phát</string>
@@ -93,7 +90,7 @@
     <string name="setting_title_size_in_mib">Dung lương (MiB)</string>
     <string name="setting_title_size_in_mb">Dung lượng (MB)</string>
     <string name="setting_title_binary_sizes">Đơn vị nhị phân</string>
-    <string name="setting_description_binary_sizes">Sizes count 1024 MiB in 1 GiB; off, 1000 MB in 1 GB</string>
+    <string name="setting_description_binary_sizes">%1$s is shown as %2$s</string>
     <!-- general -->
     <string name="setting_title_scan_interval">Trình quét</string>
     <string name="setting_description_scan_interval">Tìm nhạc trên hệ thống mỗi %1$s</string>
@@ -104,13 +101,15 @@
     <string name="setting_title_download_wifi_only">Tải bằng WiFi</string>
     <string name="setting_description_download_wifi_only">Chỉ tải khi đang dùng mạng WiFi</string>
     <string name="setting_title_download_on_low_battery">Tải khi pin thấp</string>
-    <string name="setting_description_download_on_low_battery">When off, downloads pause while the battery is low</string>
+    <string name="setting_description_download_on_low_battery_on">Downloads continue regardless of battery level</string>
+    <string name="setting_description_download_on_low_battery_off">All downloads pause while the battery is low</string>
     <string name="setting_title_download_lyrics">Tải lời bài hát</string>
     <string name="setting_description_download_lyrics">Khi nhạc tải xong, tải thêm lời bài hát</string>
     <string name="setting_title_memory_cache">Lưu hình vào RAM</string>
     <string name="setting_description_memory_cache">Trích %1$s bộ nhờ. HÌnh lưu trên RAM load nhanh hơn</string>
-    <string name="setting_title_dont_exit_with_back">Don\'t exit with back</string>
-    <string name="setting_description_dont_exit_with_back">Going back from the first screen does nothing</string>
+    <string name="setting_title_exit_on_back">Exit on back</string>
+    <string name="setting_description_exit_on_back_on">Going back from the first screen closes the app</string>
+    <string name="setting_description_exit_on_back_off">Going back from the first screen keeps the app open</string>
     <string name="setting_title_confirm_exit">Xác nhận</string>
     <string name="setting_description_confirm_exit">Nhấn/Vuốt một lần nữa để thoát</string>
     <string name="setting_title_notification_opens_player">Mở trình phát từ thanh thông báo</string>
@@ -119,8 +118,6 @@
     <string name="setting_description_confirmation_time">Chờ %1$s trước khi hủy bỏ yêu cầu</string>
     <!-- UI -->
     <string name="setting_title_contrast">Độ tương phản</string>
-    <string name="setting_description_language_status_system">Theo hệ thống</string>
-    <string name="setting_description_region_status_system">Theo hệ thống</string>
     <string name="setting_title_icon_only">Chỉ hiện nút</string>
     <string name="setting_description_icon_only">Ẩn tên của các nút</string>
     <string name="setting_title_playlist_initial">Lấy chữ cài đầu làm nền</string>
@@ -131,8 +128,7 @@
     <string name="setting_title_read_timeout">Hạn thời gian đọc</string>
     <string name="setting_title_retries">Số lần thử lại</string>
     <string name="setting_description_retries">Requests that got a server error are sent again. Applies from the next launch</string>
-    <string name="setting_title_configure_youtube">Configure %1$s</string>
-    <string name="setting_title_configure_opensubsonic">Configure %1$s</string>
+    <string name="setting_title_configure_source">Configure %1$s</string>
     <!-- proxy -->
     <string name="setting_title_use_a_proxy">Sử dụng proxy</string>
     <string name="setting_description_proxy_app_incomplete">Yêu cầu chỉ được gửi đi khi máy chủ và cổng đã được điền vào, trừ khi nguồn có proxy riêng</string>
@@ -140,9 +136,9 @@
     <string name="setting_description_proxy_source_incomplete">Yêu cầu chỉ được gửi đi đến %1$s khi máy chủ và cổng đã được điền vào, trừ khi nguồn có proxy riêng</string>
     <string name="setting_description_proxy_source_off">Đã tắt, mọi yêu cầu đển %1$s sẽ được gửi qua proxy tổng</string>
     <string name="setting_description_proxy_source">Mọi yêu cầu đến %1$s sẽ được gửi qua proxy này</string>
-    <string name="setting_title_type">Type</string>
-    <string name="setting_title_host">Host</string>
-    <string name="setting_title_port">Port</string>
+    <string name="setting_proxy_title_type">Type</string>
+    <string name="setting_proxy_title_host">Host</string>
+    <string name="setting_proxy_title_port">Port</string>
     <string name="setting_title_username">Tên đăng nhập</string>
     <string name="setting_title_password">Mật khẩu</string>
     <string name="setting_description_host_scheme">Đừng thêm giao thức http:// hoặc https://</string>
@@ -153,16 +149,14 @@
     <string name="setting_title_on_wifi">Khi dùng WiFi</string>
     <string name="setting_title_on_mobile_data">Khi dùng mạng di động</string>
     <!-- library sync -->
-    <string name="setting_title_sync_liked_songs">Đồng bộ nhạc đã thích</string>
-    <string name="setting_title_show_albums">Show albums</string>
-    <string name="setting_title_show_artists">Show artists</string>
-    <string name="setting_title_show_playlists">Show playlists</string>
-    <string name="setting_description_sync_songs_youtube">The songs you liked on %1$s are liked here too</string>
-    <string name="setting_description_show_albums_youtube">The albums you saved on %1$s show in your library</string>
-    <string name="setting_description_show_artists_youtube">The artists you follow on %1$s show in your library</string>
-    <string name="setting_description_show_playlists_youtube">Your playlists on %1$s show in your library</string>
-    <string name="setting_description_sync_songs_server">The songs you liked on the server are liked here too</string>
-    <string name="setting_description_show_playlists_server">Your playlists on the server show in your library</string>
+    <string name="setting_title_sync">Sync %1$s</string>
+    <string name="setting_description_sync_liked_songs_on">Liked songs on %1$s are synced with the local database</string>
+    <string name="setting_description_sync_liked_songs_off">Liked songs aren\'t pulled from %1$s</string>
+    <string name="setting_description_sync_playlists_on">Your playlists on %1$s are synced with the local database</string>
+    <string name="setting_description_sync_playlists_off">Your playlists aren\'t pulled from %1$s</string>
+    <string name="setting_description_sync_status_off">Doesn\'t pull %1$s</string>
+    <string name="setting_description_sync_status_liked">Syncs liked %1$s to the local database</string>
+    <string name="setting_description_sync_status_all">Shows all available %1$s</string>
     <!-- player -->
     <string name="setting_title_radio_from_songs">Radio from Songs</string>
     <string name="setting_description_radio_from_songs_on">A song tapped in Songs plays with songs like it</string>
@@ -183,18 +177,19 @@
     <string name="setting_title_load_ahead">Tải trước đoạn kế tiếp</string>
     <string name="setting_title_load_before_playing">Tải trước khi bắt đầu phát</string>
     <string name="setting_title_keep_what_was_played">Lưu phân khúc đã phát</string>
-    <string name="setting_description_keep_what_was_played">Seeking back up to a minute doesn\'t load it again</string>
+    <string name="setting_description_keep_what_was_played">Seeking back up to %1$s doesn\'t load it again</string>
     <string name="setting_title_remove_button">Giảm thời gian</string>
     <string name="setting_title_add_button">Tăng thời gian</string>
     <string name="setting_title_pause_history">Tạm dừng lịch sử nghe</string>
-    <string name="setting_description_pause_history">Songs played meanwhile aren\'t added to the history</string>
+    <string name="setting_description_pause_history_on">What you listen to isn\'t recorded</string>
+    <string name="setting_description_pause_history_off">Keeps track of what you listen to</string>
     <string name="setting_title_minimum_play_time">Tối thiểu</string>
     <string name="setting_description_minimum_play_time">Thời gian nghe tối thiểu để lưu vào lịch sử nghe</string>
     <string name="setting_title_lyrics_source">Nguồn lời bài hát</string>
     <string name="setting_title_preferred_timing">Đồng bộ lời bài hát</string>
     <string name="setting_title_always_fetch_lyrics">Luôn tải lời bài hát</string>
-    <string name="setting_description_always_fetch_lyrics_on">Lời nhạc sẽ được tải trên mạng xuống mỗi lần xem và không lưu vào máy</string>
-    <string name="setting_description_always_fetch_lyrics_off">Lời nhạc sẽ được lưu vào máy và đọc nội bộ cho lần sau</string>
+    <string name="setting_description_always_fetch_lyrics_on">Lyrics are fetched every time they show and never saved</string>
+    <string name="setting_description_always_fetch_lyrics_off">Lyrics saved from the source show without fetching them again</string>
     <string name="setting_title_text_size">Cỡ chữ</string>
     <string name="setting_title_tapping_an_album">Chọn album</string>
     <string name="setting_title_tapping_an_artist">Chọn nghệ sĩ</string>
@@ -206,7 +201,8 @@
     <string name="setting_description_back_up">Lưu hồ sơ, cài đặt, và thư viện vào tệp. Mật khẩu và đăng nhập không thể bị trích xuất ra tệp.</string>
     <!-- YouTube -->
     <string name="setting_title_use_youtube_account">Sử dụng tài khoảng %1$s</string>
-    <string name="setting_description_use_youtube_account">Tài khoản %1$s sẽ được dùng để </string>
+    <string name="setting_description_use_youtube_account_on">Your %1$s library is synced with this account</string>
+    <string name="setting_description_use_youtube_account_off">%1$s is used without signing in, your library isn\'t synced</string>
     <string name="setting_title_sign_in">Đăng nhập</string>
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
     <string name="setting_title_sign_out">Đăng xuất</string>
@@ -215,7 +211,6 @@
     <string name="setting_description_sign_in_proxy_unsupported">Thiết bị không thể điều WebView qua proxy, đăng nhập sẽ không đi qua proxy</string>
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
     <!-- OpenSubsonic -->
-    <string name="setting_title_use_opensubsonic">Use %1$s</string>
     <string name="setting_description_use_opensubsonic">The server is not contacted while this is off</string>
     <string name="setting_title_server_address">Địa chỉ máy chủ </string>
     <string name="setting_title_trusted_until_now">Đã lưu</string>
@@ -235,36 +230,27 @@
     <string name="setting_description_backup_status_default_profile_only">Chỉ hồ sơ mặc định mới có thể khôi phục sao lưu</string>
     <!-- statuses of one setting -->
     <string name="setting_description_configure_youtube_status_not_signed_in">Chưa đăng nhập</string>
-    <string name="setting_description_configure_youtube_status_checking">Đang kiểm tra…</string>
     <string name="setting_description_configure_youtube_status_signed_in_as">Đã đăng nhập với tên %1$s</string>
     <string name="setting_description_configure_youtube_status_signed_out">Signed out by %1$s</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">Chưa nhập máy chủ</string>
-    <string name="setting_description_configure_opensubsonic_status_checking">Checking the server…</string>
-    <string name="setting_description_configure_opensubsonic_status_online">Online</string>
     <string name="setting_description_configure_opensubsonic_status_unreachable">Không thể truy cập tới máy chủ</string>
     <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">Chứng chỉ chưa được tin</string>
     <string name="setting_description_configure_opensubsonic_status_certificate_changed">Chứng chỉ đã thay đổi</string>
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Không phải máy chủ %1$s</string>
-    <string name="setting_description_account_status_checking">Đang kiểm tra…</string>
-    <string name="setting_description_account_status_signed_in">Đã đăng nhập</string>
     <string name="setting_description_account_status_session_ended">Phiên bản đã kết thúc, nhấn để đăng nhập lại</string>
     <string name="setting_description_account_status_failed">%1$s, nhấn để thử lại</string>
     <string name="setting_description_account_status_unreachable">Không thể truy cập %1$s</string>
     <string name="setting_description_server_status_checking">Checking the server…</string>
-    <string name="setting_description_server_status_online">Online</string>
     <string name="setting_description_server_status_unreachable">Không thể truy cập vào máy chủ: %1$s</string>
     <string name="setting_description_server_status_certificate_untrusted">Chứng chỉ chưa được tin. Nếu dùng chứng chỉ tự ký, hãy </string>
     <string name="setting_description_server_status_certificate_changed">Chứng chỉ đã thay đổi. Nhấn để xem</string>
     <string name="setting_description_server_status_not_opensubsonic">Địa chỉ không phải là máy chủ %1$s</string>
     <string name="setting_description_sign_in_status_checking">Đang đăng nhập…</string>
-    <string name="setting_description_sign_in_status_signed_in">Đã đăng nhập</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Sai tên đăng nhập hoặc mật khẩu</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Mã API không hợp lệ</string>
     <string name="setting_description_sign_in_status_refused">The server refused to sign in (%1$d)</string>
-    <string name="setting_description_sign_in_status_unreachable">Can\'t reach the server: %1$s</string>
     <string name="setting_description_sign_in_status_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
     <string name="setting_description_sign_in_status_certificate_changed">The server\'s certificate changed</string>
-    <string name="setting_description_sign_in_status_not_opensubsonic">This address is not an %1$s server</string>
     <string name="setting_description_restore_status_reading">Đang đọc…</string>
     <string name="setting_description_restore_status_failed">Không để đọc sao lưu</string>
     <string name="setting_description_back_up_status_saving">Đang lưu…</string>
@@ -290,7 +276,7 @@
     <string name="action_retry">Thử lại</string>
     <string name="action_undo">Hoàn tác</string>
     <string name="action_reload">Tải lại</string>
-    <string name="action_switch">Chọn</string>
+    <string name="action_account_switch">Switch</string>
     <string name="action_delete">Xóa</string>
     <string name="action_add">Thêm</string>
     <string name="action_less">Ẩn bớt</string>
@@ -316,6 +302,10 @@
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Statuses">-->
     <string name="status_off">Tắt</string>
+    <string name="status_system">System</string>
+    <string name="status_online">Online</string>
+    <string name="status_checking">Checking…</string>
+    <string name="status_signed_in">Signed in</string>
     <string name="status_unlimited">Không giới hạn</string>
     <string name="status_not_set">Chưa đặt</string>
     <string name="status_ago">%1$s trước</string>
@@ -393,7 +383,6 @@
     <string name="semantic_remove_time">Giảm thời gian</string>
     <string name="semantic_add_time">Tăng thời gian</string>
     <string name="semantic_stop_the_sleep_timer">Ngừng hẹn giờ ngủ</string>
-    <string name="semantic_turn_shuffle_off_to_move_songs">Turn shuffle off to move songs</string>
     <string name="semantic_lock_the_order">Lock the order</string>
     <string name="semantic_unlock_to_move_songs">Unlock to move songs</string>
     <string name="semantic_reorder">Reorder</string>
@@ -617,7 +606,7 @@
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
-    <string name="snackbar_disliked">Disliked</string>
+    <string name="snackbar_disliked">Disliked %1$s</string>
     <string name="snackbar_removed_from_queue">Removed from the queue</string>
     <string name="snackbar_queue_cleared">Queue cleared</string>
     <string name="snackbar_playback_stopped">Playback stopped</string>
@@ -708,7 +697,10 @@
     <string name="screen_player_status_timer_running">Pauses in %1$s</string>
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Statistics">-->
-    <string name="statistics_time_listened">Time listened</string>
+    <string name="statistics_summary_title_time_listened">Time listened</string>
+    <string name="statistics_summary_title_plays">Plays</string>
+    <string name="statistics_summary_title_songs">Songs</string>
+    <string name="statistics_summary_title_artists">Artists</string>
     <string name="statistics_change_vs_last_month">%1$s vs last month</string>
     <string name="statistics_storage_this_user">This user</string>
     <string name="statistics_storage_all_users">All users</string>
