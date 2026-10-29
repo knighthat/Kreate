@@ -742,7 +742,10 @@
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Statistics">-->
-    <string name="statistics_time_listened">Time listened</string>
+    <string name="statistics_summary_title_time_listened">Time listened</string>
+    <string name="statistics_summary_title_plays">Plays</string>
+    <string name="statistics_summary_title_songs">Songs</string>
+    <string name="statistics_summary_title_artists">Artists</string>
     <string name="statistics_change_vs_last_month">%1$s vs last month</string>
     <string name="statistics_storage_this_user">This user</string>
     <string name="statistics_storage_all_users">All users</string>

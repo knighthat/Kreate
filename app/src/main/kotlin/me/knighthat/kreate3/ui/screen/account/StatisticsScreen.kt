@@ -211,9 +211,6 @@ private fun SummaryTiles(summary: ListeningSummary, previous: ListeningSummary?)
     fun change(now: Long, before: Long?): String? =
         resources.change(now, before ?: return null)
 
-    fun caption(plural: Int, count: Int) =
-        resources.getQuantityString(plural, count).replaceFirstChar { it.uppercase() }
-
     // Tiles of a row are as tall as the tallest, a long time takes two lines
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -225,7 +222,7 @@ private fun SummaryTiles(summary: ListeningSummary, previous: ListeningSummary?)
         ) {
             SummaryTile(
                 value = resources.timeSpent(summary.timeSpent),
-                caption = stringResource(R.string.statistics_time_listened),
+                caption = stringResource(R.string.statistics_summary_title_time_listened),
                 change = change(
                     summary.timeSpent.inWholeSeconds,
                     previous?.timeSpent?.inWholeSeconds
@@ -236,7 +233,7 @@ private fun SummaryTiles(summary: ListeningSummary, previous: ListeningSummary?)
             )
             SummaryTile(
                 value = "${summary.plays}",
-                caption = caption(R.plurals.unit_play, summary.plays),
+                caption = stringResource(R.string.statistics_summary_title_plays),
                 change = change(summary.plays.toLong(), previous?.plays?.toLong()),
                 modifier = Modifier
                     .weight(1f)
@@ -249,7 +246,7 @@ private fun SummaryTiles(summary: ListeningSummary, previous: ListeningSummary?)
         ) {
             SummaryTile(
                 value = "${summary.songs}",
-                caption = caption(R.plurals.unit_song, summary.songs),
+                caption = stringResource(R.string.statistics_summary_title_songs),
                 change = change(summary.songs.toLong(), previous?.songs?.toLong()),
                 modifier = Modifier
                     .weight(1f)
@@ -257,7 +254,7 @@ private fun SummaryTiles(summary: ListeningSummary, previous: ListeningSummary?)
             )
             SummaryTile(
                 value = "${summary.artists}",
-                caption = caption(R.plurals.unit_artist, summary.artists),
+                caption = stringResource(R.string.statistics_summary_title_artists),
                 change = change(summary.artists.toLong(), previous?.artists?.toLong()),
                 modifier = Modifier
                     .weight(1f)
