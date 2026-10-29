@@ -17,7 +17,6 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-    <string name="app_name">Kreate</string>
     <string name="source_local">On device</string>
     <string name="bytes">%1$s B</string>
     <string name="kib">%1$s KiB</string>
@@ -30,7 +29,6 @@
     <string name="gb">%1$s GB</string>
     <string name="tb">%1$s TB</string>
     <string name="pb">%1$s PB</string>
-    <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
@@ -56,7 +54,6 @@
     <string name="setting_header_sleep_timer">Sleep timer</string>
     <string name="setting_header_history">History</string>
     <string name="setting_header_lyrics">Lyrics</string>
-    <string name="setting_header_android_auto">Android Auto</string>
     <string name="setting_header_proxy">Proxy</string>
     <string name="setting_title_account">Account</string>
     <string name="setting_header_playback">Playback</string>
@@ -93,7 +90,7 @@
     <string name="setting_title_size_in_mib">Size in MiB</string>
     <string name="setting_title_size_in_mb">Size in MB</string>
     <string name="setting_title_binary_sizes">Binary units</string>
-    <string name="setting_description_binary_sizes">Sizes count 1024 MiB in 1 GiB; off, 1000 MB in 1 GB</string>
+    <string name="setting_description_binary_sizes">%1$s is shown as %2$s</string>
     <!-- general -->
     <string name="setting_title_scan_interval">Scan interval</string>
     <string name="setting_description_scan_interval">Search for new local media every %1$s</string>
@@ -104,13 +101,15 @@
     <string name="setting_title_download_wifi_only">Only download on Wi-Fi</string>
     <string name="setting_description_download_wifi_only">Downloads wait for unmetered network to continue</string>
     <string name="setting_title_download_on_low_battery">Download on low battery</string>
-    <string name="setting_description_download_on_low_battery">When off, downloads pause while the battery is low</string>
+    <string name="setting_description_download_on_low_battery_on">Downloads continue regardless of battery level</string>
+    <string name="setting_description_download_on_low_battery_off">All downloads pause while the battery is low</string>
     <string name="setting_title_download_lyrics">Download lyrics</string>
     <string name="setting_description_download_lyrics">Keeps a song\'s lyrics from your lyrics source once it\'s fully downloaded</string>
     <string name="setting_title_memory_cache">Memory cache</string>
     <string name="setting_description_memory_cache">%1$s of app memory. Keep recently seen images in even faster cache pool</string>
-    <string name="setting_title_dont_exit_with_back">Don\'t exit with back</string>
-    <string name="setting_description_dont_exit_with_back">Going back from the first screen does nothing</string>
+    <string name="setting_title_exit_on_back">Exit on back</string>
+    <string name="setting_description_exit_on_back_on">Going back from the first screen closes the app</string>
+    <string name="setting_description_exit_on_back_off">Going back from the first screen keeps the app open</string>
     <string name="setting_title_confirm_exit">Confirm exit</string>
     <string name="setting_description_confirm_exit">Go back twice from the first screen to exit</string>
     <string name="setting_title_notification_opens_player">Open player from notification</string>
@@ -119,8 +118,6 @@
     <string name="setting_description_confirmation_time">Wait for %1$s before dismissing confirmation</string>
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>
-    <string name="setting_description_language_status_system">System</string>
-    <string name="setting_description_region_status_system">System</string>
     <string name="setting_title_icon_only">Icon only</string>
     <string name="setting_description_icon_only">Hide button labels</string>
     <string name="setting_title_playlist_initial">Playlist initial</string>
@@ -131,8 +128,7 @@
     <string name="setting_title_read_timeout">Read timeout</string>
     <string name="setting_title_retries">Retries</string>
     <string name="setting_description_retries">Requests that got a server error are sent again. Applies from the next launch</string>
-    <string name="setting_title_configure_youtube">Configure %1$s</string>
-    <string name="setting_title_configure_opensubsonic">Configure %1$s</string>
+    <string name="setting_title_configure_source">Configure %1$s</string>
     <!-- proxy -->
     <string name="setting_title_use_a_proxy">Use a proxy</string>
     <string name="setting_description_proxy_app_incomplete">Nothing is sent until the host and port are set, except to sources with a proxy of their own</string>
@@ -140,9 +136,9 @@
     <string name="setting_description_proxy_source_incomplete">Nothing is sent to %1$s until the host and port are set</string>
     <string name="setting_description_proxy_source_off">Off, requests to %1$s go through the proxy on the Network page</string>
     <string name="setting_description_proxy_source">Every request to %1$s goes through it</string>
-    <string name="setting_title_type">Type</string>
-    <string name="setting_title_host">Host</string>
-    <string name="setting_title_port">Port</string>
+    <string name="setting_proxy_title_type">Type</string>
+    <string name="setting_proxy_title_host">Host</string>
+    <string name="setting_proxy_title_port">Port</string>
     <string name="setting_title_username">Username</string>
     <string name="setting_title_password">Password</string>
     <string name="setting_description_host_scheme">Leave out the scheme, like http://</string>
@@ -153,16 +149,14 @@
     <string name="setting_title_on_wifi">On Wi-Fi</string>
     <string name="setting_title_on_mobile_data">On mobile data</string>
     <!-- library sync -->
-    <string name="setting_title_sync_liked_songs">Sync liked songs</string>
-    <string name="setting_title_show_albums">Show albums</string>
-    <string name="setting_title_show_artists">Show artists</string>
-    <string name="setting_title_show_playlists">Show playlists</string>
-    <string name="setting_description_sync_songs_youtube">The songs you liked on %1$s are liked here too</string>
-    <string name="setting_description_show_albums_youtube">The albums you saved on %1$s show in your library</string>
-    <string name="setting_description_show_artists_youtube">The artists you follow on %1$s show in your library</string>
-    <string name="setting_description_show_playlists_youtube">Your playlists on %1$s show in your library</string>
-    <string name="setting_description_sync_songs_server">The songs you liked on the server are liked here too</string>
-    <string name="setting_description_show_playlists_server">Your playlists on the server show in your library</string>
+    <string name="setting_title_sync">Sync %1$s</string>
+    <string name="setting_description_sync_liked_songs_on">Liked songs on %1$s are synced with the local database</string>
+    <string name="setting_description_sync_liked_songs_off">Liked songs aren\'t pulled from %1$s</string>
+    <string name="setting_description_sync_playlists_on">Your playlists on %1$s are synced with the local database</string>
+    <string name="setting_description_sync_playlists_off">Your playlists aren\'t pulled from %1$s</string>
+    <string name="setting_description_sync_status_off">Doesn\'t pull %1$s</string>
+    <string name="setting_description_sync_status_liked">Syncs liked %1$s to the local database</string>
+    <string name="setting_description_sync_status_all">Shows all available %1$s</string>
     <!-- player -->
     <string name="setting_title_radio_from_songs">Radio from Songs</string>
     <string name="setting_description_radio_from_songs_on">A song tapped in Songs plays with songs like it</string>
@@ -183,18 +177,19 @@
     <string name="setting_title_load_ahead">Load ahead</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
-    <string name="setting_description_keep_what_was_played">Seeking back up to a minute doesn\'t load it again</string>
+    <string name="setting_description_keep_what_was_played">Seeking back up to %1$s doesn\'t load it again</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>
     <string name="setting_title_pause_history">Pause history</string>
-    <string name="setting_description_pause_history">Songs played meanwhile aren\'t added to the history</string>
+    <string name="setting_description_pause_history_on">What you listen to isn\'t recorded</string>
+    <string name="setting_description_pause_history_off">Keeps track of what you listen to</string>
     <string name="setting_title_minimum_play_time">Minimum play time</string>
     <string name="setting_description_minimum_play_time">Songs played for less aren\'t added to the history. Pauses and loading don\'t count</string>
     <string name="setting_title_lyrics_source">Lyrics source</string>
     <string name="setting_title_preferred_timing">Preferred timing</string>
     <string name="setting_title_always_fetch_lyrics">Always fetch lyrics</string>
-    <string name="setting_description_always_fetch_lyrics_on">Lyrics are fetched each time they show, and not saved</string>
-    <string name="setting_description_always_fetch_lyrics_off">Saved lyrics of the source show without fetching</string>
+    <string name="setting_description_always_fetch_lyrics_on">Lyrics are fetched every time they show and never saved</string>
+    <string name="setting_description_always_fetch_lyrics_off">Lyrics saved from the source show without fetching them again</string>
     <string name="setting_title_text_size">Text size</string>
     <string name="setting_title_tapping_an_album">Tapping an album</string>
     <string name="setting_title_tapping_an_artist">Tapping an artist</string>
@@ -206,7 +201,8 @@
     <string name="setting_description_back_up">Save your profiles, settings and library to a file. Passwords and sign ins stay on this device, they are never in a backup.</string>
     <!-- YouTube -->
     <string name="setting_title_use_youtube_account">Use %1$s account</string>
-    <string name="setting_description_use_youtube_account">%1$s is used signed out while this is off</string>
+    <string name="setting_description_use_youtube_account_on">Your %1$s library is synced with this account</string>
+    <string name="setting_description_use_youtube_account_off">%1$s is used without signing in, your library isn\'t synced</string>
     <string name="setting_title_sign_in">Sign in</string>
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
     <string name="setting_title_sign_out">Sign out</string>
@@ -215,7 +211,6 @@
     <string name="setting_description_sign_in_proxy_unsupported">This device\'s WebView can\'t use a proxy, the sign in page would skip it</string>
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
     <!-- OpenSubsonic -->
-    <string name="setting_title_use_opensubsonic">Use %1$s</string>
     <string name="setting_description_use_opensubsonic">The server is not contacted while this is off</string>
     <string name="setting_title_server_address">Server address</string>
     <string name="setting_title_trusted_until_now">Trusted until now</string>
@@ -235,36 +230,27 @@
     <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>
     <!-- statuses of one setting -->
     <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
-    <string name="setting_description_configure_youtube_status_checking">Checking…</string>
     <string name="setting_description_configure_youtube_status_signed_in_as">Signed in as %1$s</string>
     <string name="setting_description_configure_youtube_status_signed_out">Signed out by %1$s</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">No server set</string>
-    <string name="setting_description_configure_opensubsonic_status_checking">Checking the server…</string>
-    <string name="setting_description_configure_opensubsonic_status_online">Online</string>
     <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach the server</string>
     <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
     <string name="setting_description_configure_opensubsonic_status_certificate_changed">The server\'s certificate changed</string>
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Not an %1$s server</string>
-    <string name="setting_description_account_status_checking">Checking…</string>
-    <string name="setting_description_account_status_signed_in">Signed in</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
     <string name="setting_description_account_status_failed">%1$s, tap to try again</string>
     <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
     <string name="setting_description_server_status_checking">Checking the server…</string>
-    <string name="setting_description_server_status_online">Online</string>
     <string name="setting_description_server_status_unreachable">Can\'t reach the server: %1$s</string>
     <string name="setting_description_server_status_certificate_untrusted">The server\'s certificate isn\'t trusted. If the server uses its own, allow self-signed certificates</string>
     <string name="setting_description_server_status_certificate_changed">The server\'s certificate changed. Tap to review it</string>
     <string name="setting_description_server_status_not_opensubsonic">This address is not an %1$s server</string>
     <string name="setting_description_sign_in_status_checking">Signing in…</string>
-    <string name="setting_description_sign_in_status_signed_in">Signed in</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Wrong username or password</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Invalid API key</string>
     <string name="setting_description_sign_in_status_refused">The server refused to sign in (%1$d)</string>
-    <string name="setting_description_sign_in_status_unreachable">Can\'t reach the server: %1$s</string>
     <string name="setting_description_sign_in_status_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
     <string name="setting_description_sign_in_status_certificate_changed">The server\'s certificate changed</string>
-    <string name="setting_description_sign_in_status_not_opensubsonic">This address is not an %1$s server</string>
     <string name="setting_description_restore_status_reading">Reading…</string>
     <string name="setting_description_restore_status_failed">Couldn\'t read the backup</string>
     <string name="setting_description_back_up_status_saving">Saving…</string>
@@ -290,7 +276,7 @@
     <string name="action_retry">Retry</string>
     <string name="action_undo">Undo</string>
     <string name="action_reload">Reload</string>
-    <string name="action_switch">Switch</string>
+    <string name="action_account_switch">Switch</string>
     <string name="action_delete">Delete</string>
     <string name="action_add">Add</string>
     <string name="action_less">Less</string>
@@ -316,6 +302,10 @@
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Statuses">-->
     <string name="status_off">Off</string>
+    <string name="status_system">System</string>
+    <string name="status_online">Online</string>
+    <string name="status_checking">Checking…</string>
+    <string name="status_signed_in">Signed in</string>
     <string name="status_unlimited">Unlimited</string>
     <string name="status_not_set">Not set</string>
     <string name="status_ago">%1$s ago</string>
@@ -393,7 +383,6 @@
     <string name="semantic_remove_time">Remove time</string>
     <string name="semantic_add_time">Add time</string>
     <string name="semantic_stop_the_sleep_timer">Stop the sleep timer</string>
-    <string name="semantic_turn_shuffle_off_to_move_songs">Turn shuffle off to move songs</string>
     <string name="semantic_lock_the_order">Lock the order</string>
     <string name="semantic_unlock_to_move_songs">Unlock to move songs</string>
     <string name="semantic_reorder">Reorder</string>
@@ -617,7 +606,7 @@
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
-    <string name="snackbar_disliked">Disliked</string>
+    <string name="snackbar_disliked">Disliked %1$s</string>
     <string name="snackbar_removed_from_queue">Removed from the queue</string>
     <string name="snackbar_queue_cleared">Queue cleared</string>
     <string name="snackbar_playback_stopped">Playback stopped</string>
@@ -708,7 +697,10 @@
     <string name="screen_player_status_timer_running">Pauses in %1$s</string>
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Statistics">-->
-    <string name="statistics_time_listened">Time listened</string>
+    <string name="statistics_summary_title_time_listened">Time listened</string>
+    <string name="statistics_summary_title_plays">Plays</string>
+    <string name="statistics_summary_title_songs">Songs</string>
+    <string name="statistics_summary_title_artists">Artists</string>
     <string name="statistics_change_vs_last_month">%1$s vs last month</string>
     <string name="statistics_storage_this_user">This user</string>
     <string name="statistics_storage_all_users">All users</string>
