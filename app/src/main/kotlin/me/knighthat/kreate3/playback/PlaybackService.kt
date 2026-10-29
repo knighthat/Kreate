@@ -20,6 +20,7 @@ package me.knighthat.kreate3.playback
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
@@ -54,6 +55,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import me.knighthat.kreate3.AppLanguage
 import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.auto.ArtworkProvider
@@ -111,6 +113,10 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     /** The player of the session, `null` while there is none. */
     internal val player: Player?
         get() = mediaSession?.player
+
+    // In the language picked in the app, see AppLanguage
+    override fun attachBaseContext(newBase: Context) =
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     override fun onCreate() {
         super.onCreate()

@@ -264,7 +264,8 @@ fun <T> ChoiceSetting(
             onDismissRequest = { open = false },
             title = { Text(title) },
             text = {
-                Column {
+                // Long lists (languages) scroll inside the dialog
+                Column(Modifier.verticalScroll(rememberScrollState())) {
                     options.forEach { option ->
                         ListItem(
                             headlineContent = { Text(label(option)) },

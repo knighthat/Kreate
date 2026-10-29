@@ -26,7 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.AppIcon
+import me.knighthat.kreate3.AppLanguage
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
@@ -40,9 +42,11 @@ import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import org.koin.compose.koinInject
+import java.util.Locale
 
 /**
- * What the user sees and touches: the theme and the app icon.
+ * What the user sees and touches: the theme, the language and the app icon.
  */
 @Composable
 fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -53,6 +57,8 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val binarySizes by Preferences.BINARY_SIZES.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
+    val language by Preferences.LANGUAGE.collectAsStateWithLifecycle()
+    val scope = koinInject<CoroutineScope>()
 
     UiSettingsContent(
         themeMode = themeMode,
@@ -65,6 +71,10 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             it.apply(context)
             appIcon = it
         },
+        language = AppLanguage.of(language),
+        languages = listOf(null) + AppLanguage.available,
+        // The global scope, a restart for it outlives this screen
+        onLanguageChange = { AppLanguage.select(context, scope, it) },
         onBack = onBack,
         modifier = modifier,
     )
@@ -79,6 +89,9 @@ private fun UiSettingsContent(
     binarySizes: Boolean,
     appIcon: AppIcon,
     onAppIconChange: (AppIcon) -> Unit,
+    language: Locale?,
+    languages: List<Locale?>,
+    onLanguageChange: (Locale?) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,6 +110,17 @@ private fun UiSettingsContent(
             options = ContrastLevel.entries,
             label = labelsOf(ContrastLevel.entries) { it.labelRes },
             onSelect = { Preferences.CONTRAST_LEVEL.update(it) },
+        )
+
+        SettingsSection(stringResource(R.string.setting_title_language))
+        // Each language in its own words, "null" follows the device
+        val system = stringResource(R.string.setting_description_language_status_system)
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_language),
+            value = language,
+            options = languages,
+            label = { it?.let(AppLanguage::displayName) ?: system },
+            onSelect = onLanguageChange,
         )
 
         SettingsSection(stringResource(R.string.setting_header_layout))
@@ -141,6 +165,9 @@ private fun UiSettingsPreview() = PreviewTheme {
         binarySizes = true,
         appIcon = AppIcon.BLACK,
         onAppIconChange = {},
+        language = null,
+        languages = listOf(null, Locale.ENGLISH, Locale.forLanguageTag("vi")),
+        onLanguageChange = {},
         onBack = {},
     )
 }

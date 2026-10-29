@@ -8,6 +8,9 @@ paths:
 
 What stays a literal: `ui.md`.
 
+Only English (`values/`) is in the repo. Translations come from Crowdin (`crowdin.yml`) and are
+merged into `values-*/` before a build; never add or edit a translation folder here.
+
 ## Format
 
 - Every placeholder in `strings.xml` and `plurals.xml` is positional, even when there is only one:

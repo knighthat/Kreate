@@ -39,6 +39,26 @@ android {
         versionName = libs.versions.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Translations aren't in the repo, Crowdin merges them into res/ before the build
+        // (crowdin.yml). The language setting lists English and every folder with texts,
+        // "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
+        val languages = file("src/main/res")
+            .listFiles { dir -> dir.name.startsWith("values-") && dir.resolve("strings.xml").isFile }
+            .orEmpty()
+            //noinspection WrongGradleMethod
+            .map { dir ->
+                val qualifier = dir.name.removePrefix("values-")
+                if (qualifier.startsWith("b+"))
+                    qualifier.removePrefix("b+").replace('+', '-')
+                else
+                    qualifier.replace("-r", "-")
+            }
+        buildConfigField(
+            "String",
+            "LANGUAGES",
+            "\"${(listOf("en") + languages.sorted()).joinToString(",")}\""
+        )
     }
 
     // Credentials come from the environment, never from files in the repo
@@ -57,6 +77,7 @@ android {
     buildTypes {
         release {
             // Without the credentials, release builds stay unsigned
+            //noinspection WrongGradleMethod
             if (listOf(productionStorePassword, productionKeyPassword).all { it.isPresent })
                 signingConfig = signingConfigs.getByName("production")
             isMinifyEnabled = true
@@ -111,7 +132,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+    // The system's per-app language settings list the same translations (needs res/resources.properties)
+    androidResources.generateLocaleConfig = true
     packaging.resources.excludes += listOf(
         "/META-INF/*.version",
         "/META-INF/*.kotlin_module",

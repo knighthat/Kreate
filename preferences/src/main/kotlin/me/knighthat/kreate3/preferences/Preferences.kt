@@ -93,6 +93,12 @@ object Preferences : KoinComponent {
     val BINARY_SIZES by lazy { boolean("binary_sizes", true) }
 
     /**
+     * Language tag of the app's texts for this profile (`vi`, `pt-BR`), empty follows the device.
+     * Shown and kept in step with the system by `AppLanguage` in `:app`; set in the UI settings.
+     */
+    val LANGUAGE by lazy { string("language", "") }
+
+    /**
      * Minutes between two scans of the device's music. The system runs periodic work
      * at most every 15 minutes, so smaller values behave like 15.
      */

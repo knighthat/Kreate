@@ -20,6 +20,15 @@ Root
   or onNewIntent) → `KreateApp` expands the player sheet (unless `NOTIFICATION_OPENS_PLAYER` is
   off), starts `LocalMusicScheduler`, hosts `KreateApp`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
+- `AppLanguage.kt` — app language, per profile in `Preferences.LANGUAGE` (empty = the device's):
+  `available` from `BuildConfig.LANGUAGES` (English + the `values-*` folders with
+  `strings.xml`, listed by `app/build.gradle.kts`), `displayName` in the language itself,
+  country/script only when two share a language; `select` (settings), `follow` (started by
+  `KreateApplication`: shows each profile's language once it loads, a restored one too) and
+  `takeFromSystem` (config change: a pick in the system's settings goes to the active profile). What
+  is shown: Android 13+ `LocaleManager`, older the `app_language` SharedPreferences read by
+  `wrap` in `attachBaseContext` of the application, both activities and both services (a change
+  restarts the app there); that file also holds the last shown tag.
 - `AppIcon.kt` — launcher icon choice (BLACK default, GRADIENT): enables one manifest
   `activity-alias` of `KreateActivity`, state lives in PackageManager, not Preferences.
 - `ProfileUserSync.kt` — keeps DB `user` table in step with `ProfileManager` ids; implements
@@ -136,7 +145,8 @@ Compose.
 utils/ — `PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
 `Modifier.verticalScrollbar`).
 
-res: `res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated
+res: `res/resources.properties` (default `en-US`, for the generated locale config),
+`res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated
 `raw/aboutlibraries` through resource shrinking; overrides for POMs lacking details in
 `app/aboutlibraries/licenses/`), `res/font/inter.ttf`; source SVGs for launcher/splash in
 repo-root `assets/`.

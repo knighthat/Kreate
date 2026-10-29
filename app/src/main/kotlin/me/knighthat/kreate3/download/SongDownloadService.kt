@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.download
 
 import android.app.Notification
+import android.content.Context
 import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
@@ -26,7 +27,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Scheduler
-import me.knighthat.kreate3.download.SongDownloadService.Companion.ACTION_CANCEL
+import me.knighthat.kreate3.AppLanguage
 import me.knighthat.kreate3.notification.DownloadNotifications
 import org.koin.android.ext.android.get
 
@@ -39,6 +40,10 @@ import org.koin.android.ext.android.get
 class SongDownloadService : DownloadService(DownloadNotifications.DOWNLOADING_ID) {
 
     private val downloads: SongDownloads by lazy { get() }
+
+    // In the language picked in the app, see AppLanguage
+    override fun attachBaseContext(newBase: Context) =
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     override fun onCreate() {
         super.onCreate()

@@ -205,6 +205,10 @@ class ProfilesActivity : ComponentActivity() {
         }
     }
 
+    // In the language picked in the app, see AppLanguage
+    override fun attachBaseContext(newBase: Context) =
+        super.attachBaseContext(AppLanguage.wrap(newBase))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

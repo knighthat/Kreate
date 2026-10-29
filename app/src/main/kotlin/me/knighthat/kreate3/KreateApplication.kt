@@ -22,6 +22,7 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Process
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -98,6 +99,10 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
     internal fun restartAfterPlayback(): Job = get<CoroutineScope>().launch {
         get<PlaybackLifecycle>().restartAround { restart() }
     }
+
+    // In the language picked in the app, see AppLanguage
+    override fun attachBaseContext(newBase: Context) =
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader =
@@ -210,6 +215,15 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
         // Covers whose file is gone, like after a backup from another device was restored
         get<CoroutineScope>().launch { get<CoverFiles>().forgetMissing(get()) }
+
+        // Each profile's language, a restored one too
+        AppLanguage.follow(this, get(), get())
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // A language picked in the system's settings while the app runs
+        AppLanguage.takeFromSystem(this)
     }
 }
 

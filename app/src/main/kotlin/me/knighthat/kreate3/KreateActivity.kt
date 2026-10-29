@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -73,6 +74,10 @@ class KreateActivity : ComponentActivity() {
     // Pending until the player is open: a request taken while stopped can be cut off when
     // onStart sets the content again, so it stays to be taken by the new content
     private val openPlayer = MutableStateFlow(false)
+
+    // In the language picked in the app, see AppLanguage
+    override fun attachBaseContext(newBase: Context) =
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
