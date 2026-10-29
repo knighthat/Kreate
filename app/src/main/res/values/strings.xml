@@ -35,7 +35,7 @@
     <string name="gb">%1$s GB</string>
     <string name="tb">%1$s TB</string>
     <string name="pb">%1$s PB</string>
-    <string name="lufs">%1$d LUFS</string>
+    <string name="lufs" translatable="false">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
