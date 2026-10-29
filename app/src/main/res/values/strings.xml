@@ -17,7 +17,7 @@
   -->
 
 <resources>
-    <string name="app_name">Kreate</string>
+    <string name="app_name" translatable="false">Kreate</string>
     <string name="source_ytm" translatable="false">YouTube Music</string>
     <string name="source_opensubsonicapi" translatable="false">OpenSubsonic API</string>
     <string name="source_local">On device</string>
