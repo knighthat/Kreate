@@ -52,11 +52,6 @@
         <item quantity="few">%1$d listens</item>
         <item quantity="other">%1$d listens</item>
     </plurals>
-    <plurals name="unit_play">
-        <item quantity="one">play</item>
-        <item quantity="few">plays</item>
-        <item quantity="other">plays</item>
-    </plurals>
     <plurals name="unit_minute">
         <item quantity="one">minute</item>
         <item quantity="few">minutes</item>
