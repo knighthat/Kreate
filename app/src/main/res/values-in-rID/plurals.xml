@@ -38,9 +38,6 @@
     <plurals name="listen">
         <item quantity="other">%1$d listens</item>
     </plurals>
-    <plurals name="unit_play">
-        <item quantity="other">plays</item>
-    </plurals>
     <plurals name="unit_minute">
         <item quantity="other">minutes</item>
     </plurals>
