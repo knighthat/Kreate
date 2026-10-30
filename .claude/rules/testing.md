@@ -11,7 +11,9 @@ paths:
   A root `testDebugUnitTest` silently skips `:app`.
 - To force tests to run again, name the real tasks with `--rerun` (e.g.
   `testGithubUniversalDebugUnitTest --rerun`). `./gradlew test --rerun` and `cleanTest test` report
-  success in under a second without running anything.
+  success in under a second without running anything. `--rerun` covers only the task right before
+  it: with several, put it after each test task (`taskA --rerun taskB --rerun`), or the others stay
+  UP-TO-DATE while the build reports OK.
 - No tests containing IP addresses, usernames or passwords (proxy/server credentials). A fake host
   name with empty credentials is fine. Say what stays untested instead. Older tests with fake
   credentials (`OpenSubsonicProviderTest`, `PreferencesBackupTest`) predate this; leave them unless
@@ -39,6 +41,10 @@ paths:
   through an `internal` constructor/parameter instead (`SongCaches(context, cacheSize, …)`).
 - Media3 `SimpleCache` allows one instance per folder per process: `release()` both caches of
   `SongCaches` in `@After`. Get a Context with `RuntimeEnvironment.getApplication()`.
+- A preferences DataStore keeps its file for the rest of the process (its own `Dispatchers.IO`
+  scope is never cancelled), so opening the same file again in a test fails quietly: the engine
+  reports a load failure and serves defaults. For "the next launch", copy the folder to a new temp
+  directory and open it there, like `GlobalPreferenceStorageTest`.
 - `ProfileUserSyncTest` timing out in `start()` is a regression (a real race was fixed), not a
   flake.
 - QuickJS can't load in JVM tests (`UnsatisfiedLinkError` → `YouTubeException`), so YouTube cipher
