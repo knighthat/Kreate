@@ -182,7 +182,7 @@ fun SwitchSetting(
 }
 
 /** How opaque a disabled row is, Material's disabled content. */
-private const val DISABLED_ALPHA = .38f
+internal const val DISABLED_ALPHA = .38f
 
 /**
  * The switch at the top of a page that turns on what the page sets up, set apart from the

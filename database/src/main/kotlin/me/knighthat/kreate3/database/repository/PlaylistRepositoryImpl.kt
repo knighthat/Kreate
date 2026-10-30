@@ -132,6 +132,23 @@ internal class PlaylistRepositoryImpl(
             }
         }
 
+    override suspend fun listSearch(
+        query: String,
+        order: SortOrder<PlaylistSort>,
+    ): List<UserPlaylist> {
+        val userId = scope.awaitId()
+        return playlistDao.list(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\\' " +
+                        order.toOrderBy("playlist_id"),
+                onBindStatement = {
+                    it.bindText(1, userId)
+                    it.bindText(2, containsPattern(query))
+                },
+            )
+        ).map(UserPlaylistEntity::toModel)
+    }
+
     override fun find(playlistId: Long): Flow<UserPlaylist?> =
         playlistDao.find(playlistId).map { it?.toModel() }
 

@@ -26,6 +26,11 @@ sources jar; not yet checked in Auto or the Desktop Head Unit):
   Media3 turns into `onSetMediaItems` with a single item holding only the media id. So the id must
   say how to find the item again (`AutoNode`), and the callback tells it apart from the app's own
   items (which carry `EXTRA_ORIGIN`).
+- Voice requests ("play … on Kreate") reach the session as `playFromSearch`, which Media3 turns into
+  `onSetMediaItems` with one item whose `requestMetadata` holds `searchQuery` (empty for
+  "play music") and the Assistant's `MediaStore.EXTRA_MEDIA_*` extras. A failed future only logs;
+  `sendError(controller, …)` is what puts a message on Auto's screen. The phone's Assistant sends
+  `MEDIA_PLAY_FROM_SEARCH` to an activity instead (`KreateActivity` forwards it to the service).
 - The default `onSubscribe` asks `onGetItem` for the parent and rejects it unless that returns a
   browsable item, and Auto subscribes to every list it opens. Either answer `onGetItem` for every
   parent or override `onSubscribe` (done: accept any parsable parent).
@@ -66,6 +71,10 @@ a device):
 - System UI's `isRecent` root and its children are answered by Media3 before the library
   callback's `onGetLibraryRoot`/`onGetChildren`, from `onPlaybackResumption(isForPlayback = false)`
   (first item at the start index). The callback's own `isRecent` answer only reaches other apps.
+- Android Auto (phone projection, DHU 2026-10-30) never asked for the recent root. With "Start music
+  automatically" on it sends a plain play on connect, which Media3 turns into
+  `onPlaybackResumption(isForPlayback = true)`; with it off it shows a "Tap to open" card with a
+  disabled play button and asks nothing.
 - That item reaches System UI as a legacy `MediaDescription`: a cover in `artworkData` is decoded
   in the app and sent as a bitmap, while an `artworkUri` would have to be readable by System UI,
   whose package never reaches `grantArtwork`.

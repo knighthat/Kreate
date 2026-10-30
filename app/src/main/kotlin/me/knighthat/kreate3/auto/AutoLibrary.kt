@@ -147,6 +147,19 @@ internal class AutoLibrary(
         queue.filter { it.mediaMetadata.isPlayable == true }
     }
 
+    /**
+     * The songs that can be played of [item], an album, artist or playlist as [tab] lists it,
+     * like tapping it plays them, without shuffling.
+     *
+     * @throws me.knighthat.kreate3.provider.opensubsonic.ServerException like [children]
+     * @throws me.knighthat.kreate3.provider.youtube.YouTubeException like [children]
+     */
+    suspend fun songsOf(tab: Tab, item: MediaItem): List<MediaItem> =
+        withContext(Dispatchers.Default) {
+            Preferences.awaitLoaded()
+            songsOf(collectionOf(tab, item)).filter { it.mediaMetadata.isPlayable == true }
+        }
+
     private suspend fun sectionChildren(section: AutoNode.Section): List<MediaItem> =
         when (val tab = section.tab) {
             Tab.SONGS -> librarySongs().map { songItem(section, it) }
@@ -293,15 +306,10 @@ internal class AutoLibrary(
      * Its id says where its songs are found, like the screen it opens in the app.
      */
     private fun collectionItem(tab: Tab, item: MediaItem): MediaItem {
-        val origin = item.origin ?: Origin.LOCAL
-        // A playlist of a source is found by its id there, one of the app by its database id
-        val key = if (tab == Tab.PLAYLISTS && origin != Origin.LOCAL)
-            item.remoteId ?: item.mediaId
-        else item.mediaId
         val opens = tapAction(tab) == AutoTapAction.OPEN
 
         return item.buildUpon()
-            .setMediaId(AutoNode.Collection(tab, origin, key).id)
+            .setMediaId(collectionOf(tab, item).id)
             .setMediaMetadata(
                 item.mediaMetadata.buildUpon()
                     // Without it Auto shows the artist under the title, the artist's own name
@@ -316,6 +324,16 @@ internal class AutoLibrary(
                     .build()
             )
             .build()
+    }
+
+    /** The node of [item], an album, artist or playlist of [tab]. */
+    private fun collectionOf(tab: Tab, item: MediaItem): AutoNode.Collection {
+        val origin = item.origin ?: Origin.LOCAL
+        // A playlist of a source is found by its id there, one of the app by its database id
+        val key = if (tab == Tab.PLAYLISTS && origin != Origin.LOCAL)
+            item.remoteId ?: item.mediaId
+        else item.mediaId
+        return AutoNode.Collection(tab, origin, key)
     }
 
     /**

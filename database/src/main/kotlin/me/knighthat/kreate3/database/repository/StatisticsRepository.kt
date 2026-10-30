@@ -26,6 +26,7 @@ import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.TopAlbum
 import me.knighthat.kreate3.database.model.TopArtist
 import me.knighthat.kreate3.database.model.TopSong
+import me.knighthat.kreate3.database.model.UserSongView
 
 /**
  * What the active user's history adds up to. Every function follows changes, counts only the
@@ -42,6 +43,14 @@ interface StatisticsRepository {
     fun topAlbums(period: PlayPeriod?, limit: Int): Flow<List<TopAlbum>>
 
     fun topArtists(period: PlayPeriod?, limit: Int): Flow<List<TopArtist>>
+
+    /**
+     * The song listened to the longest of all time, its plays' time spent added up, right now.
+     *
+     * @param likedOnly whether to look only at the songs the user liked
+     * @return `null` when no such song was played
+     */
+    suspend fun mostListened(likedOnly: Boolean = false): UserSongView?
 
     /** How long the songs of each origin were listened to, the longest first. */
     fun timeByOrigin(period: PlayPeriod?): Flow<List<OriginTime>>

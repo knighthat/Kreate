@@ -109,6 +109,7 @@ import me.knighthat.kreate3.ui.navigation.Songs
 import me.knighthat.kreate3.ui.navigation.Statistics
 import me.knighthat.kreate3.ui.navigation.Tab
 import me.knighthat.kreate3.ui.navigation.UiSettings
+import me.knighthat.kreate3.ui.navigation.VoiceSearchSettings
 import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
 import me.knighthat.kreate3.ui.navigation.YouTubeArtist
 import me.knighthat.kreate3.ui.navigation.YouTubeMore
@@ -162,6 +163,7 @@ import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonic
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.player.PlayerSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.player.VoiceSearchSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.UiSettingsScreen
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
@@ -175,7 +177,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
-        Settings, GeneralSettings, DataSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
+        Settings, GeneralSettings, DataSettings, PlayerSettings, VoiceSearchSettings, UiSettings, NetworkSettings, YouTubeSettings,
         OpenSubsonicSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
@@ -443,7 +445,13 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                             }
                             entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
                             entry<DataSettings> { DataSettingsScreen(topLevel::pop) }
-                            entry<PlayerSettings> { PlayerSettingsScreen(topLevel::pop) }
+                            entry<PlayerSettings> {
+                                PlayerSettingsScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenVoiceSearch = { topLevel.push(VoiceSearchSettings) },
+                                )
+                            }
+                            entry<VoiceSearchSettings> { VoiceSearchSettingsScreen(topLevel::pop) }
                             entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
                             entry<NetworkSettings> {
                                 NetworkSettingsScreen(

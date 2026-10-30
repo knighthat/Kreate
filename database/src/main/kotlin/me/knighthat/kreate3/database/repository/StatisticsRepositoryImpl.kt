@@ -31,6 +31,7 @@ import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.TopAlbum
 import me.knighthat.kreate3.database.model.TopArtist
 import me.knighthat.kreate3.database.model.TopSong
+import me.knighthat.kreate3.database.model.UserSongView
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -67,6 +68,25 @@ internal class StatisticsRepositoryImpl(
 
     override fun topArtists(period: PlayPeriod?, limit: Int): Flow<List<TopArtist>> =
         artists(period, Of.All, limit)
+
+    override suspend fun mostListened(likedOnly: Boolean): UserSongView? {
+        // A like is a time, a dislike is negative
+        val liked = if (likedOnly) "WHERE v.liked_at > 0 " else ""
+        return playbackHistoryDao.listTopSongs(
+            query(
+                scope.awaitId(),
+                "${
+                    perSong(
+                        null,
+                        Of.All
+                    )
+                } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent " +
+                        "FROM per_song ps " +
+                        "JOIN user_song_view v ON v.user_id = ?1 AND v.song_id = ps.song_id " +
+                        "${liked}ORDER BY ps.time_spent DESC, ps.song_id LIMIT 1",
+            )
+        ).firstOrNull()?.song?.toModel()
+    }
 
     override fun timeByOrigin(period: PlayPeriod?): Flow<List<OriginTime>> =
         scope.observe(emptyList()) { userId ->

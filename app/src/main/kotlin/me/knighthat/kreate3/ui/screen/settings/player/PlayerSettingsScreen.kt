@@ -30,17 +30,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.auto.voiceSearchOrigins
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.PlayerBuild
@@ -57,6 +60,7 @@ import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.player.labelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SliderSetting
@@ -65,11 +69,12 @@ import org.koin.compose.koinInject
 
 /**
  * How the player behaves and looks, what it keeps of the songs played, where its lyrics come
- * from, and what tapping an item in Android Auto does.
+ * from, and what tapping an item in Android Auto does and where its voice requests search.
  */
 @Composable
 fun PlayerSettingsScreen(
     onBack: () -> Unit,
+    onOpenVoiceSearch: () -> Unit,
     modifier: Modifier = Modifier,
     lyrics: LyricsFinder = koinInject(),
     playback: PlaybackLifecycle = koinInject(),
@@ -100,6 +105,9 @@ fun PlayerSettingsScreen(
     val autoAlbumTap by Preferences.AUTO_ALBUM_TAP.collectAsStateWithLifecycle()
     val autoArtistTap by Preferences.AUTO_ARTIST_TAP.collectAsStateWithLifecycle()
     val autoPlaylistTap by Preferences.AUTO_PLAYLIST_TAP.collectAsStateWithLifecycle()
+    val voiceSearchOrder by Preferences.AUTO_VOICE_SEARCH_ORDER.collectAsStateWithLifecycle()
+    val voiceSearchSkipped by Preferences.AUTO_VOICE_SEARCH_SKIPPED.collectAsStateWithLifecycle()
+    val openSubsonicOn by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
 
     PlayerSettingsContent(
         historyPaused = historyPaused,
@@ -126,9 +134,15 @@ fun PlayerSettingsScreen(
         autoAlbumTap = autoAlbumTap,
         autoArtistTap = autoArtistTap,
         autoPlaylistTap = autoPlaylistTap,
+        voiceSearchOrigins = voiceSearchOrigins(voiceSearchOrder, voiceSearchSkipped)
+            .filter { (origin, searched) ->
+                searched && (openSubsonicOn || origin != Origin.OPEN_SUBSONIC)
+            }
+            .map { it.first },
         restartNeeded = restartNeeded,
         sleepTimerOn = sleepTimer != null,
         onRestartPlayer = { playback.restartPlayer() },
+        onOpenVoiceSearch = onOpenVoiceSearch,
         onBack = onBack,
         modifier = modifier,
     )
@@ -139,6 +153,7 @@ fun PlayerSettingsScreen(
  * @param lyricsSources the name of each provider there is a source for, in the order they show
  * @param restartNeeded whether a setting changed applies only to a new player, see [PlayerBuild]
  * @param sleepTimerOn whether the sleep timer is on, a restart stops it
+ * @param voiceSearchOrigins the origins a voice request searches, in their order
  */
 @Composable
 private fun PlayerSettingsContent(
@@ -166,9 +181,11 @@ private fun PlayerSettingsContent(
     autoAlbumTap: AutoTapAction,
     autoArtistTap: AutoTapAction,
     autoPlaylistTap: AutoTapAction,
+    voiceSearchOrigins: List<Origin>,
     restartNeeded: Boolean,
     sleepTimerOn: Boolean,
     onRestartPlayer: () -> Unit,
+    onOpenVoiceSearch: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -408,6 +425,14 @@ private fun PlayerSettingsContent(
             label = autoTapLabels,
             onSelect = { Preferences.AUTO_PLAYLIST_TAP.update(it) },
         )
+        val resources = LocalResources.current
+        SettingsItem(
+            title = stringResource(R.string.screen_title_voice_search),
+            summary = voiceSearchOrigins.takeIf { it.isNotEmpty() }
+                ?.joinToString(", ") { resources.getString(it.sourceRes) }
+                ?: stringResource(R.string.status_off),
+            onClick = onOpenVoiceSearch,
+        )
     }
 }
 
@@ -465,9 +490,11 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         autoAlbumTap = AutoTapAction.OPEN,
         autoArtistTap = AutoTapAction.OPEN,
         autoPlaylistTap = AutoTapAction.OPEN,
+        voiceSearchOrigins = listOf(Origin.LOCAL, Origin.OPEN_SUBSONIC, Origin.YOUTUBE),
         restartNeeded = true,
         sleepTimerOn = false,
         onRestartPlayer = {},
+        onOpenVoiceSearch = {},
         onBack = {},
     )
 }

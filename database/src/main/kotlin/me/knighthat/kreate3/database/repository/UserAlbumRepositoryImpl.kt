@@ -97,10 +97,24 @@ internal class UserAlbumRepositoryImpl(
         paged(order, filter = "AND bookmarked_at >= 0")
 
     override fun search(query: String, order: SortOrder<UserAlbumSort>) =
-        paged(
-            order,
-            filter = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\')",
-        ) { it.bindText(2, containsPattern(query)) }
+        paged(order, filter = SEARCH) { it.bindText(2, containsPattern(query)) }
+
+    override suspend fun listSearch(
+        query: String,
+        order: SortOrder<UserAlbumSort>,
+    ): List<UserAlbumView> {
+        val userId = scope.awaitId()
+        return userAlbumDao.list(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_album_view WHERE user_id = ? $SEARCH " +
+                        order.toOrderBy("album_id"),
+                onBindStatement = {
+                    it.bindText(1, userId)
+                    it.bindText(2, containsPattern(query))
+                },
+            )
+        ).map(UserAlbumViewEntity::toModel)
+    }
 
     /**
      * @param filter extra conditions after the user's, its `?` start at position 2
@@ -164,4 +178,10 @@ internal class UserAlbumRepositoryImpl(
 
     override suspend fun removeIfEmpty(albumId: String): Boolean =
         userAlbumDao.deleteIfEmpty(scope.requireId(), albumId, Origin.LOCAL) > 0
+
+    private companion object {
+
+        // ?2 is the pattern of what is searched
+        const val SEARCH = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\')"
+    }
 }

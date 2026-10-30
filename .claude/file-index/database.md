@@ -46,7 +46,8 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   page loads — the Songs tab missed the startup scan; PagingConfig), `Sorting.kt` (`SortOrder`,
   `*Sort` enums, `toOrderBy`).
 - repository/ — public interface + internal `*Impl` pairs: `Song`, `Album`, `Artist`, `Playlist`,
-  `History`, `Statistics` (summary, top songs/albums/artists, time by origin, a song's plays; SQL in
+  `History`, `Statistics` (summary, top songs/albums/artists, time by origin, a song's plays,
+  `mostListened(likedOnly)` by total time spent; SQL in
   `StatisticsRepositoryImpl`, rows in `PlaybackHistoryDao`), `Queue`, `User`, `UserSong`
   (likes/tri-state — `.claude/rules/data-model.md`;
   `forgetThumbnail(uri, songId?)` takes a file cover off every user's rows: deleted when nothing

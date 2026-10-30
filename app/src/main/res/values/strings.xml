@@ -368,6 +368,7 @@
     <string name="screen_title_switch_profile">Switch profile</string>
     <string name="screen_title_about">About</string>
     <string name="screen_title_open_source_licenses">Open source licenses</string>
+    <string name="screen_title_voice_search">Voice search</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Tabs">-->
@@ -588,6 +589,7 @@
     <string name="error_unreachable">Can\'t reach %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
+    <string name="error_voice_search_no_match">Couldn\'t find \"%1$s\"</string>
     <string name="error_songs_not_playable">These songs can\'t be played</string>
     <string name="error_song_not_playable">This song can\'t be played</string>
     <string name="error_share_unsupported">This server doesn\'t support sharing this %1$s</string>
@@ -691,6 +693,7 @@
     <string name="screen_search_hint_library">Search your library</string>
     <string name="screen_search_hint_youtube">Search %1$s</string>
     <string name="screen_search_hint_opensubsonic">Search your server</string>
+    <string name="screen_voice_search_hint_order">\"Play … on %1$s\" searches these from the top until one finds a match. Drag to change the order, switch one off to skip it.</string>
     <string name="screen_search_status_no_history">Your searches will show up here</string>
     <string name="screen_search_status_no_suggestions">No suggestions for %1$s</string>
     <string name="screen_search_results_status_none">No %1$s found for %2$s</string>

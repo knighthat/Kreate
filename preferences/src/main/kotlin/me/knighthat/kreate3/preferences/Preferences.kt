@@ -535,6 +535,18 @@ object Preferences : KoinComponent {
 
     /** Like [AUTO_ALBUM_TAP], for a playlist in the Playlists tab. */
     val AUTO_PLAYLIST_TAP by lazy { enum("auto_playlist_tap", AutoTapAction.OPEN) }
+
+    /**
+     * The origins a voice request to play something ("play … on Kreate") searches, by name, one
+     * after the other until one finds a match. Origins missing here go last, unknown names are
+     * skipped. Read by the playback service's voice search, set on the Voice search page.
+     */
+    val AUTO_VOICE_SEARCH_ORDER by lazy {
+        stringList("auto_voice_search_order", listOf("LOCAL", "OPEN_SUBSONIC", "YOUTUBE"))
+    }
+
+    /** Origins of [AUTO_VOICE_SEARCH_ORDER] the voice search skips, by name. */
+    val AUTO_VOICE_SEARCH_SKIPPED by lazy { stringSet("auto_voice_search_skipped", emptySet()) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Lyrics">
@@ -616,6 +628,17 @@ object Preferences : KoinComponent {
             name,
             default,
             codec<Set<String>, Set<*>>({ it }, { it.filterIsInstance<String>().toSet() }),
+            engine,
+        )
+
+    // Stored as one text, the values mustn't hold a comma
+    private fun stringList(name: String, default: List<String>) =
+        Preference(
+            name,
+            default,
+            codec<List<String>, String>({ it.joinToString(",") }) { stored ->
+                stored.split(',').filter { it.isNotEmpty() }
+            },
             engine,
         )
 

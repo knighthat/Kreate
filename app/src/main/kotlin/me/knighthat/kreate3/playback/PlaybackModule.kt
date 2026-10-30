@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.auto.AutoLibrary
+import me.knighthat.kreate3.auto.VoiceSearch
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.preferences.Preferences
@@ -73,6 +74,19 @@ val playbackModule = module {
             openSubsonic = get(),
             youTube = get(),
             radio = get(),
+        )
+    }
+    single {
+        VoiceSearch(
+            songs = get(),
+            albums = get(),
+            artists = get(),
+            playlists = get(),
+            statistics = get(),
+            openSubsonic = get(),
+            youTube = get(),
+            radio = get(),
+            library = get(),
         )
     }
 

@@ -72,6 +72,10 @@ data object DataSettings : Route
 @Serializable
 data object PlayerSettings : Route
 
+/** Where a voice request searches, opened from [PlayerSettings]. */
+@Serializable
+data object VoiceSearchSettings : Route
+
 @Serializable
 data object UiSettings : Route
 

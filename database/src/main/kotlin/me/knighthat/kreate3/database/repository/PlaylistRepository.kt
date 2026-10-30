@@ -80,6 +80,12 @@ interface PlaylistRepository {
         order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
     ): Flow<PagingData<UserPlaylist>>
 
+    /** Every playlist [search] finds right now, all at once. */
+    suspend fun listSearch(
+        query: String,
+        order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
+    ): List<UserPlaylist>
+
     fun find(playlistId: Long): Flow<UserPlaylist?>
 
     /**

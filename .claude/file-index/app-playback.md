@@ -17,7 +17,10 @@ playback/
 - `PlaybackService.kt` — `MediaLibraryService`, owns the player + notification; `SessionCallback`
   adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
   (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
-  into its queue in `onSetMediaItems` (items without `EXTRA_ORIGIN` whose id parses); follows
+  into its queue in `onSetMediaItems` (items without `EXTRA_ORIGIN` whose id parses); a voice
+  request (Auto's playFromSearch = an item with `requestMetadata.searchQuery`, or
+  `VOICE_SEARCH_ACTION` from the activity) plays `voiceQueue`: `VoiceSearch` for a query, else the
+  player's/saved queue, else `VoiceSearch.anything()`; nothing → `sendError` / a message; follows
   `PLAYBACK_PRELOAD_SECONDS` into the player's preload. `onPlaybackResumption` plays
   `PersistentQueue.saved()` again when play comes with nothing queued (headphones, system media
   controls; `MediaButtonReceiver` in the manifest), going foreground first under

@@ -68,11 +68,10 @@ internal class UserSongRepositoryImpl(
         paged(order.toOrderBy(), filter = "AND liked_at >= 0")
 
     override fun search(query: String, order: SortOrder<UserSongSort>) =
-        paged(
-            order.toOrderBy(),
-            filter = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\' " +
-                    "OR album_name LIKE ?2 ESCAPE '\\')",
-        ) { it.bindText(2, containsPattern(query)) }
+        paged(order.toOrderBy(), filter = SEARCH) { it.bindText(2, containsPattern(query)) }
+
+    override suspend fun listSearch(query: String, order: SortOrder<UserSongSort>) =
+        listed(order.toOrderBy(), filter = SEARCH) { it.bindText(2, containsPattern(query)) }
 
     override fun ofAlbum(albumId: String, order: SortOrder<UserSongSort>) =
         paged(order.toOrderBy(), filter = OF_ALBUM) { it.bindText(2, albumId) }
@@ -376,6 +375,10 @@ internal class UserSongRepositoryImpl(
             JOIN user_song us ON us.user_id = v.user_id AND us.song_id = v.song_id
             WHERE v.user_id = ?1 AND us.downloaded_at IS NOT NULL
         """
+
+        // ?2 is the pattern of what is searched
+        const val SEARCH = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\' " +
+                "OR album_name LIKE ?2 ESCAPE '\\')"
 
         const val OF_ALBUM = "AND album_id = ?"
         const val OF_ARTIST =

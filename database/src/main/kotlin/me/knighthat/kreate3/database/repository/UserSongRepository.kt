@@ -150,6 +150,12 @@ interface UserSongRepository {
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
     ): Flow<PagingData<UserSongView>>
 
+    /** Every song [search] finds right now, all at once. */
+    suspend fun listSearch(
+        query: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): List<UserSongView>
+
     fun find(songId: String): Flow<UserSongView?>
 
     /**

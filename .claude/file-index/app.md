@@ -126,7 +126,16 @@ auto/ (Android Auto, browsed through `PlaybackService`)
   `HOME_SONGS_TAP_RADIO`). Collection songs like the detail screens (YouTube artist = top songs,
   YouTube playlist = every continuation). Auto's song rows (only those, not the app's items or the
   queue) have the subtitle `{artists} • {album}` (`songSubtitle`, no dot when one part is missing);
-  an album's songs show only the artists, an artist's only the album.
+  an album's songs show only the artists, an artist's only the album. `songsOf(tab, item)`: a
+  collection's playable songs, unshuffled, for `VoiceSearch`.
+- `VoiceSearch.kt` — "play … on Kreate": `queue(query, extras)` searches the origins of
+  `AUTO_VOICE_SEARCH_ORDER` not in `AUTO_VOICE_SEARCH_SKIPPED` in turn (LOCAL = the library via the
+  repos' `listSearch`, YouTube search + signed-in playlists, OpenSubsonic `searchLibrary` +
+  playlists), first origin with a match wins; best match by `nameScore` (same 3 / starts 2 / holds
+  1, case ignored, +1 for the heard artist), ties songs > artists > albums > playlists; a song plays
+  with radio, a collection with all its songs. `VoiceRequest` reads the Assistant's
+  `MediaStore.EXTRA_MEDIA_*` (focus narrows the kinds). `anything()`: liked song listened longest →
+  song listened longest → random library song, + radio. `voiceSearchOrigins` decodes the prefs.
 - `ArtworkProvider.kt` — non-exported `ContentProvider` (`<applicationId>.artwork`) serving covers
   as JPEG through the app's Coil loader (`SMALL_COVER`, http/https/content only);
   `Context.autoArtworkUri` (`content://<pkg>.artwork/cover?source=…`, idempotent),
@@ -136,8 +145,8 @@ auto/ (Android Auto, browsed through `PlaybackService`)
   used by `thumbnailModel`/`songThumbnailModels`), `Context.smallCoverJpeg` (same load as bytes,
   for the resumption card's `artworkData`). Manifest also declares Media3's `MediaButtonReceiver`.
   Manifest: service actions `MediaLibraryService` + `MediaBrowserService`,
-  `com.google.android.gms.car.application` → `res/xml/automotive_app_desc.xml`; voice search
-  (`MEDIA_PLAY_FROM_SEARCH`) not supported, its lint check is ignored.
+  `com.google.android.gms.car.application` → `res/xml/automotive_app_desc.xml`; `KreateActivity`
+  takes `MEDIA_PLAY_FROM_SEARCH` and starts `PlaybackService` with `VOICE_SEARCH_ACTION`.
 
 preferences/`PreferenceDsl.kt` — `Preference<T>`/`Secret` `.collectAsStateWithLifecycle()` for
 Compose.

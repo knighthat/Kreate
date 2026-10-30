@@ -20,6 +20,7 @@ package me.knighthat.kreate3.playback
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -61,6 +62,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.auto.ArtworkProvider
 import me.knighthat.kreate3.auto.AutoLibrary
 import me.knighthat.kreate3.auto.AutoNode
+import me.knighthat.kreate3.auto.VoiceSearch
 import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.auto.grantArtwork
 import me.knighthat.kreate3.auto.smallCoverJpeg
@@ -68,6 +70,7 @@ import me.knighthat.kreate3.auto.withServedArtwork
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.DownloadedSongAction
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
@@ -279,6 +282,67 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     }
 
     /**
+     * What a voice request plays, as the player queues it. With [query], the songs [VoiceSearch]
+     * finds for it; with nothing asked, what played last (the player's queue, else the saved
+     * one, see [PersistentQueue.saved]) from where it stopped, else [VoiceSearch.anything].
+     *
+     * @param extras what the Assistant understood of [query], see [VoiceSearch.queue]
+     * @return `null` when there is nothing to play
+     */
+    private suspend fun voiceQueue(query: String, extras: Bundle?): MediaItemsWithStartPosition? {
+        fun fromStart(items: List<MediaItem>?) = items?.mapNotNull { it.queued() }
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { MediaItemsWithStartPosition(it, 0, C.TIME_UNSET) }
+
+        val search = get<VoiceSearch>()
+        if (query.isNotBlank()) return fromStart(search.queue(query, extras))
+
+        val player = player
+        if (player != null && player.mediaItemCount > 0)
+            return MediaItemsWithStartPosition(
+                List(player.mediaItemCount, player::getMediaItemAt),
+                player.currentMediaItemIndex,
+                player.currentPosition,
+            )
+        persistentQueue?.saved()?.let {
+            return MediaItemsWithStartPosition(it.items, it.start, it.position)
+        }
+        return fromStart(search.anything())
+    }
+
+    /** Why a voice request for [query] plays nothing, for the user. */
+    private fun voiceFailure(query: String): String =
+        if (query.isBlank()) getString(R.string.error_nothing_to_play)
+        else getString(R.string.error_voice_search_no_match, query.trim())
+
+    /**
+     * Plays what a voice request the app was sent asks for, see [voiceQueue]. The queue is
+     * changed through [PlaybackController], like the app does, the service connects to itself.
+     */
+    private fun playVoiceRequest(query: String, extras: Bundle?) =
+        get<CoroutineScope>().launch(Dispatchers.Main) {
+            // A service just started puts the saved queue back first
+            persistentQueue?.awaitRestored()
+            val found = voiceQueue(query, extras)
+            if (found == null) {
+                get<Notifier>().post(voiceFailure(query), AppChannel.PLAYBACK)
+                leaveResumeForeground()
+                return@launch
+            }
+            get<PlaybackController>().restore(
+                found.mediaItems,
+                found.startIndex,
+                found.startPositionMs,
+                play = true,
+            )
+            // The media notification takes the foreground over as music plays
+            withTimeoutOrNull(HANDOVER_WAIT) {
+                while (!isPlaybackOngoing) delay(HANDOVER_CHECK)
+            }
+            leaveResumeForeground()
+        }
+
+    /**
      * Takes the service out of the foreground [onPlaybackResumption][SessionCallback] put it in,
      * unless the media notification took it over.
      */
@@ -358,6 +422,19 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             startIndex: Int,
             startPositionMs: Long,
         ): ListenableFuture<MediaItemsWithStartPosition> {
+            // A voice request ("play … on Kreate") carries what was said instead of an item
+            val request = mediaItems.singleOrNull()?.requestMetadata
+            val query = request?.searchQuery
+            if (query != null) return scope.future {
+                voiceQueue(query, request.extras) ?: run {
+                    mediaSession.sendError(
+                        controller,
+                        SessionError(SessionError.ERROR_BAD_VALUE, voiceFailure(query)),
+                    )
+                    error("Nothing to play for \"$query\"")
+                }
+            }
+
             // The app's items say their origin, what Auto taps carries only the id of its node
             val tapped = mediaItems.singleOrNull()?.takeIf { it.origin == null }?.mediaId
             if (tapped == null || AutoNode.parse(tapped) == null)
@@ -517,6 +594,18 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             playDownloaded(action, id)
             return START_NOT_STICKY
         }
+        if (intent?.action == VOICE_SEARCH_ACTION) {
+            // Android 16 gives audio focus to an app in the background only while its service
+            // is in the foreground, which the media notification makes it only once playing
+            startForegroundWith(
+                RESUME_FOREGROUND_ID,
+                notificationBuilder(AppChannel.RESUME)
+                    .setContentTitle(getString(R.string.notification_resume_title_starting))
+                    .build(),
+            )
+            playVoiceRequest(intent.getStringExtra(SearchManager.QUERY).orEmpty(), intent.extras)
+            return START_NOT_STICKY
+        }
         if (intent?.action == SleepTimerCommands.RESTART) {
             val extras = intent.extras ?: Bundle.EMPTY
             sleepTimer?.restart(
@@ -602,23 +691,29 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         super.onDestroy()
     }
 
-    private companion object {
+    companion object {
 
-        const val TAG = "PlaybackService"
+        /**
+         * Starts the service to play what a voice request asks for, with its
+         * [SearchManager.QUERY] and the Assistant's `MediaStore.EXTRA_MEDIA_*` as extras.
+         */
+        const val VOICE_SEARCH_ACTION = "me.knighthat.kreate3.action.VOICE_SEARCH"
+
+        private const val TAG = "PlaybackService"
 
         /**
          * The service goes in the foreground with this to play the saved queue again. Clear of
          * Media3's media notification, 1001, the messages' 2000s, the scans' 3000s and the sleep
          * timer's 4000s.
          */
-        const val RESUME_FOREGROUND_ID = 5000
+        private const val RESUME_FOREGROUND_ID = 5000
 
         /** How long the media notification has to take the foreground over. */
-        val HANDOVER_WAIT = 5.seconds
+        private val HANDOVER_WAIT = 5.seconds
 
-        val HANDOVER_CHECK = 100.milliseconds
+        private val HANDOVER_CHECK = 100.milliseconds
 
         /** How long the cover of the song to resume may load, the system waits for it. */
-        val COVER_WAIT = 3.seconds
+        private val COVER_WAIT = 3.seconds
     }
 }

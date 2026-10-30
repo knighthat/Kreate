@@ -99,6 +99,12 @@ interface UserAlbumRepository {
         order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
     ): Flow<PagingData<UserAlbumView>>
 
+    /** Every album [search] finds right now, all at once. */
+    suspend fun listSearch(
+        query: String,
+        order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
+    ): List<UserAlbumView>
+
     fun find(albumId: String): Flow<UserAlbumView?>
 
     /**

@@ -21,6 +21,7 @@ package me.knighthat.kreate3
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -37,6 +38,7 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.repository.UserRepository
+import me.knighthat.kreate3.playback.PlaybackService
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.local.LocalMusicScheduler
@@ -103,6 +105,8 @@ class KreateActivity : ComponentActivity() {
         // A recreated activity (rotation) keeps the player where it was instead
         if (savedInstanceState == null && intent.action == OPEN_PLAYER_ACTION)
             openPlayer.value = true
+        // Played once, not again when the activity is recreated
+        if (savedInstanceState == null) playVoiceRequest(intent)
 
         // Made before a screen asks for them, off the main thread: their HTTP clients take long
         // to set up. A screen asking meanwhile waits for these instead of making its own.
@@ -162,6 +166,20 @@ class KreateActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.action == OPEN_PLAYER_ACTION) openPlayer.value = true
+        if (isSetup) playVoiceRequest(intent)
+    }
+
+    /**
+     * Hands a voice request of the Assistant ("play … on Kreate") to [PlaybackService], which
+     * finds what to play.
+     */
+    private fun playVoiceRequest(intent: Intent) {
+        if (intent.action != MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) return
+        startService(
+            Intent(this, PlaybackService::class.java)
+                .setAction(PlaybackService.VOICE_SEARCH_ACTION)
+                .putExtras(intent.extras ?: Bundle.EMPTY)
+        )
     }
 
     override fun onStop() {

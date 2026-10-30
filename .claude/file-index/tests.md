@@ -6,7 +6,8 @@ Paths are relative to `<module>/src/main/kotlin/me/knighthat/kreate3/`; checked 
 
 Tests mirror the main paths under `src/test/`.
 
-- app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `SongSubtitleTest`, `ServedArtworkTest`, backup/
+- app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `VoiceSearchTest`, `SongSubtitleTest`,
+  `ServedArtworkTest`, backup/
   `BackupTest`, download/`SongDownloadsTest` (song kept in a request), playback/
   `DataSourceResolverTest`,
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest` (read order, read-only downloads, the

@@ -93,6 +93,12 @@ interface UserArtistRepository {
         order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
     ): Flow<PagingData<UserArtistView>>
 
+    /** Every artist [search] finds right now, all at once. */
+    suspend fun listSearch(
+        query: String,
+        order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
+    ): List<UserArtistView>
+
     fun find(artistId: String): Flow<UserArtistView?>
 
     /**

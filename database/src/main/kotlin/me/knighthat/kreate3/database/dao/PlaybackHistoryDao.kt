@@ -68,6 +68,9 @@ internal interface PlaybackHistoryDao {
     @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class])
     fun observeTopSongs(query: RoomRawQuery): Flow<List<TopSongRow>>
 
+    @RawQuery
+    suspend fun listTopSongs(query: RoomRawQuery): List<TopSongRow>
+
     @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class, AlbumEntity::class, UserAlbumEntity::class])
     fun observeTopAlbums(query: RoomRawQuery): Flow<List<TopAlbumRow>>
 
