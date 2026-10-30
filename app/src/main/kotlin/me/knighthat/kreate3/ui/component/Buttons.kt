@@ -72,8 +72,9 @@ private fun IconAction(
     description: String,
     onClick: () -> Unit,
     modifier: Modifier,
+    enabled: Boolean = true,
 ) {
-    IconButton(onClick = onClick, modifier = modifier) {
+    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Icon(painterResource(icon), contentDescription = description)
     }
 }
@@ -369,14 +370,15 @@ fun AddToQueueButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 fun CreatePlaylistButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.add, stringResource(R.string.semantic_create_playlist), onClick, modifier)
 
-/** Opens one item of a list picked at random. */
+/** Opens one item of a list picked at random, off while [enabled] is `false`. */
 @Composable
-fun RandomButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+fun RandomButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =
     IconAction(
         R.drawable.casino,
         stringResource(R.string.semantic_open_one_at_random),
         onClick,
-        modifier
+        modifier,
+        enabled,
     )
 
 /**
@@ -456,7 +458,7 @@ private fun IconButtonsPreview() = PreviewTheme {
                 PlayNextButton({})
                 AddToQueueButton({})
                 CreatePlaylistButton({})
-                RandomButton({})
+                RandomButton({}, enabled = true)
                 SkipNextButton({})
                 MoreButton { close ->
                     DropdownMenuItem(text = { Text("Item") }, onClick = close)

@@ -130,7 +130,9 @@ private fun HomeAlbumsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = { RandomButton(onRandom) },
+        quickActions = {
+            RandomButton(onRandom, enabled = albums.itemCount > 0 || live.isNotEmpty())
+        },
     ) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = ALBUM_ITEM_SIZE.dp),

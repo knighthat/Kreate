@@ -149,7 +149,7 @@ private fun HomePlaylistsContent(
         onSettings = onSettings,
         quickActions = {
             CreatePlaylistButton(onCreate)
-            RandomButton(onRandom)
+            RandomButton(onRandom, enabled = playlists.itemCount > 0 || live.isNotEmpty())
         },
     ) { padding ->
         LazyVerticalGrid(

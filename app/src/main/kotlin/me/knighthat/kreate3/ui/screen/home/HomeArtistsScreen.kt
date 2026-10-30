@@ -130,7 +130,9 @@ private fun HomeArtistsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = { RandomButton(onRandom) },
+        quickActions = {
+            RandomButton(onRandom, enabled = artists.itemCount > 0 || live.isNotEmpty())
+        },
     ) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = ARTIST_ITEM_SIZE.dp),
