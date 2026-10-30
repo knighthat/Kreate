@@ -32,13 +32,16 @@ save which account or channel a device is signed in as.
 
 ## Database
 
-- Debug builds allow `run-as`, and the emulator ships `sqlite3`:
+- Debug builds allow `run-as`, and plain emulator images ship `sqlite3` (Google Play images don't:
+  force-stop, copy `kreate.db`, `-wal` and `-shm` out with `adb exec-out run-as … cat` and query on
+  the host):
   `adb shell run-as me.knighthat.kreate3 sqlite3 databases/kreate.db "\"SELECT …;\""` (the inner
   quotes are escaped because the query goes through two shells). The default profile's user id is
   `default`; library rows are in `user_song`/`user_album`/…, and the Songs tab reads
   `user_song_view`.
-- Reads while the app runs can be stale (recent commits sit in the WAL). Force-stop before trusting
-  a read; write only after `adb shell am force-stop me.knighthat.kreate3`.
+- Force-stop (`adb shell am force-stop me.knighthat.kreate3`) before any `sqlite3` on the DB, even a
+  read: one checkpointed and deleted `kreate.db-wal` under the running app, whose later writes then
+  went to the unlinked file and were lost.
 - Wiping only the DB (keeps preferences, secrets and sign-ins, unlike `pm clear`): force-stop, then
   `adb shell run-as me.knighthat.kreate3 rm -f databases/<file>` once per file (`kreate.db`, `-wal`,
   `-shm`, `.lck`; a single `sh -c 'rm -f a b c'` fails), then launch with the skip-wizard action.
