@@ -28,6 +28,7 @@ import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.DataSettings
@@ -57,15 +58,18 @@ fun SettingsScreen(
         onBack = onBack,
         onOpen = onOpen,
         showBackup = activeId == Profile.DEFAULT_ID,
+        server = openSubsonicName(),
         modifier = modifier,
     )
 }
 
+/** @param server what the OpenSubsonic server is called, see [openSubsonicName] */
 @Composable
 private fun SettingsContent(
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     showBackup: Boolean,
+    server: String,
     modifier: Modifier = Modifier,
 ) {
     SettingsPage(stringResource(R.string.screen_title_settings), onBack, modifier) {
@@ -93,6 +97,7 @@ private fun SettingsContent(
             title = stringResource(R.string.screen_title_network),
             summary = stringResource(
                 R.string.setting_description_network,
+                server,
                 stringResource(R.string.source_ytm)
             ),
             onClick = { onOpen(NetworkSettings) },
@@ -114,5 +119,5 @@ private fun SettingsContent(
 @ScreenPreviews
 @Composable
 private fun SettingsPreview() = PreviewTheme {
-    SettingsContent(onBack = {}, onOpen = {}, showBackup = true)
+    SettingsContent(onBack = {}, onOpen = {}, showBackup = true, server = "Navidrome")
 }

@@ -67,7 +67,6 @@ import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.SearchResults
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider.Companion.PAGE_SIZE
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.security.MessageDigest
@@ -883,7 +882,12 @@ class OpenSubsonicProvider internal constructor(
             return@withContext Answer.Failure(failureOf(e))
         }
 
-        parse(answer)
+        parse(answer).also {
+            if (it is Answer.Response) OpenSubsonicServer.record(
+                settings.url,
+                it.info
+            )
+        }
     }
 
     /**

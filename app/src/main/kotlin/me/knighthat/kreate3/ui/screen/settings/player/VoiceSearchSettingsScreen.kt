@@ -105,7 +105,13 @@ private fun VoiceSearchSettingsContent(
     Text(
         text = stringResource(
             R.string.screen_voice_search_hint_order,
-            stringResource(R.string.app_name),
+            stringResource(
+                R.string.quoted,
+                stringResource(
+                    R.string.screen_voice_search_hint_phrase,
+                    stringResource(R.string.app_name)
+                )
+            ),
         ),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,

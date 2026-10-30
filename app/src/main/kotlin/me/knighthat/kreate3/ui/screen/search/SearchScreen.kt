@@ -116,6 +116,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
@@ -433,6 +434,7 @@ fun SearchScreen(
         // The server is only offered while it is in use
         origins = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled },
         categories = categories,
+        server = openSubsonicName(),
         recent = recent,
         live = live,
         songs = songs,
@@ -455,6 +457,7 @@ fun SearchScreen(
 /**
  * @param text what is typed, [query] is the part the suggestions are for
  * @param origins where the user can search, [origin] is the one chosen
+ * @param server what the OpenSubsonic server is called, see [openSubsonicName]
  * @param songs the songs of the library that match, like [albums], [artists] and [playlists]
  * @param onSearch records the search and opens its results
  * @param miniPlayer the mini player above the search bar, measured into the space it is given
@@ -467,6 +470,7 @@ private fun SearchContent(
     origin: Origin,
     origins: List<Origin>,
     categories: Set<Tab>,
+    server: String,
     recent: List<SearchHistory>,
     live: LiveSuggestions,
     songs: LazyPagingItems<MediaItem>,
@@ -526,7 +530,8 @@ private fun SearchContent(
                             stringResource(R.string.source_ytm)
                         )
 
-                        Origin.OPEN_SUBSONIC -> stringResource(R.string.screen_search_hint_opensubsonic)
+                        Origin.OPEN_SUBSONIC ->
+                            stringResource(R.string.screen_search_hint_opensubsonic, server)
                     },
                     onTextChange = onTextChange,
                     onSearch = { onSearch(text) },
@@ -634,6 +639,7 @@ private fun SearchPreview() = PreviewTheme {
         origin = Origin.LOCAL,
         origins = Origin.entries,
         categories = Tab.entries.toSet(),
+        server = "Navidrome",
         recent = listOf(SearchHistory("Neon Coast"), SearchHistory("Neon lights")),
         live = LiveSuggestions(emptyList(), emptyList()),
         songs = flowOf(PagingData.from(previewSongs().take(2))).collectAsLazyPagingItems(),

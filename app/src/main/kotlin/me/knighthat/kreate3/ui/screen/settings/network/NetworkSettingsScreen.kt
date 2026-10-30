@@ -32,6 +32,7 @@ import me.knighthat.kreate3.provider.opensubsonic.ServerInfo
 import me.knighthat.kreate3.provider.youtube.YouTubeAccount
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
@@ -66,20 +67,36 @@ private fun YouTubeAccountState.summary(): String = when (this) {
     is YouTubeAccountState.Failed -> reason
 }
 
-/** The server's name and version, or why they are unknown, for the row that opens its page. */
+/**
+ * The server's name and version, or why they are unknown, for the row that opens its page.
+ *
+ * @param server what the server is called, see [openSubsonicName]
+ */
 @Composable
-private fun CheckState.serverName(): String = when (this) {
-    CheckState.Idle, CheckState.Checking -> stringResource(R.string.setting_description_server_status_checking)
+private fun CheckState.serverName(server: String): String = when (this) {
+    CheckState.Idle, CheckState.Checking ->
+        stringResource(R.string.setting_description_server_status_checking, server)
+
     is CheckState.Done -> when (val result = result) {
-        is ServerCheck.Success -> listOfNotNull(
-            result.server.type?.replaceFirstChar { it.uppercase() },
-            result.server.serverVersion,
-        ).joinToString(" ")
+        is ServerCheck.Success -> listOfNotNull(result.server.name, result.server.serverVersion)
+            .joinToString(" ")
             .ifEmpty { stringResource(R.string.status_online) }
 
-        is ServerCheck.Unreachable -> stringResource(R.string.setting_description_configure_opensubsonic_status_unreachable)
-        is ServerCheck.UntrustedCertificate -> stringResource(R.string.setting_description_configure_opensubsonic_status_certificate_untrusted)
-        is ServerCheck.CertificateChanged -> stringResource(R.string.setting_description_configure_opensubsonic_status_certificate_changed)
+        is ServerCheck.Unreachable -> stringResource(
+            R.string.setting_description_configure_opensubsonic_status_unreachable,
+            server
+        )
+
+        is ServerCheck.UntrustedCertificate -> stringResource(
+            R.string.setting_description_configure_opensubsonic_status_certificate_untrusted,
+            server
+        )
+
+        is ServerCheck.CertificateChanged -> stringResource(
+            R.string.setting_description_configure_opensubsonic_status_certificate_changed,
+            server
+        )
+
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_configure_opensubsonic_status_not_opensubsonic,
             stringResource(R.string.source_opensubsonicapi)
@@ -121,6 +138,7 @@ fun NetworkSettingsScreen(
         openSubsonicEnabled = openSubsonicEnabled,
         url = url,
         server = server,
+        serverName = openSubsonicName(),
         onBack = onBack,
         onOpen = onOpen,
         modifier = modifier,
@@ -141,6 +159,7 @@ fun NetworkSettingsScreen(
 
 /**
  * @param url the OpenSubsonic server's address, empty while there is none
+ * @param serverName what the server is called, see [openSubsonicName]
  * @param proxy the app's proxy, see [ProxySettings]
  */
 @Composable
@@ -153,6 +172,7 @@ private fun NetworkSettingsContent(
     openSubsonicEnabled: Boolean,
     url: String,
     server: CheckState,
+    serverName: String,
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
@@ -224,7 +244,7 @@ private fun NetworkSettingsContent(
             summary = when {
                 !openSubsonicEnabled -> stringResource(R.string.status_off)
                 url.isEmpty() -> stringResource(R.string.setting_description_configure_opensubsonic_status_no_server)
-                else -> server.serverName()
+                else -> server.serverName(serverName)
             },
             onClick = { onOpen(OpenSubsonicSettings) },
         )
@@ -251,6 +271,7 @@ private fun NetworkSettingsPreview() = PreviewTheme {
         server = CheckState.Done(
             ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
         ),
+        serverName = "Navidrome",
         onBack = {},
         onOpen = {},
         proxy = { PreviewProxySettings(source = null) },

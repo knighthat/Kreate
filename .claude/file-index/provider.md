@@ -18,7 +18,10 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   `openSubsonicSyncSetting`), `OpenSubsonicSettings.kt`, `OpenSubsonicClients.kt` (dedicated
   OkHttp client), `OpenSubsonicMappers.kt` (JSON → models, `toSongFormat` = `raw`,
   `toTranscodedFormat`), `ServerStream.kt` (`ServerStream`, `RAW_FORMAT`, Content-Type → format
-  tag), `SelfSignedTrustManager.kt` (cert pinning, `CertificatePin`), `ServerCheck.kt`,
+  tag), `SelfSignedTrustManager.kt` (cert pinning, `CertificatePin`), `ServerCheck.kt`
+  (`ServerInfo.name`),
+  `OpenSubsonicServer.kt` (object: what the server last answered with and its address, in memory;
+  `name`/`version` of the active profile's server, every answer of `request` records it),
   `ServerException.kt`, `OpenSubsonicSearch.kt` (`searchLibrary` result: RemoteSong/RemoteItem
   lists), `Shareable.kt`, `ArtistWithSongs.kt`.
 - youtube/ — `YouTubeProvider.kt` (public API: search, suggestions, album/artist/playlist pages,

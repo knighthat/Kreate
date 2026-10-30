@@ -36,6 +36,7 @@ import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val TAG = "SourceToggle"
@@ -100,16 +101,20 @@ class SourceToggle(
  */
 internal fun Exception.serverFailure(resources: Resources, @StringRes change: Int): String {
     val what = resources.getString(change)
+    val server = resources.openSubsonicName()
     return when ((this as? ServerException)?.check) {
-        is ServerCheck.Rejected -> resources.getString(R.string.error_server_change_refused, what)
+        is ServerCheck.Rejected ->
+            resources.getString(R.string.error_source_change_refused, what, server)
+
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
         is ServerCheck.CertificateChanged -> resources.getString(
-            R.string.error_server_change_unreachable,
-            what
+            R.string.error_source_change_unreachable,
+            what,
+            server
         )
 
-        else -> resources.getString(R.string.error_server_change_failed, what)
+        else -> resources.getString(R.string.error_source_change_failed, what, server)
     }
 }
 

@@ -64,6 +64,7 @@ import me.knighthat.kreate3.source.withoutDislikedSongs
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.SectionTitle
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
@@ -159,7 +160,11 @@ internal suspend fun <T> askServerOrNull(block: suspend () -> T?): T? =
 
 /** What a screen of the OpenSubsonic server says when the provider gives nothing. */
 internal fun Context.serverOff(): String =
-    getString(R.string.error_server_off, getString(R.string.screen_title_network))
+    getString(
+        R.string.error_server_off,
+        resources.openSubsonicName(),
+        getString(R.string.screen_title_network)
+    )
 
 /** What a screen of YouTube says when it doesn't have the item, a [noun] like the plural album. */
 internal fun Context.youTubeNotFound(@PluralsRes noun: Int): String =
@@ -170,27 +175,36 @@ internal fun Context.youTubeNotFound(@PluralsRes noun: Int): String =
     )
 
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
-private fun ServerException.reason(context: Context): String = when (val check = check) {
-    is ServerCheck.Rejected -> context.getString(
-        R.string.error_source_refused,
-        context.getString(R.string.source_opensubsonicapi),
-        check.message.ifEmpty { context.getString(R.string.error_server_code, check.code) },
-    )
+private fun ServerException.reason(context: Context): String {
+    val server = context.resources.openSubsonicName()
+    return when (val check = check) {
+        is ServerCheck.Rejected -> context.getString(
+            R.string.error_source_refused,
+            server,
+            check.message.ifEmpty { context.getString(R.string.error_server_code, check.code) },
+        )
 
-    is ServerCheck.Unreachable -> context.getString(R.string.error_server_unreachable, check.reason)
-    is ServerCheck.UntrustedCertificate -> context.getString(R.string.error_server_certificate_untrusted)
-    is ServerCheck.CertificateChanged -> context.getString(
-        R.string.error_server_certificate_changed,
-        context.getString(R.string.screen_title_network),
-    )
+        is ServerCheck.Unreachable ->
+            context.getString(R.string.error_server_unreachable, server, check.reason)
 
-    ServerCheck.NotSubsonic -> context.getString(R.string.error_server_unexpected)
-    ServerCheck.NotConfigured -> context.getString(
-        R.string.error_server_not_configured,
-        context.getString(R.string.screen_title_network),
-    )
+        is ServerCheck.UntrustedCertificate ->
+            context.getString(R.string.error_server_certificate_untrusted, server)
 
-    else -> context.getString(R.string.error_server_load)
+        is ServerCheck.CertificateChanged -> context.getString(
+            R.string.error_server_certificate_changed,
+            server,
+            context.getString(R.string.screen_title_network),
+        )
+
+        ServerCheck.NotSubsonic -> context.getString(R.string.error_server_unexpected, server)
+        ServerCheck.NotConfigured -> context.getString(
+            R.string.error_server_not_configured,
+            server,
+            context.getString(R.string.screen_title_network),
+        )
+
+        else -> context.getString(R.string.error_server_load, server)
+    }
 }
 
 /**

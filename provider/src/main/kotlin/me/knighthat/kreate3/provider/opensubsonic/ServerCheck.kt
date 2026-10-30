@@ -80,4 +80,9 @@ data class ServerInfo(
     val type: String?,
     val serverVersion: String?,
     val isOpenSubsonic: Boolean,
-)
+) {
+
+    /** [type] to show, like `Navidrome`, `null` when the server doesn't say. */
+    val name: String?
+        get() = type?.trim()?.takeIf { it.isNotEmpty() }?.replaceFirstChar { it.uppercase() }
+}

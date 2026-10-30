@@ -95,23 +95,23 @@ class LiveDetailViewModelTest {
             failureOf(ServerException(ServerCheck.Rejected(40, "")))
         )
         assertEquals(
-            LiveState.Failed("Can't reach the server: timeout"),
+            LiveState.Failed("Can't reach OpenSubsonic API: timeout"),
             failureOf(ServerException(ServerCheck.Unreachable("timeout")))
         )
         assertEquals(
-            LiveState.Failed("The server's certificate isn't trusted"),
+            LiveState.Failed("OpenSubsonic API's certificate isn't trusted"),
             failureOf(ServerException(ServerCheck.UntrustedCertificate("no anchor")))
         )
         assertEquals(
-            LiveState.Failed("The server's certificate changed, check it in Network settings"),
+            LiveState.Failed("OpenSubsonic API's certificate changed, check it in Network settings"),
             failureOf(ServerException(ServerCheck.CertificateChanged("host", "NEW", "OLD")))
         )
         assertEquals(
-            LiveState.Failed("The server sent something unexpected"),
+            LiveState.Failed("OpenSubsonic API sent something unexpected"),
             failureOf(ServerException(ServerCheck.NotSubsonic))
         )
         assertEquals(
-            LiveState.Failed("Sign in to the server in Network settings"),
+            LiveState.Failed("Sign in to OpenSubsonic API in Network settings"),
             failureOf(ServerException(ServerCheck.NotConfigured))
         )
     }

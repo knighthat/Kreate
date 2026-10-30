@@ -28,11 +28,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Profile
@@ -57,6 +59,7 @@ class BackupViewModel(
     private val backup: Backup,
     private val scope: CoroutineScope,
     private val profileManager: ProfileManager,
+    private val userRepository: UserRepository,
     private val notifier: Notifier,
 ) : ViewModel() {
 
@@ -104,7 +107,15 @@ class BackupViewModel(
     ) {
         if (_working.value != null) return
         if (profileManager.activeId.value != Profile.DEFAULT_ID) {
-            notifier.post(context.getString(R.string.setting_description_backup_status_default_profile_only))
+            viewModelScope.launch {
+                val name = userRepository.find(Profile.DEFAULT_ID).first()?.name ?: return@launch
+                notifier.post(
+                    context.getString(
+                        R.string.setting_description_backup_status_default_profile_only,
+                        context.getString(R.string.quoted, name)
+                    )
+                )
+            }
             return
         }
         _working.value = task

@@ -313,7 +313,10 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     /** Why a voice request for [query] plays nothing, for the user. */
     private fun voiceFailure(query: String): String =
         if (query.isBlank()) getString(R.string.error_nothing_to_play)
-        else getString(R.string.error_voice_search_no_match, query.trim())
+        else getString(
+            R.string.error_voice_search_no_match,
+            getString(R.string.quoted, query.trim())
+        )
 
     /**
      * Plays what a voice request the app was sent asks for, see [voiceQueue]. The queue is

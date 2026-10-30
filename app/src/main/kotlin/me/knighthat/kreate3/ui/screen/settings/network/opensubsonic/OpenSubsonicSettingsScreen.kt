@@ -52,6 +52,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.openSubsonicLabelRes
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
@@ -71,23 +72,37 @@ import me.knighthat.kreate3.ui.screen.settings.syncTitle
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
-/** What the ping found, for the row under the address. */
+/**
+ * What the ping found, for the row under the address.
+ *
+ * @param server what the server is called, see [openSubsonicName]
+ */
 @Composable
-private fun CheckState.serverSummary(): String? = when (this) {
+private fun CheckState.serverSummary(server: String): String? = when (this) {
     CheckState.Idle -> null
-    CheckState.Checking -> stringResource(R.string.setting_description_server_status_checking)
+    CheckState.Checking -> stringResource(
+        R.string.setting_description_server_status_checking,
+        server
+    )
     is CheckState.Done -> when (val result = result) {
         is ServerCheck.Success -> listOfNotNull(
             stringResource(R.string.status_online),
-            result.server.type?.replaceFirstChar { it.uppercase() },
+            result.server.name,
             result.server.serverVersion,
         ).joinToString(" · ")
 
-        is ServerCheck.Unreachable ->
-            stringResource(R.string.setting_description_server_status_unreachable, result.reason)
+        is ServerCheck.Unreachable -> stringResource(
+            R.string.setting_description_server_status_unreachable,
+            server,
+            result.reason
+        )
 
-        is ServerCheck.UntrustedCertificate -> stringResource(R.string.setting_description_server_status_certificate_untrusted)
-        is ServerCheck.CertificateChanged -> stringResource(R.string.setting_description_server_status_certificate_changed)
+        is ServerCheck.UntrustedCertificate ->
+            stringResource(R.string.setting_description_server_status_certificate_untrusted, server)
+
+        is ServerCheck.CertificateChanged ->
+            stringResource(R.string.setting_description_server_status_certificate_changed, server)
+
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_server_status_not_opensubsonic,
             stringResource(R.string.source_opensubsonicapi)
@@ -97,9 +112,13 @@ private fun CheckState.serverSummary(): String? = when (this) {
     }
 }
 
-/** What the credential check found, for the row under the credentials. */
+/**
+ * What the credential check found, for the row under the credentials.
+ *
+ * @param server what the server is called, see [openSubsonicName]
+ */
 @Composable
-private fun CheckState.credentialsSummary(): String? = when (this) {
+private fun CheckState.credentialsSummary(server: String): String? = when (this) {
     CheckState.Idle -> null
     CheckState.Checking -> stringResource(R.string.setting_description_sign_in_status_checking)
     is CheckState.Done -> when (val result = result) {
@@ -108,15 +127,29 @@ private fun CheckState.credentialsSummary(): String? = when (this) {
             40 -> stringResource(R.string.setting_description_sign_in_status_wrong_credentials)
             44 -> stringResource(R.string.setting_description_sign_in_status_invalid_api_key)
             else -> result.message.ifEmpty {
-                stringResource(R.string.setting_description_sign_in_status_refused, result.code)
+                stringResource(
+                    R.string.setting_description_sign_in_status_refused,
+                    server,
+                    result.code
+                )
             }
         }
 
-        is ServerCheck.Unreachable ->
-            stringResource(R.string.setting_description_server_status_unreachable, result.reason)
+        is ServerCheck.Unreachable -> stringResource(
+            R.string.setting_description_server_status_unreachable,
+            server,
+            result.reason
+        )
 
-        is ServerCheck.UntrustedCertificate -> stringResource(R.string.setting_description_sign_in_status_certificate_untrusted)
-        is ServerCheck.CertificateChanged -> stringResource(R.string.setting_description_sign_in_status_certificate_changed)
+        is ServerCheck.UntrustedCertificate ->
+            stringResource(
+                R.string.setting_description_sign_in_status_certificate_untrusted,
+                server
+            )
+
+        is ServerCheck.CertificateChanged ->
+            stringResource(R.string.setting_description_sign_in_status_certificate_changed, server)
+
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_server_status_not_opensubsonic,
             stringResource(R.string.source_opensubsonicapi)
@@ -177,13 +210,15 @@ private fun Fingerprint(label: String, fingerprint: String) =
 
 /**
  * Asks whether to forget the trusted certificate.
+ *
+ * @param server what the server is called, see [openSubsonicName]
  */
 @Composable
-private fun ForgetCertificateDialog(onForget: () -> Unit, onDismiss: () -> Unit) =
+private fun ForgetCertificateDialog(server: String, onForget: () -> Unit, onDismiss: () -> Unit) =
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.dialog_title_forget_certificate)) },
-        text = { Text(stringResource(R.string.dialog_body_forget_certificate)) },
+        text = { Text(stringResource(R.string.dialog_body_forget_certificate, server)) },
         confirmButton = { TextButton(onClick = onForget) { Text(stringResource(R.string.action_forget)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
@@ -254,9 +289,11 @@ fun OpenSubsonicSettingsScreen(
     val password by Secrets.OPEN_SUBSONIC_PASSWORD.collectAsStateWithLifecycle()
     val apiKey by Secrets.OPEN_SUBSONIC_API_KEY.collectAsStateWithLifecycle()
 
+    val server = openSubsonicName()
     OpenSubsonicSettingsContent(
         enabled = enabled,
         url = url,
+        server = server,
         serverCheck = serverCheck,
         allowSelfSigned = allowSelfSigned,
         certificateHost = certificateHost,
@@ -288,7 +325,7 @@ fun OpenSubsonicSettingsScreen(
         },
         proxy = {
             ProxySettings(
-                source = stringResource(R.string.setting_description_the_server),
+                source = server,
                 enabled = Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
                 type = Preferences.OPEN_SUBSONIC_PROXY_TYPE,
                 host = Preferences.OPEN_SUBSONIC_PROXY_HOST,
@@ -301,6 +338,7 @@ fun OpenSubsonicSettingsScreen(
 }
 
 /**
+ * @param server what the server is called, see [openSubsonicName]
  * @param certificate SHA-256 fingerprint of the trusted certificate, empty while there is none
  * @param certificateHost the host [certificate] was trusted for
  * @param onRetry runs the checks again
@@ -311,6 +349,7 @@ fun OpenSubsonicSettingsScreen(
 private fun OpenSubsonicSettingsContent(
     enabled: Boolean,
     url: String,
+    server: String,
     serverCheck: CheckState,
     allowSelfSigned: Boolean,
     certificateHost: String,
@@ -343,7 +382,7 @@ private fun OpenSubsonicSettingsContent(
     SettingsPage(stringResource(R.string.source_opensubsonicapi), onBack, modifier) {
         MainSwitch(
             title = stringResource(R.string.source_opensubsonicapi),
-            summary = stringResource(R.string.setting_description_use_opensubsonic),
+            summary = stringResource(R.string.setting_description_use_opensubsonic, server),
             checked = enabled,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_ENABLED.update(it) },
         )
@@ -364,7 +403,7 @@ private fun OpenSubsonicSettingsContent(
         CheckRow(
             stringResource(R.string.setting_title_server),
             serverCheck,
-            serverCheck.serverSummary()
+            serverCheck.serverSummary(server)
         ) {
             if (change != null) putOff = null else onRetry()
         }
@@ -389,6 +428,7 @@ private fun OpenSubsonicSettingsContent(
             )
         if (askForget)
             ForgetCertificateDialog(
+                server = server,
                 onForget = {
                     askForget = false
                     onForgetCertificate()
@@ -430,7 +470,7 @@ private fun OpenSubsonicSettingsContent(
         CheckRow(
             stringResource(R.string.setting_title_sign_in),
             credentialsCheck,
-            credentialsCheck.credentialsSummary(),
+            credentialsCheck.credentialsSummary(server),
             onRetry
         )
 
@@ -440,7 +480,8 @@ private fun OpenSubsonicSettingsContent(
             // Without the cache every song streams directly, the setting waits for it
             summary = stringResource(
                 if (songCacheOff) R.string.setting_description_direct_play_status_cache_off
-                else R.string.setting_description_direct_play
+                else R.string.setting_description_direct_play,
+                server
             ),
             checked = directPlay,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_DIRECT_PLAY.update(it) },
@@ -457,12 +498,12 @@ private fun OpenSubsonicSettingsContent(
                 stringResource(
                     R.string.setting_description_replay_gain_reference,
                     stringResource(R.string.lufs, it.toInt()),
+                    server,
                 )
             },
         )
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
-        val server = stringResource(R.string.setting_description_the_server)
         SwitchSetting(
             title = syncTitle(R.plurals.unit_song),
             summary = syncSongsDescription(syncSongs, server),
@@ -515,6 +556,7 @@ private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
     OpenSubsonicSettingsContent(
         enabled = true,
         url = "https://music.example.com",
+        server = "Navidrome",
         serverCheck = online,
         allowSelfSigned = false,
         certificateHost = "",
@@ -545,6 +587,6 @@ private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
                 onMobileChange = {},
             )
         },
-        proxy = { PreviewProxySettings(stringResource(R.string.setting_description_the_server)) },
+        proxy = { PreviewProxySettings("Navidrome") },
     )
 }

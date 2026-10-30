@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Profile
@@ -112,8 +113,11 @@ fun DataSettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: DataSettingsViewModel = koinViewModel(),
     profileManager: ProfileManager = koinInject(),
+    userRepository: UserRepository = koinInject(),
 ) {
     val activeId by profileManager.activeId.collectAsStateWithLifecycle()
+    val defaultUser by remember(userRepository) { userRepository.find(Profile.DEFAULT_ID) }
+        .collectAsStateWithLifecycle(null)
     val deviceStorage by viewModel.deviceStorage.collectAsStateWithLifecycle()
     val imageCache by viewModel.imageCache.collectAsStateWithLifecycle()
     val songCache by viewModel.songCache.collectAsStateWithLifecycle()
@@ -147,6 +151,7 @@ fun DataSettingsScreen(
         memoryCache = memoryCache,
         binarySizes = binarySizes,
         appWide = defaultProfile,
+        defaultProfileName = defaultUser?.name,
         onClearImageCache = if (defaultProfile) ({ viewModel.clearImageCache(it) }) else null,
         onClearSongCache = if (defaultProfile) ({ viewModel.clearSongCache() }) else null,
         onDeleteAllDownloads = if (defaultProfile) viewModel::deleteAllDownloads else null,
@@ -162,6 +167,8 @@ fun DataSettingsScreen(
  * @param binarySizes [Preferences.BINARY_SIZES]
  * @param appWide whether the profile may change the [GlobalPreferences] here, the sizes and
  * [memoryCache]; shown read-only otherwise
+ * @param defaultProfileName named in the notes of what only the default profile changes, `null`
+ * while it loads and the notes stay hidden
  * @param onClearImageCache `null` while the profile may not wipe, like [onClearSongCache] and
  * [onDeleteAllDownloads]; given whether to clear the memory cache too
  * @param onRestart restarts the app, for a smaller cache to apply
@@ -183,6 +190,7 @@ private fun DataSettingsContent(
     memoryCache: Double,
     binarySizes: Boolean,
     appWide: Boolean,
+    defaultProfileName: String?,
     onClearImageCache: ((memory: Boolean) -> Unit)?,
     onClearSongCache: (() -> Unit)?,
     onDeleteAllDownloads: (() -> Unit)?,
@@ -198,7 +206,12 @@ private fun DataSettingsContent(
     ) {
         val resources = LocalResources.current
         val size = { bytes: Long -> resources.fileSize(bytes, binarySizes) }
-        val defaultProfileOnly = stringResource(R.string.setting_description_default_profile_only)
+        val defaultProfileOnly = defaultProfileName?.let {
+            stringResource(
+                R.string.setting_description_default_profile_only,
+                stringResource(R.string.quoted, it)
+            )
+        }
         val cacheWarning = { used: String, bytes: Long ->
             if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_cache, used)
             else resources.getString(R.string.dialog_body_shrink_cache, used, size(bytes))
@@ -335,7 +348,8 @@ private fun DataSettingsContent(
                     R.string.setting_description_memory_cache,
                     stringResource(R.string.percent, it)
                 )
-                if (appWide) description else "$description\n$defaultProfileOnly"
+                if (appWide || defaultProfileOnly == null) description
+                else "$description\n$defaultProfileOnly"
             },
             enabled = appWide,
         )
@@ -644,6 +658,7 @@ private fun DataSettingsSample(defaultProfile: Boolean) {
         memoryCache = 0.15,
         binarySizes = true,
         appWide = defaultProfile,
+        defaultProfileName = "Default",
         onClearImageCache = if (defaultProfile) ({}) else null,
         onClearSongCache = if (defaultProfile) ({}) else null,
         onDeleteAllDownloads = if (defaultProfile) ({}) else null,

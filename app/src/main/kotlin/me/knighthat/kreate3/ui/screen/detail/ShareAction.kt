@@ -54,6 +54,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.ShareButton
 import me.knighthat.kreate3.ui.component.localSongId
+import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.component.origin
 import org.koin.compose.koinInject
 
@@ -88,12 +89,20 @@ internal fun Context.shareLink(title: String?, link: String) {
 /** What to tell the user when no link could be made for a [kind], like the plural `album`. */
 internal fun Throwable.shareFailure(resources: Resources, @PluralsRes kind: Int): String {
     val noun = resources.getQuantityString(kind, 1)
+    val server = resources.openSubsonicName()
     return when ((this as? ServerException)?.check) {
         // The button only shows to an account that may share, so the server doesn't share this
-        is ServerCheck.Rejected -> resources.getString(R.string.error_share_unsupported, noun)
+        is ServerCheck.Rejected -> resources.getString(
+            R.string.error_share_unsupported,
+            server,
+            noun
+        )
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> resources.getString(R.string.error_share_unreachable)
+        is ServerCheck.CertificateChanged -> resources.getString(
+            R.string.error_share_unreachable,
+            server
+        )
 
         null -> message ?: resources.getString(R.string.error_cant_share, noun)
         else -> resources.getString(R.string.error_cant_share, noun)
