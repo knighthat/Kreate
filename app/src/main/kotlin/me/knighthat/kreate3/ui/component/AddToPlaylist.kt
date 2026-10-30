@@ -110,17 +110,22 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
             // The song has to be in the database before a playlist can have it
             songs.store(item.mediaId, item.origin)
             val undo = add()
-            if (undo == null) Message(resources.getString(R.string.snackbar_already_in, playlist))
+            if (undo == null) Message(
+                resources.getString(
+                    R.string.snackbar_already_in_playlist,
+                    playlist
+                )
+            )
             else undoMessage(
                 resources,
-                resources.getString(R.string.snackbar_added_to, playlist),
+                resources.getString(R.string.snackbar_added_to_playlist, playlist),
                 undoing(playlist, undo),
             )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't add ${item.mediaId} to $playlist", e)
-            Message(resources.getString(R.string.snackbar_couldnt_add_to, playlist))
+            Message(resources.getString(R.string.snackbar_couldnt_add_to_playlist, playlist))
         }
         notifier.post(message)
     }

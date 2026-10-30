@@ -162,7 +162,7 @@ private suspend fun Context.importBackup(uri: Uri): String? =
         input.use { Backup.stageWithoutRollback(this, it) }
         null
     } catch (e: BackupException) {
-        getString(e.messageRes)
+        e.describe(this)
     } catch (_: IOException) {
         getString(R.string.setting_description_restore_status_failed)
     } catch (_: SecurityException) {
@@ -388,11 +388,7 @@ private fun Import(
                 else -> stringResource(R.string.wizard_restore_a_backup)
             },
             subtitle = if (ready) stringResource(R.string.wizard_backup_ready_description)
-            else stringResource(
-                R.string.wizard_restore_a_backup_description,
-                stringResource(R.string.screen_title_settings),
-                stringResource(R.string.screen_title_backup)
-            ),
+            else stringResource(R.string.wizard_restore_a_backup_description),
             onClick = { picker.launch(arrayOf("application/zip", "application/octet-stream")) },
             busy = importing,
             colors = if (ready)

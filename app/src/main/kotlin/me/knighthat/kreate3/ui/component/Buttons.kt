@@ -296,7 +296,7 @@ fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier 
 
 @Composable
 fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.skip_next, stringResource(R.string.semantic_next), onClick, modifier)
+    IconAction(R.drawable.skip_next, stringResource(R.string.semantic_skip_next), onClick, modifier)
 
 @Composable
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

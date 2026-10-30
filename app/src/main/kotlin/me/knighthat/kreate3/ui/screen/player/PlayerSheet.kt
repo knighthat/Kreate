@@ -808,7 +808,7 @@ private fun NowPlayingPage(
                 )
                 ControlButton(
                     R.drawable.skip_next,
-                    stringResource(R.string.semantic_next),
+                    stringResource(R.string.semantic_skip_next),
                     controller::next
                 )
                 ModeButton(

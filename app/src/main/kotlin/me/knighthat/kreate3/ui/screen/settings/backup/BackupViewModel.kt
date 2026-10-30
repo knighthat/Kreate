@@ -115,7 +115,7 @@ class BackupViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: BackupException) {
-                notifier.post(context.getString(e.messageRes), channel)
+                notifier.post(e.describe(context), channel)
             } catch (_: IOException) {
                 notifier.post(failure, channel)
             } catch (_: SecurityException) {

@@ -27,7 +27,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.backup.Backup.Companion.applyPendingRestore
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import java.io.File
@@ -56,9 +55,17 @@ internal data class BackupManifest(
 )
 
 /**
- * A backup that can't be restored, [messageRes] tells the user why.
+ * A backup that can't be restored, [messageRes] tells the user why, with the strings of
+ * [argsRes] in its placeholders.
  */
-class BackupException(@param:StringRes val messageRes: Int) : Exception()
+class BackupException(
+    @param:StringRes val messageRes: Int,
+    @param:StringRes private vararg val argsRes: Int,
+) : Exception() {
+
+    fun describe(context: Context): String =
+        context.getString(messageRes, *argsRes.map(context::getString).toTypedArray())
+}
 
 /**
  * Saves the library and the preferences of every profile to a zip, and restores them from one.
@@ -214,7 +221,7 @@ class Backup(
                                 path
                             )
                         )
-                            throw BackupException(NOT_A_BACKUP)
+                            throw BackupException(NOT_A_BACKUP, R.string.app_name)
 
                         val file = File(target, path)
                         file.parentFile?.mkdirs()
@@ -225,7 +232,7 @@ class Backup(
             val manifest = File(target, MANIFEST_ENTRY)
                 .takeIf(File::isFile)
                 ?.let { runCatching { JSON.decodeFromString<BackupManifest>(it.readText()) }.getOrNull() }
-                ?: throw BackupException(NOT_A_BACKUP)
+                ?: throw BackupException(NOT_A_BACKUP, R.string.app_name)
             if (manifest.format > FORMAT
                 || manifest.database > DatabaseBackup.VERSION
                 || manifest.globalPreferences > PreferencesBackup.GLOBAL_VERSION

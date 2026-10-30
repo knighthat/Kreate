@@ -195,18 +195,18 @@ private fun PlayerSettingsContent(
             checked = homeTapRadio,
             onCheckedChange = { Preferences.HOME_SONGS_TAP_RADIO.update(it) },
             summary = if (homeTapRadio)
-                stringResource(R.string.setting_description_radio_from_songs_on)
+                stringResource(R.string.setting_description_radio_from_tap_on)
             else
-                stringResource(R.string.setting_description_radio_from_songs_off),
+                stringResource(R.string.setting_description_radio_from_tap_off),
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_radio_from_search),
             checked = searchTapRadio,
             onCheckedChange = { Preferences.SEARCH_SONGS_TAP_RADIO.update(it) },
             summary = if (searchTapRadio)
-                stringResource(R.string.setting_description_radio_from_search_on)
+                stringResource(R.string.setting_description_radio_from_tap_on)
             else
-                stringResource(R.string.setting_description_radio_from_search_off),
+                stringResource(R.string.setting_description_radio_from_tap_off),
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_keep_the_queue),

@@ -237,10 +237,13 @@ internal fun undislikedMessage(
             ?.let { return Message(it, MessageDuration.LONG) }
             ?: resources.getString(R.string.snackbar_removed_from_dislike)
 
-        failed == 0 -> resources.getString(R.string.snackbar_removed_from_dislike_count, done)
+        failed == 0 -> resources.getString(
+            R.string.snackbar_removed_from_dislike_count,
+            resources.getQuantityString(R.plurals.song, done, done)
+        )
         else -> resources.getString(
             R.string.snackbar_removed_from_dislike_some_failed,
-            done,
+            resources.getQuantityString(R.plurals.song, done, done),
             failed
         )
     }

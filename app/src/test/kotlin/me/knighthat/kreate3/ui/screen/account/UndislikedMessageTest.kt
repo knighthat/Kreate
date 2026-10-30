@@ -46,20 +46,20 @@ class UndislikedMessageTest {
 
     @Test
     fun severalSongsDoneAreCounted() = assertEquals(
-        "3 removed from dislike",
+        "3 songs removed from dislike",
         undislikedMessage(resources, listOf(null, null, null))?.text,
     )
 
     @Test
     fun severalSongsCountTheFailedOnes() {
         val message = undislikedMessage(resources, listOf(null, "refused", null, "unreachable"))
-        assertEquals("2 removed from dislike, 2 failed", message?.text)
+        assertEquals("2 songs removed from dislike, 2 failed", message?.text)
         assertEquals(MessageDuration.LONG, message?.duration)
     }
 
     @Test
     fun severalSongsAllFailed() = assertEquals(
-        "0 removed from dislike, 2 failed",
+        "0 songs removed from dislike, 2 failed",
         undislikedMessage(resources, listOf("refused", "refused"))?.text,
     )
 }

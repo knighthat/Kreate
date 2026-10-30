@@ -179,11 +179,9 @@
 
     <!-- player -->
     <string name="setting_title_radio_from_songs">Radio from Songs</string>
-    <string name="setting_description_radio_from_songs_on">A song tapped in Songs plays with songs like it</string>
-    <string name="setting_description_radio_from_songs_off">A song tapped in Songs plays with the songs below it</string>
+    <string name="setting_description_radio_from_tap_on">A tapped song plays with songs like it</string>
+    <string name="setting_description_radio_from_tap_off">A tapped song plays with the songs below it</string>
     <string name="setting_title_radio_from_search">Radio from search</string>
-    <string name="setting_description_radio_from_search_on">A song tapped in search results plays with songs like it</string>
-    <string name="setting_description_radio_from_search_off">A song tapped in search results plays with the results below it</string>
     <string name="setting_title_keep_the_queue">Keep the queue</string>
     <string name="setting_description_keep_the_queue">Pick up where you left off after the app closes</string>
     <string name="setting_title_save_interval">Save interval</string>
@@ -417,7 +415,7 @@
     <string name="semantic_reorder">Reorder</string>
     <string name="semantic_like">Like</string>
     <string name="semantic_more">More</string>
-    <string name="semantic_next">Next</string>
+    <string name="semantic_skip_next">Next</string>
     <string name="semantic_on_this_device">On this device</string>
     <string name="semantic_open_one_at_random">Open one at random</string>
     <string name="semantic_pause">Pause</string>
@@ -491,7 +489,7 @@
     <string name="wizard_intro">A few quick steps and you are ready to listen. Here is what comes next:</string>
     <string name="wizard_permissions_entry">Control what %1$s can and cannot do or see.</string>
     <string name="wizard_import_entry">Bring over existing data from another machine or backup.</string>
-    <string name="wizard_profile_entry">Taylor the app to your taste.</string>
+    <string name="wizard_profile_entry">Tailor the app to your taste.</string>
     <string name="wizard_permissions_intro">%1$s needs your permission for the following. You can skip any of them and allow it later.</string>
     <string name="wizard_music">Music</string>
     <string name="wizard_music_description">Read the audio files stored on this device to build your library</string>
@@ -502,7 +500,7 @@
     <string name="wizard_backup_ready">Backup ready</string>
     <string name="wizard_backup_ready_description">It is restored once setup finishes, tap to choose another</string>
     <string name="wizard_restore_a_backup">Restore a backup</string>
-    <string name="wizard_restore_a_backup_description">Choose a backup made in %1$s, %2$s</string>
+    <string name="wizard_restore_a_backup_description">Choose a backup made in previous versions</string>
     <string name="wizard_profile_intro">Leave the name empty to keep %1$s. You can change all of this later.</string>
     <string name="wizard_distributed_under">Distributed under the %1$s.</string>
     <string name="wizard_get_started">Get started</string>
@@ -539,10 +537,10 @@
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
     <string name="dialog_title_clear_history">Clear history?</string>
     <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
-    <string name="dialog_body_clear_history_shown">The plays shown are taken out of the history, the others stay.</string>
+    <string name="dialog_body_clear_history_shown">Only the plays matching your filters are removed. The rest of the history stays.</string>
     <string name="dialog_title_undislike_all">Undislike all?</string>
     <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
-    <string name="dialog_body_undislike_all_shown">The disliked songs shown show up in the lists again, the others stay hidden.</string>
+    <string name="dialog_body_undislike_all_shown">Only the songs matching your filters show up in your lists again. The rest stay hidden.</string>
     <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
     <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
     <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
@@ -576,7 +574,7 @@
     <string name="error_playback_not_playable">nothing to play</string>
     <string name="error_playback_too_slow">took too long to load</string>
     <string name="error_playback_unknown">unknown error</string>
-    <string name="error_backup_not_a_backup">Not a Kreate backup</string>
+    <string name="error_backup_not_a_backup">Not a %1$s backup</string>
     <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
     <string name="error_backup_damaged">Backup is damaged</string>
     <string name="error_player_not_ready">Player not ready</string>
@@ -597,7 +595,6 @@
     <string name="error_cant_share">Can\'t share this %1$s</string>
     <string name="error_cant_search">Couldn\'t search %1$s</string>
     <string name="error_source_refused">%1$s refused: %2$s</string>
-    <string name="error_server_refused">The server refused: %1$s</string>
     <string name="error_server_code">error %1$d</string>
     <string name="error_server_unreachable">Can\'t reach the server: %1$s</string>
     <string name="error_server_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
@@ -646,17 +643,17 @@
     <string name="snackbar_playback_stopped">Playback stopped</string>
     <string name="snackbar_removed_from_history">Removed from history</string>
     <string name="snackbar_history_cleared">History cleared</string>
-    <string name="snackbar_removed_from_dislike_count">%1$d removed from dislike</string>
-    <string name="snackbar_removed_from_dislike_some_failed">%1$d removed from dislike, %2$d failed</string>
+    <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
+    <string name="snackbar_removed_from_dislike_some_failed">%1$s removed from dislike, %2$d failed</string>
     <string name="snackbar_the_playlist">the playlist</string>
     <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
-    <string name="snackbar_will_play_next_one">Will play next</string>
+    <string name="snackbar_will_play_next_one">Will play this song next</string>
     <string name="snackbar_will_play_next_many">Will play %1$s next</string>
     <string name="snackbar_lyrics_copied">Lyrics copied</string>
     <string name="snackbar_turn_shuffle_off">Turn shuffle off to move songs</string>
-    <string name="snackbar_added_to">Added to %1$s</string>
-    <string name="snackbar_already_in">Already in %1$s</string>
-    <string name="snackbar_couldnt_add_to">Couldn\'t add to %1$s</string>
+    <string name="snackbar_added_to_playlist">Added to %1$s</string>
+    <string name="snackbar_already_in_playlist">Already in %1$s</string>
+    <string name="snackbar_couldnt_add_to_playlist">Couldn\'t add to %1$s</string>
     <string name="snackbar_exit_swipe">Swipe again to exit</string>
     <string name="snackbar_exit_press">Press again to exit</string>
     <string name="snackbar_change_bookmark_album">bookmark the album</string>
@@ -687,7 +684,6 @@
     <string name="section_header_today">Today</string>
     <string name="section_header_yesterday">Yesterday</string>
     <string name="section_header_date_range">Date range</string>
-    <string name="section_header_summary">%1$s · %2$s · %3$s</string>
     <string name="section_header_in_progress">In progress</string>
     <!--</editor-fold>-->
 

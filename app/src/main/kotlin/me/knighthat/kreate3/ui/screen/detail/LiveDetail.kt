@@ -172,7 +172,8 @@ internal fun Context.youTubeNotFound(@PluralsRes noun: Int): String =
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
 private fun ServerException.reason(context: Context): String = when (val check = check) {
     is ServerCheck.Rejected -> context.getString(
-        R.string.error_server_refused,
+        R.string.error_source_refused,
+        context.getString(R.string.source_opensubsonicapi),
         check.message.ifEmpty { context.getString(R.string.error_server_code, check.code) },
     )
 

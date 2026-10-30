@@ -336,12 +336,11 @@ private fun GroupHeader(
     }
     // Known once its query answers, the group's songs may not all be loaded
     val played = summary?.let {
-        resources.getString(
-            R.string.section_header_summary,
+        listOf(
             resources.getQuantityString(R.plurals.play, it.plays, it.plays),
             resources.getQuantityString(R.plurals.song, it.songs, it.songs),
             resources.timeSpent(it.timeSpent),
-        )
+        ).joinToString(" · ")
     }
     val summaryColor = MaterialTheme.colorScheme.onSurfaceVariant
 
