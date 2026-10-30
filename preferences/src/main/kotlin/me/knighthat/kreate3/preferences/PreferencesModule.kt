@@ -19,15 +19,30 @@
 package me.knighthat.kreate3.preferences
 
 import android.content.Context
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
+/** The [PreferenceEngine] of the global file, [GlobalPreferences] and [ProfileManager] share it */
+internal val GLOBAL_ENGINE = named("global_preferences")
+
 /**
- * Pass it to `initKoin` to make [Preferences], [Secrets], [ProfileManager] and
- * [PreferencesBackup] available.
+ * Pass it to `initKoin` to make [Preferences], [GlobalPreferences], [Secrets], [ProfileManager]
+ * and [PreferencesBackup] available.
  */
 val preferencesModule = module {
-    single { ProfileManager(get(), get()) }
-    single { PreferenceEngine(get(), get()) }
+    single { FailureReports() }
+    single(GLOBAL_ENGINE) {
+        GlobalPreferenceStorage.engine(get(), get<Context>().filesDir, get())
+    }
+    single {
+        ProfileManager(
+            scope = get(),
+            storage = ProfileManager.profileStorage(get<Context>().filesDir, get()),
+            global = get(GLOBAL_ENGINE),
+            reports = get(),
+        )
+    }
+    single { PreferenceEngine(get<ProfileManager>(), get()) }
     single { SecretStore(get(), get(), get<Context>()) }
     single { PreferencesBackup(get<Context>()) }
 }

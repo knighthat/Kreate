@@ -42,7 +42,7 @@ class PreferencesBackup internal constructor(private val rootDirectory: File) {
             .orEmpty()
             .map { File(it, DataStorePreferenceStorage.PROFILE_FILE_NAME) }
 
-        return (profiles + File(rootDirectory, ProfileManager.GLOBAL_FILE_NAME))
+        return (profiles + File(rootDirectory, GlobalPreferenceStorage.FILE_NAME))
             .filter(File::isFile)
             .associateBy { it.relativeTo(rootDirectory).invariantSeparatorsPath }
     }
@@ -51,13 +51,13 @@ class PreferencesBackup internal constructor(private val rootDirectory: File) {
      * Whether [path] is a path [files] can return.
      */
     fun isBackupPath(path: String): Boolean =
-        path == ProfileManager.GLOBAL_FILE_NAME || PROFILE_PATH.matches(path)
+        path == GlobalPreferenceStorage.FILE_NAME || PROFILE_PATH.matches(path)
 
     /**
      * Whether [source], laid out by the paths in the backup, has what [restore] needs.
      */
     fun isRestorable(source: File): Boolean =
-        File(source, ProfileManager.GLOBAL_FILE_NAME).isFile
+        File(source, GlobalPreferenceStorage.FILE_NAME).isFile
 
     /**
      * Replaces the preferences of every profile with the files in [source], laid out by their
@@ -65,7 +65,7 @@ class PreferencesBackup internal constructor(private val rootDirectory: File) {
      */
     fun restore(source: File) {
         File(rootDirectory, Profile.DIRECTORY_NAME).deleteRecursively()
-        File(rootDirectory, ProfileManager.GLOBAL_FILE_NAME).delete()
+        File(rootDirectory, GlobalPreferenceStorage.FILE_NAME).delete()
 
         source.walkTopDown()
             .filter(File::isFile)

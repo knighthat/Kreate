@@ -11,9 +11,14 @@ Zip backup and restore: `backup.md`.
 
 ## Layout
 
-- One global DataStore (profile list, active profile) plus one preferences file per profile. The
+- One global DataStore (profile list, active profile, `GlobalPreferences`) plus one preferences file
+  per profile. The
   database is shared: catalog tables once, per-user tables keyed by user id; never one DB per
   profile.
+- Settings of something every profile shares (cache and download sizes, the image memory cache)
+  go in `GlobalPreferences`, not `Preferences`; only the default profile changes them, other
+  profiles see them read-only. `ProfileManager` is a frontend over two settings of the same file
+  (`profile_ids`, `active_profile_id`), sharing its `PreferenceEngine`.
 - The `preferences` module hides DataStore behind an interface and never leaks its types (the
   backend may change; hundreds of settings are expected). Key names are stable, never renamed;
   changes go through append-only `SchemaMigration` steps.

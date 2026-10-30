@@ -68,6 +68,7 @@ import me.knighthat.kreate3.playback.QueuedSong
 import me.knighthat.kreate3.playback.SongCaches
 import me.knighthat.kreate3.playback.playbackReasonRes
 import me.knighthat.kreate3.playback.streamQuality
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.component.origin
@@ -149,7 +150,7 @@ data class DownloadedFile(val bytes: Long, val quality: StreamQuality?)
  * @property waitingFor what every download waits for, `null` for nothing
  * @property userBytes room the active user's downloads take, a file shared with other users in
  * full: leaving it frees nothing while they keep it
- * @property allBytes room the downloads of every user take, what [Preferences.MEDIA3_DOWNLOAD_SIZE]
+ * @property allBytes room the downloads of every user take, what [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE]
  * limits
  */
 data class DownloadsOverview(
@@ -429,7 +430,7 @@ class SongDownloads(
      * stored first, the user's download is kept with it. A file another user's download made is
      * shared at once when it is as good, else a better one replaces it once whole. The item is
      * kept with the download, for its notifications to show and play it ([songItem]). A new file
-     * is refused with a message once the downloads hold [Preferences.MEDIA3_DOWNLOAD_SIZE].
+     * is refused with a message once the downloads hold [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE].
      */
     fun download(item: MediaItem) = scope.launch {
         val origin = item.origin ?: return@launch
@@ -456,7 +457,7 @@ class SongDownloads(
         }
 
         val full = withContext(Dispatchers.IO) {
-            caches.downloads.cacheSpace >= Preferences.MEDIA3_DOWNLOAD_SIZE.value
+            caches.downloads.cacheSpace >= GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.value
         }
         if (full) {
             userSongs.forgetDownload(id, null)

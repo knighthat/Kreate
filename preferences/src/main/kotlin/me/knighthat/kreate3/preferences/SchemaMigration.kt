@@ -65,7 +65,7 @@ internal val PROFILE_STEPS: List<SchemaStep> = listOf(
 internal val SECRET_STEPS: List<SchemaStep> = emptyList()
 
 /**
- * Same as [PROFILE_STEPS] but for the global file.
+ * Same as [PROFILE_STEPS] but for the global file ([GlobalPreferences] and the profile list).
  */
 internal val GLOBAL_STEPS: List<SchemaStep> = emptyList()
 

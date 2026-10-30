@@ -37,11 +37,15 @@ class PreferenceFailure(val store: Store, val saving: Boolean, val reason: Reaso
         /** [Preferences] of the active profile */
         SETTINGS,
 
+
         /** [Secrets] of the active profile */
         SECRETS,
 
-        /** Which profiles exist and which one is active, see [ProfileManager] */
-        PROFILES,
+        /**
+         * The global file: [GlobalPreferences] and which profiles exist and which one is active,
+         * see [ProfileManager]
+         */
+        GLOBAL,
     }
 
     enum class Reason {

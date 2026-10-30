@@ -19,30 +19,16 @@
 package me.knighthat.kreate3.preferences
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.preferencesOf
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import me.knighthat.kreate3.preferences.PreferenceFailure.Store.PROFILES
-import me.knighthat.kreate3.preferences.PreferenceFailure.Store.SETTINGS
 import java.io.File
 import kotlin.uuid.Uuid
 
@@ -50,8 +36,10 @@ import kotlin.uuid.Uuid
  * Keeps track of which profiles exist and which one is currently in use. It only knows ids,
  * the names and everything else about a profile belong to the user in the database.
  *
- * Layout under the app's files directory:
- * - `global.preferences_pb`: profile ids and the active profile id
+ * The list is kept in the global file with [GlobalPreferences], as two settings of [global];
+ * this class is how the rest of the app reads and changes them. Layout under the app's files
+ * directory:
+ * - `global.preferences_pb`: profile ids, the active profile id and [GlobalPreferences]
  * - `profiles/<id>/`: files of one profile, owned by [PreferenceStorage]
  *
  * Secrets are not here, [SecretStore] keeps them under the no-backup folder.
@@ -60,100 +48,85 @@ import kotlin.uuid.Uuid
  */
 class ProfileManager internal constructor(
     scope: CoroutineScope,
-    rootDirectory: File,
     internal val storage: PreferenceStorage,
+    /** Serves the global file, [GlobalPreferences] shares it */
+    internal val global: PreferenceEngine,
     /** What every store of this module failed at, see [Preferences.failures] */
-    internal val reports: FailureReports = FailureReports(),
+    internal val reports: FailureReports,
 ) {
 
     constructor(scope: CoroutineScope, context: Context) :
             this(scope, context.filesDir, FailureReports())
 
+    internal constructor(
+        scope: CoroutineScope,
+        rootDirectory: File,
+        storage: PreferenceStorage,
+        reports: FailureReports = FailureReports(),
+    ) : this(scope, storage, GlobalPreferenceStorage.engine(scope, rootDirectory, reports), reports)
+
     private constructor(scope: CoroutineScope, rootDirectory: File, reports: FailureReports) :
-            this(
-                scope,
-                rootDirectory,
-                DataStorePreferenceStorage(rootDirectory) {
-                    reports.report(SETTINGS, saving = false, PreferenceFailure.Reason.DAMAGED)
-                },
-                reports,
-            )
+            this(scope, rootDirectory, profileStorage(rootDirectory, reports), reports)
 
-    private val global: DataStore<Preferences> = createPreferencesDataStore(
-        scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-        steps = GLOBAL_STEPS,
-        replaceDamaged = {
-            reports.report(PROFILES, saving = false, PreferenceFailure.Reason.DAMAGED)
-            // Rebuilt from the profiles' folders, which one was active is lost
-            val ids = File(rootDirectory, Profile.DIRECTORY_NAME)
-                .listFiles()
-                ?.filter { it.isDirectory }
-                ?.map { it.name }
-                .orEmpty()
-            preferencesOf(PROFILE_IDS to ids.toSet() + Profile.DEFAULT_ID)
-        },
-    ) { File(rootDirectory, GLOBAL_FILE_NAME) }
-
-    /** The global file, empty when it can't be read */
-    private val stored: SharedFlow<Preferences> = global.data
-        .catch { e ->
-            if (e !is Exception || e is CancellationException) throw e
-            reports.report(PROFILES, saving = false, failureReasonOf(e))
-            emit(emptyPreferences())
-        }
-        .shareIn(scope, SharingStarted.Eagerly, replay = 1)
+    // Without the default profile, which is always there
+    private val storedIds = Preference(
+        PROFILE_IDS,
+        emptySet(),
+        codec<Set<String>, Set<*>>({ it }, { it.filterIsInstance<String>().toSet() }),
+        global,
+    )
+    private val storedActiveId =
+        Preference(ACTIVE_PROFILE_ID, "", codec<String, String>({ it }, { it }), global)
 
     /**
-     * Ids of all known profiles.
+     * Ids of all known profiles, the default one included. Emits once the global file is loaded.
      */
-    val ids: Flow<Set<String>> = stored.map { it[PROFILE_IDS].orEmpty() }
+    val ids: Flow<Set<String>> = flow {
+        global.awaitLoaded()
+        emitAll(storedIds.state.map { it + Profile.DEFAULT_ID })
+    }
 
     /**
-     * Id of the profile in use, `null` until the global store is loaded.
+     * Id of the profile in use, `null` until the global file is loaded.
      * Falls back to the default profile when the stored id is missing or no longer exists,
      * or the global file can't be read.
      */
-    val activeId: StateFlow<String?> = stored
-        .map { preferences ->
-            val ids = preferences[PROFILE_IDS].orEmpty()
-            preferences[ACTIVE_PROFILE_ID]?.takeIf { it in ids }
-                ?: Profile.DEFAULT_ID.takeIf { it in ids }
-                ?: ids.minOrNull()
-                ?: Profile.DEFAULT_ID
-        }
+    val activeId: StateFlow<String?> = flow {
+        global.awaitLoaded()
+        emitAll(
+            combine(ids, storedActiveId.state) { ids, active ->
+                active.takeIf { it in ids } ?: Profile.DEFAULT_ID
+            }
+        )
+    }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, null)
-
-    init {
-        scope.launch {
-            // Not reported, it isn't the user's change; done again at the next start
-            retrying {
-                global.edit {
-                    if (Profile.DEFAULT_ID !in it[PROFILE_IDS].orEmpty())
-                        it[PROFILE_IDS] = it[PROFILE_IDS].orEmpty() + Profile.DEFAULT_ID
-                }
-            }
-        }
-    }
 
     /**
      * Registers a profile. It does not become active. Adding a known id changes nothing.
      *
      * @return the id of the profile, `null` when it couldn't be saved
      */
-    suspend fun add(id: String = Uuid.random().toString()): String? =
-        id.takeIf { edit { it[PROFILE_IDS] = it[PROFILE_IDS].orEmpty() + id } }
+    suspend fun add(id: String = Uuid.random().toString()): String? {
+        global.awaitLoaded()
+        if (id != Profile.DEFAULT_ID) storedIds.update { it + id }
+        return id.takeIf { global.flush() }
+    }
 
     /**
      * Makes the profile with [profileId] active. Unknown ids are ignored.
      *
-     * @return `false` when the change couldn't be saved, the active profile stays
+     * The profile is in use at once, and goes back when the change couldn't be saved.
+     *
+     * @return `false` when the change couldn't be saved
      */
-    suspend fun switchTo(profileId: String): Boolean =
-        edit {
-            if (profileId in it[PROFILE_IDS].orEmpty())
-                it[ACTIVE_PROFILE_ID] = profileId
-        }
+    suspend fun switchTo(profileId: String): Boolean {
+        global.awaitLoaded()
+        if (profileId != Profile.DEFAULT_ID && profileId !in storedIds.value) return true
+
+        storedActiveId.update(profileId)
+        return global.flush()
+    }
 
     /**
      * Removes the profile and its files.
@@ -165,39 +138,31 @@ class ProfileManager internal constructor(
     suspend fun delete(profileId: String): Boolean {
         require(profileId != Profile.DEFAULT_ID) { "The default profile cannot be deleted" }
 
-        var deleted = false
-        val saved = edit {
-            val ids = it[PROFILE_IDS].orEmpty()
-            if (profileId !in ids) return@edit
+        global.awaitLoaded()
+        if (profileId !in storedIds.value) return false
 
-            it[PROFILE_IDS] = ids - profileId
-            if (it[ACTIVE_PROFILE_ID] == profileId)
-                it.remove(ACTIVE_PROFILE_ID)
-
-            deleted = true
-        }
-        if (!saved || !deleted) return false
+        storedIds.update { it - profileId }
+        storedActiveId.update { if (it == profileId) "" else it }
+        if (!global.flush()) return false
 
         storage.delete(profileId)
         return true
     }
 
-    /**
-     * Applies [transform] to the global file, see [retrying].
-     *
-     * @return `false` when it couldn't be saved, which is reported
-     */
-    private suspend fun edit(transform: suspend (MutablePreferences) -> Unit): Boolean {
-        val error = retrying { global.edit(transform) } ?: return true
-        reports.report(PROFILES, saving = true, failureReasonOf(error))
-        return false
-    }
-
     internal companion object {
 
-        const val GLOBAL_FILE_NAME = "global.preferences_pb"
+        /** Names in the global file, [GlobalPreferences] can't use them */
+        const val PROFILE_IDS = "profile_ids"
+        const val ACTIVE_PROFILE_ID = "active_profile_id"
 
-        val PROFILE_IDS = stringSetPreferencesKey("profile_ids")
-        val ACTIVE_PROFILE_ID = stringPreferencesKey("active_profile_id")
+        /** The profiles' files, damage is reported as [PreferenceFailure.Store.SETTINGS] */
+        fun profileStorage(rootDirectory: File, reports: FailureReports) =
+            DataStorePreferenceStorage(rootDirectory) {
+                reports.report(
+                    PreferenceFailure.Store.SETTINGS,
+                    saving = false,
+                    PreferenceFailure.Reason.DAMAGED
+                )
+            }
     }
 }

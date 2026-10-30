@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import me.knighthat.kreate3.AppRestart
 import me.knighthat.kreate3.constant.StreamQuality
-import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -45,7 +45,7 @@ import kotlin.concurrent.thread
  *
  * Their index is the database `exoplayer_internal.db`, left out of backups like the files.
  *
- * @param cacheSize bytes [cache] keeps at most, see [Preferences.MEDIA3_CACHE_SIZE], `0` turns it
+ * @param cacheSize bytes [cache] keeps at most, see [GlobalPreferences.MEDIA3_CACHE_SIZE], `0` turns it
  * off ([caching])
  */
 @OptIn(UnstableApi::class)
@@ -53,7 +53,7 @@ class SongCaches internal constructor(context: Context, cacheSize: Long) {
 
     constructor(context: Context) : this(
         context,
-        AppRestart.readOnce(Preferences.MEDIA3_CACHE_SIZE),
+        AppRestart.readOnce(GlobalPreferences.MEDIA3_CACHE_SIZE),
     )
 
     /**
@@ -88,7 +88,7 @@ class SongCaches internal constructor(context: Context, cacheSize: Long) {
 
     /**
      * What the user downloaded, kept until it is removed: nothing is dropped to make room, the
-     * downloader refuses new songs once it holds [Preferences.MEDIA3_DOWNLOAD_SIZE]. Playback only
+     * downloader refuses new songs once it holds [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE]. Playback only
      * reads it.
      */
     val downloads: Cache = SimpleCache(

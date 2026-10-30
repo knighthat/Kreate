@@ -34,7 +34,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
- * Every setting of the app. Values belong to the active profile.
+ * Every setting of the app. Values belong to the active profile, those shared by every profile
+ * are in [GlobalPreferences].
  *
  * Settings are created on first use. Wait for [awaitLoaded] (for example behind
  * the splash screen) before showing UI, otherwise defaults are shown first.
@@ -381,25 +382,6 @@ object Preferences : KoinComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Playback">
     /**
-     * Largest size, in bytes, the cache of streamed songs may grow to. The default is 1 GiB.
-     * `0` turns the cache off: songs are streamed every time and what it kept is deleted when the
-     * app starts. [Long.MAX_VALUE] has no limit. Downloads don't count, see
-     * [MEDIA3_DOWNLOAD_SIZE].
-     *
-     * The size is fixed when the player starts, so a new value applies from the next launch.
-     * A smaller value drops the songs read least recently once the next song is cached.
-     */
-    val MEDIA3_CACHE_SIZE by lazy { long("song_cache", 1024L * 1024 * 1024) }
-
-    /**
-     * Largest size, in bytes, the downloaded songs may take together. The default is 4 GiB.
-     * It is separate from [MEDIA3_CACHE_SIZE], downloads are never dropped to make room: once
-     * they take this much, new downloads are refused. `0` refuses every new download,
-     * [Long.MAX_VALUE] has no limit. Read when a download starts.
-     */
-    val MEDIA3_DOWNLOAD_SIZE by lazy { long("song_downloads", 4L * 1024 * 1024 * 1024) }
-
-    /**
      * Songs downloaded at the same time, the others wait for their turn. `SongDownloads` applies
      * it to the downloader as it changes, a song already downloading isn't stopped.
      */
@@ -573,30 +555,14 @@ object Preferences : KoinComponent {
     val LYRICS_TEXT_SIZE by lazy { int("lyrics_text_size", 100) }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Coil3">
     /**
-     * Largest size, in bytes, the image disk cache may grow to. The default is 128 MiB.
-     * `0` turns it off (its files are deleted when the app starts), [Long.MAX_VALUE] has no limit.
-     *
-     * The size is fixed when the image loader is built, so a new value applies from the next
-     * launch. A smaller value does not shrink the files already stored, the cache trims
-     * itself as new images are written.
+     * Suspends until the active profile's settings, and [GlobalPreferences], are loaded for the first
+     * time.
      */
-    val IMAGE_DISK_CACHE by lazy { long("image_disk_cache", 128L * 1024 * 1024) }
-
-    /**
-     * Share of the app's memory class that decoded images in the memory cache may use,
-     * from `0.0` to `1.0`. The default is `0.15` (15%).
-     *
-     * Applies from the next launch, like [IMAGE_DISK_CACHE].
-     */
-    val IMAGE_MEMORY_CACHE_PERCENT by lazy { double("image_memory_cache_percent", .15) }
-    //</editor-fold>
-
-    /**
-     * Suspends until the active profile's settings are loaded for the first time.
-     */
-    suspend fun awaitLoaded() = engine.awaitLoaded()
+    suspend fun awaitLoaded() {
+        engine.awaitLoaded()
+        GlobalPreferences.awaitLoaded()
+    }
 
     /**
      * Suspends until the settings of [profileId] are loaded, like after switching to it.
@@ -604,9 +570,13 @@ object Preferences : KoinComponent {
     suspend fun awaitProfile(profileId: String) = engine.awaitProfile(profileId)
 
     /**
-     * Saves pending changes now, call it when the app is about to close.
+     * Saves pending changes now, those of [GlobalPreferences] too, call it when the app is about to
+     * close.
      */
-    suspend fun flush() = engine.flush()
+    suspend fun flush() {
+        engine.flush()
+        GlobalPreferences.flush()
+    }
 
     private fun int(name: String, default: Int) =
         Preference(name, default, codec<Int, Int>({ it }, { it }), engine)

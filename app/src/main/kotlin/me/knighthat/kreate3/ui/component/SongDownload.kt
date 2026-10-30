@@ -50,7 +50,7 @@ import me.knighthat.kreate3.download.DownloadPlan
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.download.SongStorage
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import org.koin.compose.koinInject
 
@@ -91,7 +91,7 @@ fun StorageBadge(storage: SongStorage?, size: Dp = BADGE_SIZE) = when (storage) 
  * Not kept: downloads it. Cached: asks whether to move the copy to the downloads (downloading
  * it again when it is worse than the quality set now) or remove it from the cache. Downloading
  * or downloaded: asks to stop or delete the download. While downloads are off
- * ([Preferences.MEDIA3_DOWNLOAD_SIZE] is `0`) the button is disabled for a song not kept, and a
+ * ([GlobalPreferences.MEDIA3_DOWNLOAD_SIZE] is `0`) the button is disabled for a song not kept, and a
  * cached one can only be removed from the cache.
  */
 @Composable
@@ -104,7 +104,7 @@ internal fun SongDownloadAction(
     val downloads = koinInject<SongDownloads>()
     val songs by downloads.songs.collectAsStateWithLifecycle()
     val storage = songs[SongDownloads.key(origin, item.mediaId)]
-    val downloadLimit by Preferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
+    val downloadLimit by GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
     val downloadsOff = downloadLimit <= 0
     val scope = rememberCoroutineScope()
     var plan by remember { mutableStateOf<DownloadPlan?>(null) }

@@ -23,16 +23,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /**
- * A single setting of the active profile.
+ * A single setting of the active profile, or of the whole app ([GlobalPreferences]).
  *
  * Its value follows the active profile, switching profile replaces the value
  * with the one stored for the new profile. Changes are visible immediately and
  * saved in the background.
  *
- * Use the instances declared in [Preferences], they must not be created elsewhere.
+ * Use the instances declared in [Preferences] and [GlobalPreferences], they must not be created
+ * elsewhere.
  */
 class Preference<T> internal constructor(
     internal val name: String,
@@ -41,7 +41,10 @@ class Preference<T> internal constructor(
     private val engine: PreferenceEngine,
 ) {
 
-    private val _state = MutableStateFlow(decode(engine.snapshot.value))
+    // The snapshot the value comes from, a newer one replaces the value
+    private var applied = engine.snapshot.value
+
+    private val _state = MutableStateFlow(decode(applied))
 
     /**
      * Current value, emits every time it changes.
@@ -51,15 +54,9 @@ class Preference<T> internal constructor(
     val value: T get() = _state.value
 
     init {
-        engine.scope.launch {
-            var applied = engine.snapshot.value
-            engine.snapshot.collect {
-                if (it !== applied) {
-                    applied = it
-                    _state.value = decode(it)
-                }
-            }
-        }
+        engine.register(this)
+        // One published while registering would be missed
+        load(engine.snapshot.value)
     }
 
     fun update(value: T) {
@@ -90,6 +87,16 @@ class Preference<T> internal constructor(
         val current = _state.value
         if (encode(current) == failed)
             _state.compareAndSet(current, decode(stored))
+    }
+
+    /**
+     * Takes the value in [snapshot], the values of a profile just loaded.
+     */
+    internal fun load(snapshot: Snapshot) = synchronized(this) {
+        if (snapshot !== applied) {
+            applied = snapshot
+            _state.value = decode(snapshot)
+        }
     }
 
     private fun encode(value: T): Any? = if (value == default) null else codec.encode(value)

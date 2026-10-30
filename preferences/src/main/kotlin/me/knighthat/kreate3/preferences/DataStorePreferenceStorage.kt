@@ -19,17 +19,9 @@
 package me.knighthat.kreate3.preferences
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -57,20 +49,10 @@ internal class DataStorePreferenceStorage(
     private val openStores = mutableMapOf<String, OpenStore>()
 
     override suspend fun read(profileId: String): Map<String, Any> =
-        storeOf(profileId).data.first()
-            .asMap()
-            .mapKeys { it.key.name }
-            .filterKeys { it != SCHEMA_VERSION_NAME }
+        storeOf(profileId).data.first().entries()
 
     override suspend fun write(profileId: String, changes: Map<String, Any?>) {
-        storeOf(profileId).edit { preferences ->
-            changes.forEach { (name, value) ->
-                if (value == null)
-                    preferences.remove(name)
-                else
-                    preferences.put(name, value)
-            }
-        }
+        storeOf(profileId).edit { it.applyChanges(changes) }
     }
 
     override suspend fun delete(profileId: String) = mutex.withLock {
@@ -99,28 +81,6 @@ internal class DataStorePreferenceStorage(
 
     private fun profileDirectory(profileId: String): File =
         Profile.directory(rootDirectory, profileId)
-
-    private fun MutablePreferences.remove(name: String) {
-        asMap().keys.firstOrNull { it.name == name }?.let(::remove)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun MutablePreferences.put(name: String, value: Any) {
-        require(name != SCHEMA_VERSION_NAME) { "\"$name\" is reserved" }
-
-        // Remove first, in case the entry was stored with a different type
-        remove(name)
-        when (value) {
-            is String -> this[stringPreferencesKey(name)] = value
-            is Int -> this[intPreferencesKey(name)] = value
-            is Long -> this[longPreferencesKey(name)] = value
-            is Float -> this[floatPreferencesKey(name)] = value
-            is Double -> this[doublePreferencesKey(name)] = value
-            is Boolean -> this[booleanPreferencesKey(name)] = value
-            is Set<*> -> this[stringSetPreferencesKey(name)] = value as Set<String>
-            else -> throw IllegalArgumentException("Unsupported type ${value::class} for \"$name\"")
-        }
-    }
 
     internal companion object {
 

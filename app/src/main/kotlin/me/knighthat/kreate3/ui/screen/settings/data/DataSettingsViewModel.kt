@@ -46,6 +46,7 @@ import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.imageCacheDir
 import me.knighthat.kreate3.playback.SongCaches
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.ui.component.StorageUse
@@ -89,22 +90,22 @@ class DataSettingsViewModel(
     /** The overview of the downloads, shared by [songDownloads] and [deviceStorage]. */
     private val overview = downloads.overview().shareIn(viewModelScope, WHILE_SHOWN, 1)
 
-    /** The image disk cache out of [Preferences.IMAGE_DISK_CACHE], `null` until known. */
+    /** The image disk cache out of [GlobalPreferences.IMAGE_DISK_CACHE], `null` until known. */
     val imageCache: StateFlow<StorageUse?> =
         combine(
             ticks,
-            Preferences.IMAGE_DISK_CACHE.state,
+            GlobalPreferences.IMAGE_DISK_CACHE.state,
             Preferences.BINARY_SIZES.state,
         ) { _, limit, binary ->
             val used = loader.diskCache?.size ?: imageCacheFiles()
             context.storageUse(used, used, limit, binary) { context.cacheDir.usableSpace }
         }.watched()
 
-    /** The song cache out of [Preferences.MEDIA3_CACHE_SIZE], `null` until known. */
+    /** The song cache out of [GlobalPreferences.MEDIA3_CACHE_SIZE], `null` until known. */
     val songCache: StateFlow<StorageUse?> =
         combine(
             ticks,
-            Preferences.MEDIA3_CACHE_SIZE.state,
+            GlobalPreferences.MEDIA3_CACHE_SIZE.state,
             Preferences.BINARY_SIZES.state,
         ) { _, limit, binary ->
             val used = caches.cache.cacheSpace
@@ -112,13 +113,13 @@ class DataSettingsViewModel(
         }.watched()
 
     /**
-     * The song downloads out of [Preferences.MEDIA3_DOWNLOAD_SIZE], the active user's and every
+     * The song downloads out of [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE], the active user's and every
      * user's, `null` until known.
      */
     val songDownloads: StateFlow<StorageUse?> =
         combine(
             overview,
-            Preferences.MEDIA3_DOWNLOAD_SIZE.state,
+            GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.state,
             Preferences.BINARY_SIZES.state,
         ) { overview, limit, binary ->
             context.storageUse(overview.userBytes, overview.allBytes, limit, binary) {

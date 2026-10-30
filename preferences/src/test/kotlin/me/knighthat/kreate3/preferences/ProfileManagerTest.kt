@@ -134,12 +134,12 @@ class ProfileManagerTest {
         val damagedRoot = Files.createTempDirectory("damaged").toFile()
         Profile.directory(damagedRoot, "work").mkdirs()
         // Not a protobuf message
-        File(damagedRoot, ProfileManager.GLOBAL_FILE_NAME).writeBytes(byteArrayOf(-1, -1, -1, -1))
+        File(damagedRoot, GlobalPreferenceStorage.FILE_NAME).writeBytes(byteArrayOf(-1, -1, -1, -1))
         try {
             val damaged = ProfileManager(scope, damagedRoot, storage)
 
             val failure = withTimeout(5_000) { damaged.reports.failures.first() }
-            assertEquals(PreferenceFailure.Store.PROFILES, failure.store)
+            assertEquals(PreferenceFailure.Store.GLOBAL, failure.store)
             assertFalse(failure.saving)
             assertEquals(PreferenceFailure.Reason.DAMAGED, failure.reason)
             assertEquals(setOf(Profile.DEFAULT_ID, "work"), damaged.ids.first())

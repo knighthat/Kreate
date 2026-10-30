@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * Everything stored for the active profile. Compared by identity, a new instance
@@ -48,21 +49,37 @@ internal class Snapshot(val values: Map<String, Any>, val profileId: String? = n
  * loaded before its pending writes are saved. Writes are batched, rapid changes of
  * one setting end up as a single write. A write that keeps failing puts its settings back to
  * what is stored.
+ *
+ * @param profileIds the profile whose values are served, each new one is loaded
+ * @param store what failures are reported as
  */
 internal class PreferenceEngine(
-    private val profiles: ProfileManager,
-    internal val scope: CoroutineScope
+    private val storage: PreferenceStorage,
+    profileIds: Flow<String?>,
+    private val reports: FailureReports,
+    private val store: PreferenceFailure.Store,
+    private val scope: CoroutineScope,
 ) {
+
+    /** Serves the [Preferences] of the active profile */
+    constructor(profiles: ProfileManager, scope: CoroutineScope) : this(
+        profiles.storage,
+        profiles.activeId,
+        profiles.reports,
+        PreferenceFailure.Store.SETTINGS,
+        scope,
+    )
 
     private sealed interface Command {
         class Dirty(val preference: Preference<*>) : Command
         class Switch(val profileId: String) : Command
-        class Flush(val done: CompletableDeferred<Unit>) : Command
+        class Flush(val done: CompletableDeferred<Boolean>) : Command
     }
 
     private val commands = Channel<Command>(Channel.UNLIMITED)
     private val loaded = CompletableDeferred<Unit>()
     private val mutableSnapshot = MutableStateFlow(Snapshot(emptyMap()))
+    private val preferences = CopyOnWriteArraySet<Preference<*>>()
 
     /** What is in the file of the active profile, only [process] touches it */
     private val saved = mutableMapOf<String, Any>()
@@ -75,11 +92,11 @@ internal class PreferenceEngine(
     /**
      * See [FailureReports.failures], those of the secrets and the profile list included.
      */
-    val failures: Flow<PreferenceFailure> = profiles.reports.failures
+    val failures: Flow<PreferenceFailure> = reports.failures
 
     init {
         scope.launch {
-            profiles.activeId
+            profileIds
                 .filterNotNull()
                 .distinctUntilChanged()
                 .collect { commands.send(Command.Switch(it)) }
@@ -99,17 +116,27 @@ internal class PreferenceEngine(
         snapshot.first { it.profileId == profileId }
     }
 
+    /**
+     * Keeps [preference] in step with [snapshot]: it gets each new one before anyone waiting for
+     * it (like [awaitLoaded]) goes on.
+     */
+    fun register(preference: Preference<*>) {
+        preferences += preference
+    }
+
     fun markDirty(preference: Preference<*>) {
         commands.trySend(Command.Dirty(preference))
     }
 
     /**
      * Saves pending changes now, call it when the app is about to close.
+     *
+     * @return `false` when they couldn't be saved, which is reported and undone
      */
-    suspend fun flush() {
-        val done = CompletableDeferred<Unit>()
+    suspend fun flush(): Boolean {
+        val done = CompletableDeferred<Boolean>()
         commands.send(Command.Flush(done))
-        done.await()
+        return done.await()
     }
 
     private suspend fun process() {
@@ -126,10 +153,7 @@ internal class PreferenceEngine(
             when (command) {
                 null -> write(profileId, dirty)
                 is Command.Dirty -> dirty += command.preference
-                is Command.Flush -> {
-                    write(profileId, dirty)
-                    command.done.complete(Unit)
-                }
+                is Command.Flush -> command.done.complete(write(profileId, dirty))
 
                 is Command.Switch -> {
                     write(profileId, dirty)
@@ -140,49 +164,52 @@ internal class PreferenceEngine(
         }
     }
 
-    private suspend fun write(profileId: String?, dirty: MutableSet<Preference<*>>) {
-        if (profileId == null || dirty.isEmpty()) return
+    /** @return `false` when it couldn't be saved */
+    private suspend fun write(profileId: String?, dirty: MutableSet<Preference<*>>): Boolean {
+        if (profileId == null || dirty.isEmpty()) return true
 
         val batch = dirty.toList()
         dirty.clear()
         val changes = batch.associate { it.name to it.encoded() }
 
-        val error = retrying { profiles.storage.write(profileId, changes) }
+        val error = retrying { storage.write(profileId, changes) }
         if (error == null) {
             changes.forEach { (name, value) ->
                 if (value == null) saved -= name else saved[name] = value
             }
-            return
+            return true
         }
 
         // A setting changed again meanwhile is in the queue, it keeps that change
         batch.forEach { it.revert(failed = changes[it.name], stored = saved[it.name]) }
         report(saving = true, error)
+        return false
     }
 
     private suspend fun load(profileId: String) {
         saved.clear()
         try {
-            val values = profiles.storage.read(profileId)
+            val values = storage.read(profileId)
             saved += values
-            mutableSnapshot.value = Snapshot(values, profileId)
+            publish(Snapshot(values, profileId))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             // Defaults are used meanwhile
-            mutableSnapshot.value = Snapshot(emptyMap(), profileId)
+            publish(Snapshot(emptyMap(), profileId))
             report(saving = false, e)
         } finally {
             loaded.complete(Unit)
         }
     }
 
+    private fun publish(snapshot: Snapshot) {
+        mutableSnapshot.value = snapshot
+        preferences.forEach { it.load(snapshot) }
+    }
+
     private fun report(saving: Boolean, error: Exception) =
-        profiles.reports.report(
-            PreferenceFailure.Store.SETTINGS,
-            saving,
-            profiles.storage.reasonOf(error)
-        )
+        reports.report(store, saving, storage.reasonOf(error))
 
     private companion object {
 

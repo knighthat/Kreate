@@ -41,6 +41,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -237,7 +238,7 @@ fun OpenSubsonicSettingsScreen(
     val serverCheck by viewModel.server.collectFlowAsState()
     val allowSelfSigned by Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.collectAsStateWithLifecycle()
     val directPlay by Preferences.OPEN_SUBSONIC_DIRECT_PLAY.collectAsStateWithLifecycle()
-    val songCacheSize by Preferences.MEDIA3_CACHE_SIZE.collectAsStateWithLifecycle()
+    val songCacheSize by GlobalPreferences.MEDIA3_CACHE_SIZE.collectAsStateWithLifecycle()
     val replayGainLufs by Preferences.OPEN_SUBSONIC_REPLAY_GAIN_LUFS.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
     val certificate by Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.collectAsStateWithLifecycle()

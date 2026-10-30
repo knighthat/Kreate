@@ -643,9 +643,9 @@ private fun ShowPreferenceFailures(notifier: Notifier) {
                     if (failure.saving) R.string.snackbar_couldnt_save_credentials
                     else R.string.snackbar_couldnt_load_credentials
 
-                PreferenceFailure.Store.PROFILES ->
-                    if (failure.saving) R.string.snackbar_couldnt_change_profiles
-                    else R.string.snackbar_couldnt_load_profiles
+                PreferenceFailure.Store.GLOBAL ->
+                    if (failure.saving) R.string.snackbar_couldnt_save_global_settings
+                    else R.string.snackbar_couldnt_load_global_settings
             }
             val text = resources.getString(message, reason)
             notifier.post(Message(text, MessageDuration.LONG, dismissable = true))

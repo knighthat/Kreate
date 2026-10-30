@@ -7,13 +7,17 @@ on
 
 - `preferences/Preferences.kt` — every setting (`object Preferences`), keys on disk never renamed.
   `Preference.kt` — single setting following the active profile.
+- `preferences/GlobalPreferences.kt` — settings shared by every profile (cache/download sizes, image
+  memory cache), default profile edits them. `GlobalPreferenceStorage.kt` — `global.preferences_pb`
+  (these + the profile list), its engine, damaged file rebuilt from profile folders.
 - `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens in
   `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`).
 - `app/res/xml/backup_rules.xml` (API ≤30) + `data_extraction_rules.xml` (API 31+) — backup/transfer
   exclusions (`.claude/rules/storage.md`).
 - `preferences/PreferencesBackup.kt` — preference files for a backup (global + profiles/<id>
   /preferences), path check, `restore`, schema versions.
-- `preferences/ProfileManager.kt` — profile ids, active profile, file layout. `Profile.kt` —
+- `preferences/ProfileManager.kt` — profile ids, active profile (settings of the global file), file
+  layout. `Profile.kt` —
   constants.
 - `preferences/PreferenceEngine.kt` (active-profile snapshot, write retries/revert),
   `PreferenceFailure.kt` (load/save failure + reason, `FailureReports` owned by `ProfileManager`,

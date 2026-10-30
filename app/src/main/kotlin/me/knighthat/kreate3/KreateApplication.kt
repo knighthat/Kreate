@@ -50,7 +50,7 @@ import me.knighthat.kreate3.notification.SystemNotifications
 import me.knighthat.kreate3.notification.createNotificationChannels
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.playbackModule
-import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
@@ -129,13 +129,13 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 MemoryCache.Builder()
                     .maxSizePercent(
                         context,
-                        AppRestart.readOnce(Preferences.IMAGE_MEMORY_CACHE_PERCENT)
+                        AppRestart.readOnce(GlobalPreferences.IMAGE_MEMORY_CACHE_PERCENT)
                     )
                     .build()
             }
             .diskCache {
                 val directory = imageCacheDir()
-                val size = AppRestart.readOnce(Preferences.IMAGE_DISK_CACHE)
+                val size = AppRestart.readOnce(GlobalPreferences.IMAGE_DISK_CACHE)
                 if (size <= 0) {
                     // Turned off, what it kept goes
                     thread(name = "ImageCacheClear") {
@@ -227,5 +227,5 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
     }
 }
 
-/** The folder of the image loader's disk cache, see [Preferences.IMAGE_DISK_CACHE]. */
+/** The folder of the image loader's disk cache, see [GlobalPreferences.IMAGE_DISK_CACHE]. */
 internal fun Context.imageCacheDir(): File = cacheDir.resolve("coil3_image_cache")

@@ -40,6 +40,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.download.DownloadedFile
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
@@ -119,13 +120,13 @@ class DownloadedViewModel(
         }.stateIn(viewModelScope, WHILE_SHOWN, null)
 
     /**
-     * The room downloads take out of [Preferences.MEDIA3_DOWNLOAD_SIZE], the active user's and
+     * The room downloads take out of [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE], the active user's and
      * every user's (see [me.knighthat.kreate3.download.DownloadsOverview]), `null` until known.
      */
     val storage: StateFlow<StorageUse?> =
         combine(
             overview,
-            Preferences.MEDIA3_DOWNLOAD_SIZE.state,
+            GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.state,
             Preferences.BINARY_SIZES.state,
         ) { overview, limit, binary ->
             overview ?: return@combine null

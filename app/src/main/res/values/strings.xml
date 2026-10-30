@@ -248,6 +248,7 @@
     <string name="setting_description_direct_play">Streams songs from the server without keeping them in the song cache</string>
     <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from the server always stream directly</string>
     <string name="setting_title_account_status_signed_out">Signed out by %1$s</string>
+    <string name="setting_description_default_profile_only">Shared by every profile, only the default profile can change it</string>
     <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>
 
     <!-- statuses of one setting -->
@@ -633,8 +634,8 @@
     <string name="snackbar_couldnt_save_settings">Couldn\'t save settings: %1$s, change undone</string>
     <string name="snackbar_couldnt_load_credentials">Couldn\'t load credentials: %1$s, sign in again</string>
     <string name="snackbar_couldnt_save_credentials">Couldn\'t save credentials: %1$s</string>
-    <string name="snackbar_couldnt_load_profiles">Couldn\'t load profiles: %1$s, using the default profile</string>
-    <string name="snackbar_couldnt_change_profiles">Couldn\'t change profiles: %1$s</string>
+    <string name="snackbar_couldnt_load_global_settings">Couldn\'t load profiles and app-wide settings: %1$s, using the default profile and defaults</string>
+    <string name="snackbar_couldnt_save_global_settings">Couldn\'t save profiles or app-wide settings: %1$s, change undone</string>
     <string name="snackbar_nothing_to_pick">No %1$s to pick from</string>
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>

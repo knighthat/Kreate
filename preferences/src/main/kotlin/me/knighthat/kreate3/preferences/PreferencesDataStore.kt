@@ -21,8 +21,16 @@ package me.knighthat.kreate3.preferences
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import java.io.File
 import java.io.IOException
@@ -58,3 +66,42 @@ internal fun createPreferencesDataStore(
         migrations = listOf(SchemaMigration(steps)),
         produceFile = produceFile,
     )
+
+/**
+ * Entries of the file by name, without its schema version.
+ */
+internal fun Preferences.entries(): Map<String, Any> =
+    asMap()
+        .mapKeys { it.key.name }
+        .filterKeys { it != SCHEMA_VERSION_NAME }
+
+/**
+ * Applies [changes] to the file, an entry with a `null` value is removed. Values are limited to
+ * the types of [PreferenceStorage].
+ */
+internal fun MutablePreferences.applyChanges(changes: Map<String, Any?>) =
+    changes.forEach { (name, value) ->
+        if (value == null) remove(name) else put(name, value)
+    }
+
+private fun MutablePreferences.remove(name: String) {
+    asMap().keys.firstOrNull { it.name == name }?.let(::remove)
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun MutablePreferences.put(name: String, value: Any) {
+    require(name != SCHEMA_VERSION_NAME) { "\"$name\" is reserved" }
+
+    // Remove first, in case the entry was stored with a different type
+    remove(name)
+    when (value) {
+        is String -> this[stringPreferencesKey(name)] = value
+        is Int -> this[intPreferencesKey(name)] = value
+        is Long -> this[longPreferencesKey(name)] = value
+        is Float -> this[floatPreferencesKey(name)] = value
+        is Double -> this[doublePreferencesKey(name)] = value
+        is Boolean -> this[booleanPreferencesKey(name)] = value
+        is Set<*> -> this[stringSetPreferencesKey(name)] = value as Set<String>
+        else -> throw IllegalArgumentException("Unsupported type ${value::class} for \"$name\"")
+    }
+}

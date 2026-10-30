@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
@@ -58,6 +60,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
+import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -100,7 +103,8 @@ private fun songDownloadSizes(binary: Boolean): List<Long> =
 /**
  * What the app keeps on the device: how full the device is and the app's part of it, the room the
  * image disk cache, the song cache and the song downloads take with their sizes, which the default
- * profile can also wipe, then how songs download and the image memory cache.
+ * profile can also wipe, then how songs download and the image memory cache. The sizes and the
+ * memory cache are [GlobalPreferences], only the default profile changes them.
  */
 @Composable
 fun DataSettingsScreen(
@@ -114,19 +118,19 @@ fun DataSettingsScreen(
     val imageCache by viewModel.imageCache.collectAsStateWithLifecycle()
     val songCache by viewModel.songCache.collectAsStateWithLifecycle()
     val songDownloads by viewModel.songDownloads.collectAsStateWithLifecycle()
-    val imageCacheSize by Preferences.IMAGE_DISK_CACHE.collectPreference()
-    val songCacheSize by Preferences.MEDIA3_CACHE_SIZE.collectPreference()
-    val songDownloadsSize by Preferences.MEDIA3_DOWNLOAD_SIZE.collectPreference()
+    val imageCacheSize by GlobalPreferences.IMAGE_DISK_CACHE.collectPreference()
+    val songCacheSize by GlobalPreferences.MEDIA3_CACHE_SIZE.collectPreference()
+    val songDownloadsSize by GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.collectPreference()
     val parallelDownloads by Preferences.DOWNLOAD_PARALLEL_COUNT.collectPreference()
     val downloadRetries by Preferences.DOWNLOAD_RETRY_COUNT.collectPreference()
     val downloadWifiOnly by Preferences.DOWNLOAD_WIFI_ONLY.collectPreference()
     val downloadOnLowBattery by Preferences.DOWNLOAD_ON_LOW_BATTERY.collectPreference()
     val downloadLyrics by Preferences.DOWNLOAD_LYRICS.collectPreference()
-    val memoryCache by Preferences.IMAGE_MEMORY_CACHE_PERCENT.collectPreference()
+    val memoryCache by GlobalPreferences.IMAGE_MEMORY_CACHE_PERCENT.collectPreference()
     val binarySizes by Preferences.BINARY_SIZES.collectPreference()
 
-    // The caches and downloads hold every profile's songs, only the default one may wipe them
-    val wipes = activeId == Profile.DEFAULT_ID
+    // Caches and downloads hold every profile's songs, only the default one sizes or wipes them
+    val defaultProfile = activeId == Profile.DEFAULT_ID
     DataSettingsContent(
         deviceStorage = deviceStorage,
         imageCache = imageCache,
@@ -142,9 +146,10 @@ fun DataSettingsScreen(
         downloadLyrics = downloadLyrics,
         memoryCache = memoryCache,
         binarySizes = binarySizes,
-        onClearImageCache = if (wipes) ({ viewModel.clearImageCache(it) }) else null,
-        onClearSongCache = if (wipes) ({ viewModel.clearSongCache() }) else null,
-        onDeleteAllDownloads = if (wipes) viewModel::deleteAllDownloads else null,
+        appWide = defaultProfile,
+        onClearImageCache = if (defaultProfile) ({ viewModel.clearImageCache(it) }) else null,
+        onClearSongCache = if (defaultProfile) ({ viewModel.clearSongCache() }) else null,
+        onDeleteAllDownloads = if (defaultProfile) viewModel::deleteAllDownloads else null,
         onRestart = { viewModel.restart() },
         onBack = onBack,
         modifier = modifier,
@@ -155,6 +160,8 @@ fun DataSettingsScreen(
  * @param imageCacheSize in bytes, like [songCacheSize] and [songDownloadsSize]
  * @param memoryCache the part of the app's memory, `0.15` for 15%
  * @param binarySizes [Preferences.BINARY_SIZES]
+ * @param appWide whether the profile may change the [GlobalPreferences] here, the sizes and
+ * [memoryCache]; shown read-only otherwise
  * @param onClearImageCache `null` while the profile may not wipe, like [onClearSongCache] and
  * [onDeleteAllDownloads]; given whether to clear the memory cache too
  * @param onRestart restarts the app, for a smaller cache to apply
@@ -175,6 +182,7 @@ private fun DataSettingsContent(
     downloadLyrics: Boolean,
     memoryCache: Double,
     binarySizes: Boolean,
+    appWide: Boolean,
     onClearImageCache: ((memory: Boolean) -> Unit)?,
     onClearSongCache: (() -> Unit)?,
     onDeleteAllDownloads: (() -> Unit)?,
@@ -190,6 +198,7 @@ private fun DataSettingsContent(
     ) {
         val resources = LocalResources.current
         val size = { bytes: Long -> resources.fileSize(bytes, binarySizes) }
+        val defaultProfileOnly = stringResource(R.string.setting_description_default_profile_only)
         val cacheWarning = { used: String, bytes: Long ->
             if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_cache, used)
             else resources.getString(R.string.dialog_body_shrink_cache, used, size(bytes))
@@ -202,11 +211,12 @@ private fun DataSettingsContent(
         StorageSetting(
             title = stringResource(R.string.setting_title_disk_cache),
             description = stringResource(R.string.setting_description_disk_cache),
+            note = defaultProfileOnly.takeUnless { appWide },
             size = imageCacheSize,
             sizes = imageCacheSizes(binarySizes),
             binary = binarySizes,
             storage = imageCache,
-            onSave = { Preferences.IMAGE_DISK_CACHE.update(it) },
+            onSave = { GlobalPreferences.IMAGE_DISK_CACHE.update(it) },
             shrinkWarning = cacheWarning,
             onRestart = onRestart,
             wipe = onClearImageCache?.let {
@@ -222,11 +232,12 @@ private fun DataSettingsContent(
         StorageSetting(
             title = stringResource(R.string.setting_title_song_cache),
             description = stringResource(R.string.setting_description_song_cache),
+            note = defaultProfileOnly.takeUnless { appWide },
             size = songCacheSize,
             sizes = songCacheSizes(binarySizes),
             binary = binarySizes,
             storage = songCache,
-            onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it) },
+            onSave = { GlobalPreferences.MEDIA3_CACHE_SIZE.update(it) },
             shrinkWarning = cacheWarning,
             onRestart = onRestart,
             wipe = onClearSongCache?.let {
@@ -241,11 +252,12 @@ private fun DataSettingsContent(
         StorageSetting(
             title = stringResource(R.string.setting_title_song_downloads),
             description = stringResource(R.string.setting_description_song_downloads),
+            note = defaultProfileOnly.takeUnless { appWide },
             size = songDownloadsSize,
             sizes = songDownloadSizes(binarySizes),
             binary = binarySizes,
             storage = songDownloads,
-            onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it) },
+            onSave = { GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.update(it) },
             // Downloads apply at once, nothing to restart for
             shrinkWarning = { used, bytes ->
                 if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_downloads, used)
@@ -317,13 +329,15 @@ private fun DataSettingsContent(
             value = (memoryCache * 100).roundToLong(),
             min = 5,
             max = 50,
-            onSave = { Preferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
+            onSave = { GlobalPreferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
             note = {
-                stringResource(
+                val description = stringResource(
                     R.string.setting_description_memory_cache,
                     stringResource(R.string.percent, it)
                 )
+                if (appWide) description else "$description\n$defaultProfileOnly"
             },
+            enabled = appWide,
         )
     }
 }
@@ -347,6 +361,8 @@ private class Wipe(
  * the user agrees to [shrinkWarning], and with [onRestart] the app can restart right away for it
  * to apply. With [wipe], a button at the end empties it once confirmed.
  *
+ * @param note a line under [description] while the size can't be changed, the row is dimmed and
+ * taps do nothing then; the bar stays as it is
  * @param size in bytes, `0` while it is off, [Long.MAX_VALUE] without a limit
  * @param sizes the sizes the slider stops at, from off to unlimited
  * @param binary [Preferences.BINARY_SIZES], typed in MiB while on, in MB otherwise
@@ -357,6 +373,7 @@ private class Wipe(
 private fun StorageSetting(
     title: String,
     description: String,
+    note: String?,
     size: Long,
     sizes: List<Long>,
     binary: Boolean,
@@ -371,10 +388,10 @@ private fun StorageSetting(
     var wiping by remember { mutableStateOf(false) }
 
     // The bar spans the whole row, under the button too
-    Column(Modifier.clickable { editing = true }) {
+    Column(Modifier.clickable(enabled = note == null) { editing = true }) {
         ListItem(
             headlineContent = { Text(title) },
-            supportingContent = { Text(description) },
+            supportingContent = { Text(note?.let { "$description\n$it" } ?: description) },
             trailingContent = wipe?.let {
                 {
                     TextButton(
@@ -384,6 +401,7 @@ private fun StorageSetting(
                 }
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            modifier = if (note == null) Modifier else Modifier.alpha(DISABLED_ALPHA),
         )
         storage?.let {
             StorageUsage(it, Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp))
@@ -591,7 +609,10 @@ private fun sizeLabel(resources: Resources, bytes: Long, binary: Boolean): Strin
 @Composable
 private fun DataSettingsPreview() = PreviewTheme { DataSettingsSample(defaultProfile = true) }
 
-/** Another profile than the default one: nothing can be wiped, no Clear or Delete buttons. */
+/**
+ * Another profile than the default one: nothing can be wiped, no Clear or Delete buttons, and the
+ * sizes and the memory cache are read-only.
+ */
 @ScreenPreviews
 @Composable
 private fun DataSettingsOtherProfilePreview() = PreviewTheme {
@@ -622,6 +643,7 @@ private fun DataSettingsSample(defaultProfile: Boolean) {
         downloadLyrics = false,
         memoryCache = 0.15,
         binarySizes = true,
+        appWide = defaultProfile,
         onClearImageCache = if (defaultProfile) ({}) else null,
         onClearSongCache = if (defaultProfile) ({}) else null,
         onDeleteAllDownloads = if (defaultProfile) ({}) else null,
