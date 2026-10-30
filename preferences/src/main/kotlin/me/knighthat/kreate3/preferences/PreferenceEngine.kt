@@ -94,6 +94,9 @@ internal class PreferenceEngine(
      */
     val failures: Flow<PreferenceFailure> = reports.failures
 
+    /** Whether [awaitLoaded] returns at once */
+    val isLoaded: Boolean get() = loaded.isCompleted
+
     init {
         scope.launch {
             profileIds

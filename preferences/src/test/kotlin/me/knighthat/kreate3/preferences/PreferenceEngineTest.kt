@@ -24,10 +24,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -116,6 +118,23 @@ class PreferenceEngineTest {
         start()
 
         assertEquals(7, volume().value)
+    }
+
+    @Test
+    fun itIsLoadedOnceAProfileIs() {
+        // No profile yet, nothing loads
+        val waiting =
+            PreferenceEngine(
+                storage,
+                flowOf(null),
+                FailureReports(),
+                PreferenceFailure.Store.SETTINGS,
+                scope
+            )
+        start()
+
+        assertFalse(waiting.isLoaded)
+        assertTrue(engine.isLoaded)
     }
 
     @Test

@@ -78,6 +78,8 @@ object GlobalPreferences : KoinComponent {
     val IMAGE_MEMORY_CACHE_PERCENT by lazy { double("image_memory_cache_percent", .15) }
     //</editor-fold>
 
+    internal val isLoaded: Boolean get() = engine.isLoaded
+
     internal suspend fun awaitLoaded() = engine.awaitLoaded()
 
     internal suspend fun flush() = engine.flush()

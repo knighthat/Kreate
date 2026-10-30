@@ -52,6 +52,9 @@ object Preferences : KoinComponent {
      */
     val failures: Flow<PreferenceFailure> get() = engine.failures
 
+    /** Whether [awaitLoaded] returns at once: the settings in use are the stored ones. */
+    val isLoaded: Boolean get() = engine.isLoaded && GlobalPreferences.isLoaded
+
     val THEME_MODE by lazy { enum("theme_mode", ThemeMode.THUMBNAIL) }
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
 

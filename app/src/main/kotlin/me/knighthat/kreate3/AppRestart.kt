@@ -27,9 +27,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import me.knighthat.kreate3.AppRestart.needed
-import me.knighthat.kreate3.AppRestart.readOnce
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
+import me.knighthat.kreate3.AppRestart.LOAD_WAIT_MILLIS
 import me.knighthat.kreate3.preferences.Preference
+import me.knighthat.kreate3.preferences.Preferences
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 
 /**
  * Settings read once by what the app makes once, like the HTTP client, the song caches and the
@@ -40,6 +44,12 @@ object AppRestart {
 
     // The value each setting was read with, the first read is the one in use
     private val read = MutableStateFlow<Map<Preference<*>, Any?>>(emptyMap())
+
+    // The files are small and opened when the app starts, a longer wait means they won't come
+    private const val LOAD_WAIT_MILLIS = 300L
+
+    // Every read shares one wait, from the first read on: a load that never ends delays only once
+    private val waitEnd by lazy { TimeSource.Monotonic.markNow() + LOAD_WAIT_MILLIS.milliseconds }
 
     /**
      * Whether a setting read with [readOnce] is set to something else now, a restart applies it.
@@ -54,8 +64,20 @@ object AppRestart {
         }
         .distinctUntilChanged()
 
-    /** The value of [preference] now, kept as the one in use until the app restarts. */
+    /**
+     * The value of [preference] now, kept as the one in use until the app restarts.
+     *
+     * Read before the settings are loaded (like the player made when a media button starts the
+     * app), it blocks until they are, then takes the default; up to [LOAD_WAIT_MILLIS] from the
+     * first read, for all reads together.
+     */
     fun <T> readOnce(preference: Preference<T>): T {
+        if (!Preferences.isLoaded) {
+            val left = -waitEnd.elapsedNow()
+            if (left.isPositive())
+                runBlocking { withTimeoutOrNull(left) { Preferences.awaitLoaded() } }
+        }
+
         val value = preference.value
         read.update { if (preference in it) it else it + (preference to value) }
         return value
