@@ -55,6 +55,7 @@ internal class PlaylistRepositoryImpl(
     override fun all(
         order: SortOrder<PlaylistSort>,
         origins: Set<Origin>,
+        monthlyOnly: Boolean,
     ): Flow<PagingData<UserPlaylist>> =
         scope.observe(PagingData.empty()) { userId ->
             database.pagedFlow(
@@ -67,7 +68,7 @@ internal class PlaylistRepositoryImpl(
                 playlistDao.pagedWithCovers(
                     RoomRawQuery(
                         sql = "SELECT *, $COVERS FROM user_playlist " +
-                                "WHERE user_id = ? ${originFilter(origins)} " +
+                                "WHERE user_id = ? ${filter(origins, monthlyOnly)} " +
                                 order.toOrderBy("playlist_id"),
                         onBindStatement = { it.bindText(1, userId) },
                     )
@@ -92,21 +93,23 @@ internal class PlaylistRepositoryImpl(
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> playlistDao.origins(userId).map { it.toSet() } }
 
-    override suspend fun count(origins: Set<Origin>): Int {
+    override suspend fun count(origins: Set<Origin>, monthlyOnly: Boolean): Int {
         val userId = scope.awaitId()
         return playlistDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_playlist WHERE user_id = ? ${originFilter(origins)}",
+                sql = "SELECT COUNT(*) FROM user_playlist WHERE user_id = ? " +
+                        filter(origins, monthlyOnly),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
     }
 
-    override suspend fun random(origins: Set<Origin>): UserPlaylist? {
+    override suspend fun random(origins: Set<Origin>, monthlyOnly: Boolean): UserPlaylist? {
         val userId = scope.awaitId()
         return playlistDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
+                sql = "SELECT * FROM user_playlist WHERE user_id = ? " +
+                        "${filter(origins, monthlyOnly)} " +
                         "ORDER BY RANDOM() LIMIT 1",
                 onBindStatement = { it.bindText(1, userId) },
             )
@@ -226,6 +229,9 @@ internal class PlaylistRepositoryImpl(
     }
 
     private companion object {
+
+        fun filter(origins: Set<Origin>, monthlyOnly: Boolean) =
+            originFilter(origins) + if (monthlyOnly) " AND is_monthly = 1" else ""
 
         /**
          * The `covers` column of [UserPlaylistRow] for each row of `user_playlist`: the songs the

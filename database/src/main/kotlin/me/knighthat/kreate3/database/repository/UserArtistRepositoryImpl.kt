@@ -52,7 +52,8 @@ internal class UserArtistRepositoryImpl(
     override fun all(
         order: SortOrder<UserArtistSort>,
         origins: Set<Origin>,
-    ): Flow<PagingData<UserArtistView>> = paged(order, filter = originFilter(origins))
+        followedOnly: Boolean,
+    ): Flow<PagingData<UserArtistView>> = paged(order, filter = filter(origins, followedOnly))
 
     override suspend fun list(
         order: SortOrder<UserArtistSort>,
@@ -71,34 +72,31 @@ internal class UserArtistRepositoryImpl(
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> userArtistDao.origins(userId).map { it.toSet() } }
 
-    override suspend fun count(origins: Set<Origin>): Int {
+    override suspend fun count(origins: Set<Origin>, followedOnly: Boolean): Int {
         val userId = scope.awaitId()
         return userArtistDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_artist_view WHERE user_id = ? ${
-                    originFilter(
-                        origins
-                    )
-                }",
+                sql = "SELECT COUNT(*) FROM user_artist_view WHERE user_id = ? " +
+                        filter(origins, followedOnly),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
     }
 
-    override suspend fun random(origins: Set<Origin>): UserArtistView? {
+    override suspend fun random(origins: Set<Origin>, followedOnly: Boolean): UserArtistView? {
         val userId = scope.awaitId()
         return userArtistDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_artist_view WHERE user_id = ? ${originFilter(origins)} " +
+                sql = "SELECT * FROM user_artist_view WHERE user_id = ? " +
+                        "${filter(origins, followedOnly)} " +
                         "ORDER BY RANDOM() LIMIT 1",
                 onBindStatement = { it.bindText(1, userId) },
             )
         )?.toModel()
     }
 
-    // A follow is a time, -1 is a dislike
     override fun followed(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =
-        paged(order, filter = "AND follow_since >= 0")
+        paged(order, filter = FOLLOWED)
 
     override fun search(query: String, order: SortOrder<UserArtistSort>) =
         paged(order, filter = SEARCH) { it.bindText(2, containsPattern(query)) }
@@ -181,5 +179,11 @@ internal class UserArtistRepositoryImpl(
 
         // ?2 is the pattern of what is searched
         const val SEARCH = "AND name LIKE ?2 ESCAPE '\\'"
+
+        // A follow is a time, -1 is a dislike
+        const val FOLLOWED = "AND follow_since >= 0"
+
+        fun filter(origins: Set<Origin>, followedOnly: Boolean) =
+            originFilter(origins) + if (followedOnly) " $FOLLOWED" else ""
     }
 }

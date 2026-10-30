@@ -332,8 +332,13 @@ fun RemoteSong.toLiveMediaItem(
 
 /**
  * An album of an online catalog.
+ *
+ * @param isBookmarked whether the user bookmarked it at its source, see [isBookmarked]
  */
-fun Album.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem {
+fun Album.toLiveMediaItem(
+    thumbnail: android.net.Uri? = this.thumbnail,
+    isBookmarked: Boolean = false,
+): MediaItem {
     val names = artists.orEmpty()
     return mediaItem(id) {
         setTitle(name)
@@ -344,6 +349,7 @@ fun Album.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaIt
         setReleaseYear(year)
         setArtworkUri(thumbnail)
         setMediaType(MediaMetadata.MEDIA_TYPE_ALBUM)
+        setUserRating(if (isBookmarked) ThumbRating(true) else ThumbRating())
         setExtras(extras {
             putString(EXTRA_ORIGIN, origin.name)
             putString(EXTRA_URL, url)
@@ -356,13 +362,19 @@ fun Album.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaIt
 
 /**
  * An artist of an online catalog.
+ *
+ * @param isFollowed whether the user follows them at their source, see [isFollowed]
  */
-fun Artist.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem =
+fun Artist.toLiveMediaItem(
+    thumbnail: android.net.Uri? = this.thumbnail,
+    isFollowed: Boolean = false,
+): MediaItem =
     mediaItem(id) {
         setTitle(name)
         setArtist(name)
         setArtworkUri(thumbnail)
         setMediaType(MediaMetadata.MEDIA_TYPE_ARTIST)
+        setUserRating(if (isFollowed) ThumbRating(true) else ThumbRating())
         setExtras(extras { putString(EXTRA_ORIGIN, origin.name) })
         setIsBrowsable(true)
         setIsPlayable(false)

@@ -52,7 +52,8 @@ internal class UserAlbumRepositoryImpl(
     override fun all(
         order: SortOrder<UserAlbumSort>,
         origins: Set<Origin>,
-    ): Flow<PagingData<UserAlbumView>> = paged(order, filter = originFilter(origins))
+        bookmarkedOnly: Boolean,
+    ): Flow<PagingData<UserAlbumView>> = paged(order, filter = filter(origins, bookmarkedOnly))
 
     override suspend fun list(
         order: SortOrder<UserAlbumSort>,
@@ -71,21 +72,23 @@ internal class UserAlbumRepositoryImpl(
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> userAlbumDao.origins(userId).map { it.toSet() } }
 
-    override suspend fun count(origins: Set<Origin>): Int {
+    override suspend fun count(origins: Set<Origin>, bookmarkedOnly: Boolean): Int {
         val userId = scope.awaitId()
         return userAlbumDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_album_view WHERE user_id = ? ${originFilter(origins)}",
+                sql = "SELECT COUNT(*) FROM user_album_view WHERE user_id = ? " +
+                        filter(origins, bookmarkedOnly),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
     }
 
-    override suspend fun random(origins: Set<Origin>): UserAlbumView? {
+    override suspend fun random(origins: Set<Origin>, bookmarkedOnly: Boolean): UserAlbumView? {
         val userId = scope.awaitId()
         return userAlbumDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_album_view WHERE user_id = ? ${originFilter(origins)} " +
+                sql = "SELECT * FROM user_album_view WHERE user_id = ? " +
+                        "${filter(origins, bookmarkedOnly)} " +
                         "ORDER BY RANDOM() LIMIT 1",
                 onBindStatement = { it.bindText(1, userId) },
             )
@@ -94,7 +97,7 @@ internal class UserAlbumRepositoryImpl(
 
     // A bookmark is a time, -1 is a dislike
     override fun bookmarked(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =
-        paged(order, filter = "AND bookmarked_at >= 0")
+        paged(order, filter = BOOKMARKED)
 
     override fun search(query: String, order: SortOrder<UserAlbumSort>) =
         paged(order, filter = SEARCH) { it.bindText(2, containsPattern(query)) }
@@ -183,5 +186,11 @@ internal class UserAlbumRepositoryImpl(
 
         // ?2 is the pattern of what is searched
         const val SEARCH = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\')"
+
+        // A bookmark is a time, -1 is a dislike
+        const val BOOKMARKED = "AND bookmarked_at >= 0"
+
+        fun filter(origins: Set<Origin>, bookmarkedOnly: Boolean) =
+            originFilter(origins) + if (bookmarkedOnly) " $BOOKMARKED" else ""
     }
 }

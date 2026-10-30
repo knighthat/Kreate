@@ -26,8 +26,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
@@ -43,16 +43,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,6 +73,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.FilterIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.ProfileButton
@@ -139,7 +150,10 @@ private class ToolbarScroll : NestedScrollConnection {
 
 /**
  * One row under the title: a chip for each origin of [choices], scrolling sideways when they
- * don't fit, then [quickActions] that always stay at the end.
+ * don't fit, then a button opening the tab's options that always stays at the end. A short line
+ * parts the chips from it, unless [LocalIconOnly] shows the origins as icons.
+ *
+ * @param onConfigure opens the options, `null` for a tab without them
  */
 @Composable
 private fun HomeToolbar(
@@ -147,7 +161,7 @@ private fun HomeToolbar(
     selected: Set<Origin>,
     onToggleOrigin: (Origin) -> Unit,
     scroll: ToolbarScroll,
-    quickActions: @Composable RowScope.() -> Unit,
+    onConfigure: (() -> Unit)?,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -166,15 +180,37 @@ private fun HomeToolbar(
             .background(MaterialTheme.colorScheme.surfaceDim)
             .padding(end = 4.dp),
     ) {
+        val iconOnly = LocalIconOnly.current
+        // The icons alone need no line
+        val lined = !iconOnly && choices.isNotEmpty()
+        val chipScroll = rememberScrollState()
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .weight(1f)
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                // Chips that don't fit fade out into the line, as if they went under it
+                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                .drawWithContent {
+                    drawContent()
+                    if (lined && chipScroll.canScrollForward) {
+                        val fade = CHIP_FADE.toPx()
+                        drawRect(
+                            brush = Brush.horizontalGradient(
+                                listOf(Color.Black, Color.Transparent),
+                                startX = size.width - fade,
+                                endX = size.width,
+                            ),
+                            topLeft = Offset(size.width - fade, 0f),
+                            size = Size(fade, size.height),
+                            blendMode = BlendMode.DstIn,
+                        )
+                    }
+                }
+                .horizontalScroll(chipScroll)
+                // The room before the line scrolls with the chips, so a cut chip meets the line
+                .padding(start = 16.dp, end = if (lined) 18.dp else 16.dp),
         ) {
-            val iconOnly = LocalIconOnly.current
             choices.forEach {
                 if (iconOnly)
                     OriginToggle(it, it in selected) { onToggleOrigin(it) }
@@ -194,9 +230,14 @@ private fun HomeToolbar(
                     )
             }
         }
-        quickActions()
+        // Ends the chips, a bit taller than them
+        if (lined) VerticalDivider(Modifier.height(FilterChipDefaults.Height + 8.dp))
+        onConfigure?.let { ConfigButton(it) }
     }
 }
+
+/** How far the chips that don't fit fade out before the line ending them. */
+private val CHIP_FADE = 24.dp
 
 /**
  * The icon of [origin] in place of its chip, see [LocalIconOnly]: in the primary color while
@@ -208,11 +249,13 @@ private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit
 
 /**
  * The frame of a home tab: a large top bar named [title] that collapses when the scrollable
- * [content] is scrolled, over a row of origin chips and [quickActions] that hides while the list
- * scrolls down.
+ * [content] is scrolled, over a row of origin chips and a button opening [sheet] that hides while
+ * the list scrolls down.
  *
  * @param choices the origins to offer a chip for, see [OriginFilter.choices]
  * @param selected the origins the tab shows, every origin while empty
+ * @param sheet the tab's options, a [me.knighthat.kreate3.ui.component.ConfigSheet] that calls
+ * `onDismiss` once closed; `null` for no button
  * @param contentPadding room [content] adds around its items on top of the bars', e.g. so the
  * last one can scroll clear of what floats over the screen
  */
@@ -228,17 +271,24 @@ fun HomeScaffold(
     onSearch: () -> Unit = {},
     onProfile: () -> Unit = {},
     onSettings: () -> Unit = {},
-    quickActions: @Composable RowScope.() -> Unit = {},
+    sheet: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val toolbarScroll = remember { ToolbarScroll() }
+    var configuring by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             Column {
                 HomeTopBar(title, scrollBehavior, onSearch, onProfile, onSettings)
-                HomeToolbar(choices, selected, onToggleOrigin, toolbarScroll, quickActions)
+                HomeToolbar(
+                    choices,
+                    selected,
+                    onToggleOrigin,
+                    toolbarScroll,
+                    sheet?.let { { configuring = true } },
+                )
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
@@ -247,4 +297,6 @@ fun HomeScaffold(
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .nestedScroll(toolbarScroll),
     ) { content(it + contentPadding) }
+
+    if (configuring) sheet?.invoke { configuring = false }
 }

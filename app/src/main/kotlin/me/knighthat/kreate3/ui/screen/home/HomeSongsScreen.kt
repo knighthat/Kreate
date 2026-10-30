@@ -36,12 +36,12 @@ import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
-import me.knighthat.kreate3.ui.component.PlayAllButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
+import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueMoreButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
-import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
@@ -62,6 +62,7 @@ fun HomeSongsScreen(
 ) {
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val filters by viewModel.filters.collectAsStateWithLifecycle()
 
     // Each visit to the tab, the songs liked on YouTube are brought up to date
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -70,7 +71,9 @@ fun HomeSongsScreen(
         songs = viewModel.songs.collectAsLazyPagingItems(),
         choices = choices,
         selected = selected,
+        filters = filters,
         onToggleOrigin = viewModel.filter::toggle,
+        onFilter = viewModel::filter,
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(
             Preferences.HOME_SONGS_TAP_RADIO,
@@ -89,7 +92,9 @@ private fun HomeSongsContent(
     songs: LazyPagingItems<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
+    filters: SongFilters,
     onToggleOrigin: (Origin) -> Unit,
+    onFilter: ((SongFilters) -> SongFilters) -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     onSearch: () -> Unit,
@@ -108,11 +113,7 @@ private fun HomeSongsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = {
-            PlayAllButton({ onAction(QueueAction.PLAY) })
-            ShuffleButton({ onAction(QueueAction.SHUFFLE) })
-            QueueMoreButton(onAction)
-        },
+        sheet = { onDismiss -> SongsSheet(filters, onFilter, onAction, onDismiss) },
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -128,6 +129,50 @@ private fun HomeSongsContent(
     }
 }
 
+/**
+ * The quick actions on every song shown, then what the tab shows. Cached only and Downloaded only
+ * exclude each other, turning one on turns the other off.
+ */
+@Composable
+private fun SongsSheet(
+    filters: SongFilters,
+    onFilter: ((SongFilters) -> SongFilters) -> Unit,
+    onAction: (QueueAction) -> Unit,
+    onDismiss: () -> Unit,
+) = ConfigSheet(
+    onDismiss = onDismiss,
+    actions = { close ->
+        LabeledIconButton(R.drawable.play_arrow, stringResource(R.string.menu_play_all)) {
+            close { onAction(QueueAction.PLAY) }
+        }
+        LabeledIconButton(R.drawable.shuffle, stringResource(R.string.menu_shuffle)) {
+            close { onAction(QueueAction.SHUFFLE) }
+        }
+        LabeledIconButton(R.drawable.queue_play_next, stringResource(R.string.menu_play_next)) {
+            close { onAction(QueueAction.PLAY_NEXT) }
+        }
+        LabeledIconButton(R.drawable.playlist_add, stringResource(R.string.menu_add_to_queue)) {
+            close { onAction(QueueAction.ENQUEUE) }
+        }
+    },
+) {
+    ConfigToggle(
+        R.drawable.thumb_down,
+        stringResource(R.string.menu_show_disliked),
+        filters.withDisliked,
+    ) { onFilter { it.copy(withDisliked = !it.withDisliked) } }
+    ConfigToggle(
+        R.drawable.cloud_done,
+        stringResource(R.string.menu_cached_only),
+        filters.cachedOnly,
+    ) { onFilter { it.copy(cachedOnly = !it.cachedOnly, downloadedOnly = false) } }
+    ConfigToggle(
+        R.drawable.downloaded,
+        stringResource(R.string.menu_downloaded_only),
+        filters.downloadedOnly,
+    ) { onFilter { it.copy(downloadedOnly = !it.downloadedOnly, cachedOnly = false) } }
+}
+
 @ScreenPreviews
 @Composable
 private fun HomeSongsPreview() = PreviewTheme {
@@ -136,7 +181,9 @@ private fun HomeSongsPreview() = PreviewTheme {
             .collectAsLazyPagingItems(),
         choices = Origin.entries,
         selected = setOf(Origin.LOCAL),
+        filters = SongFilters(),
         onToggleOrigin = {},
+        onFilter = {},
         onAction = {},
         onSongClick = {},
         onSearch = {},

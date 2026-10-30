@@ -20,7 +20,9 @@ it), albums and artists still write `-1`; old `-1` song rows stay dislikes. Chec
 them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `ThumbRating`, not
 `HeartRating`).
 
-Disliked songs are hidden everywhere, always (no setting; Account's Disliked page takes them back).
+Disliked songs are hidden everywhere, always (no setting; Account's Disliked page takes them back),
+except on the home Songs tab while its sheet's "Show disliked" is on (`withDisliked`, off until
+turned on, kept while the tab is in the back stack; rows show the `isDisliked` badge).
 `UserSongRepositoryImpl.query` leaves them out of every library list, `find` still gives them. Lists
 fetched live drop the ids of `UserSongRepository.dislikedIds` where
 they're built (`source/DislikedSongs.kt` helpers; `LiveDetailViewModel` re-filters its state, so a

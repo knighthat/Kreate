@@ -194,6 +194,18 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun dislikedSongsShowWhenAsked() = runBlocking {
+        listOf("disliked", "kept").forEach { addSong(it) }
+        librarySong("disliked", DISLIKED)
+        librarySong("kept")
+
+        val all = listOf("disliked", "kept")
+        assertEquals(all, songs.all(withDisliked = true).asList().map { it.songId })
+        assertEquals(all, songs.list(withDisliked = true).map { it.songId })
+        assertEquals(listOf("kept"), songs.list().map { it.songId })
+    }
+
+    @Test
     fun dislikedSongsAreLeftOutOfEveryListButStillFound() = runBlocking {
         addAlbum("a1")
         addArtist("r1")
@@ -619,6 +631,28 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
 
         assertEquals(listOf("a1"), albums.bookmarked().asList().map { it.albumId })
         assertEquals(listOf("r1"), artists.followed().asList().map { it.artistId })
+    }
+
+    @Test
+    fun theLibraryCanShowOnlyBookmarkedAlbumsAndFollowedArtists() = runBlocking {
+        addAlbum("a1", origin = Origin.YOUTUBE)
+        listOf("a2", "a3").forEach { addAlbum(it) }
+        albums.save(UserAlbum("a1", bookmarkedAt = liked))
+        albums.save(UserAlbum("a2", bookmarkedAt = DISLIKED))
+        albums.save(UserAlbum("a3"))
+        listOf("r1", "r2").forEach { addArtist(it) }
+        artists.save(UserArtist("r1", followSince = liked))
+        artists.save(UserArtist("r2"))
+
+        val bookmarked = albums.all(bookmarkedOnly = true).asList().map { it.albumId }
+        assertEquals(listOf("a1"), bookmarked)
+        assertEquals(1, albums.count(bookmarkedOnly = true))
+        assertEquals("a1", albums.random(bookmarkedOnly = true)?.albumId)
+        assertEquals(0, albums.count(setOf(Origin.LOCAL), bookmarkedOnly = true))
+        assertEquals(listOf("r1"), artists.all(followedOnly = true).asList().map { it.artistId })
+        assertEquals(1, artists.count(followedOnly = true))
+        assertEquals("r1", artists.random(followedOnly = true)?.artistId)
+        assertEquals(3, albums.count())
     }
 
     @Test

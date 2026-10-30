@@ -24,12 +24,12 @@ ui/screen/
   kept to `DownloadsOverview.files`, row `trailing` = size · quality; storage header =
   `StorageUsage`
   of this user's and all users' bytes against `MEDIA3_DOWNLOAD_SIZE`; In progress section shows the
-  running downloads and the next in line
-  (else the first one), its See more opens the rest; a toolbar row like home's: origin chips
-  (Disliked's
-  `OriginChips`), then a show-disliked toggle (`UserSongRepository.downloaded` includes disliked
-  songs, hidden by default, marked with a thumb when shown), Play/Shuffle/⋮ Add to queue;
-  newest/oldest toggle, Delete all (confirm, only what's shown); tap plays the list from the song;
+  running downloads and the next in line (else the first one), its See more opens the rest; origin
+  chips (Disliked's `OriginChips`) as a row of the list; the bar's `ConfigButton` opens
+  `DownloadedSheet` (`ConfigSheet`): Play all, Shuffle, Play next, Add to queue, Delete all
+  (confirm, only what's shown), then Show disliked (`UserSongRepository.downloaded` includes
+  disliked songs, hidden by default, marked with a thumb when shown); the newest/oldest button stays
+  in the bar; tap plays the list from the song;
   nothing kept). `DownloadQueueScreen.kt` + `DownloadQueueViewModel.kt`
   (every unfinished download in the order asked for, failed last: state over the darkened cover
   (ring + percent, hourglass, faded ring + pause, warning), `UnfinishedRow.status` above the title
@@ -39,10 +39,12 @@ ui/screen/
   extends this one; flows stop 5 s after the screen, `WHILE_SHOWN`).
   `DislikedScreen.kt` + `DislikedViewModel.kt` (paged
   `UserSongRepository.disliked`, each row's `trailing` says how long ago it was disliked; origin
-  chips under the bar (only sources with dislikes), newest/oldest toggle and Undislike all (confirm
-  dialog, only what's shown while filtered, one song at a time, then one message from
+  chips under the bar (only sources with dislikes); the bar's `ConfigButton` opens a `ConfigSheet`
+  with Undislike all (confirm dialog, only what's shown while filtered, one song at a time, then one
+  message from
   `undislikedMessage`: done, the reason, or counts with failures; the song menu's Dislike takes one
-  back); tap plays the song alone; undislikes go through the song's source like the song menu, on
+  back); the newest/oldest button stays in the bar; tap plays the song alone; undislikes go through
+  the song's source like the song menu, on
   the app scope; nothing is kept). `StatisticsScreen.kt` + `StatisticsViewModel.kt`
   (All time / This month chips, nothing kept; summary tiles with the change against last month up to
   the same day (`monthToDate`), top 5 songs with minutes, 3 albums, 10 artists, time per source;
@@ -74,8 +76,16 @@ ui/screen/
   `HistoryGroups.kt` (`HistoryBuckets`: Today, Yesterday, days to 6, weeks to a month, months to a
   year, years up to 50; `spans()` gives each bucket's time span; `HistoryRange` as picker UTC days,
   presets).
-- home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'),
-  `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt`, `OriginFilter.kt` (filter chips state),
+- home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'; the
+  toolbar's `ConfigButton` opens the tab's `sheet`),
+  `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
+  all/shuffle/play next/add to queue + show disliked, cached only, downloaded only (`SongFilters`,
+  cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
+  `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
+  `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist + monthly only
+  (grayed out unless local playlists exist and show); filters live in the view model, kept while the
+  tab is in the back stack),
+  `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as
   content padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (

@@ -44,11 +44,15 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.ConfigSheet
+import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.RandomButton
+import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewAlbums
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -70,6 +74,8 @@ fun HomeAlbumsScreen(
     val live by viewModel.live.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val bookmarkedOnly by viewModel.bookmarkedOnly.collectAsStateWithLifecycle()
+    val playRandom = rememberQueueActions(viewModel::randomSongs)
     val notifier = LocalNotifier.current
     val nothingToPick = stringResource(
         R.string.snackbar_nothing_to_pick,
@@ -85,7 +91,9 @@ fun HomeAlbumsScreen(
         live = live,
         choices = choices,
         selected = selected,
+        bookmarkedOnly = bookmarkedOnly,
         onToggleOrigin = viewModel.filter::toggle,
+        onToggleBookmarkedOnly = viewModel::toggleBookmarkedOnly,
         onOpen = onOpen,
         onRandom = {
             scope.launch {
@@ -94,6 +102,7 @@ fun HomeAlbumsScreen(
                 else notifier.post(nothingToPick)
             }
         },
+        onPlayRandom = { playRandom(QueueAction.PLAY) },
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
@@ -111,9 +120,12 @@ private fun HomeAlbumsContent(
     live: List<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
+    bookmarkedOnly: Boolean,
     onToggleOrigin: (Origin) -> Unit,
+    onToggleBookmarkedOnly: () -> Unit,
     onOpen: (MediaItem) -> Unit,
     onRandom: () -> Unit,
+    onPlayRandom: () -> Unit,
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
@@ -130,8 +142,30 @@ private fun HomeAlbumsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = {
-            RandomButton(onRandom, enabled = albums.itemCount > 0 || live.isNotEmpty())
+        sheet = { onDismiss ->
+            val any = albums.itemCount > 0 || live.isNotEmpty()
+            ConfigSheet(
+                onDismiss = onDismiss,
+                actions = { close ->
+                    LabeledIconButton(
+                        R.drawable.casino,
+                        stringResource(R.string.menu_open_random),
+                        enabled = any,
+                    ) { close(onRandom) }
+                    LabeledIconButton(
+                        R.drawable.play_arrow,
+                        stringResource(R.string.menu_play_random),
+                        enabled = any,
+                    ) { close(onPlayRandom) }
+                },
+            ) {
+                ConfigToggle(
+                    R.drawable.bookmark_filled,
+                    stringResource(R.string.menu_bookmarked_only),
+                    bookmarkedOnly,
+                    onToggle = onToggleBookmarkedOnly,
+                )
+            }
         },
     ) { padding ->
         LazyVerticalGrid(
@@ -161,9 +195,12 @@ private fun HomeAlbumsPreview() = PreviewTheme {
         live = previewAlbums(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),
+        bookmarkedOnly = false,
         onToggleOrigin = {},
+        onToggleBookmarkedOnly = {},
         onOpen = {},
         onRandom = {},
+        onPlayRandom = {},
         onSearch = {},
         onProfile = {},
         onSettings = {},

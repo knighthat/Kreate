@@ -48,11 +48,14 @@ private const val TAG = "LiveLibrary"
 /** The albums saved on each source. */
 suspend fun liveAlbums(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvider) = fetchEach(
     openSubsonicSection(Preferences.OPEN_SUBSONIC_SYNC_ALBUMS) { starredOnly ->
-        openSubsonic.libraryAlbums(starredOnly)?.map { it.item.toLiveMediaItem() }
+        openSubsonic.libraryAlbums(starredOnly)?.map {
+            it.item.toLiveMediaItem(isBookmarked = it.starredAt != null)
+        }
     },
+    // Saved to the library is YouTube's bookmark
     youTubeSection(LibrarySection.ALBUMS) {
         youTube.libraryAlbums()?.map {
-            it.toLiveMediaItem(youTube.artwork(it.thumbnail, CARD_ARTWORK))
+            it.toLiveMediaItem(youTube.artwork(it.thumbnail, CARD_ARTWORK), isBookmarked = true)
         }
     },
 )
@@ -60,11 +63,14 @@ suspend fun liveAlbums(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvi
 /** The artists followed on each source. */
 suspend fun liveArtists(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvider) = fetchEach(
     openSubsonicSection(Preferences.OPEN_SUBSONIC_SYNC_ARTISTS) { starredOnly ->
-        openSubsonic.libraryArtists(starredOnly)?.map { it.item.toLiveMediaItem() }
+        openSubsonic.libraryArtists(starredOnly)?.map {
+            it.item.toLiveMediaItem(isFollowed = it.starredAt != null)
+        }
     },
+    // A subscription is YouTube's follow
     youTubeSection(LibrarySection.ARTISTS) {
         youTube.libraryArtists()?.map {
-            it.toLiveMediaItem(youTube.artwork(it.thumbnail, CARD_ARTWORK))
+            it.toLiveMediaItem(youTube.artwork(it.thumbnail, CARD_ARTWORK), isFollowed = true)
         }
     },
 )

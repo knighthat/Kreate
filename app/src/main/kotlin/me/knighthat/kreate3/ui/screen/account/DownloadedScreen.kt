@@ -18,9 +18,9 @@
 
 package me.knighthat.kreate3.ui.screen.account
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,15 +48,14 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.download.DownloadWait
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.ui.component.DeleteAllDownloadsButton
-import me.knighthat.kreate3.ui.component.FilterIconButton
-import me.knighthat.kreate3.ui.component.PlayAllButton
+import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
+import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueMoreButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
-import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SortOrderButton
 import me.knighthat.kreate3.ui.component.StorageUsage
@@ -157,6 +155,7 @@ private fun DownloadedContent(
         shownQuery = query
     }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var configuring by rememberSaveable { mutableStateOf(false) }
 
     if (confirmDelete)
         DeleteAllDownloadsDialog(
@@ -175,7 +174,7 @@ private fun DownloadedContent(
         contentPadding = contentPadding,
         actions = {
             SortOrderButton(newestFirst, onToggleOrder)
-            if (!songs.isNullOrEmpty()) DeleteAllDownloadsButton({ confirmDelete = true })
+            if (songs != null) ConfigButton({ configuring = true })
         },
     ) { padding ->
         LazyColumn(
@@ -210,17 +209,9 @@ private fun DownloadedContent(
                 }
             }
 
-            if (songs != null && (songs.isNotEmpty() || filtered || showDisliked))
-                item(key = "toolbar") {
-                    DownloadedToolbar(
-                        choices = choices,
-                        selected = selected,
-                        showDisliked = showDisliked,
-                        hasSongs = songs.isNotEmpty(),
-                        onToggleOrigin = onToggleOrigin,
-                        onToggleDisliked = onToggleDisliked,
-                        onQueue = onQueue,
-                    )
+            if (songs != null && choices.isNotEmpty())
+                item(key = "origins") {
+                    OriginChips(choices, selected, onToggleOrigin)
                 }
 
             if (songs?.isEmpty() == true)
@@ -248,43 +239,53 @@ private fun DownloadedContent(
             }
         }
     }
+
+    if (configuring)
+        DownloadedSheet(
+            hasSongs = !songs.isNullOrEmpty(),
+            showDisliked = showDisliked,
+            onQueue = onQueue,
+            onDeleteAll = { confirmDelete = true },
+            onToggleDisliked = onToggleDisliked,
+            onDismiss = { configuring = false },
+        )
 }
 
-/**
- * One row like the home tabs' toolbar: a chip for each origin of [choices], scrolling sideways
- * when they don't fit, then the disliked songs toggle and, with [hasSongs], the buttons queueing
- * the songs shown, which always stay at the end.
- */
+/** The quick actions on the songs shown and Delete all, then whether disliked songs show. */
 @Composable
-private fun DownloadedToolbar(
-    choices: List<Origin>,
-    selected: Set<Origin>,
-    showDisliked: Boolean,
+private fun DownloadedSheet(
     hasSongs: Boolean,
-    onToggleOrigin: (Origin) -> Unit,
-    onToggleDisliked: () -> Unit,
+    showDisliked: Boolean,
     onQueue: (QueueAction) -> Unit,
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(end = 4.dp),
-) {
-    if (choices.isNotEmpty())
-        OriginChips(choices, selected, onToggleOrigin, Modifier.weight(1f))
-    else Spacer(Modifier.weight(1f))
+    onDeleteAll: () -> Unit,
+    onToggleDisliked: () -> Unit,
+    onDismiss: () -> Unit,
+) = ConfigSheet(
+    onDismiss = onDismiss,
+    actions = { close ->
+        @Composable
+        fun Queue(@DrawableRes icon: Int, @StringRes label: Int, action: QueueAction) =
+            LabeledIconButton(icon, stringResource(label), enabled = hasSongs) {
+                close { onQueue(action) }
+            }
 
-    FilterIconButton(
+        Queue(R.drawable.play_arrow, R.string.menu_play_all, QueueAction.PLAY)
+        Queue(R.drawable.shuffle, R.string.menu_shuffle, QueueAction.SHUFFLE)
+        Queue(R.drawable.queue_play_next, R.string.menu_play_next, QueueAction.PLAY_NEXT)
+        Queue(R.drawable.playlist_add, R.string.menu_add_to_queue, QueueAction.ENQUEUE)
+        LabeledIconButton(
+            R.drawable.delete,
+            stringResource(R.string.menu_delete_all),
+            enabled = hasSongs,
+        ) { close(onDeleteAll) }
+    },
+) {
+    ConfigToggle(
         R.drawable.thumb_down,
-        stringResource(R.string.semantic_show_disliked_songs),
-        selected = showDisliked,
+        stringResource(R.string.menu_show_disliked),
+        showDisliked,
         onToggle = onToggleDisliked,
     )
-    if (hasSongs) {
-        PlayAllButton({ onQueue(QueueAction.PLAY) })
-        ShuffleButton({ onQueue(QueueAction.SHUFFLE) })
-        QueueMoreButton(onQueue)
-    }
 }
 
 @Composable

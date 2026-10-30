@@ -65,14 +65,16 @@ import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.FilterIconButton
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SortOrderButton
-import me.knighthat.kreate3.ui.component.UndislikeAllButton
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.playTapped
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -152,6 +154,7 @@ private fun DislikedContent(
         shownQuery = query
     }
     var confirmUndislike by rememberSaveable { mutableStateOf(false) }
+    var configuring by rememberSaveable { mutableStateOf(false) }
 
     if (confirmUndislike)
         UndislikeAllDialog(
@@ -170,7 +173,7 @@ private fun DislikedContent(
         contentPadding = contentPadding,
         actions = {
             SortOrderButton(newestFirst, onToggleOrder)
-            if (!empty) UndislikeAllButton({ confirmUndislike = true })
+            ConfigButton({ configuring = true })
         },
     ) { padding ->
         Column(Modifier.padding(top = padding.calculateTopPadding())) {
@@ -216,6 +219,18 @@ private fun DislikedContent(
             }
         }
     }
+
+    if (configuring)
+        ConfigSheet(
+            onDismiss = { configuring = false },
+            actions = { close ->
+                LabeledIconButton(
+                    R.drawable.thumb_down_outline,
+                    stringResource(R.string.menu_undislike_all),
+                    enabled = !empty,
+                ) { close { confirmUndislike = true } }
+            },
+        )
 }
 
 /** A chip for each origin of [choices], scrolling sideways when they don't fit. */

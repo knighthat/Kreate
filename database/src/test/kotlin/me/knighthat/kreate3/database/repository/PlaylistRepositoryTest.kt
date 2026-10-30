@@ -247,6 +247,19 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun theMonthlyPlaylistsCanShowAlone() = runBlocking {
+        repository.save(playlist("Mine"))
+        repository.save(playlist("2026-10").copy(isMonthly = true))
+
+        val monthly = repository.all(monthlyOnly = true).asList().map { it.name }
+        assertEquals(listOf("2026-10"), monthly)
+        assertEquals(1, repository.count(monthlyOnly = true))
+        assertEquals("2026-10", repository.random(monthlyOnly = true)?.name)
+        assertEquals(0, repository.count(setOf(Origin.YOUTUBE), monthlyOnly = true))
+        assertEquals(2, repository.count())
+    }
+
+    @Test
     fun theSongsOfAPlaylistAreSorted() = runBlocking {
         addAlbum("a1")
         addSong("third", albumId = "a1", albumPosition = 3)

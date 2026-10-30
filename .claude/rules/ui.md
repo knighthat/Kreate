@@ -38,6 +38,19 @@ charts: `.claude/docs/charts.md`.
   starts listening a moment after the screen starts. Code that posts as the app opens (a failure
   found at startup) calls `notifier.awaitScreen()` first, like `ShowPreferenceFailures`.
 
+## Config sheets
+
+- A screen's options go in a `ConfigSheet` (`ConfigSheet.kt`) opened by `ConfigButton`: the button
+  row holds actions, which close the sheet before running; `ConfigToggle`s under the divider apply
+  at once and leave it open.
+- Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
+- Filters live in the screen's view model: kept while the screen is in the back stack (A > B > C,
+  back to B keeps them), off when it is opened again. Never reset them from a `LaunchedEffect`, it
+  also runs on coming back from a page and on rotation.
+- Filters that can't apply together turn each other off (Songs' Cached only / Downloaded only); one
+  that can't apply right now is grayed out (`enabled = false`), not hidden (Playlists' Monthly
+  only).
+
 ## Menus and hints
 
 - Menus of list items open by long-press; rows have no trailing ⋮ (more) button. The pressed row

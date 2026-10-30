@@ -36,8 +36,8 @@ import me.knighthat.kreate3.model.Origin
  * value when set, the shared one otherwise. Only the active user's data is touched,
  * the shared song lives in [SongRepository].
  *
- * Every list leaves out the songs the user disliked, [dislikedIds] are their ids. [find] still
- * gives them, so a dislike can be taken back.
+ * Every list leaves out the songs the user disliked, [dislikedIds] are their ids, unless it is
+ * asked to keep them ([all]). [find] still gives them, so a dislike can be taken back.
  */
 interface UserSongRepository {
 
@@ -46,20 +46,24 @@ interface UserSongRepository {
      * and the list follows changes in the database.
      *
      * @param origins only the songs from these, every song when empty
+     * @param withDisliked keeps the songs the user disliked
      */
     fun all(
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
         origins: Set<Origin> = emptySet(),
+        withDisliked: Boolean = false,
     ): Flow<PagingData<UserSongView>>
 
     /**
      * Every song in the library right now, all at once, in the order [all] shows them.
      *
      * @param origins only the songs from these, every song when empty
+     * @param withDisliked keeps the songs the user disliked
      */
     suspend fun list(
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
         origins: Set<Origin> = emptySet(),
+        withDisliked: Boolean = false,
     ): List<UserSongView>
 
     /**

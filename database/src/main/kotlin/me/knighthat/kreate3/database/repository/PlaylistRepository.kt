@@ -37,10 +37,12 @@ interface PlaylistRepository {
      * list follows plays and changes to the playlists' songs too.
      *
      * @param origins only the playlists from these, every playlist when empty
+     * @param monthlyOnly only the monthly playlists
      */
     fun all(
         order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
         origins: Set<Origin> = emptySet(),
+        monthlyOnly: Boolean = false,
     ): Flow<PagingData<UserPlaylist>>
 
     /**
@@ -57,8 +59,9 @@ interface PlaylistRepository {
      * How many playlists [all] has right now.
      *
      * @param origins only the playlists from these, every playlist when empty
+     * @param monthlyOnly only the monthly playlists
      */
-    suspend fun count(origins: Set<Origin> = emptySet()): Int
+    suspend fun count(origins: Set<Origin> = emptySet(), monthlyOnly: Boolean = false): Int
 
     /**
      * The origins the active user has playlists from. It follows changes in the database.
@@ -69,8 +72,12 @@ interface PlaylistRepository {
      * One playlist of the active user picked at random, `null` when there is none.
      *
      * @param origins only the playlists from these, every playlist when empty
+     * @param monthlyOnly only the monthly playlists
      */
-    suspend fun random(origins: Set<Origin> = emptySet()): UserPlaylist?
+    suspend fun random(
+        origins: Set<Origin> = emptySet(),
+        monthlyOnly: Boolean = false,
+    ): UserPlaylist?
 
     /**
      * Playlists of the active user whose name contains [query], a page at a time.

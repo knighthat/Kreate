@@ -482,6 +482,17 @@
     <string name="menu_play_all">Play all</string>
     <string name="menu_shuffle">Shuffle</string>
     <string name="menu_clear_history">Clear history</string>
+    <string name="menu_open_random">Open random</string>
+    <string name="menu_play_random">Play random</string>
+    <string name="menu_create_playlist">New playlist</string>
+    <string name="menu_show_disliked">Show disliked</string>
+    <string name="menu_cached_only">Cached only</string>
+    <string name="menu_downloaded_only">Downloaded only</string>
+    <string name="menu_bookmarked_only">Bookmarked only</string>
+    <string name="menu_followed_only">Followed only</string>
+    <string name="menu_monthly_only">Monthly only</string>
+    <string name="menu_delete_all">Delete all</string>
+    <string name="menu_undislike_all">Undislike all</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
     <!--</editor-fold>-->

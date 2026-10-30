@@ -40,10 +40,12 @@ interface UserArtistRepository {
      * and the list follows changes in the database.
      *
      * @param origins only the artists from these, every artist when empty
+     * @param followedOnly only the artists the user follows
      */
     fun all(
         order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
         origins: Set<Origin> = emptySet(),
+        followedOnly: Boolean = false,
     ): Flow<PagingData<UserArtistView>>
 
     /**
@@ -60,8 +62,9 @@ interface UserArtistRepository {
      * How many artists [all] has right now.
      *
      * @param origins only the artists from these, every artist when empty
+     * @param followedOnly only the artists the user follows
      */
-    suspend fun count(origins: Set<Origin> = emptySet()): Int
+    suspend fun count(origins: Set<Origin> = emptySet(), followedOnly: Boolean = false): Int
 
     /**
      * The origins the library has artists from. It follows changes in the database.
@@ -72,8 +75,12 @@ interface UserArtistRepository {
      * One artist of the library picked at random, `null` when there is none.
      *
      * @param origins only the artists from these, every artist when empty
+     * @param followedOnly only the artists the user follows
      */
-    suspend fun random(origins: Set<Origin> = emptySet()): UserArtistView?
+    suspend fun random(
+        origins: Set<Origin> = emptySet(),
+        followedOnly: Boolean = false,
+    ): UserArtistView?
 
     /**
      * Artists the user follows, a page at a time. Newest follow first unless [order] says otherwise.

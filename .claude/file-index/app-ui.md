@@ -22,8 +22,11 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `queue_music` icon, or the name's first letter on a hue from the name (HCT) while
   `LocalPlaylistInitial` (`Preferences.PLAYLIST_INITIAL`, provided in `KreateApp`) is on; drawn
   through `Thumbnail`'s `placeholder` slot.
+- `ConfigSheet.kt` — `ConfigSheet` (a screen's options: a row of `LabeledIconButton` actions given
+  `close`, then options under a divider; opens on its content, `skipPartiallyExpanded`),
+  `ConfigToggle` (row with a trailing `Switch`). Used by the home tabs.
 - `SongMenu.kt` (2026-10-20) — `LabeledIconButton` (internal, the sheet's top row, `showLabel`; also
-  History's
+  History's and `ConfigSheet`'s
   sheet), `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`
   progress from `sheetState.requireOffset()`), the ModalBottomSheet (Dislike/Like/Share header, play

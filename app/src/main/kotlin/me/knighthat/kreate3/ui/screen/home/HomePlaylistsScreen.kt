@@ -46,14 +46,17 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.ui.component.CreatePlaylistButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
+import me.knighthat.kreate3.ui.component.ConfigToggle
 import me.knighthat.kreate3.ui.component.CreatePlaylistDialog
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.RandomButton
+import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewPlaylists
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -75,6 +78,9 @@ fun HomePlaylistsScreen(
     val live by viewModel.live.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val offersMonthly by viewModel.offersMonthly.collectAsStateWithLifecycle()
+    val monthlyOnly by viewModel.monthlyOnly.collectAsStateWithLifecycle()
+    val playRandom = rememberQueueActions(viewModel::randomSongs)
     val notifier = LocalNotifier.current
     val nothingToPick = stringResource(
         R.string.snackbar_nothing_to_pick,
@@ -91,7 +97,10 @@ fun HomePlaylistsScreen(
         live = live,
         choices = choices,
         selected = selected,
+        monthlyOnly = monthlyOnly,
+        offersMonthly = offersMonthly,
         onToggleOrigin = viewModel.filter::toggle,
+        onToggleMonthlyOnly = viewModel::toggleMonthlyOnly,
         onOpen = onOpen,
         onRandom = {
             scope.launch {
@@ -100,6 +109,7 @@ fun HomePlaylistsScreen(
                 else notifier.post(nothingToPick)
             }
         },
+        onPlayRandom = { playRandom(QueueAction.PLAY) },
         onCreate = { creating = true },
         onSearch = onSearch,
         onProfile = onProfile,
@@ -120,6 +130,8 @@ fun HomePlaylistsScreen(
 
 /**
  * @param live the playlists of the external sources, after the ones of the database
+ * @param monthlyOnly whether only the monthly playlists show
+ * @param offersMonthly whether [monthlyOnly] can be changed: the app's own playlists show
  */
 @Composable
 private fun HomePlaylistsContent(
@@ -127,9 +139,13 @@ private fun HomePlaylistsContent(
     live: List<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
+    monthlyOnly: Boolean,
+    offersMonthly: Boolean,
     onToggleOrigin: (Origin) -> Unit,
+    onToggleMonthlyOnly: () -> Unit,
     onOpen: (MediaItem) -> Unit,
     onRandom: () -> Unit,
+    onPlayRandom: () -> Unit,
     onCreate: () -> Unit,
     onSearch: () -> Unit,
     onProfile: () -> Unit,
@@ -147,9 +163,35 @@ private fun HomePlaylistsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = {
-            CreatePlaylistButton(onCreate)
-            RandomButton(onRandom, enabled = playlists.itemCount > 0 || live.isNotEmpty())
+        sheet = { onDismiss ->
+            val any = playlists.itemCount > 0 || live.isNotEmpty()
+            ConfigSheet(
+                onDismiss = onDismiss,
+                actions = { close ->
+                    LabeledIconButton(
+                        R.drawable.casino,
+                        stringResource(R.string.menu_open_random),
+                        enabled = any,
+                    ) { close(onRandom) }
+                    LabeledIconButton(
+                        R.drawable.play_arrow,
+                        stringResource(R.string.menu_play_random),
+                        enabled = any,
+                    ) { close(onPlayRandom) }
+                    LabeledIconButton(
+                        R.drawable.add,
+                        stringResource(R.string.menu_create_playlist),
+                    ) { close(onCreate) }
+                },
+            ) {
+                ConfigToggle(
+                    R.drawable.date_range,
+                    stringResource(R.string.menu_monthly_only),
+                    monthlyOnly,
+                    enabled = offersMonthly,
+                    onToggle = onToggleMonthlyOnly,
+                )
+            }
         },
     ) { padding ->
         LazyVerticalGrid(
@@ -179,9 +221,13 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         live = previewPlaylists(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),
+        monthlyOnly = false,
+        offersMonthly = true,
         onToggleOrigin = {},
+        onToggleMonthlyOnly = {},
         onOpen = {},
         onRandom = {},
+        onPlayRandom = {},
         onCreate = {},
         onSearch = {},
         onProfile = {},

@@ -40,10 +40,12 @@ interface UserAlbumRepository {
      * and the list follows changes in the database.
      *
      * @param origins only the albums from these, every album when empty
+     * @param bookmarkedOnly only the albums the user bookmarked
      */
     fun all(
         order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
         origins: Set<Origin> = emptySet(),
+        bookmarkedOnly: Boolean = false,
     ): Flow<PagingData<UserAlbumView>>
 
     /**
@@ -60,8 +62,9 @@ interface UserAlbumRepository {
      * How many albums [all] has right now.
      *
      * @param origins only the albums from these, every album when empty
+     * @param bookmarkedOnly only the albums the user bookmarked
      */
-    suspend fun count(origins: Set<Origin> = emptySet()): Int
+    suspend fun count(origins: Set<Origin> = emptySet(), bookmarkedOnly: Boolean = false): Int
 
     /**
      * The origins the library has albums from. It follows changes in the database.
@@ -72,8 +75,12 @@ interface UserAlbumRepository {
      * One album of the library picked at random, `null` when there is none.
      *
      * @param origins only the albums from these, every album when empty
+     * @param bookmarkedOnly only the albums the user bookmarked
      */
-    suspend fun random(origins: Set<Origin> = emptySet()): UserAlbumView?
+    suspend fun random(
+        origins: Set<Origin> = emptySet(),
+        bookmarkedOnly: Boolean = false,
+    ): UserAlbumView?
 
     /**
      * Albums the user bookmarked, a page at a time. Newest bookmark first unless [order] says otherwise.

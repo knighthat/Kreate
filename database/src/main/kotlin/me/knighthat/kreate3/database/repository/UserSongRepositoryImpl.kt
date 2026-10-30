@@ -58,10 +58,15 @@ internal class UserSongRepositoryImpl(
     override fun all(
         order: SortOrder<UserSongSort>,
         origins: Set<Origin>,
-    ): Flow<PagingData<UserSongView>> = paged(order.toOrderBy(), filter = originFilter(origins))
+        withDisliked: Boolean,
+    ): Flow<PagingData<UserSongView>> =
+        paged(order.toOrderBy(), filter = originFilter(origins), includeDisliked = withDisliked)
 
-    override suspend fun list(order: SortOrder<UserSongSort>, origins: Set<Origin>) =
-        listed(order.toOrderBy(), filter = originFilter(origins))
+    override suspend fun list(
+        order: SortOrder<UserSongSort>,
+        origins: Set<Origin>,
+        withDisliked: Boolean,
+    ) = listed(order.toOrderBy(), filter = originFilter(origins), includeDisliked = withDisliked)
 
     // A like is a time, a dislike is negative
     override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
@@ -150,11 +155,12 @@ internal class UserSongRepositoryImpl(
         orderBy: String,
         filter: String,
         tables: Array<String> = arrayOf("user_song_view"),
+        includeDisliked: Boolean = false,
         bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserSongView>> =
         scope.observe(PagingData.empty()) { userId ->
             database.pagedFlow(UserSongViewEntity::toModel, *tables) {
-                userSongDao.paged(query(userId, orderBy, filter, bind))
+                userSongDao.paged(query(userId, orderBy, filter, bind, includeDisliked))
             }
         }
 

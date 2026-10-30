@@ -24,13 +24,21 @@ import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.liveArtists
+import me.knighthat.kreate3.ui.component.isFollowed
 import me.knighthat.kreate3.ui.component.toMediaItem
 
 /**
@@ -52,13 +60,26 @@ class HomeArtistsViewModel(
         liveItems = remote.items,
     )
 
-    val artists = filter.selected
-        .flatMapLatest { artistRepository.all(origins = it) }
+    private val _followedOnly = MutableStateFlow(false)
+
+    /**
+     * Whether the tab shows only the artists the user follows, off at first. It lives with the view
+     * model, as long as the tab is in the back stack.
+     */
+    val followedOnly: StateFlow<Boolean> = _followedOnly.asStateFlow()
+
+    val artists = combine(filter.selected, _followedOnly, ::Pair)
+        .flatMapLatest { (origins, only) ->
+            artistRepository.all(origins = origins, followedOnly = only)
+        }
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
 
     /** The artists of the server and of YouTube, fetched live and never stored. */
-    val live = filter.live
+    val live: StateFlow<List<MediaItem>> =
+        combine(filter.live, _followedOnly) { list, only ->
+            if (only) list.filter { it.isFollowed } else list
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, filter.live.value)
 
     /**
      * Fetches the artists of the server and of YouTube again, call it when the tab shows. Each
@@ -66,11 +87,15 @@ class HomeArtistsViewModel(
      */
     fun refresh() = remote.refresh()
 
+    /** Turns [followedOnly] around. */
+    fun toggleFollowedOnly() = _followedOnly.update { !it }
+
     /** One artist of the list at random, `null` when the list is empty. */
     suspend fun random(): MediaItem? {
         val origins = filter.selected.value
-        return pickRandom(artistRepository.count(origins), live.value) {
-            artistRepository.random(origins)?.toMediaItem()
+        val only = _followedOnly.value
+        return pickRandom(artistRepository.count(origins, only), live.value) {
+            artistRepository.random(origins, only)?.toMediaItem()
         }
     }
 }

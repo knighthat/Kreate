@@ -44,9 +44,11 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.ArtistItem
+import me.knighthat.kreate3.ui.component.ConfigSheet
+import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.RandomButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewArtists
 import org.koin.androidx.compose.koinViewModel
@@ -70,6 +72,7 @@ fun HomeArtistsScreen(
     val live by viewModel.live.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val followedOnly by viewModel.followedOnly.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
     val nothingToPick = stringResource(
         R.string.snackbar_nothing_to_pick,
@@ -85,7 +88,9 @@ fun HomeArtistsScreen(
         live = live,
         choices = choices,
         selected = selected,
+        followedOnly = followedOnly,
         onToggleOrigin = viewModel.filter::toggle,
+        onToggleFollowedOnly = viewModel::toggleFollowedOnly,
         onOpen = onOpen,
         onRandom = {
             scope.launch {
@@ -111,7 +116,9 @@ private fun HomeArtistsContent(
     live: List<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
+    followedOnly: Boolean,
     onToggleOrigin: (Origin) -> Unit,
+    onToggleFollowedOnly: () -> Unit,
     onOpen: (MediaItem) -> Unit,
     onRandom: () -> Unit,
     onSearch: () -> Unit,
@@ -130,8 +137,24 @@ private fun HomeArtistsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
-        quickActions = {
-            RandomButton(onRandom, enabled = artists.itemCount > 0 || live.isNotEmpty())
+        sheet = { onDismiss ->
+            ConfigSheet(
+                onDismiss = onDismiss,
+                actions = { close ->
+                    LabeledIconButton(
+                        R.drawable.casino,
+                        stringResource(R.string.menu_open_random),
+                        enabled = artists.itemCount > 0 || live.isNotEmpty(),
+                    ) { close(onRandom) }
+                },
+            ) {
+                ConfigToggle(
+                    R.drawable.how_to_reg,
+                    stringResource(R.string.menu_followed_only),
+                    followedOnly,
+                    onToggle = onToggleFollowedOnly,
+                )
+            }
         },
     ) { padding ->
         LazyVerticalGrid(
@@ -161,7 +184,9 @@ private fun HomeArtistsPreview() = PreviewTheme {
         live = previewArtists(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),
+        followedOnly = false,
         onToggleOrigin = {},
+        onToggleFollowedOnly = {},
         onOpen = {},
         onRandom = {},
         onSearch = {},
