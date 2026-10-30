@@ -18,88 +18,88 @@
   -->
 <resources>
     <plurals name="time">
-        <item quantity="one">%1$d time</item>
-        <item quantity="two">%1$d times</item>
-        <item quantity="other">%1$d times</item>
+        <item quantity="one">פעם אחת</item>
+        <item quantity="two">פעמיים</item>
+        <item quantity="other">%1$d פעמים</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">%1$d minute</item>
-        <item quantity="two">%1$d minutes</item>
-        <item quantity="other">%1$d minutes</item>
+        <item quantity="one">דקה אחת</item>
+        <item quantity="two"></item>
+        <item quantity="other">%1$d דקות</item>
     </plurals>
     <plurals name="second">
-        <item quantity="one">%1$d second</item>
+        <item quantity="one">שניה אחת</item>
         <item quantity="two">%1$d seconds</item>
-        <item quantity="other">%1$d seconds</item>
+        <item quantity="other">%1$d שניות</item>
     </plurals>
     <plurals name="play">
-        <item quantity="one">%1$d play</item>
+        <item quantity="one">ניגון אחד</item>
         <item quantity="two">%1$d plays</item>
-        <item quantity="other">%1$d plays</item>
+        <item quantity="other">%1$d ניגונים</item>
     </plurals>
     <plurals name="song">
-        <item quantity="one">%1$d song</item>
+        <item quantity="one">שיר אחד</item>
         <item quantity="two">%1$d songs</item>
-        <item quantity="other">%1$d songs</item>
+        <item quantity="other">%1$d שירים</item>
     </plurals>
     <plurals name="hour">
-        <item quantity="one">%1$d hour</item>
-        <item quantity="two">%1$d hours</item>
-        <item quantity="other">%1$d hours</item>
+        <item quantity="one">שעה אחת</item>
+        <item quantity="two">שעה אחת</item>
+        <item quantity="other">%1$d שעות</item>
     </plurals>
     <plurals name="listen">
-        <item quantity="one">%1$d listen</item>
+        <item quantity="one">האזנה אחת</item>
         <item quantity="two">%1$d listens</item>
-        <item quantity="other">%1$d listens</item>
+        <item quantity="other">%1$d האזנות</item>
     </plurals>
     <plurals name="unit_minute">
-        <item quantity="one">minute</item>
+        <item quantity="one">דקה</item>
         <item quantity="two">minutes</item>
-        <item quantity="other">minutes</item>
+        <item quantity="other">דקות</item>
     </plurals>
     <plurals name="unit_hour">
-        <item quantity="one">hour</item>
+        <item quantity="one">שעה</item>
         <item quantity="two">hours</item>
-        <item quantity="other">hours</item>
+        <item quantity="other">שעות</item>
     </plurals>
     <plurals name="unit_song">
-        <item quantity="one">song</item>
+        <item quantity="one">שיר</item>
         <item quantity="two">songs</item>
-        <item quantity="other">songs</item>
+        <item quantity="other">שירים</item>
     </plurals>
     <plurals name="unit_album">
-        <item quantity="one">album</item>
+        <item quantity="one">אלבום</item>
         <item quantity="two">albums</item>
-        <item quantity="other">albums</item>
+        <item quantity="other">אלבומים</item>
     </plurals>
     <plurals name="unit_artist">
-        <item quantity="one">artist</item>
+        <item quantity="one">אומן</item>
         <item quantity="two">artists</item>
-        <item quantity="other">artists</item>
+        <item quantity="other">אומנים</item>
     </plurals>
     <plurals name="unit_playlist">
-        <item quantity="one">playlist</item>
+        <item quantity="one">רשימות השמעה</item>
         <item quantity="two">playlists</item>
-        <item quantity="other">playlists</item>
+        <item quantity="other">רשימות השמעה</item>
     </plurals>
     <plurals name="day">
-        <item quantity="one">%1$d day</item>
-        <item quantity="two">%1$d days</item>
-        <item quantity="other">%1$d days</item>
+        <item quantity="one">יום אחד</item>
+        <item quantity="two">יומיים</item>
+        <item quantity="other">%1$d ימים</item>
     </plurals>
     <plurals name="week">
-        <item quantity="one">%1$d week</item>
-        <item quantity="two">%1$d weeks</item>
-        <item quantity="other">%1$d weeks</item>
+        <item quantity="one">שבוע אחד</item>
+        <item quantity="two">שבועיים</item>
+        <item quantity="other">%1$d שבועות</item>
     </plurals>
     <plurals name="month">
-        <item quantity="one">%1$d month</item>
-        <item quantity="two">%1$d months</item>
-        <item quantity="other">%1$d months</item>
+        <item quantity="one">חודש אחד</item>
+        <item quantity="two">חודשיים</item>
+        <item quantity="other">%1$d חודשים</item>
     </plurals>
     <plurals name="year">
-        <item quantity="one">%1$d year</item>
-        <item quantity="two">%1$d years</item>
-        <item quantity="other">%1$d years</item>
+        <item quantity="one">שנה אחת</item>
+        <item quantity="two">שנתיים</item>
+        <item quantity="other">%1$d שנים</item>
     </plurals>
 </resources>
