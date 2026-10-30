@@ -79,6 +79,7 @@ class YouTubeProvider internal constructor(
      * @param pageId page id of the channel the signed in user acts as, empty for their account's
      * own. The active profile's choice by default.
      * @param context runs the WebView that makes PO tokens, `null` plays without them
+     * @param region the country sent as `gl`, [youTubeRegion] by default
      */
     constructor(
         client: HttpClient,
@@ -86,7 +87,11 @@ class YouTubeProvider internal constructor(
         context: Context? = null,
         cookies: suspend () -> String = ::profileCookies,
         pageId: suspend () -> String = ::profilePageId,
-    ) : this(innerTube({ client }, json, context, cookies, pageId), YouTubeParser { it.toUri() })
+        region: () -> String = ::youTubeRegion,
+    ) : this(
+        innerTube({ client }, json, context, cookies, pageId, region),
+        YouTubeParser { it.toUri() },
+    )
 
     /**
      * Sends every request with a client derived from [base], through the active profile's proxy,
@@ -538,11 +543,12 @@ class YouTubeProvider internal constructor(
             context: Context?,
             cookies: suspend () -> String,
             pageId: suspend () -> String,
+            region: () -> String = ::youTubeRegion,
         ) = InnerTube(
             client,
             json,
             Locale::getDefault,
-            ::youTubeRegion,
+            region,
             cookies,
             pageId = pageId,
             poTokens = context?.let { WebPoTokenProvider(it, client) },

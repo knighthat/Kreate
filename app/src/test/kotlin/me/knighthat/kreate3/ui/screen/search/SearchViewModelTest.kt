@@ -153,6 +153,8 @@ class SearchViewModelTest {
         // Nobody is signed in
         cookies = { "" },
         pageId = { "" },
+        // The setting needs Koin, which tests don't start
+        region = { "US" },
     )
 
     // Never asked here: it reads the profile's settings, which tests don't have

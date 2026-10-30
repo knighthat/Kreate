@@ -87,11 +87,11 @@ class LiveDetailViewModelTest {
     @Test
     fun eachServerProblemIsExplained() {
         assertEquals(
-            LiveState.Failed("The server refused: Not found"),
+            LiveState.Failed("OpenSubsonic API refused: Not found"),
             failureOf(ServerException(ServerCheck.Rejected(70, "Not found")))
         )
         assertEquals(
-            LiveState.Failed("The server refused: error 40"),
+            LiveState.Failed("OpenSubsonic API refused: error 40"),
             failureOf(ServerException(ServerCheck.Rejected(40, "")))
         )
         assertEquals(

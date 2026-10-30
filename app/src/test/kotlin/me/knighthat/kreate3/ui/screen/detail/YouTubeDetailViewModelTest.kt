@@ -114,6 +114,8 @@ class YouTubeDetailViewModelTest {
         // Nobody is signed in
         cookies = { "" },
         pageId = { "" },
+        // The setting needs Koin, which tests don't start
+        region = { "US" },
     )
 
     @Before
