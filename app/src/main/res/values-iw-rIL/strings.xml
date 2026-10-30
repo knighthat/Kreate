@@ -65,7 +65,7 @@
     <string name="setting_description_data">Caches, downloads and the room they take</string>
     <string name="setting_description_player">How songs play and what is kept of them</string>
     <string name="setting_description_ui">Theme, language and what you interact with</string>
-    <string name="setting_description_network">Connections, your music server and %1$s account</string>
+    <string name="setting_description_network">Connections, your %1$s server and %2$s account</string>
     <string name="setting_description_backup">Save or restore your profiles, settings and library</string>
     <string name="setting_description_about">Version, license and the open source libraries used</string>
     <!-- About -->
@@ -144,7 +144,6 @@
     <string name="setting_description_host_scheme">Leave out the scheme, like http://</string>
     <string name="setting_description_host_only">Only the host name or IP address</string>
     <string name="setting_description_port_range">A port from 1 to 65535</string>
-    <string name="setting_description_the_server">the server</string>
     <!-- stream quality -->
     <string name="setting_title_on_wifi">On Wi-Fi</string>
     <string name="setting_title_on_mobile_data">On mobile data</string>
@@ -159,11 +158,9 @@
     <string name="setting_description_sync_status_all">Shows all available %1$s</string>
     <!-- player -->
     <string name="setting_title_radio_from_songs">Radio from Songs</string>
-    <string name="setting_description_radio_from_songs_on">A song tapped in Songs plays with songs like it</string>
-    <string name="setting_description_radio_from_songs_off">A song tapped in Songs plays with the songs below it</string>
+    <string name="setting_description_radio_from_tap_on">A tapped song plays with songs like it</string>
+    <string name="setting_description_radio_from_tap_off">A tapped song plays with the songs below it</string>
     <string name="setting_title_radio_from_search">Radio from search</string>
-    <string name="setting_description_radio_from_search_on">A song tapped in search results plays with songs like it</string>
-    <string name="setting_description_radio_from_search_off">A song tapped in search results plays with the results below it</string>
     <string name="setting_title_keep_the_queue">Keep the queue</string>
     <string name="setting_description_keep_the_queue">Pick up where you left off after the app closes</string>
     <string name="setting_title_save_interval">Save interval</string>
@@ -211,7 +208,7 @@
     <string name="setting_description_sign_in_proxy_unsupported">This device\'s WebView can\'t use a proxy, the sign in page would skip it</string>
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
     <!-- OpenSubsonic -->
-    <string name="setting_description_use_opensubsonic">The server is not contacted while this is off</string>
+    <string name="setting_description_use_opensubsonic">%1$s isn\'t contacted while this is off</string>
     <string name="setting_title_server_address">Server address</string>
     <string name="setting_title_trusted_until_now">Trusted until now</string>
     <string name="setting_title_presented_now">Presented now</string>
@@ -223,34 +220,35 @@
     <string name="setting_title_api_key">API key</string>
     <string name="setting_title_direct_play">Direct play</string>
     <string name="setting_title_replay_gain_reference">ReplayGain reference</string>
-    <string name="setting_description_replay_gain_reference">%1$s, the loudness the server\'s ReplayGain tags bring songs to</string>
-    <string name="setting_description_direct_play">Streams songs from the server without keeping them in the song cache</string>
-    <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from the server always stream directly</string>
-    <string name="setting_title_account_status_signed_out">Signed out by %1$s</string>
-    <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>
+    <string name="setting_description_replay_gain_reference">%1$s, the loudness %2$s\'s ReplayGain tags bring songs to</string>
+    <string name="setting_description_direct_play">Streams songs from %1$s without keeping them in the song cache</string>
+    <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from %1$s always stream directly</string>
+    <string name="setting_title_account_status_signed_out">%1$s signed you out</string>
+    <string name="setting_description_default_profile_only">Shared by every profile, only %1$s can change it</string>
+    <string name="setting_description_backup_status_default_profile_only">Only %1$s can back up or restore</string>
     <!-- statuses of one setting -->
     <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
     <string name="setting_description_configure_youtube_status_signed_in_as">Signed in as %1$s</string>
-    <string name="setting_description_configure_youtube_status_signed_out">Signed out by %1$s</string>
+    <string name="setting_description_configure_youtube_status_signed_out">%1$s signed you out</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">No server set</string>
-    <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach the server</string>
-    <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
-    <string name="setting_description_configure_opensubsonic_status_certificate_changed">The server\'s certificate changed</string>
+    <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach %1$s</string>
+    <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <string name="setting_description_configure_opensubsonic_status_certificate_changed">%1$s\'s certificate changed</string>
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Not an %1$s server</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
     <string name="setting_description_account_status_failed">%1$s, tap to try again</string>
     <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
-    <string name="setting_description_server_status_checking">Checking the server…</string>
-    <string name="setting_description_server_status_unreachable">Can\'t reach the server: %1$s</string>
-    <string name="setting_description_server_status_certificate_untrusted">The server\'s certificate isn\'t trusted. If the server uses its own, allow self-signed certificates</string>
-    <string name="setting_description_server_status_certificate_changed">The server\'s certificate changed. Tap to review it</string>
+    <string name="setting_description_server_status_checking">Checking %1$s…</string>
+    <string name="setting_description_server_status_unreachable">Can\'t reach %1$s: %2$s</string>
+    <string name="setting_description_server_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted. If it uses its own, allow self-signed certificates</string>
+    <string name="setting_description_server_status_certificate_changed">%1$s\'s certificate changed. Tap to review it</string>
     <string name="setting_description_server_status_not_opensubsonic">This address is not an %1$s server</string>
     <string name="setting_description_sign_in_status_checking">Signing in…</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Wrong username or password</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Invalid API key</string>
-    <string name="setting_description_sign_in_status_refused">The server refused to sign in (%1$d)</string>
-    <string name="setting_description_sign_in_status_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
-    <string name="setting_description_sign_in_status_certificate_changed">The server\'s certificate changed</string>
+    <string name="setting_description_sign_in_status_refused">%1$s refused to sign in (%2$d)</string>
+    <string name="setting_description_sign_in_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <string name="setting_description_sign_in_status_certificate_changed">%1$s\'s certificate changed</string>
     <string name="setting_description_restore_status_reading">Reading…</string>
     <string name="setting_description_restore_status_failed">Couldn\'t read the backup</string>
     <string name="setting_description_back_up_status_saving">Saving…</string>
@@ -343,6 +341,7 @@
     <string name="screen_title_switch_profile">Switch profile</string>
     <string name="screen_title_about">About</string>
     <string name="screen_title_open_source_licenses">Open source licenses</string>
+    <string name="screen_title_voice_search">Voice search</string>
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Tabs">-->
     <string name="tab_songs">Songs</string>
@@ -388,7 +387,7 @@
     <string name="semantic_reorder">Reorder</string>
     <string name="semantic_like">Like</string>
     <string name="semantic_more">More</string>
-    <string name="semantic_next">Next</string>
+    <string name="semantic_skip_next">Next</string>
     <string name="semantic_on_this_device">On this device</string>
     <string name="semantic_open_one_at_random">Open one at random</string>
     <string name="semantic_pause">Pause</string>
@@ -452,6 +451,17 @@
     <string name="menu_play_all">Play all</string>
     <string name="menu_shuffle">Shuffle</string>
     <string name="menu_clear_history">Clear history</string>
+    <string name="menu_open_random">Open random</string>
+    <string name="menu_play_random">Play random</string>
+    <string name="menu_create_playlist">New playlist</string>
+    <string name="menu_show_disliked">Show disliked</string>
+    <string name="menu_cached_only">Cached only</string>
+    <string name="menu_downloaded_only">Downloaded only</string>
+    <string name="menu_bookmarked_only">Bookmarked only</string>
+    <string name="menu_followed_only">Followed only</string>
+    <string name="menu_monthly_only">Monthly only</string>
+    <string name="menu_delete_all">Delete all</string>
+    <string name="menu_undislike_all">Undislike all</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
     <!--</editor-fold>-->
@@ -460,7 +470,7 @@
     <string name="wizard_intro">A few quick steps and you are ready to listen. Here is what comes next:</string>
     <string name="wizard_permissions_entry">Control what %1$s can and cannot do or see.</string>
     <string name="wizard_import_entry">Bring over existing data from another machine or backup.</string>
-    <string name="wizard_profile_entry">Taylor the app to your taste.</string>
+    <string name="wizard_profile_entry">Tailor the app to your taste.</string>
     <string name="wizard_permissions_intro">%1$s needs your permission for the following. You can skip any of them and allow it later.</string>
     <string name="wizard_music">Music</string>
     <string name="wizard_music_description">Read the audio files stored on this device to build your library</string>
@@ -471,7 +481,7 @@
     <string name="wizard_backup_ready">Backup ready</string>
     <string name="wizard_backup_ready_description">It is restored once setup finishes, tap to choose another</string>
     <string name="wizard_restore_a_backup">Restore a backup</string>
-    <string name="wizard_restore_a_backup_description">Choose a backup made in %1$s, %2$s</string>
+    <string name="wizard_restore_a_backup_description">Choose a backup made in previous versions</string>
     <string name="wizard_profile_intro">Leave the name empty to keep %1$s. You can change all of this later.</string>
     <string name="wizard_distributed_under">Distributed under the %1$s.</string>
     <string name="wizard_get_started">Get started</string>
@@ -486,7 +496,7 @@
     <string name="dialog_body_clear_the_queue_2">Remove currently playing song</string>
     <string name="dialog_body_clear_the_queue_3">This will stop the player and close the fullscreen player</string>
     <string name="dialog_title_forget_certificate">Forget certificate?</string>
-    <string name="dialog_body_forget_certificate">The next certificate the server presents will be trusted without asking.</string>
+    <string name="dialog_body_forget_certificate">The next certificate %1$s presents will be trusted without asking.</string>
     <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
@@ -507,10 +517,10 @@
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
     <string name="dialog_title_clear_history">Clear history?</string>
     <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
-    <string name="dialog_body_clear_history_shown">The plays shown are taken out of the history, the others stay.</string>
+    <string name="dialog_body_clear_history_shown">Only the plays matching your filters are removed. The rest of the history stays.</string>
     <string name="dialog_title_undislike_all">Undislike all?</string>
     <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
-    <string name="dialog_body_undislike_all_shown">The disliked songs shown show up in the lists again, the others stay hidden.</string>
+    <string name="dialog_body_undislike_all_shown">Only the songs matching your filters show up in your lists again. The rest stay hidden.</string>
     <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
     <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
     <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
@@ -543,7 +553,7 @@
     <string name="error_playback_not_playable">nothing to play</string>
     <string name="error_playback_too_slow">took too long to load</string>
     <string name="error_playback_unknown">unknown error</string>
-    <string name="error_backup_not_a_backup">Not a Kreate backup</string>
+    <string name="error_backup_not_a_backup">Not a %1$s backup</string>
     <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
     <string name="error_backup_damaged">Backup is damaged</string>
     <string name="error_player_not_ready">Player not ready</string>
@@ -557,33 +567,30 @@
     <string name="error_unreachable">Can\'t reach %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
+    <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
     <string name="error_songs_not_playable">These songs can\'t be played</string>
     <string name="error_song_not_playable">This song can\'t be played</string>
-    <string name="error_share_unsupported">This server doesn\'t support sharing this %1$s</string>
-    <string name="error_share_unreachable">Can\'t reach the server to share</string>
+    <string name="error_share_unsupported">%1$s doesn\'t support sharing this %2$s</string>
+    <string name="error_share_unreachable">Can\'t reach %1$s to share</string>
     <string name="error_cant_share">Can\'t share this %1$s</string>
     <string name="error_cant_search">Couldn\'t search %1$s</string>
     <string name="error_source_refused">%1$s refused: %2$s</string>
-    <string name="error_server_refused">The server refused: %1$s</string>
     <string name="error_server_code">error %1$d</string>
-    <string name="error_server_unreachable">Can\'t reach the server: %1$s</string>
-    <string name="error_server_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
-    <string name="error_server_certificate_changed">The server\'s certificate changed, check it in %1$s settings</string>
+    <string name="error_server_unreachable">Can\'t reach %1$s: %2$s</string>
+    <string name="error_server_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <string name="error_server_certificate_changed">%1$s\'s certificate changed, check it in %2$s settings</string>
     <string name="error_download_failed">Couldn\'t download</string>
     <string name="error_download_not_saved">Couldn\'t download, the song couldn\'t be saved</string>
     <string name="error_downloads_full">Downloads are full, delete some or raise their size in settings</string>
-    <string name="error_server_not_configured">Sign in to the server in %1$s settings</string>
-    <string name="error_server_unexpected">The server sent something unexpected</string>
-    <string name="error_server_load">Couldn\'t load this from the server</string>
-    <string name="error_server_off">The server is turned off, turn it on in %1$s settings</string>
+    <string name="error_server_not_configured">Sign in to %1$s in %2$s settings</string>
+    <string name="error_server_unexpected">%1$s sent something unexpected</string>
+    <string name="error_server_load">Couldn\'t load this from %1$s</string>
+    <string name="error_server_off">%1$s is turned off, turn it on in %2$s settings</string>
     <string name="error_source_not_found">%1$s doesn\'t have this %2$s</string>
     <string name="error_bookmark_album">Couldn\'t bookmark the album</string>
     <string name="error_remove_bookmark">Couldn\'t remove the bookmark</string>
     <string name="error_follow_artist">Couldn\'t follow the artist</string>
     <string name="error_unfollow_artist">Couldn\'t unfollow the artist</string>
-    <string name="error_server_change_refused">The server refused to %1$s</string>
-    <string name="error_server_change_unreachable">Can\'t reach the server to %1$s</string>
-    <string name="error_server_change_failed">Couldn\'t %1$s on the server</string>
     <string name="error_change_failed">Couldn\'t %1$s</string>
     <string name="error_source_change_failed">Couldn\'t %1$s on %2$s</string>
     <string name="error_source_change_signed_out">Sign in to %2$s again to %1$s</string>
@@ -600,8 +607,8 @@
     <string name="snackbar_couldnt_save_settings">Couldn\'t save settings: %1$s, change undone</string>
     <string name="snackbar_couldnt_load_credentials">Couldn\'t load credentials: %1$s, sign in again</string>
     <string name="snackbar_couldnt_save_credentials">Couldn\'t save credentials: %1$s</string>
-    <string name="snackbar_couldnt_load_profiles">Couldn\'t load profiles: %1$s, using the default profile</string>
-    <string name="snackbar_couldnt_change_profiles">Couldn\'t change profiles: %1$s</string>
+    <string name="snackbar_couldnt_load_global_settings">Couldn\'t load profiles and app-wide settings: %1$s, using the default profile and defaults</string>
+    <string name="snackbar_couldnt_save_global_settings">Couldn\'t save profiles or app-wide settings: %1$s, change undone</string>
     <string name="snackbar_nothing_to_pick">No %1$s to pick from</string>
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <string name="snackbar_removed_from">Removed from %1$s</string>
@@ -612,17 +619,17 @@
     <string name="snackbar_playback_stopped">Playback stopped</string>
     <string name="snackbar_removed_from_history">Removed from history</string>
     <string name="snackbar_history_cleared">History cleared</string>
-    <string name="snackbar_removed_from_dislike_count">%1$d removed from dislike</string>
-    <string name="snackbar_removed_from_dislike_some_failed">%1$d removed from dislike, %2$d failed</string>
+    <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
+    <string name="snackbar_removed_from_dislike_some_failed">%1$s removed from dislike, %2$d failed</string>
     <string name="snackbar_the_playlist">the playlist</string>
     <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
-    <string name="snackbar_will_play_next_one">Will play next</string>
+    <string name="snackbar_will_play_next_one">Will play this song next</string>
     <string name="snackbar_will_play_next_many">Will play %1$s next</string>
     <string name="snackbar_lyrics_copied">Lyrics copied</string>
     <string name="snackbar_turn_shuffle_off">Turn shuffle off to move songs</string>
-    <string name="snackbar_added_to">Added to %1$s</string>
-    <string name="snackbar_already_in">Already in %1$s</string>
-    <string name="snackbar_couldnt_add_to">Couldn\'t add to %1$s</string>
+    <string name="snackbar_added_to_playlist">Added to %1$s</string>
+    <string name="snackbar_already_in_playlist">Already in %1$s</string>
+    <string name="snackbar_couldnt_add_to_playlist">Couldn\'t add to %1$s</string>
     <string name="snackbar_exit_swipe">Swipe again to exit</string>
     <string name="snackbar_exit_press">Press again to exit</string>
     <string name="snackbar_change_bookmark_album">bookmark the album</string>
@@ -652,13 +659,14 @@
     <string name="section_header_today">Today</string>
     <string name="section_header_yesterday">Yesterday</string>
     <string name="section_header_date_range">Date range</string>
-    <string name="section_header_summary">%1$s · %2$s · %3$s</string>
     <string name="section_header_in_progress">In progress</string>
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Screen texts">-->
     <string name="screen_search_hint_library">Search your library</string>
     <string name="screen_search_hint_youtube">Search %1$s</string>
-    <string name="screen_search_hint_opensubsonic">Search your server</string>
+    <string name="screen_search_hint_opensubsonic">Search %1$s</string>
+    <string name="screen_voice_search_hint_phrase">Play … on %1$s</string>
+    <string name="screen_voice_search_hint_order">%1$s searches these from the top until one finds a match. Drag to change the order, switch one off to skip it.</string>
     <string name="screen_search_status_no_history">Your searches will show up here</string>
     <string name="screen_search_status_no_suggestions">No suggestions for %1$s</string>
     <string name="screen_search_results_status_none">No %1$s found for %2$s</string>
