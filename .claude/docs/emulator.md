@@ -56,6 +56,9 @@ save which account or channel a device is signed in as.
   that is already on turns it off, dump before tapping. Under it: `uiautomator dump
   /sdcard/ui.xml`, find the node by `text=`/`content-desc=`, tap the centre of its `bounds`.
   uiautomator's `enabled=` on Compose `IconButton`s isn't reliable; check a screenshot and a tap.
+- A label that shows twice (a page title and a button, a segment and a field label: "Sign in",
+  "Password") makes `ui.sh tap` hit whichever comes first, and text typed after it lands in the
+  wrong field. Dump first and tap the bounds of the node you mean; dump again before saving.
 - Long-press: `adb shell input swipe x y x y 800`.
 - The 5-minute library throttle is in memory: force-stop + relaunch makes a tab sync again at once.
 - Killing the app for cold paths: `am kill` does nothing while `PlaybackService` is foreground. Use

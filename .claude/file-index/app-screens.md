@@ -162,9 +162,10 @@ ui/screen/
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
     page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
-  `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, sign-in
-    checks, direct play (disabled while the song cache is Off, value kept), quality sliders,
-    ReplayGain reference (LUFS), library), `backup/` (
+    `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, "Sign
+    in" row with the check's status, direct play (disabled while the song cache is Off, value kept),
+    quality sliders, ReplayGain reference (LUFS), library; `OpenSubsonicSignInScreen.kt`: a
+    segmented button per sign-in way, Sign out / Save in the top bar), `backup/` (
   `BackupSettingsScreen.kt` +
   `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
   licenses row; `OpenSourceLicensesScreen.kt` + `OpenSourceLicensesViewModel.kt`: libraries read

@@ -98,6 +98,7 @@ import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
+import me.knighthat.kreate3.ui.navigation.OpenSubsonicSignIn
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Playlists
 import me.knighthat.kreate3.ui.navigation.Route
@@ -160,6 +161,7 @@ import me.knighthat.kreate3.ui.screen.settings.data.DataSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.general.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.NetworkSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.player.PlayerSettingsScreen
@@ -178,7 +180,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
         Settings, GeneralSettings, DataSettings, PlayerSettings, VoiceSearchSettings, UiSettings, NetworkSettings, YouTubeSettings,
-        OpenSubsonicSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
+        OpenSubsonicSettings, OpenSubsonicSignIn, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
         is SearchResults -> false
@@ -465,7 +467,13 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
                                     onSignIn = { topLevel.push(YouTubeSignIn) },
                                 )
                             }
-                            entry<OpenSubsonicSettings> { OpenSubsonicSettingsScreen(topLevel::pop) }
+                            entry<OpenSubsonicSettings> {
+                                OpenSubsonicSettingsScreen(
+                                    onBack = topLevel::pop,
+                                    onSignIn = { topLevel.push(OpenSubsonicSignIn) },
+                                )
+                            }
+                            entry<OpenSubsonicSignIn> { OpenSubsonicSignInScreen(topLevel::pop) }
                             entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
                             entry<About> {
                                 AboutScreen(

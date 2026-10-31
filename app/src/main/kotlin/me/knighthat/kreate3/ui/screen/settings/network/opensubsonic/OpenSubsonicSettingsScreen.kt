@@ -58,7 +58,6 @@ import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
-import me.knighthat.kreate3.ui.screen.settings.RadioSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -156,6 +155,37 @@ private fun CheckState.credentialsSummary(server: String): String? = when (this)
         )
         ServerCheck.Disabled, ServerCheck.NotConfigured -> null
     }
+}
+
+/**
+ * Where the sign in stands, for the row that opens [OpenSubsonicSignInScreen].
+ *
+ * @param server what the server is called, see [openSubsonicName]
+ * @param serverSet whether the server's address is saved
+ * @param credentialsSet whether every credential of [auth] is saved
+ */
+@Composable
+private fun CheckState.signInSummary(
+    server: String,
+    auth: OpenSubsonicAuth,
+    username: String,
+    serverSet: Boolean,
+    credentialsSet: Boolean,
+): String = when {
+    !credentialsSet && serverSet ->
+        stringResource(R.string.setting_description_sign_in_status_start_syncing)
+
+    !credentialsSet -> stringResource(R.string.setting_description_sign_in_status_not_signed_in)
+    this is CheckState.Done && result is ServerCheck.Success -> when (auth) {
+        OpenSubsonicAuth.PASSWORD ->
+            stringResource(R.string.setting_description_sign_in_status_signed_in_as, username)
+
+        OpenSubsonicAuth.API_KEY ->
+            stringResource(R.string.setting_description_sign_in_status_signed_in_with_api_key)
+    }
+    // Not checked until the server answers, its row says why
+    else -> credentialsSummary(server)
+        ?: stringResource(R.string.setting_description_sign_in_status_waiting_for_server)
 }
 
 /** The first pairs of a fingerprint, enough to tell two apart at a glance. */
@@ -267,6 +297,7 @@ private fun serverUrlValidator(): (String) -> String? {
 @Composable
 fun OpenSubsonicSettingsScreen(
     onBack: () -> Unit,
+    onSignIn: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OpenSubsonicSettingsViewModel = koinViewModel(),
 ) {
@@ -314,6 +345,7 @@ fun OpenSubsonicSettingsScreen(
         onTrust = viewModel::trust,
         onForgetCertificate = viewModel::forgetCertificate,
         onSongSyncChange = viewModel::setSongSync,
+        onSignIn = onSignIn,
         onBack = onBack,
         modifier = modifier,
         quality = {
@@ -342,6 +374,7 @@ fun OpenSubsonicSettingsScreen(
  * @param certificate SHA-256 fingerprint of the trusted certificate, empty while there is none
  * @param certificateHost the host [certificate] was trusted for
  * @param onRetry runs the checks again
+ * @param onSignIn opens [OpenSubsonicSignInScreen]
  * @param quality how good the streamed songs are, see [StreamQualitySettings]
  * @param proxy the server's proxy, see [ProxySettings]
  */
@@ -370,6 +403,7 @@ private fun OpenSubsonicSettingsContent(
     onTrust: (ServerCheck.CertificateChanged) -> Unit,
     onForgetCertificate: () -> Unit,
     onSongSyncChange: (Boolean) -> Unit,
+    onSignIn: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     quality: @Composable () -> Unit,
@@ -436,42 +470,24 @@ private fun OpenSubsonicSettingsContent(
                 onDismiss = { askForget = false },
             )
 
-        SettingsSection(stringResource(R.string.setting_header_sign_in_with))
-        RadioSetting(
-            value = auth,
-            options = OpenSubsonicAuth.entries,
-            label = labelsOf(OpenSubsonicAuth.entries) { it.labelRes },
-            onSelect = { Preferences.OPEN_SUBSONIC_AUTH.update(it) },
-        )
-        when (auth) {
-            OpenSubsonicAuth.PASSWORD -> {
-                TextSetting(
-                    title = stringResource(R.string.setting_title_username),
-                    value = username,
-                    onSave = { Secrets.OPEN_SUBSONIC_USERNAME.update(it.trim()) },
-                )
-                TextSetting(
-                    title = stringResource(R.string.setting_title_password),
-                    value = password,
-                    summary = if (password.isEmpty()) "" else "•".repeat(8),
-                    hidden = true,
-                    onSave = { Secrets.OPEN_SUBSONIC_PASSWORD.update(it) },
-                )
-            }
-
-            OpenSubsonicAuth.API_KEY -> TextSetting(
-                title = stringResource(R.string.setting_title_api_key),
-                value = apiKey,
-                summary = if (apiKey.isEmpty()) "" else "•".repeat(8),
-                hidden = true,
-                onSave = { Secrets.OPEN_SUBSONIC_API_KEY.update(it) },
-            )
+        val credentialsSet = when (auth) {
+            OpenSubsonicAuth.PASSWORD -> username.isNotEmpty() && password.isNotEmpty()
+            OpenSubsonicAuth.API_KEY -> apiKey.isNotEmpty()
         }
-        CheckRow(
-            stringResource(R.string.setting_title_sign_in),
-            credentialsCheck,
-            credentialsCheck.credentialsSummary(server),
-            onRetry
+        SettingsItem(
+            title = stringResource(R.string.setting_title_sign_in),
+            summary = credentialsCheck.signInSummary(
+                server = server,
+                auth = auth,
+                username = username,
+                serverSet = url.isNotEmpty(),
+                credentialsSet = credentialsSet,
+            ),
+            onClick = onSignIn,
+            trailing = {
+                if (credentialsCheck is CheckState.Checking)
+                    CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_playback))
@@ -577,6 +593,7 @@ private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
         onTrust = {},
         onForgetCertificate = {},
         onSongSyncChange = {},
+        onSignIn = {},
         onBack = {},
         quality = {
             StreamQualitySettings(

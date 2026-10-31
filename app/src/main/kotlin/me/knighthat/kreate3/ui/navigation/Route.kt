@@ -90,6 +90,10 @@ data object YouTubeSettings : Route
 @Serializable
 data object OpenSubsonicSettings : Route
 
+/** The OpenSubsonic server's credentials, opened from [OpenSubsonicSettings]. */
+@Serializable
+data object OpenSubsonicSignIn : Route
+
 @Serializable
 data object BackupSettings : Route
 
