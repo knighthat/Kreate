@@ -56,6 +56,7 @@ import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
@@ -267,15 +268,18 @@ private fun CredentialField(
         singleLine = true,
         trailingIcon = if (hidden) {
             {
-                IconButton(onClick = { revealed = !revealed }) {
-                    Icon(
-                        painterResource(
-                            if (revealed) R.drawable.visibility_off else R.drawable.visibility
-                        ),
-                        contentDescription = stringResource(
-                            if (revealed) R.string.semantic_hide_text else R.string.semantic_show_text
-                        ),
-                    )
+                val description = stringResource(
+                    if (revealed) R.string.semantic_hide_text else R.string.semantic_show_text
+                )
+                Tooltip(description) {
+                    IconButton(onClick = { revealed = !revealed }) {
+                        Icon(
+                            painterResource(
+                                if (revealed) R.drawable.visibility_off else R.drawable.visibility
+                            ),
+                            contentDescription = description,
+                        )
+                    }
                 }
             }
         } else null,

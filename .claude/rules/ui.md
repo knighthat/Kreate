@@ -13,6 +13,11 @@ charts: `.claude/docs/charts.md`.
 - Buttons used on more than one screen (search, profile, settings, back, …) live in
   `ui/component/Buttons.kt` as `XButton(onClick, modifier = Modifier)` wrapping the private
   `IconAction`. Don't inline an `IconButton` in a scaffold; a one-off button can stay in its screen.
+- Icon buttons without a visible label show their `semantic_*` description in a `Tooltip`
+  (`Buttons.kt`) on long press; a button with a long press of its own gets none.
+  `LabeledIconButton` shows one only while its label is hidden (`LocalIconOnly`). Drag handles get
+  none, the long press would fire mid-drag. Top bars provide
+  `LocalTooltipSide provides TooltipSide.BELOW` (clear of the status bar); elsewhere it's above.
 - `ItemRow` (`ItemParts.kt`) already pads rows (16dp × 6dp): never add padding to `SongItem`,
   `PlaylistItem` or other row items, or horizontal `contentPadding` to a list of them. Grid cards
   (`AlbumItem`, `ArtistItem`) have no padding of their own.

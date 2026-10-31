@@ -45,6 +45,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -76,9 +77,11 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.FilterIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
+import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.ProfileButton
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SettingsButton
+import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.sourceRes
 import kotlin.math.roundToInt
@@ -95,37 +98,40 @@ private fun HomeTopBar(
     onProfile: () -> Unit,
     onSettings: () -> Unit,
 ) {
-    LargeTopAppBar(
-        title = { Text(title) },
-        navigationIcon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_monochrome),
-                contentDescription = null,
-                tint = IconButtonDefaults.iconButtonColors().contentColor,
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .size(36.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        role = Role.Button,
-                        onClick = {
+    // Below its buttons, above them is the status bar
+    CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
+        LargeTopAppBar(
+            title = { Text(title) },
+            navigationIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_monochrome),
+                    contentDescription = null,
+                    tint = IconButtonDefaults.iconButtonColors().contentColor,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .size(36.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            role = Role.Button,
+                            onClick = {
 
-                        }
-                    ),
-            )
-        },
-        actions = {
-            SearchButton(onSearch)
-            ProfileButton(onProfile)
-            SettingsButton(onSettings)
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceDim,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-        ),
-        scrollBehavior = scrollBehavior,
-    )
+                            }
+                        ),
+                )
+            },
+            actions = {
+                SearchButton(onSearch)
+                ProfileButton(onProfile)
+                SettingsButton(onSettings)
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceDim,
+                scrolledContainerColor = MaterialTheme.colorScheme.surfaceDim,
+            ),
+            scrollBehavior = scrollBehavior,
+        )
+    }
 }
 
 /**

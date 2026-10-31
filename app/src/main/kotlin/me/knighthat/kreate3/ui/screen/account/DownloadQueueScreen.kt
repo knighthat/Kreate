@@ -52,6 +52,7 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
@@ -171,11 +172,13 @@ internal fun UnfinishedItem(row: UnfinishedRow, actions: UnfinishedActions, show
         overlineColor = if (failed) MaterialTheme.colorScheme.error else Color.Unspecified,
         showBadges = showBadges,
         trailing = {
-            IconButton(onClick = { actions.cancel(download) }) {
-                Icon(
-                    painterResource(R.drawable.close),
-                    contentDescription = stringResource(R.string.semantic_cancel_download),
-                )
+            Tooltip(stringResource(R.string.semantic_cancel_download)) {
+                IconButton(onClick = { actions.cancel(download) }) {
+                    Icon(
+                        painterResource(R.drawable.close),
+                        contentDescription = stringResource(R.string.semantic_cancel_download),
+                    )
+                }
             }
         },
     )

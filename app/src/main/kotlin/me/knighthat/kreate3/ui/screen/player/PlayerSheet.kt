@@ -123,6 +123,7 @@ import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.ItemBadges
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.Thumbnail
+import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.memoryCacheKey
 import me.knighthat.kreate3.ui.component.rememberSongThumbnails
@@ -909,12 +910,14 @@ private fun ReactionButton(
     description: String,
     setDescription: String,
     onClick: () -> Unit,
-) = IconButton(onClick = onClick, enabled = enabled) {
-    Icon(
-        painter = painterResource(if (isSet) setIcon else unsetIcon),
-        contentDescription = if (isSet) setDescription else description,
-        tint = if (isSet) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-    )
+) = Tooltip(if (isSet) setDescription else description) {
+    IconButton(onClick = onClick, enabled = enabled) {
+        Icon(
+            painter = painterResource(if (isSet) setIcon else unsetIcon),
+            contentDescription = if (isSet) setDescription else description,
+            tint = if (isSet) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+        )
+    }
 }
 
 /**
@@ -931,15 +934,17 @@ internal fun ModeButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
     dimmed: Boolean = false,
-) = IconButton(onClick = onClick, enabled = enabled) {
-    val tint = if (isOn) MaterialTheme.colorScheme.primary
-    else MaterialTheme.colorScheme.onSurfaceVariant
-    Icon(
-        painter = painterResource(icon),
-        contentDescription = description,
-        // A tint of its own, the button can't dim it while it is off
-        tint = if (enabled && !dimmed) tint else tint.copy(alpha = DISABLED_ALPHA),
-    )
+) = Tooltip(description) {
+    IconButton(onClick = onClick, enabled = enabled) {
+        val tint = if (isOn) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.onSurfaceVariant
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = description,
+            // A tint of its own, the button can't dim it while it is off
+            tint = if (enabled && !dimmed) tint else tint.copy(alpha = DISABLED_ALPHA),
+        )
+    }
 }
 
 /** A large button of the player, the icon alone without anything around it. */
@@ -949,6 +954,8 @@ private fun ControlButton(
     description: String,
     onClick: () -> Unit,
     iconSize: Dp = 40.dp,
-) = IconButton(onClick = onClick, modifier = Modifier.size(iconSize + 24.dp)) {
-    Icon(painterResource(icon), contentDescription = description, Modifier.size(iconSize))
+) = Tooltip(description) {
+    IconButton(onClick = onClick, modifier = Modifier.size(iconSize + 24.dp)) {
+        Icon(painterResource(icon), contentDescription = description, Modifier.size(iconSize))
+    }
 }

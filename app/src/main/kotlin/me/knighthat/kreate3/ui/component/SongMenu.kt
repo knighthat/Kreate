@@ -642,8 +642,8 @@ private fun ReactionToggle(
 
 /**
  * A button of the row at the top of a menu sheet: [icon] over [label], dimmed and off unless
- * [enabled]. Without [showLabel] (off while [LocalIconOnly]) the label only describes the icon to
- * screen readers.
+ * [enabled]. Without [showLabel] (off while [LocalIconOnly]) the label only describes the icon, to
+ * screen readers and in its [Tooltip].
  */
 @Composable
 internal fun LabeledIconButton(
@@ -653,10 +653,17 @@ internal fun LabeledIconButton(
     showLabel: Boolean = !LocalIconOnly.current,
     onClick: () -> Unit,
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    IconButton(onClick = onClick, enabled = enabled) {
-        Icon(painterResource(icon), contentDescription = label)
+    val button = @Composable {
+        IconButton(onClick = onClick, enabled = enabled) {
+            Icon(painterResource(icon), contentDescription = label)
+        }
     }
-    if (showLabel) ButtonLabel(label, enabled)
+    // The label under it says what it does already
+    if (showLabel) {
+        button()
+        ButtonLabel(label, enabled)
+    } else
+        Tooltip(label, content = button)
 }
 
 @Composable

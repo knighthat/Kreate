@@ -108,6 +108,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.ItemRow
+import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.MiniPlayerSpace
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
@@ -115,6 +116,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
+import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.component.previewAlbums
@@ -509,13 +511,16 @@ private fun SearchContent(
     val miniPlayerSpace = rememberMiniPlayerSpace()
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.screen_title_search)) },
-                navigationIcon = { BackButton(onBack) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceDim,
-                ),
-            )
+            // Below its buttons, above them is the status bar
+            CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.screen_title_search)) },
+                    navigationIcon = { BackButton(onBack) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceDim,
+                    ),
+                )
+            }
         },
         bottomBar = {
             // The search bar stays last, next to the keyboard

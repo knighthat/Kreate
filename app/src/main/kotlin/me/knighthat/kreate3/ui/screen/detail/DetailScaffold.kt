@@ -28,9 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import me.knighthat.kreate3.ui.component.BackButton
+import me.knighthat.kreate3.ui.component.LocalTooltipSide
+import me.knighthat.kreate3.ui.component.TooltipSide
 
 /**
  * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
@@ -51,16 +54,19 @@ fun DetailScaffold(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = {
-                    BackButton(onBack)
-                },
-                actions = actions,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceDim,
-                ),
-            )
+            // Below its buttons, above them is the status bar
+            CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
+                TopAppBar(
+                    title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    navigationIcon = {
+                        BackButton(onBack)
+                    },
+                    actions = actions,
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceDim,
+                    ),
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,

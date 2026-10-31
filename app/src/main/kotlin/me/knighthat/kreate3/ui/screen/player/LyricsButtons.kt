@@ -65,6 +65,7 @@ import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.Tooltip
 import org.koin.compose.koinInject
 
 /**
@@ -220,14 +221,16 @@ private fun TextSizeStepper(size: Int) = Row(
     modifier = Modifier.padding(horizontal = 8.dp),
 ) {
     val sizes = LYRICS_TEXT_SIZES
-    IconButton(
-        onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it - sizes.step).coerceAtLeast(sizes.first) } },
-        enabled = size > sizes.first,
-    ) {
-        Icon(
-            painterResource(R.drawable.remove),
-            contentDescription = stringResource(R.string.semantic_smaller)
-        )
+    Tooltip(stringResource(R.string.semantic_smaller)) {
+        IconButton(
+            onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it - sizes.step).coerceAtLeast(sizes.first) } },
+            enabled = size > sizes.first,
+        ) {
+            Icon(
+                painterResource(R.drawable.remove),
+                contentDescription = stringResource(R.string.semantic_smaller)
+            )
+        }
     }
     TextButton(
         onClick = { Preferences.LYRICS_TEXT_SIZE.reset() },
@@ -235,14 +238,16 @@ private fun TextSizeStepper(size: Int) = Row(
     ) {
         Text("$size%")
     }
-    IconButton(
-        onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it + sizes.step).coerceAtMost(sizes.last) } },
-        enabled = size < sizes.last,
-    ) {
-        Icon(
-            painterResource(R.drawable.add),
-            contentDescription = stringResource(R.string.semantic_larger)
-        )
+    Tooltip(stringResource(R.string.semantic_larger)) {
+        IconButton(
+            onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it + sizes.step).coerceAtMost(sizes.last) } },
+            enabled = size < sizes.last,
+        ) {
+            Icon(
+                painterResource(R.drawable.add),
+                contentDescription = stringResource(R.string.semantic_larger)
+            )
+        }
     }
 }
 

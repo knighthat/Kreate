@@ -38,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,9 +46,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,8 +70,41 @@ import me.knighthat.kreate3.R
 /** Alpha of a [FilterIconButton] that isn't selected, the disabled one of Material. */
 private const val UNSELECTED_FILTER_ALPHA = .38f
 
+/** Which side of its button a [Tooltip] shows on. */
+enum class TooltipSide { ABOVE, BELOW }
+
 /**
- * An icon button whose only content is [icon], described to screen readers as [description].
+ * The side [Tooltip]s show on, [TooltipSide.ABOVE] unless provided. Top bars provide
+ * [TooltipSide.BELOW], above them is the status bar.
+ */
+val LocalTooltipSide = compositionLocalOf { TooltipSide.ABOVE }
+
+/**
+ * Shows [text] in a bubble pointing at [content] from [side] while it is long pressed (hovered
+ * with a mouse), for icon buttons, which say what they do with their `semantic_*` description.
+ * Only for buttons without a long press of their own: the tooltip takes it.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun Tooltip(
+    text: String,
+    side: TooltipSide = LocalTooltipSide.current,
+    content: @Composable () -> Unit,
+) = TooltipBox(
+    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+        when (side) {
+            TooltipSide.ABOVE -> TooltipAnchorPosition.Above
+            TooltipSide.BELOW -> TooltipAnchorPosition.Below
+        }
+    ),
+    tooltip = { PlainTooltip(caretShape = TooltipDefaults.caretShape()) { Text(text) } },
+    state = rememberTooltipState(),
+    content = content,
+)
+
+/**
+ * An icon button whose only content is [icon], described to screen readers and in its [Tooltip]
+ * as [description].
  */
 @Composable
 private fun IconAction(
@@ -73,7 +113,7 @@ private fun IconAction(
     onClick: () -> Unit,
     modifier: Modifier,
     enabled: Boolean = true,
-) {
+) = Tooltip(description) {
     IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Icon(painterResource(icon), contentDescription = description)
     }
@@ -90,16 +130,18 @@ fun FilterIconButton(
     selected: Boolean,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
-) = IconToggleButton(
-    checked = selected,
-    onCheckedChange = { onToggle() },
-    modifier = modifier,
-    colors = IconButtonDefaults.iconToggleButtonColors(
-        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = UNSELECTED_FILTER_ALPHA),
-        checkedContentColor = MaterialTheme.colorScheme.primary,
-    ),
-) {
-    Icon(painterResource(icon), contentDescription = description)
+) = Tooltip(description) {
+    IconToggleButton(
+        checked = selected,
+        onCheckedChange = { onToggle() },
+        modifier = modifier,
+        colors = IconButtonDefaults.iconToggleButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = UNSELECTED_FILTER_ALPHA),
+            checkedContentColor = MaterialTheme.colorScheme.primary,
+        ),
+    ) {
+        Icon(painterResource(icon), contentDescription = description)
+    }
 }
 
 /**
@@ -177,45 +219,50 @@ fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 
 @Composable
 fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) =
-    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-        Icon(
-            painterResource(R.drawable.share),
-            contentDescription = stringResource(R.string.semantic_share)
-        )
-    }
+    IconAction(
+        R.drawable.share,
+        stringResource(R.string.semantic_share),
+        onClick,
+        modifier,
+        enabled
+    )
 
 /** Restarts the app, off while [enabled] is `false`. */
 @Composable
 fun RestartAppButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =
-    IconButton(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-        colors = IconButtonDefaults.iconButtonColors(
-            contentColor = MaterialTheme.colorScheme.tertiary
-        )
-    ) {
-        Icon(
-            painterResource(R.drawable.power_settings_new),
-            contentDescription = stringResource(R.string.semantic_restart_the_app)
-        )
+    Tooltip(stringResource(R.string.semantic_restart_the_app)) {
+        IconButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            Icon(
+                painterResource(R.drawable.power_settings_new),
+                contentDescription = stringResource(R.string.semantic_restart_the_app)
+            )
+        }
     }
 
 /** Restarts the player, off while [enabled] is `false`. */
 @Composable
 fun RestartPlayerButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) =
-    IconButton(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-        colors = IconButtonDefaults.iconButtonColors(
-            contentColor = MaterialTheme.colorScheme.tertiary
-        )
-    ) {
-        Icon(
-            painterResource(R.drawable.restart_alt),
-            contentDescription = stringResource(R.string.semantic_restart_the_player),
-        )
+    Tooltip(stringResource(R.string.semantic_restart_the_player)) {
+        IconButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            Icon(
+                painterResource(R.drawable.restart_alt),
+                contentDescription = stringResource(R.string.semantic_restart_the_player),
+            )
+        }
     }
 
 /**
@@ -261,7 +308,7 @@ private fun ToggleAction(
     description: String,
     onClick: () -> Unit,
     modifier: Modifier,
-) {
+) = Tooltip(description) {
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(
             painterResource(if (isSet) setIcon else unsetIcon),
@@ -280,18 +327,20 @@ fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
  */
 @Composable
 fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconButton(onClick = onClick, modifier = modifier) {
-        Crossfade(targetState = isPlaying, label = "PlayPauseIcon") { playing ->
-            if (playing)
-                Icon(
-                    painterResource(R.drawable.pause),
-                    contentDescription = stringResource(R.string.semantic_pause)
-                )
-            else
-                Icon(
-                    painterResource(R.drawable.play_arrow),
-                    contentDescription = stringResource(R.string.semantic_play)
-                )
+    Tooltip(stringResource(if (isPlaying) R.string.semantic_pause else R.string.semantic_play)) {
+        IconButton(onClick = onClick, modifier = modifier) {
+            Crossfade(targetState = isPlaying, label = "PlayPauseIcon") { playing ->
+                if (playing)
+                    Icon(
+                        painterResource(R.drawable.pause),
+                        contentDescription = stringResource(R.string.semantic_pause)
+                    )
+                else
+                    Icon(
+                        painterResource(R.drawable.play_arrow),
+                        contentDescription = stringResource(R.string.semantic_play)
+                    )
+            }
         }
     }
 

@@ -96,11 +96,13 @@ internal fun BoxScope.CoverEditOverlay(
             stringResource(R.string.semantic_drag_to_move),
             handle
         )
-        CoverEditMode.REMOVE -> CoverIcon(
-            icon = R.drawable.close,
-            description = removeDescription,
-            modifier = Modifier.clickable(onClick = onRemove),
-        )
+        CoverEditMode.REMOVE -> Tooltip(removeDescription) {
+            CoverIcon(
+                icon = R.drawable.close,
+                description = removeDescription,
+                modifier = Modifier.clickable(onClick = onRemove),
+            )
+        }
     }
 }
 

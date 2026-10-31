@@ -337,11 +337,13 @@ fun QueueActionRow(
 fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     if (LocalIconOnly.current)
     // Play stays the main action, filled like its labeled button
-        FilledIconButton(onClick = onClick, modifier = modifier) {
-            Icon(
-                painterResource(R.drawable.play_arrow),
-                contentDescription = stringResource(R.string.semantic_play)
-            )
+        Tooltip(stringResource(R.string.semantic_play)) {
+            FilledIconButton(onClick = onClick, modifier = modifier) {
+                Icon(
+                    painterResource(R.drawable.play_arrow),
+                    contentDescription = stringResource(R.string.semantic_play)
+                )
+            }
         }
     else
         LabeledButton("Play", R.drawable.play_arrow, onClick, modifier)

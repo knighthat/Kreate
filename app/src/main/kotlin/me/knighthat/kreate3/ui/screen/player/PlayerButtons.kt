@@ -63,6 +63,7 @@ import me.knighthat.kreate3.playback.changedBy
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.formatDuration
 import me.knighthat.kreate3.ui.screen.detail.rememberSongShare
 import kotlin.time.Duration.Companion.minutes
@@ -223,14 +224,18 @@ private fun SleepTimerControls(timer: SleepTimer, controller: PlaybackController
         ) {
             Text(removeStep.buttonLabel(add = false))
         }
-        IconButton(onClick = { controller.changeSleepTimer(SleepTimerAction.TOGGLE_PAUSE) }) {
-            Icon(
-                painter = painterResource(
-                    if (timer.isPaused) R.drawable.play_arrow else R.drawable.pause
-                ),
-                contentDescription = if (timer.isPaused) stringResource(R.string.semantic_resume_the_sleep_timer)
-                else stringResource(R.string.semantic_pause_the_sleep_timer),
-            )
+        val toggleDescription =
+            if (timer.isPaused) stringResource(R.string.semantic_resume_the_sleep_timer)
+            else stringResource(R.string.semantic_pause_the_sleep_timer)
+        Tooltip(toggleDescription) {
+            IconButton(onClick = { controller.changeSleepTimer(SleepTimerAction.TOGGLE_PAUSE) }) {
+                Icon(
+                    painter = painterResource(
+                        if (timer.isPaused) R.drawable.play_arrow else R.drawable.pause
+                    ),
+                    contentDescription = toggleDescription,
+                )
+            }
         }
         TextButton(
             onClick = { controller.changeSleepTimer(SleepTimerAction.ADD) },
