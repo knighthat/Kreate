@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.playback
 
+import android.content.ContentResolver
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.core.net.toUri
@@ -32,7 +33,6 @@ import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.playback.DataSourceResolver.Companion.SERVER_ADDRESS_LIFE
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerStream
@@ -101,11 +101,16 @@ data class QueuedSong(
  * The item with the address of its song, which the player needs to queue it. Items carry no
  * address of their own, it is only found when the song is read, see [DataSourceResolver].
  *
+ * A file another app opened with the app has no origin, it carries its `content://` address in
+ * its request instead, see [OpenedFiles].
+ *
  * @return `null` when the item doesn't say where it comes from
  */
 fun MediaItem.withSongUri(): MediaItem? {
     if (localConfiguration != null) return this
-    val origin = origin ?: return null
+    val origin = origin ?: return requestMetadata.mediaUri
+        ?.takeIf { it.scheme == ContentResolver.SCHEME_CONTENT }
+        ?.let { buildUpon().setUri(it).build() }
     return buildUpon().setUri(QueuedSong(origin, mediaId).uri).build()
 }
 

@@ -32,6 +32,67 @@ class YouTubeLinksTest {
     }
 
     @Test
+    fun linksAreReadBack() {
+        assertEquals(YouTubeLink.Song("abc"), YouTubeLinks.parse(YouTubeLinks.song("abc")))
+        assertEquals(
+            YouTubeLink.Album("MPREb_1"),
+            YouTubeLinks.parse(YouTubeLinks.album("MPREb_1"))
+        )
+        assertEquals(YouTubeLink.Artist("UC1"), YouTubeLinks.parse(YouTubeLinks.artist("UC1")))
+        assertEquals(YouTubeLink.Playlist("PL1"), YouTubeLinks.parse(YouTubeLinks.playlist("PL1")))
+    }
+
+    @Test
+    fun linksOfTheAppAreRead() {
+        // A song played from a playlist, with tracking
+        assertEquals(
+            YouTubeLink.Song("abc"),
+            YouTubeLinks.parse("https://music.youtube.com/watch?v=abc&list=RDAMVMabc&si=x1"),
+        )
+        assertEquals(
+            YouTubeLink.Playlist("PL1"),
+            YouTubeLinks.parse("http://MUSIC.youtube.com/browse/VLPL1"),
+        )
+        assertEquals(
+            YouTubeLink.Playlist("OLAK5uy_1"),
+            YouTubeLinks.parse("https://music.youtube.com/playlist?list=OLAK5uy_1&si=x"),
+        )
+        assertEquals(
+            YouTubeLink.Artist("UC1"),
+            YouTubeLinks.parse("https://music.youtube.com/browse/UC1"),
+        )
+        assertEquals(
+            YouTubeLink.Album("MPREb_1"),
+            YouTubeLinks.parse("https://music.youtube.com/browse/MPREb_1/"),
+        )
+    }
+
+    @Test
+    fun otherLinksAreNotRead() {
+        assertEquals(null, YouTubeLinks.parse("https://www.youtube.com/watch?v=abc"))
+        assertEquals(null, YouTubeLinks.parse("https://youtu.be/abc"))
+        assertEquals(null, YouTubeLinks.parse("https://music.youtube.com/"))
+        assertEquals(null, YouTubeLinks.parse("https://music.youtube.com/watch"))
+        assertEquals(null, YouTubeLinks.parse("https://music.youtube.com/browse/FEmusic_home"))
+        assertEquals(null, YouTubeLinks.parse("https://music.youtube.com/channel/UC1/videos"))
+        assertEquals(null, YouTubeLinks.parse("music.youtube.com/watch?v=abc"))
+        assertEquals(null, YouTubeLinks.parse("not a link"))
+    }
+
+    @Test
+    fun sharedTextIsSearched() {
+        assertEquals(
+            YouTubeLink.Song("abc"),
+            YouTubeLinks.find("Listen to this! https://music.youtube.com/watch?v=abc&si=x"),
+        )
+        assertEquals(
+            YouTubeLink.Album("MPREb_1"),
+            YouTubeLinks.find("https://example.com\nhttps://music.youtube.com/browse/MPREb_1"),
+        )
+        assertEquals(null, YouTubeLinks.find("No link here"))
+    }
+
+    @Test
     fun coversAreCutToTheSizeAsked() {
         val cover = "https://yt3.googleusercontent.com/abc-DEF_1=w60-h60-l90-rj"
 

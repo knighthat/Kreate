@@ -53,6 +53,43 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <!-- "Open with" for audio files of other apps, see OpenedFiles -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/x-flac" />
+            </intent-filter>
+            <!-- YouTube Music links: songs, albums, artists and playlists. Not verified, the app
+                 doesn't own the domain: the user turns "Open supported links" on for it -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="music.youtube.com" />
+                <data android:pathPrefix="/watch" />
+                <data android:pathPrefix="/playlist" />
+                <data android:pathPrefix="/browse/" />
+                <data android:pathPrefix="/channel/" />
+            </intent-filter>
+            <!-- A YouTube Music link shared as text -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
 
         <!-- One launcher entry per app icon, only the chosen one is enabled (see AppIcon) -->

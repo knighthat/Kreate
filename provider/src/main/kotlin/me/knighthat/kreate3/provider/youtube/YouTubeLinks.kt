@@ -17,6 +17,10 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
+import java.net.URI
+import java.net.URISyntaxException
+import java.net.URLDecoder
+
 /**
  * Public links to items of YouTube Music, made from their ids. They don't expire and need no
  * request, anyone can open them.
@@ -24,6 +28,18 @@ package me.knighthat.kreate3.provider.youtube
 object YouTubeLinks {
 
     private const val BASE = "https://music.youtube.com"
+    private const val HOST = "music.youtube.com"
+
+    /** Start of the id of an album's page. */
+    private const val ALBUM_PAGE = "MPRE"
+
+    /** Start of the id of a playlist's page, before the playlist's own id. */
+    private const val PLAYLIST_PAGE = "VL"
+
+    /** Start of the id of a channel, an artist's page. */
+    private const val CHANNEL_PAGE = "UC"
+
+    private val LINK = Regex("""https?://\S+""", RegexOption.IGNORE_CASE)
 
     fun song(songId: String): String = "$BASE/watch?v=$songId"
 
@@ -33,6 +49,65 @@ object YouTubeLinks {
 
     /** @param playlistId id of the playlist, without `VL` */
     fun playlist(playlistId: String): String = "$BASE/playlist?list=$playlistId"
+
+    /**
+     * What a YouTube Music link points to: the links above, and pages of the app opened under
+     * `browse/` (an album, an artist or a playlist). Anything else, like a link of YouTube itself,
+     * is `null`. A song played from a playlist (`watch?v=…&list=…`) is the song.
+     */
+    fun parse(link: String): YouTubeLink? {
+        val uri = try {
+            URI(link.trim())
+        } catch (_: URISyntaxException) {
+            return null
+        }
+        if (uri.scheme?.lowercase() !in setOf("http", "https")) return null
+        if (uri.host?.lowercase() != HOST) return null
+
+        val path = uri.path.orEmpty().trim('/').split('/')
+        val query = uri.rawQuery.orEmpty().split('&').mapNotNull { pair ->
+            val parts = pair.split('=', limit = 2).takeIf { it.size == 2 } ?: return@mapNotNull null
+            parts[0] to URLDecoder.decode(parts[1], Charsets.UTF_8.name())
+        }.toMap()
+        // The id of a page is all its path holds after its kind
+        val id = path.getOrNull(1)?.takeIf { it.isNotBlank() && path.size == 2 }
+
+        return when (path.first()) {
+            "watch" -> query["v"]?.takeIf { it.isNotBlank() }?.let(YouTubeLink::Song)
+            "playlist" -> query["list"]?.takeIf { it.isNotBlank() }
+                ?.let { YouTubeLink.Playlist(it.removePrefix(PLAYLIST_PAGE)) }
+
+            "channel" -> id?.let(YouTubeLink::Artist)
+            "browse" -> when {
+                id == null -> null
+                id.startsWith(ALBUM_PAGE) -> YouTubeLink.Album(id)
+                id.startsWith(PLAYLIST_PAGE) ->
+                    YouTubeLink.Playlist(id.removePrefix(PLAYLIST_PAGE))
+
+                id.startsWith(CHANNEL_PAGE) -> YouTubeLink.Artist(id)
+                else -> null
+            }
+
+            else -> null
+        }
+    }
+
+    /** The first YouTube Music link in [text] that [parse] knows, like the text an app shares. */
+    fun find(text: String): YouTubeLink? =
+        LINK.findAll(text).firstNotNullOfOrNull { parse(it.value) }
+}
+
+/** An item of YouTube Music a link points to, see [YouTubeLinks.parse]. */
+sealed interface YouTubeLink {
+
+    data class Song(val songId: String) : YouTubeLink
+
+    data class Album(val albumId: String) : YouTubeLink
+
+    data class Artist(val artistId: String) : YouTubeLink
+
+    /** @property playlistId id of the playlist, without `VL` */
+    data class Playlist(val playlistId: String) : YouTubeLink
 }
 
 private val VIDEO_PICTURE = Regex("""^https?://i\d*\.ytimg\.com/(?:vi|vi_webp)/([^/]+)/""")

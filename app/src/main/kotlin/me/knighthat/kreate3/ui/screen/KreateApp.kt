@@ -198,9 +198,16 @@ private val Route.showsMessages: Boolean
  * @param openPlayer whether the full player was asked to open, like by a tap on the media
  * notification, unless [Preferences.NOTIFICATION_OPENS_PLAYER] is off; [onPlayerOpened] is called
  * once it is open or the request is dropped
+ * @param openRoute a screen asked for from outside the app, like by a link; [onRouteOpened] is
+ * called once it is on top
  */
 @Composable
-fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
+fun KreateApp(
+    openPlayer: Boolean = false,
+    onPlayerOpened: () -> Unit = {},
+    openRoute: Route? = null,
+    onRouteOpened: () -> Unit = {},
+) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
@@ -233,6 +240,13 @@ fun KreateApp(openPlayer: Boolean = false, onPlayerOpened: () -> Unit = {}) {
         }.first { it }
         playerSheet.expand()
         onPlayerOpened()
+    }
+    LaunchedEffect(openRoute) {
+        openRoute ?: return@LaunchedEffect
+        // The player may be open over the screens
+        if (playerSheet.isExpanded) playerSheet.collapse()
+        topLevel.push(openRoute)
+        onRouteOpened()
     }
     val currentRoute = topLevel.backStack.lastOrNull() as? Route
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }

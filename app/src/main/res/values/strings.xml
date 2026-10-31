@@ -612,6 +612,8 @@
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
     <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
+    <string name="error_open_file">Couldn\'t open this file</string>
+    <string name="error_open_link">Couldn\'t open this link</string>
     <string name="error_songs_not_playable">These songs can\'t be played</string>
     <string name="error_song_not_playable">This song can\'t be played</string>
     <string name="error_share_unsupported">%1$s doesn\'t support sharing this %2$s</string>

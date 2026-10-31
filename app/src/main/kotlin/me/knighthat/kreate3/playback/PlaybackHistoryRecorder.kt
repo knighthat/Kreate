@@ -34,6 +34,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.HistoryRepository
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.origin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -86,7 +87,8 @@ class PlaybackHistoryRecorder(
 
     /** Saves the time so far of the session that is still going on. */
     private fun saveOngoing() {
-        val songId = player.currentMediaItem?.mediaId ?: return
+        // A file another app opened isn't a stored song, it has no history
+        val songId = player.currentMediaItem?.takeIf { it.origin != null }?.mediaId ?: return
         val playStats = stats.playbackStats ?: return
         send(songId, playStats, ended = false)
     }
@@ -94,9 +96,9 @@ class PlaybackHistoryRecorder(
     /** [start] is when the session began, its item is the song played. */
     private fun onSessionEnded(start: EventTime, playStats: PlaybackStats) {
         if (start.windowIndex >= start.timeline.windowCount) return
-        val songId =
-            start.timeline.getWindow(start.windowIndex, Timeline.Window()).mediaItem.mediaId
-        send(songId, playStats, ended = true)
+        val item = start.timeline.getWindow(start.windowIndex, Timeline.Window()).mediaItem
+        if (item.origin == null) return
+        send(item.mediaId, playStats, ended = true)
     }
 
     private fun send(songId: String, playStats: PlaybackStats, ended: Boolean) {

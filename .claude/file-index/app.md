@@ -18,7 +18,14 @@ Root
 - `KreateActivity.kt` — main activity: splash (waits on prefs), setup-wizard gate,
   `SETUP_WIZARD_SKIP_ACTION` handling, `OPEN_PLAYER_ACTION` (media notification tap, from onCreate
   or onNewIntent) → `KreateApp` expands the player sheet (unless `NOTIFICATION_OPENS_PLAYER` is
-  off), starts `LocalMusicScheduler`, hosts `KreateApp`.
+  off), starts `LocalMusicScheduler`, hosts `KreateApp`. `ACTION_VIEW` of an audio file ("Open
+  with", manifest filter `audio/*` + ogg/flac, content/file) → `OpenedFiles.item` →
+  `PlaybackController.play` + opens the player; `null` → `error_open_file` message. A
+  `music.youtube.com` link (`ACTION_VIEW`, filter on /watch /playlist /browse/ /channel/, not
+  verified) or text shared to it (`ACTION_SEND` text/plain) → `YouTubeLinks.find`: a song plays
+  (`songDetails` → `toLiveMediaItem`) and the player opens, an album/artist/playlist goes to
+  `KreateApp(openRoute)`, which collapses the player and pushes it; anything else →
+  `error_open_link`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
 - `AppLanguage.kt` — app language, per profile in `Preferences.LANGUAGE` (empty = the device's):
   `available` from `BuildConfig.LANGUAGES` (English + the `values-*` folders with

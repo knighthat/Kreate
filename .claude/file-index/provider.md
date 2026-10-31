@@ -36,7 +36,8 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   `gl` sent, chosen or the device's), `YouTubeLibrary.kt` (liked-song sync both ways: pulls "Liked
   Music", `react` sends like,
   dislike or neither while signed in; `youTubeSyncSetting`), `YouTubeLinks.kt` (share links,
-  `resizeArtwork`).
+  `parse`/`find` read `music.youtube.com` links back into a `YouTubeLink` Song/Album/Artist/
+  Playlist, `resizeArtwork`).
 - test resources: `provider/src/test/resources/youtube/*.json` (captured InnerTube responses),
   `certs/*.pem`.
 

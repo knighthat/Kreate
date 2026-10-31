@@ -57,7 +57,9 @@ playback/
 - `KreatePlayer.kt` — `ExoPlayer` delegate wrapper; enforces repeat-one ⇄ shuffle exclusion for
   every controller (app and system media controls).
 - `DataSourceResolver.kt` — `QueuedSong` (`kreate://<ORIGIN>/<id>`, `quality`, `cacheKey` = uri
-  `#QUALITY`), `MediaItem.withSongUri`, resolver: queued address → provider URL at read time in the
+  `#QUALITY`), `MediaItem.withSongUri` (an item without origin queues its `content://`
+  `requestMetadata.mediaUri`: an opened file), resolver: queued address → provider URL at read time
+  in the
   copy's quality, YouTube stream cache/refusals, OpenSubsonic `ServerStream` reuse for seeks,
   `answered` (Content-Type) (`.claude/docs/playback-pipeline.md`).
 - `SongFormatRecorder.kt` — stores YouTube/OpenSubsonic `SongFormat` (gain) before a song is read,
@@ -88,7 +90,15 @@ playback/
   `PlaybackStatsListener` play time (no pauses/loading, wall-clock) → `recordPlay` per session ≥
   `Preferences.PLAYBACK_HISTORY_MIN_SECONDS` (Player settings → History, default 1 s), nothing while
   `PLAYBACK_HISTORY_PAUSED`; on STATE_IDLE/ENDED saves the ongoing session early and `updatePlay`s
-  that row when it ends; writes in the global scope (last ones come after release).
+  that row when it ends; writes in the global scope (last ones come after release). Items without
+  origin (opened files) get no history.
+- `OpenedFiles.kt` — `item(uri)` for an audio file another app opened with Kreate: with the audio
+  permission, the library's `LOCAL` song of its MediaStore id (from a `content://media/…/audio/
+  media/<id>` or `…/file/<id>` address, the media documents' `audio:<id>`, a `file://` path via
+  `DATA`, else `DISPLAY_NAME` + `SIZE`); otherwise a `content://` file as a queue-only item (id =
+  the uri, no origin, tags from `MediaMetadataRetriever`, embedded picture kept as
+  `cacheDir/opened_covers/<sha1 of uri>`, last 20) never stored, left out of the saved queue; `null`
+  for a `file://` that isn't a library song or a file it can't open.
 - `PlayedSongRecorder.kt` — stores a YouTube/server song once it starts playing (catalog + library,
   no like), asking its source again; then `SongFormatRecorder.flush` and `onStored` (queue re-save).
 - `Radio.kt` — songs like a song, per origin: local ones scored from the user's library (

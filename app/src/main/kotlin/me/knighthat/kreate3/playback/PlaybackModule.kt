@@ -64,6 +64,7 @@ val playbackModule = module {
     single { CacheCopies(get<SongCaches>(), androidContext(), get<YouTubeProvider>()) }
 
     single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
+    single { OpenedFiles(androidContext(), get<UserSongRepository>()) }
     single {
         AutoLibrary(
             context = androidContext(),
