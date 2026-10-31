@@ -135,9 +135,9 @@ class DownloadNotifications(
         covers.keys.retainAll(listed.keys)
 
         val waitingFor = when {
-            waitingForBattery -> R.string.notification_downloads_subtitle_waiting_for_battery
+            waitingForBattery -> R.string.status_downloads_waiting_for_battery
             notMetRequirements and Requirements.NETWORK_UNMETERED != 0 ->
-                R.string.notification_downloads_subtitle_waiting_for_wifi
+                R.string.status_downloads_waiting_for_wifi
 
             else -> null
         }

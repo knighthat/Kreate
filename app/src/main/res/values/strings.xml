@@ -836,8 +836,6 @@
     <string name="notification_downloads_title_downloaded">Downloaded</string>
     <string name="notification_downloads_title_failed">Download failed</string>
     <string name="notification_downloads_subtitle_paused">Paused</string>
-    <string name="notification_downloads_subtitle_waiting_for_wifi">Waiting for Wi-Fi</string>
-    <string name="notification_downloads_subtitle_waiting_for_battery">Waiting, the battery is low</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Enum values">-->
