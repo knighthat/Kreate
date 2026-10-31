@@ -54,8 +54,9 @@ notification/
   channel goes to `SystemNotifications`, one without is dropped.
 - `AppChannel.kt` — notification channels (PLAYBACK default importance, OTHER default (one-off
   notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, SLEEP_TIMER low +
-  `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`), RESUME low + silent
-  (brief foreground notification of playback resumption); message ids 2000+ordinal,
+  `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`); the brief foreground
+  notification of playback resumption goes to OTHER with `setSilent(true)`, the old `resume` channel
+  is deleted at start; message ids 2000+ordinal,
   newest replaces), `Context.createNotificationChannels()` called in `KreateApplication.onCreate`.
 - `LocalScanNotifications.kt` — LOCAL_SCAN's two notifications (Koin single): scan (3000:
   indeterminate bar → "N songs scanned") and loudness (3001: `measured/total` bar, ≤1 update/s → "

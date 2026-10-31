@@ -783,13 +783,11 @@
     <string name="notification_playback_title_channel">Playback problems</string>
     <string name="notification_playback_subtitle_channel">A song couldn\'t be played</string>
     <string name="notification_other_title_channel">Other</string>
-    <string name="notification_other_subtitle_channel">One-off notices, like a backup that couldn\'t be restored</string>
+    <string name="notification_other_subtitle_channel">One-off notices, like a backup that couldn\'t be restored, and music starting in the background</string>
     <string name="notification_local_scan_title_channel">Music on this device</string>
     <string name="notification_local_scan_subtitle_channel">Progress of reading the device\'s music and measuring its loudness</string>
     <string name="notification_sleep_timer_title_channel">Sleep timer</string>
     <string name="notification_sleep_timer_subtitle_channel">Time left until the music pauses, with buttons to change it</string>
-    <string name="notification_resume_title_channel">Resuming music</string>
-    <string name="notification_resume_subtitle_channel">Shows for a moment while headphones or the system\'s media controls play the last queue again, or a downloaded song starts from its notification</string>
     <string name="notification_local_scan_title_scanning">Scanning music</string>
     <string name="notification_local_scan_title_scanned">Music scan finished</string>
     <string name="notification_local_scan_subtitle_scanned">%1$s scanned</string>
@@ -804,8 +802,8 @@
     <string name="notification_sleep_timer_subtitle_on_hold">On hold</string>
     <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
-    <string name="notification_resume_title_resuming">Resuming music</string>
-    <string name="notification_resume_title_starting">Starting music</string>
+    <string name="notification_other_title_resuming">Resuming music</string>
+    <string name="notification_other_title_starting">Starting music</string>
     <string name="notification_downloads_title_channel">Downloads</string>
     <string name="notification_downloads_subtitle_channel">Songs being downloaded, downloaded, or that couldn\'t be downloaded</string>
     <string name="notification_downloads_title_downloading">Downloading</string>

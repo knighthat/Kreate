@@ -56,6 +56,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.AppRestart
@@ -140,7 +141,8 @@ fun SettingsSection(title: String) =
 
 /**
  * One row of a settings page: the [title], what it is set to or does as [summary], and [onClick]
- * for what a tap does. [trailing] sits at the end of the row.
+ * for what a tap does. [trailing] sits at the end of the row. The title keeps to one line and the
+ * summary to two, see [SettingsSummary].
  */
 @Composable
 fun SettingsItem(
@@ -151,8 +153,8 @@ fun SettingsItem(
     trailing: @Composable (() -> Unit)? = null,
 ) {
     ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = summary?.let { { Text(it) } },
+        headlineContent = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        supportingContent = summary?.let { { SettingsSummary(it) } },
         trailingContent = trailing,
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         modifier = if (onClick != null) modifier.clickable(onClick = onClick) else modifier,
@@ -181,6 +183,16 @@ fun SwitchSetting(
     )
 }
 
+/**
+ * What a settings row says under its title, cut to two lines. A note after a line break (who may
+ * change it, …) gets two lines of its own.
+ */
+@Composable
+internal fun SettingsSummary(summary: String) =
+    Column {
+        summary.lines().forEach { Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+    }
+
 /** How opaque a disabled row is, Material's disabled content. */
 internal const val DISABLED_ALPHA = .38f
 
@@ -208,8 +220,15 @@ fun MainSwitch(
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         ListItem(
-            headlineContent = { Text(title, style = MaterialTheme.typography.titleMedium) },
-            supportingContent = summary?.let { { Text(it) } },
+            headlineContent = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
+            supportingContent = summary?.let { { SettingsSummary(it) } },
             trailingContent = { Switch(checked = checked, onCheckedChange = null) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
@@ -313,7 +332,7 @@ fun <T> SliderSetting(
     val shown = options[position.roundToInt().coerceIn(options.indices)]
 
     ListItem(
-        headlineContent = { Text(title) },
+        headlineContent = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = {
             Column {
                 Text(label(shown))

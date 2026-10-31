@@ -49,7 +49,12 @@ enum class AppChannel(
         importance = NotificationManagerCompat.IMPORTANCE_DEFAULT,
     ),
 
-    /** One-off notices, not something that happens again and again like each backup. */
+    /**
+     * One-off notices, not something that happens again and again like each backup. Also the
+     * moment music starts in the background (the last queue from headphones or the system's media
+     * controls, a downloaded song from its notification) until the media notification takes over,
+     * posted silent.
+     */
     OTHER(
         id = "other",
         titleRes = R.string.notification_other_title_channel,
@@ -74,18 +79,6 @@ enum class AppChannel(
     ),
 
     /**
-     * Shows for a moment while the last queue plays again from headphones or the system's media
-     * controls, until the media notification takes over.
-     */
-    RESUME(
-        id = "resume",
-        titleRes = R.string.notification_resume_title_channel,
-        descriptionRes = R.string.notification_resume_subtitle_channel,
-        importance = NotificationManagerCompat.IMPORTANCE_LOW,
-        isSilent = true,
-    ),
-
-    /**
      * The songs being downloaded, downloaded and failed, each group with a notification per song,
      * see [DownloadNotifications].
      */
@@ -103,9 +96,13 @@ enum class AppChannel(
         get() = 2000 + ordinal
 }
 
+/** Ids of channels merged into another, deleted so the system's settings stop listing them. */
+private val REMOVED_CHANNEL_IDS = listOf("resume")
+
 /** Makes every [AppChannel], or updates their names. Safe to call at every start. */
-internal fun Context.createNotificationChannels() =
-    NotificationManagerCompat.from(this).createNotificationChannelsCompat(
+internal fun Context.createNotificationChannels() = with(NotificationManagerCompat.from(this)) {
+    REMOVED_CHANNEL_IDS.forEach(::deleteNotificationChannel)
+    createNotificationChannelsCompat(
         AppChannel.entries.map {
             NotificationChannelCompat.Builder(it.id, it.importance)
                 .setName(getString(it.titleRes))
@@ -119,3 +116,4 @@ internal fun Context.createNotificationChannels() =
                 .build()
         }
     )
+}

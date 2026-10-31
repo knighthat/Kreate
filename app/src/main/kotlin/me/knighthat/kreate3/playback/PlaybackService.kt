@@ -484,7 +484,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             // in the foreground, which the media notification makes it only once playing.
             startForegroundWith(
                 RESUME_FOREGROUND_ID,
-                notificationBuilder(AppChannel.RESUME).setContentTitle(getString(R.string.notification_resume_title_resuming))
+                notificationBuilder(AppChannel.OTHER)
+                    .setContentTitle(getString(R.string.notification_other_title_resuming))
+                    .setSilent(true)
                     .build(),
             )
             return scope.future {
@@ -590,8 +592,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             if (action == DownloadedSongAction.PLAY)
                 startForegroundWith(
                     RESUME_FOREGROUND_ID,
-                    notificationBuilder(AppChannel.RESUME)
-                        .setContentTitle(getString(R.string.notification_resume_title_starting))
+                    notificationBuilder(AppChannel.OTHER)
+                        .setContentTitle(getString(R.string.notification_other_title_starting))
+                        .setSilent(true)
                         .build(),
                 )
             playDownloaded(action, id)
@@ -602,8 +605,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             // is in the foreground, which the media notification makes it only once playing
             startForegroundWith(
                 RESUME_FOREGROUND_ID,
-                notificationBuilder(AppChannel.RESUME)
-                    .setContentTitle(getString(R.string.notification_resume_title_starting))
+                notificationBuilder(AppChannel.OTHER)
+                    .setContentTitle(getString(R.string.notification_other_title_starting))
+                    .setSilent(true)
                     .build(),
             )
             playVoiceRequest(intent.getStringExtra(SearchManager.QUERY).orEmpty(), intent.extras)

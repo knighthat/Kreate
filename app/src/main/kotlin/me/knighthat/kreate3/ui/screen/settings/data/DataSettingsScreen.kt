@@ -48,6 +48,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
@@ -65,6 +66,7 @@ import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -404,8 +406,10 @@ private fun StorageSetting(
     // The bar spans the whole row, under the button too
     Column(Modifier.clickable(enabled = note == null) { editing = true }) {
         ListItem(
-            headlineContent = { Text(title) },
-            supportingContent = { Text(note?.let { "$description\n$it" } ?: description) },
+            headlineContent = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            supportingContent = {
+                SettingsSummary(note?.let { "$description\n$it" } ?: description)
+            },
             trailingContent = wipe?.let {
                 {
                     TextButton(

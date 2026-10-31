@@ -20,6 +20,10 @@ merged into `values-*/` before a build; never add or edit a translation folder h
   (`stringResource(R.string.x, stringResource(R.string.source_ytm))`).
 - Texts in `plurals.xml` are lowercase; a heading or label capitalizes them in code
   (`replaceFirstChar`).
+- Settings rows (`SettingsComponents.kt`) cut the title at one line and the summary at two, with
+  "…"; a note after `\n` gets two lines of its own. English budgets, measured with Inter on a 360dp
+  phone: `setting_title_*` ≤ 35 characters, `setting_description_*` ≤ 75, ≤ 65 under a
+  `MainSwitch`. Placeholders count at their usual value (`YouTube Music`, a server name).
 
 ## Key names
 

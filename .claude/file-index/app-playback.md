@@ -24,7 +24,8 @@ playback/
   `PLAYBACK_PRELOAD_SECONDS` into the player's preload. `onPlaybackResumption` plays
   `PersistentQueue.saved()` again when play comes with nothing queued (headphones, system media
   controls; `MediaButtonReceiver` in the manifest), going foreground first under
-  `RESUME_FOREGROUND_ID` 5000 (`AppChannel.RESUME`); for System UI's card after a reboot only the
+  `RESUME_FOREGROUND_ID` 5000 (`AppChannel.OTHER`, silent); for System UI's card after a reboot only
+  the
   playing song, cover as `artworkData`.
   `onStartCommand` also takes a downloaded song's notification buttons (`DownloadedSongAction`,
   data = download id): Play goes foreground first (5000, "Starting music"), then
