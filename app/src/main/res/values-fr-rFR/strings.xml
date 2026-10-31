@@ -58,7 +58,6 @@
     <string name="setting_title_account">Compte</string>
     <string name="setting_header_playback">Lecture</string>
     <string name="setting_title_server">Serveur</string>
-    <string name="setting_header_sign_in_with">Se connecter avec</string>
     <string name="setting_header_server_library">Bibliothèque serveur</string>
     <!-- what each page is about -->
     <string name="setting_description_general">Fonctionnement de l\'application</string>
@@ -249,6 +248,11 @@
     <string name="setting_description_sign_in_status_refused">%1$s refused to sign in (%2$d)</string>
     <string name="setting_description_sign_in_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
     <string name="setting_description_sign_in_status_certificate_changed">%1$s\'s certificate changed</string>
+    <string name="setting_description_sign_in_status_not_signed_in">Not signed in</string>
+    <string name="setting_description_sign_in_status_start_syncing">Sign in to start syncing</string>
+    <string name="setting_description_sign_in_status_signed_in_as">Signed in as %1$s</string>
+    <string name="setting_description_sign_in_status_signed_in_with_api_key">Signed in with an API key</string>
+    <string name="setting_description_sign_in_status_waiting_for_server">Waiting for server to complete authentication</string>
     <string name="setting_description_restore_status_reading">Reading…</string>
     <string name="setting_description_restore_status_failed">Couldn\'t read the backup</string>
     <string name="setting_description_back_up_status_saving">Saving…</string>
@@ -264,6 +268,8 @@
     <string name="action_ok">OK</string>
     <string name="action_skip">Skip</string>
     <string name="action_forget">Forget</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_update">Update</string>
     <string name="action_sign_out">Sign out</string>
     <string name="action_pick_backup">Pick backup</string>
     <string name="action_trust_new_certificate">Trust new certificate</string>
@@ -332,9 +338,11 @@
     <string name="screen_title_network">Network</string>
     <string name="screen_title_backup">Backup</string>
     <string name="screen_title_sign_in_to_youtube">Sign in to %1$s</string>
+    <string name="screen_title_sign_in">Sign in</string>
     <string name="screen_title_account">Account</string>
     <string name="screen_title_history">History</string>
     <string name="screen_title_statistics">Statistics</string>
+    <string name="screen_title_song_details">Details</string>
     <string name="screen_title_disliked">Disliked</string>
     <string name="screen_title_downloaded">Downloaded</string>
     <string name="screen_title_download_queue">Download queue</string>
@@ -365,6 +373,8 @@
     <string name="semantic_dislike">Dislike</string>
     <string name="semantic_disliked">Disliked</string>
     <string name="semantic_show_disliked_songs">Show disliked songs</string>
+    <string name="semantic_show_text">Show text</string>
+    <string name="semantic_hide_text">Hide text</string>
     <string name="semantic_drag_to_move">Drag to move</string>
     <string name="semantic_equalizer">Equalizer</string>
     <string name="semantic_explicit">Explicit</string>
@@ -443,6 +453,7 @@
     <string name="menu_add_to_queue">Add to queue</string>
     <string name="menu_add_to_playlist">Add to playlist</string>
     <string name="menu_start_radio">Start radio</string>
+    <string name="menu_details">Details</string>
     <string name="menu_go_to">Go to %1$s</string>
     <string name="menu_title_artists">Artists</string>
     <string name="menu_title_add_to_playlist">Add to playlist</string>
@@ -538,7 +549,11 @@
     <string name="dialog_body_turn_off_downloads">Downloads take %1$s. None are deleted, but no new song can be downloaded.</string>
     <string name="dialog_body_shrink_downloads">Downloads take %1$s, more than %2$s. None are deleted, but new downloads are refused until there is room.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
+    <string name="dialog_title_find_recording">Find the recording</string>
+    <string name="dialog_body_find_recording_no_matches">No recordings found</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
+    <string name="dialog_title_sign_out_of_opensubsonic">Sign out of %1$s?</string>
+    <string name="dialog_body_sign_out_of_opensubsonic">The saved username, password and API key are removed. You can sign in again any time.</string>
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
     <!--</editor-fold>-->
     <!--<editor-fold defaultstate="collapsed" desc="Error messages">-->
@@ -565,9 +580,12 @@
     <string name="error_queue_every_song">Couldn\'t get all songs</string>
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
     <string name="error_unreachable">Can\'t reach %1$s</string>
+    <string name="error_song_details">Couldn\'t get details from %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
     <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
+    <string name="error_open_file">Couldn\'t open this file</string>
+    <string name="error_open_link">Couldn\'t open this link</string>
     <string name="error_songs_not_playable">These songs can\'t be played</string>
     <string name="error_song_not_playable">This song can\'t be played</string>
     <string name="error_share_unsupported">%1$s doesn\'t support sharing this %2$s</string>
@@ -647,6 +665,7 @@
     <string name="section_header_top_songs">Top songs</string>
     <string name="section_header_top_albums">Top albums</string>
     <string name="section_header_top_artists">Top artists</string>
+    <string name="section_header_releases">Releases</string>
     <string name="section_header_listening_by_source">Listening by source</string>
     <string name="section_header_listening_over_time">Listening over time</string>
     <string name="section_header_listening_by_hour">By hour of the day</string>
@@ -677,6 +696,9 @@
     <string name="screen_open_source_licenses_hint_search">Search libraries</string>
     <string name="screen_open_source_licenses_status_no_match">No library matches %1$s</string>
     <string name="screen_lyrics_hint_change_source">Press Change source (%1$s) below to pick another source.</string>
+    <string name="screen_song_details_status_not_found">%1$s has no match for this song.</string>
+    <string name="screen_song_details_hint_search">Press Search (%1$s) to search with other words.</string>
+    <string name="screen_song_details_hint_not_kept">Not in your library, so this match isn\'t kept</string>
     <string name="screen_profiles_hint_search_or_add">Search or add profile</string>
     <string name="screen_profiles_status_active_since">Active since %1$s</string>
     <string name="screen_profiles_status_last_seen">Last seen %1$s</string>
@@ -728,6 +750,11 @@
     <string name="statistics_song_time_listened">Time listened</string>
     <string name="statistics_song_first_discovered">First discovered</string>
     <string name="statistics_song_last_played">Last played</string>
+    <string name="details_length">Length</string>
+    <string name="details_first_released">First released</string>
+    <string name="details_isrc">ISRC</string>
+    <string name="details_genres">Genres</string>
+    <string name="details_musicbrainz_id">%1$s ID</string>
     <string name="statistics_album_listens">Times completed</string>
     <string name="statistics_album_plays">Plays</string>
     <string name="statistics_album_time_listened">Time listened</string>
@@ -745,13 +772,11 @@
     <string name="notification_playback_title_channel">Playback problems</string>
     <string name="notification_playback_subtitle_channel">A song couldn\'t be played</string>
     <string name="notification_other_title_channel">Other</string>
-    <string name="notification_other_subtitle_channel">One-off notices, like a backup that couldn\'t be restored</string>
+    <string name="notification_other_subtitle_channel">One-off notices, like a backup that couldn\'t be restored, and music starting in the background</string>
     <string name="notification_local_scan_title_channel">Music on this device</string>
     <string name="notification_local_scan_subtitle_channel">Progress of reading the device\'s music and measuring its loudness</string>
     <string name="notification_sleep_timer_title_channel">Sleep timer</string>
     <string name="notification_sleep_timer_subtitle_channel">Time left until the music pauses, with buttons to change it</string>
-    <string name="notification_resume_title_channel">Resuming music</string>
-    <string name="notification_resume_subtitle_channel">Shows for a moment while headphones or the system\'s media controls play the last queue again, or a downloaded song starts from its notification</string>
     <string name="notification_local_scan_title_scanning">Scanning music</string>
     <string name="notification_local_scan_title_scanned">Music scan finished</string>
     <string name="notification_local_scan_subtitle_scanned">%1$s scanned</string>
@@ -766,8 +791,8 @@
     <string name="notification_sleep_timer_subtitle_on_hold">On hold</string>
     <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
-    <string name="notification_resume_title_resuming">Resuming music</string>
-    <string name="notification_resume_title_starting">Starting music</string>
+    <string name="notification_other_title_resuming">Resuming music</string>
+    <string name="notification_other_title_starting">Starting music</string>
     <string name="notification_downloads_title_channel">Downloads</string>
     <string name="notification_downloads_subtitle_channel">Songs being downloaded, downloaded, or that couldn\'t be downloaded</string>
     <string name="notification_downloads_title_downloading">Downloading</string>
@@ -801,7 +826,7 @@
     <string name="constant_sync_mode_off">Off</string>
     <string name="constant_sync_mode_liked">Liked only</string>
     <string name="constant_sync_mode_all">All</string>
-    <string name="constant_opensubsonic_auth_password">Username and password</string>
+    <string name="constant_opensubsonic_auth_password">Password</string>
     <string name="constant_opensubsonic_auth_api_key">API key</string>
     <string name="constant_auto_tap_action_open">Show its songs</string>
     <string name="constant_auto_tap_action_play_from_start">Play from the start</string>
