@@ -95,6 +95,7 @@ import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.Route
+import me.knighthat.kreate3.ui.navigation.SongDetails
 import me.knighthat.kreate3.ui.navigation.albumRoute
 import me.knighthat.kreate3.ui.navigation.artistRoute
 import me.knighthat.kreate3.ui.screen.detail.rememberSongShare
@@ -511,6 +512,27 @@ private fun SongMenuActions(
     actions.forEach { action ->
         MenuRow(action.icon, action.label) { close(action.onClick) }
     }
+    if (navigator != null)
+        MenuRow(R.drawable.info, stringResource(R.string.menu_details)) {
+            close { navigator.open(item.detailsRoute()) }
+        }
+}
+
+/** The details page of the song of [item], searched by what the item says of it. */
+private fun MediaItem.detailsRoute(): SongDetails {
+    val metadata = mediaMetadata
+    // A credit search finds one artist best: the first of the names a live song carries, or the
+    // album artist a library song is given
+    val artist =
+        metadata.extras?.getStringArray(EXTRA_ARTIST_NAMES)?.firstOrNull { it.isNotBlank() }
+            ?: metadata.albumArtist?.toString()
+            ?: metadata.artist?.toString()
+    return SongDetails(
+        songId = mediaId,
+        title = metadata.title?.toString().orEmpty(),
+        artist = artist?.ifBlank { null },
+        durationMs = metadata.durationMs?.takeIf { it > 0 },
+    )
 }
 
 @Composable
@@ -693,6 +715,7 @@ private fun SongMenuPreview() = PreviewTheme {
                 trailing = R.drawable.chevron_right,
             ) {}
             MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio)) {}
+            MenuRow(R.drawable.info, stringResource(R.string.menu_details)) {}
             Spacer(Modifier.height(16.dp))
         }
     }

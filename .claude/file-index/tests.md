@@ -8,7 +8,8 @@ Tests mirror the main paths under `src/test/`.
 
 - app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `VoiceSearchTest`, `SongSubtitleTest`,
   `ServedArtworkTest`, backup/
-  `BackupTest`, download/`SongDownloadsTest` (song kept in a request), playback/
+  `BackupTest`, download/`SongDownloadsTest` (song kept in a request), musicbrainz/
+  `MusicBrainzTest` (MockEngine: best match, query fallback, recording parsing), playback/
   `DataSourceResolverTest`,
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest` (read order, read-only downloads, the
   downloader's cache move), `LoudnessNormalizerTest`,

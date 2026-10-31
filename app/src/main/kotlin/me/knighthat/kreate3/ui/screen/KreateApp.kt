@@ -105,6 +105,7 @@ import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
 import me.knighthat.kreate3.ui.navigation.SearchResults
 import me.knighthat.kreate3.ui.navigation.Settings
+import me.knighthat.kreate3.ui.navigation.SongDetails
 import me.knighthat.kreate3.ui.navigation.SongStatistics
 import me.knighthat.kreate3.ui.navigation.Songs
 import me.knighthat.kreate3.ui.navigation.Statistics
@@ -143,6 +144,7 @@ import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailScreen
+import me.knighthat.kreate3.ui.screen.details.SongDetailsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
@@ -424,6 +426,14 @@ fun KreateApp(
                             }
                             entry<SongStatistics> {
                                 SongStatisticsScreen(
+                                    onBack = topLevel::pop,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<SongDetails> {
+                                SongDetailsScreen(
                                     onBack = topLevel::pop,
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,

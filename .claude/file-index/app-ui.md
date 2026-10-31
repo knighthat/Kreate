@@ -34,8 +34,10 @@ ui/component/ (shared composables; each file that draws something ends with its 
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`
   progress from `sheetState.requireOffset()`), the ModalBottomSheet (Dislike/Like/Share header, play
   next, add to queue, add to playlist + picker of the app's playlists (newest first, create button
-  in its header), radio, go to album/artist(s) + picker, list actions like "Remove from
-  playlist", Details = "In construction"). `SongMenuAction` for list-specific actions.
+  in its header), radio, go to album/artist(s) + picker, list actions like "Remove from playlist",
+  Details opens `SongDetails` with the item's title, first artist and length).
+  `SongMenuAction` for list-specific actions.
+- `OpenLink.kt` — `rememberOpenLink()`: opens a link, posts `error_no_browser` when no app can.
 - `SongDownload.kt` — `LocalSongStorage` (provided in KreateApp), `MediaItem.storage`,
   `StorageBadge` (downloaded > cached, in `ItemBadges`), `SongDownloadAction` (song menu header
   button next to Share: Download / Cached → move-or-remove dialog with worse-quality warning /

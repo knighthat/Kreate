@@ -34,6 +34,8 @@ import kotlin.time.Instant
  * @property albumPosition where the user put the song in its album, lowest first, `null` to use
  * the shared position
  * @property downloadedAt when the user downloaded the song, `null` if they didn't
+ * @property musicBrainzId the MusicBrainz recording the song was last identified as, `null` while
+ * it never was
  */
 data class UserSong(
     val songId: String,
@@ -43,4 +45,5 @@ data class UserSong(
     val likedAt: Instant? = null,
     val albumPosition: Int? = null,
     val downloadedAt: Instant? = null,
+    val musicBrainzId: String? = null,
 )

@@ -40,6 +40,8 @@ import kotlin.time.Instant
  * the shared position
  * @property downloadedAt when the user downloaded the song, `null` if they didn't. The file is
  * shared by every user who did, and kept while one of them does.
+ * @property musicBrainzId the MusicBrainz recording the song was last identified as, `null` while
+ * it never was
  * @property createdAt when the row was first stored
  * @property updatedAt when the row was last changed
  */
@@ -76,6 +78,8 @@ internal data class UserSongEntity(
     val albumPosition: Int? = null,
     @ColumnInfo(name = "downloaded_at")
     val downloadedAt: Instant? = null,
+    @ColumnInfo(name = "music_brainz_id")
+    val musicBrainzId: String? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

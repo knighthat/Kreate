@@ -147,8 +147,7 @@ before suspecting app code. Workarounds: close the inspector while testing, or u
 Compose's `UriHandler.openUri` throws `IllegalArgumentException` ("Can't open …"), not
 `ActivityNotFoundException`, when no app can open the link; uncaught it crashes the app. The
 `Pixel_6a_GPlay` emulator has no browser, so every link tap hits it there. Open links through
-`rememberOpenLink()` (`settings/about/AboutScreen.kt`), which catches it and posts
-`error_no_browser`; move it to `ui/component` once a screen outside `about/` needs it.
+`rememberOpenLink()` (`ui/component/OpenLink.kt`), which catches it and posts `error_no_browser`.
 
 ## The device's locale while the app has its own language
 

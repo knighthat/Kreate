@@ -126,7 +126,7 @@ internal fun UserAlbum.toEntity(userId: String, createdAt: Instant, updatedAt: I
     UserAlbumEntity(userId, albumId, name, thumbnail, artists, bookmarkedAt, createdAt, updatedAt)
 
 internal fun UserSongEntity.toModel() =
-    UserSong(songId, name, artists, thumbnail, likedAt, albumPosition, downloadedAt)
+    UserSong(songId, name, artists, thumbnail, likedAt, albumPosition, downloadedAt, musicBrainzId)
 
 internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: Instant) =
     UserSongEntity(
@@ -138,6 +138,7 @@ internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: In
         likedAt,
         albumPosition,
         downloadedAt,
+        musicBrainzId,
         createdAt,
         updatedAt
     )

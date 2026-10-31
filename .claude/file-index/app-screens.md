@@ -18,6 +18,11 @@ ui/screen/
   has no origin. A dislike also calls `PlaybackController.drop`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
+- details/ — `SongDetailsScreen.kt` + `SongDetailsViewModel.kt` (song menu's Details: the kept
+  `user_song.music_brainz_id` fetched again, else `MusicBrainz.identify`; header, facts (length,
+  first released, ISRCs, genres, id opens musicbrainz.org), releases; search button = "Find the
+  recording" dialog listing matches, a tap shows and keeps one; every fetched id is kept on the
+  global scope when the song is in the library, else a "not kept" hint).
 - account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Disliked,
   Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
   `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`
@@ -168,5 +173,6 @@ ui/screen/
     segmented button per sign-in way, Sign out / Save in the top bar), `backup/` (
   `BackupSettingsScreen.kt` +
   `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
-  licenses row; `OpenSourceLicensesScreen.kt` + `OpenSourceLicensesViewModel.kt`: libraries read
+    licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +
+    `OpenSourceLicensesViewModel.kt`: libraries read
   from AboutLibraries' generated `R.raw.aboutlibraries`, search, license text sheet).

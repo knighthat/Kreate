@@ -128,6 +128,35 @@ data class SongStatistics(val songId: String) : Route {
     }
 }
 
+/**
+ * What MusicBrainz knows about the song [songId], opened from the song menu. [title], [artist]
+ * and [durationMs] are what it is searched by, they come with the menu's song: one fetched live
+ * isn't in the database.
+ */
+@Serializable
+data class SongDetails(
+    val songId: String,
+    val title: String,
+    val artist: String?,
+    val durationMs: Long?,
+) : Route {
+
+    override val arguments: Bundle
+        get() = Bundle().apply {
+            putString(ID, songId)
+            putString(TITLE, title)
+            putString(ARTIST, artist)
+            durationMs?.let { putLong(DURATION, it) }
+        }
+
+    companion object {
+        const val ID = "songId"
+        const val TITLE = "title"
+        const val ARTIST = "artist"
+        const val DURATION = "durationMs"
+    }
+}
+
 /** How the profile listens to the songs of the album [albumId], opened from [Statistics]. */
 @Serializable
 data class AlbumStatistics(val albumId: String) : Route {

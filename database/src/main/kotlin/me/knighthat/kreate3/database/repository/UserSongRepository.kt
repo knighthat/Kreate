@@ -162,6 +162,17 @@ interface UserSongRepository {
 
     fun find(songId: String): Flow<UserSongView?>
 
+    /** The MusicBrainz recording the song was identified as, see [UserSong.musicBrainzId]. */
+    suspend fun musicBrainzId(songId: String): String?
+
+    /**
+     * Keeps [musicBrainzId] as the recording the song is, only for a song in the library: it
+     * doesn't add one.
+     *
+     * @return `false` when the song isn't in the library, nothing was kept
+     */
+    suspend fun setMusicBrainzId(songId: String, musicBrainzId: String): Boolean
+
     /**
      * Songs of the library that resemble [songId], most alike first, at most [limit]. Only
      * songs from the same origin as [songId] are considered, the song itself and disliked songs

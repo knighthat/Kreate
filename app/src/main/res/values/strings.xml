@@ -24,6 +24,7 @@
     <string name="source_better_lyrics" translatable="false">Better Lyrics</string>
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
+    <string name="source_musicbrainz" translatable="false">MusicBrainz</string>
     <string name="bytes">%1$s B</string>
     <string name="kib">%1$s KiB</string>
     <string name="mib">%1$s MiB</string>
@@ -369,6 +370,7 @@
     <string name="screen_title_account">Account</string>
     <string name="screen_title_history">History</string>
     <string name="screen_title_statistics">Statistics</string>
+    <string name="screen_title_song_details">Details</string>
     <string name="screen_title_disliked">Disliked</string>
     <string name="screen_title_downloaded">Downloaded</string>
     <string name="screen_title_download_queue">Download queue</string>
@@ -482,6 +484,7 @@
     <string name="menu_add_to_queue">Add to queue</string>
     <string name="menu_add_to_playlist">Add to playlist</string>
     <string name="menu_start_radio">Start radio</string>
+    <string name="menu_details">Details</string>
     <string name="menu_go_to">Go to %1$s</string>
     <string name="menu_title_artists">Artists</string>
     <string name="menu_title_add_to_playlist">Add to playlist</string>
@@ -579,6 +582,8 @@
     <string name="dialog_body_turn_off_downloads">Downloads take %1$s. None are deleted, but no new song can be downloaded.</string>
     <string name="dialog_body_shrink_downloads">Downloads take %1$s, more than %2$s. None are deleted, but new downloads are refused until there is room.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
+    <string name="dialog_title_find_recording">Find the recording</string>
+    <string name="dialog_body_find_recording_no_matches">No recordings found</string>
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
     <string name="dialog_title_sign_out_of_opensubsonic">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">The saved username, password and API key are removed. You can sign in again any time.</string>
@@ -609,6 +614,7 @@
     <string name="error_queue_every_song">Couldn\'t get all songs</string>
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
     <string name="error_unreachable">Can\'t reach %1$s</string>
+    <string name="error_song_details">Couldn\'t get details from %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
     <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
@@ -695,6 +701,7 @@
     <string name="section_header_top_songs">Top songs</string>
     <string name="section_header_top_albums">Top albums</string>
     <string name="section_header_top_artists">Top artists</string>
+    <string name="section_header_releases">Releases</string>
     <string name="section_header_listening_by_source">Listening by source</string>
     <string name="section_header_listening_over_time">Listening over time</string>
     <string name="section_header_listening_by_hour">By hour of the day</string>
@@ -726,6 +733,9 @@
     <string name="screen_open_source_licenses_hint_search">Search libraries</string>
     <string name="screen_open_source_licenses_status_no_match">No library matches %1$s</string>
     <string name="screen_lyrics_hint_change_source">Press Change source (%1$s) below to pick another source.</string>
+    <string name="screen_song_details_status_not_found">%1$s has no match for this song.</string>
+    <string name="screen_song_details_hint_search">Press Search (%1$s) to search with other words.</string>
+    <string name="screen_song_details_hint_not_kept">Not in your library, so this match isn\'t kept</string>
     <string name="screen_profiles_hint_search_or_add">Search or add profile</string>
     <string name="screen_profiles_status_active_since">Active since %1$s</string>
     <string name="screen_profiles_status_last_seen">Last seen %1$s</string>
@@ -778,6 +788,11 @@
     <string name="statistics_song_time_listened">Time listened</string>
     <string name="statistics_song_first_discovered">First discovered</string>
     <string name="statistics_song_last_played">Last played</string>
+    <string name="details_length">Length</string>
+    <string name="details_first_released">First released</string>
+    <string name="details_isrc">ISRC</string>
+    <string name="details_genres">Genres</string>
+    <string name="details_musicbrainz_id">%1$s ID</string>
     <string name="statistics_album_listens">Times completed</string>
     <string name="statistics_album_plays">Plays</string>
     <string name="statistics_album_time_listened">Time listened</string>

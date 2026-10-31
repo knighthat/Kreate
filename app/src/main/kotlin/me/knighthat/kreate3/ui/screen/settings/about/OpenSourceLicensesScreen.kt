@@ -60,6 +60,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SearchButton
+import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import org.koin.compose.viewmodel.koinViewModel

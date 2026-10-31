@@ -43,6 +43,7 @@ import me.knighthat.kreate3.database.databaseModule
 import me.knighthat.kreate3.download.downloadModule
 import me.knighthat.kreate3.lyrics.LyricsSource
 import me.knighthat.kreate3.lyrics.lyricsModule
+import me.knighthat.kreate3.musicbrainz.MusicBrainz
 import me.knighthat.kreate3.notification.DownloadNotifications
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
@@ -200,6 +201,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     // Pictures of artists stored from song credits, which carry none
                     single { ArtistPictures(get(), get(), get()) }
+                    // Recordings and their releases, for the song details page
+                    single { MusicBrainz(get(), get()) }
                     single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }
                 },
                 databaseModule,

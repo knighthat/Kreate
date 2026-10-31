@@ -195,6 +195,12 @@ internal class UserSongRepositoryImpl(
             userSongDao.find(userId, songId).map { it?.toModel() }
         }
 
+    override suspend fun musicBrainzId(songId: String): String? =
+        userSongDao.musicBrainzId(scope.requireId(), songId)
+
+    override suspend fun setMusicBrainzId(songId: String, musicBrainzId: String): Boolean =
+        userSongDao.setMusicBrainzId(scope.requireId(), songId, musicBrainzId, clock.now()) > 0
+
     override suspend fun similar(songId: String, limit: Int): List<UserSongView> {
         val userId = scope.awaitId()
         return userSongDao.list(

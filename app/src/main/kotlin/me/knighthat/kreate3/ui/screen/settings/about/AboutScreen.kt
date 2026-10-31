@@ -23,13 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 
@@ -94,26 +93,6 @@ private fun AboutContent(
     }
 }
 
-/**
- * Opens a link in another app, or says no app can when none is installed (an emulator may have
- * no browser).
- */
-@Composable
-internal fun rememberOpenLink(): (String) -> Unit {
-    val uriHandler = LocalUriHandler.current
-    val notifier = LocalNotifier.current
-    val noBrowser = stringResource(R.string.error_no_browser)
-    return remember(uriHandler, notifier, noBrowser) {
-        { uri ->
-            try {
-                uriHandler.openUri(uri)
-            } catch (_: IllegalArgumentException) {
-                // How the handler says no app can open it
-                notifier.post(noBrowser)
-            }
-        }
-    }
-}
 
 @ScreenPreviews
 @Composable

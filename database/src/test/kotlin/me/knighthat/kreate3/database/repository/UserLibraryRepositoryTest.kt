@@ -92,6 +92,32 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun musicBrainzIdIsKeptOnlyForSongsOfTheLibrary() = runBlocking {
+        addSong("s1")
+        addSong("live")
+        librarySong("s1")
+
+        assertTrue(songs.setMusicBrainzId("s1", "mbid"))
+        assertEquals("mbid", songs.musicBrainzId("s1"))
+        // A song fetched live isn't added
+        assertFalse(songs.setMusicBrainzId("live", "mbid"))
+        assertNull(database.userSongDao().get(USER, "live"))
+        assertNull(songs.musicBrainzId("live"))
+    }
+
+    @Test
+    fun forgetThumbnailKeepsRowsWithAMusicBrainzId() = runBlocking {
+        val file = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        addSong("s1")
+        songs.save(UserSong("s1", thumbnail = file, musicBrainzId = "mbid"))
+
+        songs.forgetThumbnail(file)
+
+        assertNull(database.userSongDao().get(USER, "s1")?.thumbnail)
+        assertEquals("mbid", songs.musicBrainzId("s1"))
+    }
+
+    @Test
     fun eachUserDownloadsOnTheirOwn() = runBlocking {
         val cover = Uri.parse("file:///data/download_covers/a-1440.jpg")
         addUser("other")

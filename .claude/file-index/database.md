@@ -22,7 +22,8 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `UserSongRepository.disliked` reads a dislike's time from its negative `liked_at`,
   `DislikedSongRow` in `UserSongDao`; `downloaded` joins `user_song.downloaded_at` onto the view,
   disliked songs included,
-  `DownloadedSongRow`),
+  `DownloadedSongRow`; `music_brainz_id` = the recording the Details page last showed, set by
+  `setMusicBrainzId` only on rows already there, not in the view),
   `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:

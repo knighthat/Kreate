@@ -45,6 +45,10 @@ Root
   periodic), waits for `ActiveUser` + `Preferences.awaitProfile`, then in `finally` `scanNow` +
   `schedule` with the new profile's interval.
 - `NetworkModule.kt` — Koin: shared `OkHttpClient` (timeouts/retries from Preferences), Ktor/JSON.
+- musicbrainz/`MusicBrainz.kt` — MusicBrainz web service client (Koin single in
+  `KreateApplication`): recording `search` (phrase, then loose words), `identify` (`best`: top
+  scores, length within 5 s, not live, most releases, earliest), `recording` lookup (credits, ISRCs,
+  genres + tags, releases); one request a second across callers, named User-Agent.
 - `ViewModelModule.kt` — Koin: every `viewModel { }` declaration. Add new ViewModels here.
 - backup/`Backup.kt` — zip export (`manifest.json`, `kreate.db` via VACUUM INTO, preference files;
   no secrets), `stage` (validate + unpack to `noBackupFilesDir/restore`, export current state to

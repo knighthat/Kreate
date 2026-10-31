@@ -63,6 +63,21 @@ internal interface UserSongDao {
     @Query("SELECT * FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun get(userId: String, songId: String): UserSongEntity?
 
+    @Query("SELECT music_brainz_id FROM user_song WHERE user_id = :userId AND song_id = :songId")
+    suspend fun musicBrainzId(userId: String, songId: String): String?
+
+    /** @return the rows changed, none when the song isn't in the user's library */
+    @Query(
+        "UPDATE user_song SET music_brainz_id = :musicBrainzId, updated_at = :now " +
+                "WHERE user_id = :userId AND song_id = :songId"
+    )
+    suspend fun setMusicBrainzId(
+        userId: String,
+        songId: String,
+        musicBrainzId: String,
+        now: Instant,
+    ): Int
+
     /** Ids of the songs the user disliked, a negative `liked_at`. */
     @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at < 0")
     fun dislikedIds(userId: String): Flow<List<String>>
@@ -123,27 +138,28 @@ internal interface UserSongDao {
 
     /**
      * Deletes the rows of every user whose cover is [thumbnail], of the song [songId] or of any
-     * when `null`, that keep nothing else: no name, artists, reaction, album position or
-     * download.
+     * when `null`, that keep nothing else: no name, artists, reaction, album position, download
+     * or MusicBrainz id.
      */
     @Query(
         "DELETE FROM user_song WHERE thumbnail = :thumbnail " +
                 "AND (:songId IS NULL OR song_id = :songId) " +
                 "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
-                "AND album_position IS NULL AND downloaded_at IS NULL"
+                "AND album_position IS NULL AND downloaded_at IS NULL AND music_brainz_id IS NULL"
     )
     suspend fun deleteKeepingOnly(thumbnail: Uri, songId: String?)
 
     /**
      * Deletes the rows of the song [songId] downloaded by the user [userId], or by any when
-     * `null`, that keep nothing else: no name, artists, reaction, album position, and no cover
-     * but [thumbnail].
+     * `null`, that keep nothing else: no name, artists, reaction, album position, MusicBrainz id,
+     * and no cover but [thumbnail].
      */
     @Query(
         "DELETE FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL " +
                 "AND (:userId IS NULL OR user_id = :userId) " +
                 "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
-                "AND album_position IS NULL AND (thumbnail IS NULL OR thumbnail = :thumbnail)"
+                "AND album_position IS NULL AND music_brainz_id IS NULL " +
+                "AND (thumbnail IS NULL OR thumbnail = :thumbnail)"
     )
     suspend fun deleteKeepingOnlyDownload(songId: String, userId: String?, thumbnail: Uri?)
 
