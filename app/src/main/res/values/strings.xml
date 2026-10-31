@@ -674,7 +674,7 @@
     <string name="snackbar_history_cleared">History cleared</string>
     <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
     <string name="snackbar_removed_from_dislike_some_failed">%1$s removed from dislike, %2$d failed</string>
-    <string name="snackbar_the_playlist">the playlist</string>
+    <string name="snackbar_the_playlist">this playlist</string>
     <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
     <string name="snackbar_will_play_next_one">Will play this song next</string>
     <string name="snackbar_will_play_next_many">Will play %1$s next</string>
@@ -773,8 +773,6 @@
     <string name="statistics_storage_this_user">This user</string>
     <string name="statistics_storage_all_users">All users</string>
     <string name="statistics_storage_of_limit">%1$s of %2$s</string>
-    <string name="statistics_storage_file">%1$s · %2$s</string>
-    <string name="statistics_storage_with_status">%1$s · %2$s</string>
     <string name="statistics_storage_device_used">%1$s of %2$s used</string>
     <string name="statistics_storage_app_uses">%1$s uses %2$s</string>
     <string name="statistics_storage_image_cache">Image cache</string>

@@ -147,12 +147,10 @@ fun Resources.fileSize(bytes: Long, binary: Boolean = Preferences.BINARY_SIZES.v
 fun StorageUsage(storage: StorageUse, modifier: Modifier = Modifier) = Column(modifier) {
     val resources = LocalResources.current
     val ofLimit = { used: String ->
-        resources.getString(
-            if (storage.limited) R.string.statistics_storage_of_limit
-            else R.string.statistics_storage_with_status,
-            used,
-            storage.limit,
-        )
+        if (storage.limited)
+            resources.getString(R.string.statistics_storage_of_limit, used, storage.limit)
+        else
+            "$used · ${storage.limit}"
     }
     // One thing out of a limit: other users' part is a fainter step of this user's color
     val userColor = MaterialTheme.colorScheme.primary

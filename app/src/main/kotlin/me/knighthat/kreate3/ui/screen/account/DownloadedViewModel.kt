@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.DownloadedSong
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.download.DownloadedFile
@@ -170,13 +169,7 @@ class DownloadedViewModel(
         val size = context.resources.fileSize(file.bytes, binary)
         return DownloadedRow(
             item = song.toMediaItem() ?: return null,
-            file = file.quality?.let {
-                context.getString(
-                    R.string.statistics_storage_file,
-                    size,
-                    context.getString(it.labelRes)
-                )
-            } ?: size,
+            file = file.quality?.let { "$size · ${context.getString(it.labelRes)}" } ?: size,
             disliked = song.likedAt?.let { it.toEpochMilliseconds() < 0 } == true,
         )
     }
