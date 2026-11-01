@@ -26,6 +26,12 @@
 
 </div>
 
+# ❗❗ IMPORTANT ❗❗
+
+This version (v2.2.4) of Kreate has officially entered maintain mode. Bugs will no longer be fixed, except for YT block workarounds. 
+
+Kreate3 is not in active development, beta will be released on [Patreon](https://patreon.com/knighthat) first. 
+
 # 📲 Installation
 
 [![Get it on Github](./assets/get-it-on/GitHub.png)](https://github.com/knighthat/RiMusic/releases/latest)
