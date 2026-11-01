@@ -28,9 +28,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.Notifier
 
@@ -42,6 +44,12 @@ val LocalNotifier = staticCompositionLocalOf { Notifier() }
 
 /** Where the [Notifier]'s messages show, see [MessageHost]. */
 val LocalMessageHost = staticCompositionLocalOf { SnackbarHostState() }
+
+/** How long a [MessageDuration.SHORT] message stays, shorter than Material's 4 s. */
+private const val SHORT_MILLIS = 3_000L
+
+/** How long a [MessageDuration.LONG] message stays, shorter than Material's 10 s. */
+private const val LONG_MILLIS = 5_000L
 
 /**
  * Shows the messages of [LocalMessageHost]. The app's scaffold has it above its bottom bar; a
@@ -59,24 +67,41 @@ fun ShowMessages(notifier: Notifier, host: SnackbarHostState) {
     val state by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
     // Not collected meanwhile, so the notifier sends messages to the system instead
     if (!state.isAtLeast(Lifecycle.State.STARTED)) return
+    val accessibility = LocalAccessibilityManager.current
 
-    LaunchedEffect(notifier, host) {
+    LaunchedEffect(notifier, host, accessibility) {
         // A message cancelled by the next one is taken off the screen
         notifier.messages.collectLatest { message ->
             host.currentSnackbarData?.dismiss()
-            val result = host.showSnackbar(
-                message = message.text,
-                actionLabel = message.actionLabel,
-                withDismissAction = message.dismissable,
-                duration = when (message.duration) {
-                    // A button needs time to be reached
-                    MessageDuration.SHORT ->
-                        if (message.actionLabel != null) SnackbarDuration.Long
-                        else SnackbarDuration.Short
-                    MessageDuration.LONG -> SnackbarDuration.Long
-                    MessageDuration.INDEFINITE -> SnackbarDuration.Indefinite
-                },
-            )
+            val millis = when (message.duration) {
+                // A button needs time to be reached
+                MessageDuration.SHORT ->
+                    if (message.actionLabel != null) LONG_MILLIS else SHORT_MILLIS
+
+                MessageDuration.LONG -> LONG_MILLIS
+                MessageDuration.INDEFINITE -> null
+            }
+            // Shown as indefinite and taken off when the time runs out, Material's own times
+            // being fixed; stretched like Material's by the system's accessibility timeout
+            val timeout = millis?.let {
+                accessibility?.calculateRecommendedTimeoutMillis(
+                    originalTimeoutMillis = it,
+                    containsIcons = message.dismissable,
+                    containsText = true,
+                    containsControls = message.actionLabel != null,
+                ) ?: it
+            }
+            val show = suspend {
+                host.showSnackbar(
+                    message = message.text,
+                    actionLabel = message.actionLabel,
+                    withDismissAction = message.dismissable,
+                    duration = SnackbarDuration.Indefinite,
+                )
+            }
+            val result =
+                if (timeout == null) show()
+                else withTimeoutOrNull(timeout) { show() } ?: SnackbarResult.Dismissed
             if (result == SnackbarResult.ActionPerformed) message.onAction()
         }
     }
