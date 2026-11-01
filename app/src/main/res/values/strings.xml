@@ -51,6 +51,10 @@
     <string name="setting_header_images">Images</string>
     <string name="setting_header_navigation">Navigation</string>
     <string name="setting_title_theme">Theme</string>
+    <string name="setting_title_translate_language">Translate this language</string>
+    <string name="setting_description_translate_language">Help finish its translation on Crowdin</string>
+    <string name="setting_title_request_language">Request new language</string>
+    <string name="setting_description_request_language">Ask on Crowdin for a language the app doesn\'t have yet</string>
     <string name="setting_title_language">Language</string>
     <string name="setting_title_region">Region</string>
     <string name="setting_header_layout">Layout</string>

@@ -161,7 +161,9 @@ ui/screen/
     `AUTO_*_TAP` choices and a Voice search row), `player/VoiceSearchSettingsScreen.kt` (voice
     search origins: drag to reorder via `ReorderableColumn`, switch to skip; OpenSubsonic dimmed,
     not movable or switchable while `OPEN_SUBSONIC_ENABLED` is off),
-    `ui/UiSettingsScreen.kt` (theme, contrast; Layout: icon only, playlist
+    `ui/UiSettingsScreen.kt` (theme, contrast; language + "Translate this language" and
+    "Request new language" rows (both open the Crowdin project; translate hidden while System or
+    English is picked); Layout: icon only, playlist
     initial, binary units; app icon),
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account

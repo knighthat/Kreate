@@ -39,12 +39,17 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 import java.util.Locale
+
+/** The Crowdin project, where the app is translated and new languages are asked for. */
+private const val CROWDIN_PROJECT_URL = "https://translate.kreate.knighthat.me/project/kreate"
 
 /**
  * What the user sees and touches: the theme, the language and the app icon.
@@ -60,6 +65,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
     val language by Preferences.LANGUAGE.collectAsStateWithLifecycle()
     val scope = koinInject<CoroutineScope>()
+    val openLink = rememberOpenLink()
 
     UiSettingsContent(
         themeMode = themeMode,
@@ -76,6 +82,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         languages = listOf(null) + AppLanguage.available,
         // The global scope, a restart for it outlives this screen
         onLanguageChange = { AppLanguage.select(context, scope, it) },
+        onOpenCrowdin = { openLink(CROWDIN_PROJECT_URL) },
         onBack = onBack,
         modifier = modifier,
     )
@@ -93,6 +100,7 @@ private fun UiSettingsContent(
     language: Locale?,
     languages: List<Locale?>,
     onLanguageChange: (Locale?) -> Unit,
+    onOpenCrowdin: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -122,6 +130,19 @@ private fun UiSettingsContent(
             options = languages,
             label = { it?.let(AppLanguage::displayName) ?: system },
             onSelect = onLanguageChange,
+        )
+        // Both lead to the Crowdin project, which lists every language. Translating needs a
+        // language picked, "System" names none and English is the source
+        if (language != null && language.language != "en")
+            SettingsItem(
+                title = stringResource(R.string.setting_title_translate_language),
+                summary = stringResource(R.string.setting_description_translate_language),
+                onClick = onOpenCrowdin,
+            )
+        SettingsItem(
+            title = stringResource(R.string.setting_title_request_language),
+            summary = stringResource(R.string.setting_description_request_language),
+            onClick = onOpenCrowdin,
         )
 
         SettingsSection(stringResource(R.string.setting_header_layout))
@@ -166,9 +187,10 @@ private fun UiSettingsPreview() = PreviewTheme {
         binarySizes = true,
         appIcon = AppIcon.BLACK,
         onAppIconChange = {},
-        language = null,
+        language = Locale.forLanguageTag("vi"),
         languages = listOf(null, Locale.ENGLISH, Locale.forLanguageTag("vi")),
         onLanguageChange = {},
+        onOpenCrowdin = {},
         onBack = {},
     )
 }
