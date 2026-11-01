@@ -36,7 +36,9 @@ ui/component/ (shared composables; each file that draws something ends with its 
   next, add to queue, add to playlist + picker of the app's playlists (newest first, create button
   in its header), radio, go to album/artist(s) + picker, list actions like "Remove from playlist",
   Details opens `SongDetails` with the item's title, first artist and length).
-  `SongMenuAction` for list-specific actions.
+  `SongMenuAction` for list-specific actions; `SongMenuHost.openPlaying(item)` for the full player's
+  button (`rowBounds = null`: no lifted row; `showQueueActions = false`: no play next / add to
+  queue).
 - `OpenLink.kt` — `rememberOpenLink()`: opens a link, posts `error_no_browser` when no app can.
 - `SongDownload.kt` — `LocalSongStorage` (provided in KreateApp), `MediaItem.storage`,
   `StorageBadge` (downloaded > cached, in `ItemBadges`), `SongDownloadAction` (song menu header

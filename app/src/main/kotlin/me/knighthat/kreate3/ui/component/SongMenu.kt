@@ -131,8 +131,8 @@ internal class SongMenuRequest(
     /** The row that is lifted, it stays empty while the menu is open. */
     val owner: Any,
     val item: MediaItem,
-    /** Where the row is on the screen. */
-    val rowBounds: Rect,
+    /** Where the row is on the screen, `null` for a menu opened by a button: no row is lifted. */
+    val rowBounds: Rect?,
     val showThumbnail: Boolean,
     val showAlbum: Boolean,
     val actions: List<SongMenuAction>,
@@ -143,6 +143,8 @@ internal class SongMenuRequest(
     val overlineColor: Color = Color.Unspecified,
     val showBadges: Boolean = true,
     val showDisliked: Boolean = true,
+    /** Whether Play next and Add to queue are in the menu, not for the song playing. */
+    val showQueueActions: Boolean = true,
 )
 
 /**
@@ -152,6 +154,23 @@ internal class SongMenuRequest(
 @Stable
 class SongMenuHost {
     internal var request: SongMenuRequest? by mutableStateOf(null)
+}
+
+/**
+ * Opens the menu of the song playing, for the full player's button: no row is lifted, and Play
+ * next and Add to queue are left out.
+ */
+fun SongMenuHost.openPlaying(item: MediaItem) {
+    request = SongMenuRequest(
+        owner = item,
+        item = item,
+        rowBounds = null,
+        showThumbnail = true,
+        showAlbum = true,
+        actions = emptyList(),
+        trailing = null,
+        showQueueActions = false,
+    )
 }
 
 /** The app's [SongMenuHost], `null` where there is none, like in previews: rows have no menu. */
@@ -278,6 +297,7 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
                     item = request.item,
                     artists = artists,
                     actions = request.actions,
+                    showQueueActions = request.showQueueActions,
                     close = ::close,
                     onPickArtist = { page = SongMenuPage.ARTISTS },
                     onPickPlaylist = { page = SongMenuPage.PLAYLISTS },
@@ -303,7 +323,8 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
 /**
  * The scrim of the menu, and the row of [request] over it: in its place in the list while the
  * sheet is hidden, hovering above the sheet like a card once it's open, and in between as it
- * moves. Drawn in the app's window, under the sheet's.
+ * moves. Opened by a button, there is only the scrim. Drawn in the app's window, under the
+ * sheet's.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -320,6 +341,7 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
             .onGloballyPositioned { origin = it.positionOnScreen() }
             .drawBehind { drawRect(scrim, alpha = placement.progress) }
     ) {
+        if (row == null) return@Box
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             SongRow(
                 item = request.item,
@@ -446,6 +468,7 @@ private fun SongMenuActions(
     item: MediaItem,
     artists: List<SongArtist>,
     actions: List<SongMenuAction>,
+    showQueueActions: Boolean,
     close: (then: () -> Unit) -> Unit,
     onPickArtist: () -> Unit,
     onPickPlaylist: () -> Unit,
@@ -461,27 +484,31 @@ private fun SongMenuActions(
             ?.takeIf { it != navigator?.current }
     }
 
-    MenuRow(
-        R.drawable.queue_play_next,
-        stringResource(R.string.menu_play_next),
-        enabled = playable
-    ) {
-        close {
-            val items = listOf(item)
-            playback.playNext(items)
-            notifier.post(undoMessage(resources, willPlayNext(resources, 1)) {
-                playback.unqueue(
-                    items
-                )
-            })
+    if (showQueueActions) {
+        MenuRow(
+            R.drawable.queue_play_next,
+            stringResource(R.string.menu_play_next),
+            enabled = playable
+        ) {
+            close {
+                val items = listOf(item)
+                playback.playNext(items)
+                notifier.post(undoMessage(resources, willPlayNext(resources, 1)) {
+                    playback.unqueue(
+                        items
+                    )
+                })
+            }
         }
-    }
-    MenuRow(
-        R.drawable.playlist_add,
-        stringResource(R.string.menu_add_to_queue),
-        enabled = playable
-    ) {
-        close { playback.queue(resources, QueueAction.ENQUEUE, listOf(item))?.let(notifier::post) }
+        MenuRow(
+            R.drawable.playlist_add,
+            stringResource(R.string.menu_add_to_queue),
+            enabled = playable
+        ) {
+            close {
+                playback.queue(resources, QueueAction.ENQUEUE, listOf(item))?.let(notifier::post)
+            }
+        }
     }
     MenuRow(
         icon = R.drawable.library_add,

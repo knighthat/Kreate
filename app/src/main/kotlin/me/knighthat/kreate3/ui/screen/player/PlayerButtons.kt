@@ -63,9 +63,10 @@ import me.knighthat.kreate3.playback.changedBy
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.LocalSongMenuHost
 import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.formatDuration
-import me.knighthat.kreate3.ui.screen.detail.rememberSongShare
+import me.knighthat.kreate3.ui.component.openPlaying
 import kotlin.time.Duration.Companion.minutes
 
 /** Minutes the sleep timer can be set to. */
@@ -73,7 +74,7 @@ private val SLEEP_TIMER_MINUTES = listOf(5, 10, 15, 30, 45, 60)
 
 /**
  * The buttons of [NowPlayingPage]: the equalizer, the sleep timer, in the primary color while it
- * runs, and sharing the song.
+ * runs, and the song's menu.
  */
 @Composable
 internal fun PlayerButtons(
@@ -87,7 +88,7 @@ internal fun PlayerButtons(
 ) {
     EqualizerButton(controller)
     SleepTimerButton(controller)
-    SongShareButton(item)
+    SongMenuButton(item)
 }
 
 /**
@@ -264,16 +265,19 @@ private fun SleepTimerItem(label: String, isChecked: Boolean, onClick: () -> Uni
         onClick = onClick,
     )
 
-/** Shares the song, see [rememberSongShare]. */
+/**
+ * Opens the song's menu, the one its rows open, with Share in it, less what queues it. Off where
+ * there is none.
+ */
 @Composable
-private fun SongShareButton(item: MediaItem) {
-    val share = rememberSongShare(item)
+private fun SongMenuButton(item: MediaItem) {
+    val host = LocalSongMenuHost.current
 
     ModeButton(
-        icon = R.drawable.share,
-        description = stringResource(R.string.semantic_share),
+        icon = R.drawable.more_vert,
+        description = stringResource(R.string.semantic_more),
         isOn = false,
-        enabled = share.enabled,
-        onClick = { share.share() },
+        enabled = host != null,
+        onClick = { host?.openPlaying(item) },
     )
 }

@@ -119,8 +119,8 @@ ui/screen/
   `LyricsControls` hoisted per song in `FullPlayer`, text scaled via `LocalDensity.fontScale` ×
   `LYRICS_TEXT_SIZE`), `LyricsButtons.kt` (lyrics bar: source menu, search dialog, timing menu, text
   size stepper, copy), `PlayerButtons.kt` (Player page bar: EQ = system effect panel via
-  StartActivityForResult, sleep timer menu with countdown, share: YouTube link / OpenSubsonic
-  `Shareable.Song` share / local file via EXTRA_STREAM), `QueuePage.kt` (`PlaybackController.queue`,
+  StartActivityForResult, sleep timer menu with countdown, more button opening the song menu via
+  `SongMenuHost.openPlaying`), `QueuePage.kt` (`PlaybackController.queue`,
   rows in `shuffledOrder` while shuffled (queue order while its size lags), tap → `skipTo` and
   remove at `positionOf` (row in queue order, queue index less pending removals when shuffled),
   `FullPlayer` scrolls the list to the playing song's row when the order switches; entries keyed
