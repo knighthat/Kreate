@@ -60,7 +60,10 @@ The app is currently available on [Patreon](https://patreon.com/knighthat).
     <img alt="Screenshot 6" src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" height="350px" />
     <img alt="Screenshot 7" src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.jpg" height="350px" />
     <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.jpg" height="350px" />
+    <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/9.jpg" height="350px" />
 </div>
+
+<p align="center"><sub>Songs and artists are made up; covers are stock photos, see <a href="fastlane/metadata/android/en-US/images/phoneScreenshots/CREDITS.md">credits</a>.</sub></p>
 
 # 🌐 Supported languages
 

@@ -268,7 +268,7 @@ fun UserPlaylist.toMediaItem(): MediaItem =
             subtitle(
                 if (isMonthly) GlobalContext.get().get<Context>()
                     .getString(R.string.playlist_type_monthly) else null,
-                GlobalContext.get().get<Context>().getString(origin.sourceRes)
+                GlobalContext.get().get<Context>().resources.sourceName(origin)
             )
         )
         setArtworkUri(thumbnail)
@@ -386,7 +386,7 @@ fun Artist.toLiveMediaItem(
 fun UserPlaylist.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem =
     mediaItem(checkNotNull(remoteId) { "A playlist of an online catalog has a remote id" }) {
         setTitle(name)
-        setSubtitle(origin.name)
+        setSubtitle(GlobalContext.get().get<Context>().resources.sourceName(origin))
         setArtworkUri(thumbnail)
         setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
         setExtras(extras {

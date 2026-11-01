@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPreference
@@ -34,6 +35,10 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPr
  */
 internal fun Resources.openSubsonicName(): String =
     OpenSubsonicServer.name ?: getString(R.string.source_opensubsonicapi)
+
+/** What texts call [origin]'s source: [openSubsonicName] for OpenSubsonic, else its name. */
+internal fun Resources.sourceName(origin: Origin): String =
+    if (origin == Origin.OPEN_SUBSONIC) openSubsonicName() else getString(origin.sourceRes)
 
 /**
  * [openSubsonicName] that follows the server's answers and the profile's address. It reads
