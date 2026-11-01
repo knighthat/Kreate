@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -71,6 +72,7 @@ import androidx.media3.common.MediaMetadata
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.memory.MemoryCache
+import coil3.request.ImageRequest
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.model.Origin
@@ -79,6 +81,7 @@ import me.knighthat.kreate3.source.local.LocalCover
 import me.knighthat.kreate3.source.local.isAlbumArt
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import org.koin.compose.koinInject
+import kotlin.math.max
 
 internal val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
@@ -183,6 +186,9 @@ fun Thumbnail(
     localSongId: Long? = null,
 ) = Thumbnail(listOfNotNull(thumbnailModel(uri, localSongId)), shape, modifier)
 
+/** The order [Thumbnail] tries its pictures in, and one in memory to show while they load. */
+private class ThumbnailOrder(val models: List<Any>, val standIn: MemoryCache.Key?)
+
 /**
  * Like the other [Thumbnail], with several pictures to try. One that Coil has in memory shows
  * first, wherever it is in [models], so nothing is loaded for it. The others are loaded in the
@@ -190,6 +196,8 @@ fun Thumbnail(
  *
  * @param placeholder drawn instead of the broken frame when [models] is empty; a picture that
  * can't be loaded still shows the broken frame
+ * @param minCachedSize longer side a picture in memory needs to show first. A smaller one, like
+ * a list's cover in the player, only stands in while the pictures load in order
  */
 @Composable
 fun Thumbnail(
@@ -197,17 +205,32 @@ fun Thumbnail(
     shape: Shape,
     modifier: Modifier = Modifier,
     placeholder: (@Composable BoxScope.() -> Unit)? = null,
+    minCachedSize: Dp = 0.dp,
 ) {
     val context = LocalContext.current
-    val order = remember(models) {
+    val minCachedPx = with(LocalDensity.current) { minCachedSize.roundToPx() }
+    val order = remember(models, minCachedPx) {
         val memory = SingletonImageLoader.get(context).memoryCache
+        var standIn: MemoryCache.Key? = null
         val cached = models.firstOrNull { model ->
-            memoryCacheKey(model)?.let { memory?.get(MemoryCache.Key(it)) } != null
+            val key = memoryCacheKey(model)?.let(MemoryCache::Key) ?: return@firstOrNull false
+            val image = memory?.get(key)?.image ?: return@firstOrNull false
+            val sharp = max(image.width, image.height) >= minCachedPx
+            if (!sharp && standIn == null) standIn = key
+            sharp
         }
-        if (cached == null) models else listOf(cached) + (models - cached)
+        if (cached == null) ThumbnailOrder(models, standIn)
+        else ThumbnailOrder(listOf(cached) + (models - cached), null)
     }
     var failed by remember(order) { mutableIntStateOf(0) }
-    val model = order.getOrNull(failed)
+    val model = order.models.getOrNull(failed)
+    val request = remember(model, order.standIn) {
+        if (model == null || order.standIn == null) model
+        else ImageRequest.Builder(context)
+            .data(model)
+            .placeholderMemoryCacheKey(order.standIn)
+            .build()
+    }
     var loaded by remember(model) { mutableStateOf(false) }
 
     Box(
@@ -216,7 +239,7 @@ fun Thumbnail(
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        if (model == null && placeholder != null && order.isEmpty())
+        if (model == null && placeholder != null && order.models.isEmpty())
             placeholder()
         else if (model == null)
             Image(
@@ -228,7 +251,7 @@ fun Thumbnail(
         else {
             if (!loaded) LoadingShimmer(Modifier.matchParentSize())
             AsyncImage(
-                model = model,
+                model = request,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 onSuccess = { loaded = true },

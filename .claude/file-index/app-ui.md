@@ -48,7 +48,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
   `song` table is stored first (`SongStore`).
   `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
-- `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/covers.md`),
+- `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/covers.md`; a model in
+  memory goes first unless under `minCachedSize`, then it is only the placeholder),
   `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges; `OriginBadge`, `ExplicitBadge` alone),
   `formatDuration`,
   `MediaItem.localSongId`.

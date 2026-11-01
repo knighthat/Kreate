@@ -706,6 +706,8 @@ private fun NowPlayingPage(
                 models = covers,
                 shape = RectangleShape,
                 modifier = Modifier.matchParentSize(),
+                // A list's small cover in memory only stands in while the sharp one loads
+                minCachedSize = coverHeight,
             )
             // The same cover blurred over it, more and more of it as the cover fades out
             BlurredCover(
