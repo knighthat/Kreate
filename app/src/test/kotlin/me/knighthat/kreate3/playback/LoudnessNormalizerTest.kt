@@ -50,8 +50,9 @@ class LoudnessNormalizerTest {
 
     @Test
     fun louderTargetBoostsMore() {
-        assertEquals(4f, normalizationDb(0f, targetLufs = -10), 0f)
-        assertEquals(-7f, normalizationDb(3f, targetLufs = -18), 0f)
+        assertEquals(4f, normalizationDb(0f, targetLufs = -10f), 0f)
+        assertEquals(-7f, normalizationDb(3f, targetLufs = -18f), 0f)
+        assertEquals(0.5f, normalizationDb(0f, targetLufs = -13.5f), 0f)
     }
 
     @Test

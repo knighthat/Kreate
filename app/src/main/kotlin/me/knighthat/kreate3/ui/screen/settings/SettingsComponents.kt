@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -36,7 +37,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -44,6 +44,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,9 +63,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.AppRestart
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.ui.component.LufsSlider
+import me.knighthat.kreate3.ui.component.PercentSlider
 import me.knighthat.kreate3.ui.component.RestartAppButton
+import me.knighthat.kreate3.ui.component.SecondSlider
+import me.knighthat.kreate3.ui.component.StopSlider
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
-import kotlin.math.roundToInt
 
 /**
  * The frame of a settings page: a top bar named [title] with a back button, [actions] and, with
@@ -312,8 +316,10 @@ fun <T> ChoiceSetting(
 }
 
 /**
- * A setting with a few values in order, picked by sliding to one. The row shows the [title] and
- * the [label] of the value under it, which follows the slider while it is dragged.
+ * A setting with a few values in order, picked by sliding a [StopSlider] to one, with
+ * [leadingIcon] and [trailingIcon] at its ends. The row shows the [title] and the [label] of the
+ * value under it, which follows the slider while it is dragged (its ball shows nothing); the
+ * setting changes when it is let go.
  *
  * @param value shown as the first of [options] when it isn't one of them
  */
@@ -325,35 +331,161 @@ fun <T> SliderSetting(
     label: (T) -> String,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val index = options.indexOf(value).coerceAtLeast(0)
-    // Where the slider is while it is dragged, the setting changes when it is let go
-    var position by remember(index, options.size) { mutableFloatStateOf(index.toFloat()) }
-    val shown = options[position.roundToInt().coerceIn(options.indices)]
+    // Where the slider is while it is dragged
+    var position by remember(index, options.size) { mutableIntStateOf(index) }
 
-    ListItem(
-        headlineContent = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        supportingContent = {
-            Column {
-                Text(label(shown))
-                Slider(
-                    value = position,
-                    onValueChange = { position = it },
-                    onValueChangeFinished = {
-                        // A tap moves and lets go in one frame, before `shown` is read again
-                        val picked = options[position.roundToInt().coerceIn(options.indices)]
-                        if (picked != value) onSelect(picked)
-                    },
-                    valueRange = 0f..options.lastIndex.coerceAtLeast(1).toFloat(),
-                    steps = (options.size - 2).coerceAtLeast(0),
-                    enabled = options.size > 1,
-                )
-            }
-        },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        modifier = modifier,
-    )
+    SliderRow(title, label(options[position.coerceIn(options.indices)]), true, modifier) {
+        StopSlider(
+            value = position,
+            onValueChange = { position = it },
+            stops = options.size,
+            onValueChangeFinished = {
+                // A tap moves and lets go in one frame, read the position it left
+                val picked = options[position.coerceIn(options.indices)]
+                if (picked != value) onSelect(picked)
+            },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+        )
+    }
 }
+
+/**
+ * A setting of whole seconds in [range], picked on a [SecondSlider] whose ball shows the seconds.
+ * The setting changes only when the slider is let go. While not [enabled] the row is dimmed and
+ * the slider doesn't move.
+ *
+ * @param summary under the title, like why it's off; none when `null`
+ * @param number what the ball shows for a second, the second itself by default
+ */
+@Composable
+fun SecondSetting(
+    title: String,
+    value: Int,
+    range: IntRange,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    number: (Int) -> String = Int::toString,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
+
+    SliderRow(title, summary, enabled, modifier) {
+        SecondSlider(
+            value = position,
+            onValueChange = { position = it },
+            range = range,
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
+            number = number,
+        )
+    }
+}
+
+/**
+ * A setting of a whole percentage in [range], picked on a [PercentSlider] whose ball shows it, with
+ * [leadingIcon] and [trailingIcon] at the slider's ends. The setting changes only when the slider
+ * is let go. While not [enabled] the row is dimmed and the slider doesn't move.
+ *
+ * @param summary under the title, like why it's off; none when `null`
+ */
+@Composable
+fun PercentSetting(
+    title: String,
+    value: Int,
+    range: IntRange,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
+
+    SliderRow(title, summary, enabled, modifier) {
+        PercentSlider(
+            value = position,
+            onValueChange = { position = it },
+            range = range,
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+        )
+    }
+}
+
+/**
+ * A setting of a loudness in LUFS, picked on a [LufsSlider] whose ball shows the value. The
+ * setting changes only when the slider is let go. While not [enabled] the row is dimmed and the
+ * slider doesn't move.
+ *
+ * @param summary under the title, like why it's off; none when `null`
+ */
+@Composable
+fun LufsSetting(
+    title: String,
+    value: Float,
+    onSelect: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableFloatStateOf(value) }
+
+    SliderRow(title, summary, enabled, modifier) {
+        LufsSlider(
+            value = position,
+            onValueChange = { position = it },
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
+        )
+    }
+}
+
+/**
+ * A settings row with a [slider] under the [title] and [summary]. While not [enabled] the texts
+ * are dimmed; the slider dims itself.
+ */
+@Composable
+private fun SliderRow(
+    title: String,
+    summary: String?,
+    enabled: Boolean,
+    modifier: Modifier,
+    slider: @Composable () -> Unit,
+) = ListItem(
+    headlineContent = {
+        Text(
+            text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = if (enabled) Modifier else Modifier.alpha(DISABLED_ALPHA),
+        )
+    },
+    supportingContent = {
+        Column {
+            summary?.let {
+                Box(if (enabled) Modifier else Modifier.alpha(DISABLED_ALPHA)) { SettingsSummary(it) }
+            }
+            slider()
+        }
+    },
+    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    modifier = modifier,
+)
 
 /**
  * A setting typed in a dialog. [onSave] only gets text that [validate] accepted.

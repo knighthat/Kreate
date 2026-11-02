@@ -45,6 +45,10 @@
         <item quantity="one">%1$d listen</item>
         <item quantity="other">%1$d listens</item>
     </plurals>
+    <plurals name="unit_second">
+        <item quantity="one">second</item>
+        <item quantity="other">seconds</item>
+    </plurals>
     <plurals name="unit_minute">
         <item quantity="one">minute</item>
         <item quantity="other">minutes</item>

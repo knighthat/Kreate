@@ -30,12 +30,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,6 +58,7 @@ import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.StopSlider
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
@@ -70,7 +70,6 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPreference
 
@@ -511,8 +510,8 @@ private fun StorageSetting(
 
 /**
  * Picks a size: typed in MiB (MB unless [binary]), or slid to one of [sizes], from off to
- * unlimited. Typing moves the slider to the largest of [sizes] not above the number, sliding
- * writes the size in the field.
+ * unlimited. Typing moves the slider to the largest of [sizes] not above the number; letting the
+ * slider go writes the size it's on in the field.
  *
  * @param size in bytes, see [StorageSetting]
  */
@@ -544,7 +543,7 @@ private fun SizeDialog(
             Long.MAX_VALUE -> sizes.lastIndex
             else -> sizes.indexOfLast { it <= picked }.coerceIn(0, sizes.lastIndex - 1)
         }
-        mutableFloatStateOf(index.toFloat())
+        mutableIntStateOf(index)
     }
 
     AlertDialog(
@@ -578,16 +577,15 @@ private fun SizeDialog(
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
-                Slider(
+                StopSlider(
                     value = position,
-                    onValueChange = {
-                        position = it
-                        val stop = sizes[it.roundToInt().coerceIn(sizes.indices)]
+                    onValueChange = { position = it },
+                    stops = sizes.size,
+                    onValueChangeFinished = {
+                        val stop = sizes[position.coerceIn(sizes.indices)]
                         unlimited = stop == Long.MAX_VALUE
                         text = if (unlimited) "" else (stop / mega).toString()
                     },
-                    valueRange = 0f..sizes.lastIndex.toFloat(),
-                    steps = (sizes.size - 2).coerceAtLeast(0),
                 )
             }
         },

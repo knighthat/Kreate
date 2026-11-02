@@ -36,7 +36,9 @@
     <string name="gb">%1$s GB</string>
     <string name="tb">%1$s TB</string>
     <string name="pb">%1$s PB</string>
-    <string name="lufs" translatable="false">%1$d LUFS</string>
+    <string name="lufs" translatable="false">%1$s LUFS</string>
+    <string name="lufs_symbol" translatable="false">LUFS</string>
+    <string name="percent_sign" translatable="false">%</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
@@ -190,12 +192,19 @@
     <string name="setting_title_save_interval">Save interval</string>
     <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
+    <string name="setting_description_load_next_song_ahead">Load the first %1$s of the next song early</string>
+    <string name="setting_description_load_next_song_ahead_off">Only load the next song when it starts</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
     <string name="setting_title_give_up_loading_after">Give up loading after</string>
+    <string name="setting_description_give_up_loading_after">Wait %1$s before declaring a failure</string>
+    <string name="setting_description_give_up_loading_after_off">Wait until the network times out</string>
     <string name="setting_title_even_out_loudness">Even out loudness</string>
     <string name="setting_description_even_out_loudness">Quiet and loud songs play at about the same volume</string>
+    <string name="setting_description_target_loudness_status_disabled">Even out loudness is disabled</string>
     <string name="setting_title_target_loudness">Target loudness</string>
     <string name="setting_title_load_ahead">Load ahead</string>
+    <string name="setting_description_load_ahead">Load up to %1$s ahead</string>
+    <string name="setting_description_load_ahead_unlimited">Load as much as %1$s can</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
     <string name="setting_description_keep_what_was_played">Seeking back up to %1$s doesn\'t load it again</string>

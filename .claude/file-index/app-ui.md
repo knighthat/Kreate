@@ -88,6 +88,16 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `PreviewSamples.kt` (sample data, `previewItem` with album/media type/reaction for badges,
   `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark, `@ComponentPreviews` wrap-content
   light+dark).
+- `Sliders.kt` — thin-track sliders on a private `BallSlider` (4dp track, number in a ball/pill
+  thumb 26dp, 34dp while held, no gap, unit label under the middle, `leadingIcon`/`trailingIcon`
+  slots, `held` overloads for previews): `LufsSlider` (-18..-10 LUFS in 0.5 steps, filled from a
+  mark at -14, "LUFS", fixed-width pill, volume down/up icons) and
+  `SecondSlider` (whole seconds of an `IntRange`, filled from the start, "seconds", `number` for
+  what the ball shows, hourglass -/+ icons) and `PercentSlider` (whole percents, "%", no default
+  icons) and `StopSlider` (index of n stops, empty ball, nothing under it), all on a private
+  `WholeSlider`; `SliderIcon` (icon with an optional small badge). Used by `SecondSetting`/
+  `PercentSetting`/`LufsSetting`/`SliderSetting` and the Data size dialog. The thumb keeps one
+  shape: the maintainer rejected pointed corners at the track ends.
 - seekbar/`SeekBar.kt` — the full player's seek bar (moved out of PlayerSheet.kt by the maintainer),
   with previews and a private fake `PlaybackController`.
 

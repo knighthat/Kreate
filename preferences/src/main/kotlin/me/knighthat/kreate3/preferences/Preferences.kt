@@ -439,11 +439,11 @@ object Preferences : KoinComponent {
     val LOUDNESS_NORMALIZATION by lazy { boolean("loudness_normalization", true) }
 
     /**
-     * Loudness songs are evened out to, in LUFS, from -18 to -10, -14 (YouTube's) by default.
-     * Louder means more songs get a boost, which stops at 6 dB. `LoudnessNormalizer` follows it
-     * while playing.
+     * Loudness songs are evened out to, in LUFS, from -18 to -10 in steps of 0.5, -14 (YouTube's)
+     * by default. Louder means more songs get a boost, which stops at 6 dB. `LoudnessNormalizer`
+     * follows it while playing. A whole number stored before it took halves reads as the default.
      */
-    val LOUDNESS_TARGET_LUFS by lazy { int("loudness_target_lufs", -14) }
+    val LOUDNESS_TARGET_LUFS by lazy { float("loudness_target_lufs", -14f) }
 
     /**
      * What the player does when a song fails to play, or loads longer than
@@ -592,6 +592,9 @@ object Preferences : KoinComponent {
 
     private fun long(name: String, default: Long) =
         Preference(name, default, codec<Long, Long>({ it }, { it }), engine)
+
+    private fun float(name: String, default: Float) =
+        Preference(name, default, codec<Float, Float>({ it }, { it }), engine)
 
     private fun double(name: String, default: Double) =
         Preference(name, default, codec<Double, Double>({ it }, { it }), engine)

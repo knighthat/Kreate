@@ -17,8 +17,10 @@
  */
 package me.knighthat.kreate3.ui.screen.settings
 
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.StreamQuality
@@ -65,6 +67,8 @@ fun StreamQualitySettings(
         options = options,
         label = label,
         onSelect = onWifiChange,
+        leadingIcon = { Icon(painterResource(R.drawable.sd), contentDescription = null) },
+        trailingIcon = { Icon(painterResource(R.drawable.hd), contentDescription = null) },
     )
     SliderSetting(
         title = stringResource(R.string.setting_title_on_mobile_data),
@@ -72,6 +76,8 @@ fun StreamQualitySettings(
         options = options,
         label = label,
         onSelect = onMobileChange,
+        leadingIcon = { Icon(painterResource(R.drawable.sd), contentDescription = null) },
+        trailingIcon = { Icon(painterResource(R.drawable.hd), contentDescription = null) },
     )
 }
 

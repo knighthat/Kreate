@@ -140,8 +140,9 @@ ui/screen/
 - settings/ — one subpackage per page; shared bits stay at the root: `SettingsScreen.kt` (page
   list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
   dialog)/Section, MainSwitch (page-top switch), SettingsSummary (row text: title 1 line, summary
-  2),
-  Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
+  2), Switch/Choice/Radio/Number/Text settings, Slider setting (`StopSlider`, optional end icons),
+  SecondSetting/PercentSetting/LufsSetting (slider rows saved on release, optional summary, dimmed
+  while disabled), `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
   call. `general/GeneralSettingsScreen.kt` (library scan, navigation), `data/DataSettingsScreen.kt`

@@ -19,8 +19,11 @@
 package me.knighthat.kreate3.ui.screen.settings.player
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,8 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -59,11 +64,13 @@ import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.player.labelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.LufsSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.PercentSetting
+import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
-import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 
@@ -167,7 +174,7 @@ private fun PlayerSettingsContent(
     failureAction: PlaybackFailureAction,
     stallSeconds: Int,
     loudnessNormalization: Boolean,
-    loudnessTarget: Int,
+    loudnessTarget: Float,
     bufferAhead: Int,
     bufferToStart: Int,
     keepPlayed: Boolean,
@@ -245,15 +252,20 @@ private fun PlayerSettingsContent(
                     )
                 },
             )
-        val off = stringResource(R.string.status_off)
-        val preloadLabels = PRELOAD_SECONDS.associateWith {
-            if (it == 0) off else pluralStringResource(R.plurals.second, it, it)
-        }
-        SliderSetting(
+        val resources = LocalResources.current
+        // Always a line under these titles, so the row keeps its height as the value changes
+        val seconds = { it: Int -> resources.getQuantityString(R.plurals.second, it, it) }
+        SecondSetting(
             title = stringResource(R.string.setting_title_load_next_song_ahead),
             value = preloadSeconds,
-            options = PRELOAD_SECONDS,
-            label = { preloadLabels.getValue(it) },
+            range = 0..MAX_SECONDS,
+            summary = if (preloadSeconds == 0)
+                stringResource(R.string.setting_description_load_next_song_ahead_off)
+            else
+                stringResource(
+                    R.string.setting_description_load_next_song_ahead,
+                    seconds(preloadSeconds)
+                ),
             onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
         )
         ChoiceSetting(
@@ -263,14 +275,17 @@ private fun PlayerSettingsContent(
             label = labelsOf(PlaybackFailureAction.entries) { it.labelRes },
             onSelect = { Preferences.PLAYBACK_FAILURE_ACTION.update(it) },
         )
-        val stallLabels = STALL_SECONDS.associateWith {
-            if (it == 0) off else pluralStringResource(R.plurals.second, it, it)
-        }
-        SliderSetting(
+        SecondSetting(
             title = stringResource(R.string.setting_title_give_up_loading_after),
             value = stallSeconds,
-            options = STALL_SECONDS,
-            label = { stallLabels.getValue(it) },
+            range = 0..MAX_SECONDS,
+            summary = if (stallSeconds == 0)
+                stringResource(R.string.setting_description_give_up_loading_after_off)
+            else
+                stringResource(
+                    R.string.setting_description_give_up_loading_after,
+                    seconds(stallSeconds)
+                ),
             onSelect = { Preferences.PLAYBACK_STALL_SECONDS.update(it) },
         )
 
@@ -281,34 +296,37 @@ private fun PlayerSettingsContent(
             onCheckedChange = { Preferences.LOUDNESS_NORMALIZATION.update(it) },
             summary = stringResource(R.string.setting_description_even_out_loudness),
         )
-        if (loudnessNormalization) {
-            val lufsLabels = TARGET_LUFS.associateWith { stringResource(R.string.lufs, it) }
-            SliderSetting(
-                title = stringResource(R.string.setting_title_target_loudness),
-                value = loudnessTarget,
-                options = TARGET_LUFS,
-                label = { lufsLabels.getValue(it) },
-                onSelect = { Preferences.LOUDNESS_TARGET_LUFS.update(it) },
-            )
-        }
+        LufsSetting(
+            title = stringResource(R.string.setting_title_target_loudness),
+            value = loudnessTarget,
+            onSelect = { Preferences.LOUDNESS_TARGET_LUFS.update(it) },
+            summary = stringResource(R.string.setting_description_target_loudness_status_disabled)
+                .takeUnless { loudnessNormalization },
+            enabled = loudnessNormalization,
+        )
 
         SettingsSection(stringResource(R.string.setting_header_buffering))
-        val unlimited = stringResource(R.string.status_unlimited)
-        val bufferLabels = BUFFER_AHEAD_SECONDS.associateWith {
-            if (it == 0) unlimited else pluralStringResource(R.plurals.second, it, it)
-        }
-        SliderSetting(
+        // The stop past the last second is the whole song, stored as 0
+        SecondSetting(
             title = stringResource(R.string.setting_title_load_ahead),
-            value = bufferAhead,
-            options = BUFFER_AHEAD_SECONDS,
-            label = { bufferLabels.getValue(it) },
-            onSelect = { Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(it) },
+            value = if (bufferAhead == 0) WHOLE_SONG_STOP else bufferAhead,
+            range = 1..WHOLE_SONG_STOP,
+            summary = if (bufferAhead == 0)
+                stringResource(
+                    R.string.setting_description_load_ahead_unlimited,
+                    stringResource(R.string.app_name),
+                )
+            else
+                stringResource(R.string.setting_description_load_ahead, seconds(bufferAhead)),
+            number = { if (it == WHOLE_SONG_STOP) "∞" else it.toString() },
+            onSelect = {
+                Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(if (it == WHOLE_SONG_STOP) 0 else it)
+            },
         )
-        SliderSetting(
+        SecondSetting(
             title = stringResource(R.string.setting_title_load_before_playing),
             value = bufferToStart,
-            options = BUFFER_SECONDS,
-            label = { bufferLabels.getValue(it) },
+            range = 1..MAX_SECONDS,
             onSelect = { Preferences.PLAYBACK_BUFFER_TO_START_SECONDS.update(it) },
         )
         SwitchSetting(
@@ -392,14 +410,21 @@ private fun PlayerSettingsContent(
             else
                 stringResource(R.string.setting_description_always_fetch_lyrics_off),
         )
-        val textSizes = LYRICS_TEXT_SIZES.toList()
-        val percents = textSizes.associateWith { stringResource(R.string.percent, it) }
-        SliderSetting(
+        PercentSetting(
             title = stringResource(R.string.setting_title_text_size),
             value = lyricsTextSize,
-            options = textSizes,
-            label = { percents.getValue(it) },
+            // Every percent here, the player's buttons step by LYRICS_TEXT_SIZES' step
+            range = LYRICS_TEXT_SIZES.first..LYRICS_TEXT_SIZES.last,
             onSelect = { Preferences.LYRICS_TEXT_SIZE.update(it) },
+            // Smaller and larger text, in boxes of one size so the track stays centered
+            leadingIcon = {
+                Box(Modifier.size(28.dp), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(R.drawable.format_size), null, Modifier.size(18.dp))
+                }
+            },
+            trailingIcon = {
+                Icon(painterResource(R.drawable.format_size), null, Modifier.size(28.dp))
+            },
         )
 
         SettingsSection(stringResource(R.string.setting_header_android_auto))
@@ -425,7 +450,6 @@ private fun PlayerSettingsContent(
             label = autoTapLabels,
             onSelect = { Preferences.AUTO_PLAYLIST_TAP.update(it) },
         )
-        val resources = LocalResources.current
         SettingsItem(
             title = stringResource(R.string.screen_title_voice_search),
             summary = voiceSearchOrigins.takeIf { it.isNotEmpty() }
@@ -476,7 +500,7 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         failureAction = PlaybackFailureAction.SKIP,
         stallSeconds = 15,
         loudnessNormalization = true,
-        loudnessTarget = -14,
+        loudnessTarget = -13.5f,
         bufferAhead = 50,
         bufferToStart = 1,
         keepPlayed = false,
@@ -499,17 +523,11 @@ private fun PlayerSettingsPreview() = PreviewTheme {
     )
 }
 
-/** Seconds of the next song that can be loaded ahead, `0` for none. */
-private val PRELOAD_SECONDS = listOf(0, 5, 10, 15, 30, 60)
+/**
+ * The most seconds the seconds settings go to: loading the next song ahead, giving up loading
+ * (both from `0`, off) and loading ahead or before playing (from 1).
+ */
+private const val MAX_SECONDS = 60
 
-/** Seconds a song may load while it should play before it fails, `0` to wait for the network. */
-private val STALL_SECONDS = listOf(0, 5, 10, 15, 30, 60)
-
-/** Seconds that can be loaded before a song plays. */
-private val BUFFER_SECONDS = listOf(1, 2, 3, 5, 10, 15, 20, 30, 40, 50, 60)
-
-/** Seconds that can be loaded ahead, `0` (last) for the whole song. */
-private val BUFFER_AHEAD_SECONDS = BUFFER_SECONDS + 0
-
-/** Loudness songs can be evened out to, in LUFS, quietest first. */
-private val TARGET_LUFS = (-18..-10).toList()
+/** The stop of "Load ahead" past [MAX_SECONDS], for the whole song. */
+private const val WHOLE_SONG_STOP = MAX_SECONDS + 1

@@ -50,7 +50,7 @@ private const val MAX_BOOST_DB = 6f
  * gain isn't known. A gain is the song's loudness over [REFERENCE_LUFS], positive for a louder
  * song; a song louder than the target is cut, a quieter one is boosted, up to [MAX_BOOST_DB].
  */
-internal fun normalizationDb(gain: Float?, targetLufs: Int = REFERENCE_LUFS.toInt()): Float =
+internal fun normalizationDb(gain: Float?, targetLufs: Float = REFERENCE_LUFS.toFloat()): Float =
     if (gain == null) 0f
     else ((targetLufs - REFERENCE_LUFS).toFloat() - gain).coerceIn(-MAX_CUT_DB, MAX_BOOST_DB)
 
@@ -86,7 +86,7 @@ class LoudnessNormalizer(
     private val songs: SongRepository,
     private val formats: SongFormatRecorder,
     private val enabled: StateFlow<Boolean>,
-    private val targetLufs: StateFlow<Int>,
+    private val targetLufs: StateFlow<Float>,
     private val replayGainLufs: StateFlow<Int>,
     private val scope: CoroutineScope,
 ) : Player.Listener {

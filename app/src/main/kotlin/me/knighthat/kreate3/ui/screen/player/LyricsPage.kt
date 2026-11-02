@@ -201,7 +201,10 @@ internal class LyricsControls {
 /** What the inline icon of the change source button reads as, and where it goes in the hint. */
 private const val CHANGE_SOURCE_MARK = "⇄"
 
-/** Sizes the lyrics' text can take, in percent, see [Preferences.LYRICS_TEXT_SIZE]. */
+/**
+ * Sizes the lyrics' text can take, in percent, see [Preferences.LYRICS_TEXT_SIZE]: any whole
+ * percent between the ends from settings, the player's buttons step by [IntProgression.step].
+ */
 internal val LYRICS_TEXT_SIZES = 80..200 step 10
 
 /** How [LyricsSync] is shown to the user. */
