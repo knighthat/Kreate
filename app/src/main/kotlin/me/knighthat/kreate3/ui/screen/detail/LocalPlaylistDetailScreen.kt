@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +37,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -77,9 +77,9 @@ fun LocalPlaylistDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
-    val playlist by viewModel.playlist.collectAsState()
-    val mode by viewModel.editMode.collectAsState()
-    val arranged by viewModel.arranged.collectAsState()
+    val playlist by viewModel.playlist.collectAsStateWithLifecycle()
+    val mode by viewModel.editMode.collectAsStateWithLifecycle()
+    val arranged by viewModel.arranged.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
     val moveFailed = stringResource(R.string.error_move_song)

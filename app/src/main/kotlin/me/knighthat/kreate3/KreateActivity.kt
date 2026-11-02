@@ -28,9 +28,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -187,8 +187,8 @@ class KreateActivity : ComponentActivity() {
 
         setContent {
             if (isSetup) {
-                val playerRequested by openPlayer.collectAsState()
-                val routeRequested by openRoute.collectAsState()
+                val playerRequested by openPlayer.collectAsStateWithLifecycle()
+                val routeRequested by openRoute.collectAsStateWithLifecycle()
                 KreateApp(
                     openPlayer = playerRequested,
                     onPlayerOpened = { openPlayer.value = false },

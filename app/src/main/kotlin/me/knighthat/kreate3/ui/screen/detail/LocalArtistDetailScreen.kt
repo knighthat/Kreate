@@ -25,12 +25,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -66,9 +66,9 @@ fun LocalArtistDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
 ) {
-    val artist by viewModel.artist.collectAsState()
-    val albums by viewModel.albums.collectAsState()
-    val isFollowed by viewModel.isFollowed.collectAsState()
+    val artist by viewModel.artist.collectAsStateWithLifecycle()
+    val albums by viewModel.albums.collectAsStateWithLifecycle()
+    val isFollowed by viewModel.isFollowed.collectAsStateWithLifecycle()
 
     val cover = artist?.thumbnail
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }

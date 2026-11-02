@@ -47,7 +47,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
@@ -174,9 +174,9 @@ class ProfilesActivity : ComponentActivity() {
     @Composable
     private fun Profiles(modifier: Modifier = Modifier) {
         val scope = rememberCoroutineScope()
-        val ids by profileManager.ids.collectAsState(emptySet())
-        val activeId by profileManager.activeId.collectAsState()
-        val users by userRepository.all().collectAsState(emptyList())
+        val ids by profileManager.ids.collectAsStateWithLifecycle(emptySet())
+        val activeId by profileManager.activeId.collectAsStateWithLifecycle()
+        val users by userRepository.all().collectAsStateWithLifecycle(emptyList())
         var text by rememberSaveable { mutableStateOf("") }
         val shown =
             users.filter { it.id in ids && it.name.contains(text.trim(), ignoreCase = true) }

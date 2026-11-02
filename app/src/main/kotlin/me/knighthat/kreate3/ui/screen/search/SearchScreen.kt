@@ -68,7 +68,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,6 +94,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -403,14 +403,14 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
 ) {
-    val text by viewModel.text.collectAsState()
+    val text by viewModel.text.collectAsStateWithLifecycle()
     val savedOrigin by Preferences.SEARCH_ORIGIN.collectAsStateWithLifecycle()
     val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
-    val query by viewModel.query.collectAsState()
-    val categories by viewModel.categories.collectAsState()
-    val origin by viewModel.origin.collectAsState()
-    val recent by viewModel.recentSearches.collectAsState()
-    val live by viewModel.liveSuggestions.collectAsState()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val origin by viewModel.origin.collectAsStateWithLifecycle()
+    val recent by viewModel.recentSearches.collectAsStateWithLifecycle()
+    val live by viewModel.liveSuggestions.collectAsStateWithLifecycle()
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()

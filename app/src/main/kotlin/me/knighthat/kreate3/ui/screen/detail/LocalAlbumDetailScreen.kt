@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +39,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -81,12 +81,12 @@ fun LocalAlbumDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalAlbumDetailViewModel = koinViewModel(),
 ) {
-    val album by viewModel.album.collectAsState()
-    val canShare by viewModel.canShare.collectAsState()
-    val isBookmarked by viewModel.isBookmarked.collectAsState()
-    val isReordering by viewModel.isReordering.collectAsState()
-    val arranged by viewModel.arranged.collectAsState()
-    val tracks by viewModel.tracks.collectAsState()
+    val album by viewModel.album.collectAsStateWithLifecycle()
+    val canShare by viewModel.canShare.collectAsStateWithLifecycle()
+    val isBookmarked by viewModel.isBookmarked.collectAsStateWithLifecycle()
+    val isReordering by viewModel.isReordering.collectAsStateWithLifecycle()
+    val arranged by viewModel.arranged.collectAsStateWithLifecycle()
+    val tracks by viewModel.tracks.collectAsStateWithLifecycle()
     val resources = LocalResources.current
     val artist = remember(tracks, album) { tracks.albumArtistRoute(album?.artists) }
     val notifier = LocalNotifier.current
