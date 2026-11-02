@@ -55,7 +55,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `song` table is stored first (`SongStore`).
   `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
 - `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/covers.md`; a model in
-  memory goes first unless under `minCachedSize`, then it is only the placeholder),
+  memory goes first unless under `minCachedSize`, then it is only the placeholder, no shimmer, the
+  loaded one cross-fades over it), `LoadingShimmer`,
   `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges; `OriginBadge`, `ExplicitBadge` alone),
   `formatDuration`,
   `MediaItem.localSongId`.
@@ -80,6 +81,18 @@ ui/component/ (shared composables; each file that draws something ends with its 
   a fling calls `PlaybackController.stop()` = stop + clear queue; `MiniPlayerSpace`/
   `rememberMiniPlayerSpace`: measured mini player height, `outside(barPadding)` for the screen's
   outer padding, `inside` for list content padding), `SectionTitle.kt`.
+- `Placeholders.kt` — shimmering stand-ins while a section loads: `LoadingBlock`,
+  `ItemRowPlaceholder`, `TextPlaceholder` (description lines), `CardRowPlaceholder` (album/artist
+  cards); used by the OpenSubsonic and YouTube artist pages.
+- `SharedPicture.kt` — `LocalSharedTransitionScope` (KreateApp's `SharedTransitionLayout` around
+  `NavDisplay`), `screenTransform` (400 ms fade of every screen change), `pictureFirst()` (entry
+  metadata of the artist screens: opening, the picture moves for 350 ms while the screens fade,
+  then the rest fades in over 200 ms; going back is the plain fade),
+  `rememberSharedPicture(key, corners, otherCorners, onlyAway)`: shared element with its own clip
+  in a `graphicsLayer` (none while moving), corners morphing in the overlay by how far it grew
+  (`MorphingClip`), `overlay` for what lies over it (artist bar, bottom fade); `onlyAway` (the
+  artist card) turns the match off while its screen comes back, so nothing moves back;
+  `rememberContentsAfterPicture()`: the alpha of the rest of such a screen; `artistPictureKey`.
 - `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
   and the search results tabs; drops labels under `LocalIconOnly`.
 - `Messages.kt` — `LocalNotifier`/`LocalMessageHost` (provided in `KreateApp`), `ShowMessages` (
@@ -111,7 +124,8 @@ ui/navigation/
 
 - `Route.kt` — every screen as a `Route` (Tab routes, Local*/OpenSubsonic*/YouTube* detail routes,
   SearchResults, YouTubeMore, settings, Account and its pages). `albumRoute`/`artistRoute` also take
-  `(origin, id)`.
+  `(origin, id)`; `artistRoute(item)` carries the card's name and picture (`LocalArtist.NAME`/
+  `PICTURE`, read as `OpenedArtist`).
 - `Navigator.kt` (2026-10-20) — `Navigator(current, open)` + `LocalNavigator`, provided by
   KreateApp, for opening screens from components that don't own the back stack (song menu).
 - `TopLevelBackStack.kt` — one back stack per Tab.

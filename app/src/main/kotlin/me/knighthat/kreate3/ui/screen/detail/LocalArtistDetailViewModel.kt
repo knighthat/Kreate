@@ -60,6 +60,9 @@ class LocalArtistDetailViewModel(
         "LocalArtist.ID is missing from the saved state"
     }
 
+    /** What the screen shows of the artist until they are read. */
+    val opened: OpenedArtist = savedStateHandle.openedArtist()
+
     val artist = repository.find(artistId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 

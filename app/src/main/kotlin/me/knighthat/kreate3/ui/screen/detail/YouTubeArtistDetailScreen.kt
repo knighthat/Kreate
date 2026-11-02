@@ -18,24 +18,30 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
+import me.knighthat.kreate3.ui.component.CardRowPlaceholder
+import me.knighthat.kreate3.ui.component.ItemRowPlaceholder
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.TextPlaceholder
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewArtists
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -68,11 +74,14 @@ fun YouTubeArtistDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
-    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val cover = viewModel.picture ?: (state as? LiveState.Ready)?.value?.thumbnail
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
     CoverTheme(coverModels) {
         YouTubeArtistDetailContent(
+            artistId = viewModel.artistId,
+            opened = viewModel.opened,
+            picture = viewModel.picture,
             state = state,
             onRetry = viewModel::load,
             onBack = onBack,
@@ -97,11 +106,17 @@ fun YouTubeArtistDetailScreen(
 }
 
 /**
+ * Until the page is there, placeholders stand in for its parts under what [opened] shows.
+ *
+ * @param picture shown at the top instead of the page's, see [YouTubeArtistDetailViewModel.picture]
  * @param isFollowed whether the user is subscribed to the artist on YouTube, or follows them on
  * the device while signed out, `null` turns Follow off
  */
 @Composable
 private fun YouTubeArtistDetailContent(
+    artistId: String,
+    opened: OpenedArtist,
+    picture: Uri?,
     state: LiveState<YouTubeArtistDetail>,
     onRetry: () -> Unit,
     onBack: () -> Unit,
@@ -119,10 +134,13 @@ private fun YouTubeArtistDetailContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val artist = (state as? LiveState.Ready)?.value
+    val name = artist?.name ?: opened.name
 
     ArtistDetailScaffold(
-        name = artist?.name.orEmpty(),
-        thumbnail = artist?.thumbnail,
+        name = name.orEmpty(),
+        artistId = artistId,
+        thumbnail = picture ?: artist?.thumbnail,
+        standIn = opened.picture,
         origin = Origin.YOUTUBE,
         subtitle = artist?.audience,
         onBack = onBack,
@@ -130,19 +148,30 @@ private fun YouTubeArtistDetailContent(
         contentPadding = contentPadding,
         menu = { onDismiss ->
             ArtistMenu(
-                name = artist?.name,
+                name = name,
                 onDismiss = onDismiss,
                 onAction = onAction.takeIf { artist?.topSongs?.isNotEmpty() == true },
                 isFollowed = isFollowed.takeIf { artist != null },
                 onToggleFollow = onToggleFollow,
                 share = share,
-                onOpenDetails = artist?.name?.let { { onOpenDetails(it) } },
+                onOpenDetails = name?.let { { onOpenDetails(it) } },
                 onOpenStatistics = onOpenStatistics,
             )
         },
     ) {
-        if (artist == null) {
+        if (state is LiveState.Failed) {
             item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@ArtistDetailScaffold
+        }
+        if (artist == null) {
+            item(key = "description") { TextPlaceholder() }
+            item(key = "songs-title") {
+                SectionTitle(stringResource(R.string.section_header_top_songs))
+            }
+            items(SONG_PLACEHOLDERS, key = { "song-placeholder:$it" }) { ItemRowPlaceholder() }
+            item(key = "section-placeholder") {
+                CardRowPlaceholder(LIVE_CARD_WIDTH, Modifier.padding(top = 16.dp))
+            }
             return@ArtistDetailScaffold
         }
         artist.description?.let {
@@ -169,6 +198,9 @@ private fun YouTubeArtistDetailContent(
 @Composable
 private fun YouTubeArtistDetailPreview() = PreviewTheme {
     YouTubeArtistDetailContent(
+        artistId = "",
+        opened = OpenedArtist("Neon Coast", null),
+        picture = null,
         state = LiveState.Ready(
             YouTubeArtistDetail(
                 name = "Neon Coast",
@@ -198,6 +230,30 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         onSongClick = {},
         share = { Result.success("") },
         isFollowed = false,
+        onToggleFollow = {},
+        onOpenDetails = {},
+        onOpenStatistics = {},
+    )
+}
+
+/** The artist's page opened from a card, while YouTube hasn't answered yet. */
+@ScreenPreviews
+@Composable
+private fun YouTubeArtistDetailLoadingPreview() = PreviewTheme {
+    YouTubeArtistDetailContent(
+        artistId = "",
+        opened = OpenedArtist("Neon Coast", null),
+        picture = null,
+        state = LiveState.Loading,
+        onRetry = {},
+        onBack = {},
+        onOpen = { _, _ -> },
+        onSeeMore = { _, _ -> },
+        onOpenPlaylist = {},
+        onAction = {},
+        onSongClick = {},
+        share = { Result.success("") },
+        isFollowed = null,
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},

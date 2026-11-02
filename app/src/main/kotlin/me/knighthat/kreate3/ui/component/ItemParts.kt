@@ -73,6 +73,7 @@ import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.model.Origin
@@ -84,7 +85,7 @@ import org.koin.compose.koinInject
 import kotlin.math.max
 
 internal val BADGE_SIZE = 12.dp
-private val ROW_THUMBNAIL_SIZE = 48.dp
+internal val ROW_THUMBNAIL_SIZE = 48.dp
 
 /** The name of the source an item comes from, as its own strings say it. */
 @get:StringRes
@@ -198,7 +199,8 @@ private class ThumbnailOrder(val models: List<Any>, val standIn: MemoryCache.Key
  * @param placeholder drawn instead of the broken frame when [models] is empty; a picture that
  * can't be loaded still shows the broken frame
  * @param minCachedSize longer side a picture in memory needs to show first. A smaller one, like
- * a list's cover in the player, only stands in while the pictures load in order
+ * a list's cover in the player, only stands in while the pictures load in order, without the
+ * sweeping band, and the one that loads fades in over it
  */
 @Composable
 fun Thumbnail(
@@ -234,6 +236,8 @@ fun Thumbnail(
             ImageRequest.Builder(context)
                 .data(model)
                 .placeholderMemoryCacheKey(order.standIn)
+                // The sharper picture fades in over the one standing in
+                .crossfade(true)
                 .build()
         }
     }
@@ -255,7 +259,8 @@ fun Thumbnail(
                 modifier = Modifier.matchParentSize(),
             )
         } else {
-            if (!loaded) LoadingShimmer(Modifier.matchParentSize())
+            // A picture standing in shows that it loads already
+            if (!loaded && order.standIn == null) LoadingShimmer(Modifier.matchParentSize())
             AsyncImage(
                 model = request,
                 contentDescription = null,
@@ -272,7 +277,7 @@ fun Thumbnail(
  * Light band that sweeps diagonally across a [Thumbnail] while its picture loads.
  */
 @Composable
-private fun LoadingShimmer(modifier: Modifier = Modifier) {
+internal fun LoadingShimmer(modifier: Modifier = Modifier) {
     val highlight = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
     val progress by rememberInfiniteTransition(label = "thumbnail loading").animateFloat(
         initialValue = 0f,

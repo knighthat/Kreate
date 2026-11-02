@@ -70,13 +70,15 @@ fun LocalArtistDetailScreen(
     val albums by viewModel.albums.collectAsStateWithLifecycle()
     val isFollowed by viewModel.isFollowed.collectAsStateWithLifecycle()
 
-    val cover = artist?.thumbnail
+    val cover = artist?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
     CoverTheme(coverModels) {
         LocalArtistDetailContent(
-            name = artist?.name,
-            thumbnail = artist?.thumbnail,
+            artistId = viewModel.artistId,
+            name = artist?.name ?: viewModel.opened.name,
+            thumbnail = cover,
+            standIn = viewModel.opened.picture,
             origin = artist?.origin,
             albums = albums,
             songs = viewModel.songs.collectAsLazyPagingItems(),
@@ -95,12 +97,15 @@ fun LocalArtistDetailScreen(
 }
 
 /**
+ * @param standIn see [ArtistDetailScaffold]
  * @param isFollowed `null` turns Follow off in the menu, while it isn't known
  */
 @Composable
 private fun LocalArtistDetailContent(
+    artistId: String,
     name: String?,
     thumbnail: Uri?,
+    standIn: Uri?,
     origin: Origin?,
     albums: List<MediaItem>,
     songs: LazyPagingItems<MediaItem>,
@@ -117,7 +122,9 @@ private fun LocalArtistDetailContent(
 ) {
     ArtistDetailScaffold(
         name = name.orEmpty(),
+        artistId = artistId,
         thumbnail = thumbnail,
+        standIn = standIn,
         origin = origin,
         onBack = onBack,
         modifier = modifier,
@@ -175,8 +182,10 @@ private fun LocalArtistDetailContent(
 @Composable
 private fun LocalArtistDetailPreview() = PreviewTheme {
     LocalArtistDetailContent(
+        artistId = "",
         name = "Neon Coast",
         thumbnail = null,
+        standIn = null,
         origin = Origin.LOCAL,
         albums = previewAlbums().take(3),
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),

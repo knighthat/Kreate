@@ -26,13 +26,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -51,6 +51,13 @@ fun ArtistItem(
     modifier: Modifier = Modifier,
 ) {
     val metadata = item.mediaMetadata
+    // Round here, square at the top of the artist's page; it doesn't come back from there
+    val picture = rememberSharedPicture(
+        artistPictureKey(item.mediaId),
+        corners = 50,
+        otherCorners = 0,
+        onlyAway = true,
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,10 +65,13 @@ fun ArtistItem(
     ) {
         Thumbnail(
             uri = metadata.artworkUri,
-            shape = CircleShape,
+            // Clipped by the picture's modifier
+            shape = RectangleShape,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                // Grows into the top of the artist's page as it opens
+                .then(picture.modifier),
         )
         ItemBadges(
             item,

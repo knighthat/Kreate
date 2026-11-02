@@ -119,7 +119,10 @@ ui/screen/
   scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
   picture fades into its `BlurredCover` as the list goes up, fully blurred once the list's top
   reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
-  next / Add to queue / Details / Statistics rows; used by all three artist screens),
+  next / Add to queue / Details / Statistics rows; used by all three artist screens. `OpenedArtist`
+  (`SavedStateHandle.openedArtist()`): the opening card's name and picture, shown until the page has
+  its own; the header grows from the card (`sharedPicture`) with that picture standing in while the
+  large one loads),
   `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as content
   padding), `DetailHeader.kt` (`DetailHeader`, unused since the redesigns; `DetailDescription`;
   `AlbumTrack` (track number in
@@ -140,7 +143,9 @@ ui/screen/
   album loaded in `arranged`, `DragHandle`s where track numbers would be, a drop calls
   `moveInAlbum` serialized by a `Mutex`, like the app's playlists; a long press on Reorder asks to
   reset to the album's order; `tracks` = every song at once for the header's count, length and
-  artist);
+  artist; the OpenSubsonic artist page is ready after `getArtist`, its `topSongs` (`TopSongs`) and
+  `description` load after it as their own `LiveState`s with placeholders meanwhile, a failure
+  leaves the section out; the YouTube artist page shows placeholders until its one answer);
   `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more");
   `OpenSubsonicArtistSongsScreen/ViewModel.kt` (every song of a server artist, behind "See more" of
   the artist screen's 10 top songs: `getTopSongs` filled from `search3`; Play/Shuffle there start

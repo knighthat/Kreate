@@ -73,6 +73,15 @@ class YouTubeArtistDetailViewModel(
         "LocalArtist.ID is missing from the saved state"
     }
 
+    /** What the screen shows of the artist until YouTube answers. */
+    val opened: OpenedArtist = savedStateHandle.openedArtist()
+
+    /**
+     * [OpenedArtist.picture] at the size of the top of the page, shown there instead of the one
+     * of the page: the picture of the card grows into it.
+     */
+    val picture: Uri? = provider.artwork(opened.picture, HEADER_ARTWORK)
+
     override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_artist)
 
     /** The channel subscribed to, which may not be the artist's id. */

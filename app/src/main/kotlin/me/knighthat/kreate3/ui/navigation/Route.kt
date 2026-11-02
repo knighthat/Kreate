@@ -237,15 +237,35 @@ data class LocalAlbum(val id: String) : Route {
     }
 }
 
+/**
+ * An artist of the device's library. Opened from a card or a row, the artist's screen shows the
+ * [name] and [picture] it had there until it has its own, the same for every artist screen.
+ *
+ * @param picture the address of the picture as the card loaded it
+ */
 @Serializable
-data class LocalArtist(val id: String) : Route {
+data class LocalArtist(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
+    override val arguments: Bundle get() = artistArguments(id, name, picture)
 
     companion object {
         const val ID = "artistId"
+        const val NAME = "artistShownName"
+        const val PICTURE = "artistShownPicture"
     }
 }
+
+/** What the screen of any artist reads, see [LocalArtist]. */
+private fun artistArguments(id: String, name: String?, picture: String?): Bundle =
+    Bundle().apply {
+        putString(LocalArtist.ID, id)
+        putString(LocalArtist.NAME, name)
+        putString(LocalArtist.PICTURE, picture)
+    }
 
 @Serializable
 data class LocalPlaylist(val id: Long) : Route {
@@ -271,9 +291,13 @@ data class OpenSubsonicAlbum(val id: String) : Route {
  * An artist of the OpenSubsonic server, fetched when they open and never stored.
  */
 @Serializable
-data class OpenSubsonicArtist(val id: String) : Route {
+data class OpenSubsonicArtist(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(LocalArtist.ID, id) }
+    override val arguments: Bundle get() = artistArguments(id, name, picture)
 }
 
 /**
@@ -320,9 +344,13 @@ data class YouTubeAlbum(val id: String) : Route {
  * An artist of YouTube, fetched when they open and never stored.
  */
 @Serializable
-data class YouTubeArtist(val id: String) : Route {
+data class YouTubeArtist(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(LocalArtist.ID, id) }
+    override val arguments: Bundle get() = artistArguments(id, name, picture)
 }
 
 /**
@@ -390,9 +418,18 @@ fun albumRoute(origin: Origin?, id: String): Route = when (origin) {
 }
 
 /**
- * The screen of an artist, by where they come from.
+ * The screen of an artist, by where they come from. It shows the name and picture of [item] until
+ * it has its own.
  */
-fun artistRoute(item: MediaItem): Route = artistRoute(item.origin, item.mediaId)
+fun artistRoute(item: MediaItem): Route {
+    val name = item.mediaMetadata.title?.toString()
+    val picture = item.mediaMetadata.artworkUri?.toString()
+    return when (item.origin) {
+        Origin.OPEN_SUBSONIC -> OpenSubsonicArtist(item.mediaId, name, picture)
+        Origin.YOUTUBE -> YouTubeArtist(item.mediaId, name, picture)
+        else -> LocalArtist(item.mediaId, name, picture)
+    }
+}
 
 /** The screen of the artist [id] of [origin], like an artist of a song. */
 fun artistRoute(origin: Origin?, id: String): Route = when (origin) {

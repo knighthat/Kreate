@@ -73,6 +73,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.core.net.toUri
+import androidx.lifecycle.SavedStateHandle
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
@@ -88,7 +91,11 @@ import me.knighthat.kreate3.ui.component.OriginBadge
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
+import me.knighthat.kreate3.ui.component.artistPictureKey
+import me.knighthat.kreate3.ui.component.rememberContentsAfterPicture
+import me.knighthat.kreate3.ui.component.rememberSharedPicture
 import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.LocalArtist
 
 /** Share of the screen's height the artist's picture takes at the top, before it scrolls. */
 private const val PICTURE_HEIGHT = 0.4f
@@ -111,6 +118,21 @@ private val BADGE_SIZE = 16.dp
 /** Edge of the artist icon shown while there is no picture. */
 private val PLACEHOLDER_SIZE = 96.dp
 
+/** Rows standing in for an artist's top songs while they load. */
+internal const val SONG_PLACEHOLDERS = 5
+
+/**
+ * What the card or row an artist was opened from showed of them, see
+ * [me.knighthat.kreate3.ui.navigation.artistRoute]. Their page shows it until it has its own.
+ *
+ * @property picture the picture as the card loaded it, the top of the page grows from it
+ */
+data class OpenedArtist(val name: String?, val picture: Uri?)
+
+/** The [OpenedArtist] in the arguments of an artist's screen, nothing when opened by id alone. */
+internal fun SavedStateHandle.openedArtist(): OpenedArtist =
+    OpenedArtist(get<String>(LocalArtist.NAME), get<String>(LocalArtist.PICTURE)?.toUri())
+
 /**
  * The frame of an artist's page: their picture across the top, [PICTURE_HEIGHT] of the screen,
  * under a see-through top bar shaded at its top, with the [name], their badges under it, and a ⋮
@@ -118,6 +140,9 @@ private val PLACEHOLDER_SIZE = 96.dp
  * through, fading out just under the bar; the picture blurs more the farther it went up, fully blurred once
  * the list's top reaches the bar.
  *
+ * @param artistId whose page it is, the picture of their card grows into the top as it opens
+ * @param standIn the picture the artist was opened with, see [OpenedArtist]: in memory already,
+ * it shows while [thumbnail] loads, which then fades in over it, and stands in for it when it fails
  * @param origin where the artist comes from, a badge under the name, none when `null`
  * @param subtitle shown under the name in place of the badges, like YouTube's monthly audience
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
@@ -128,11 +153,13 @@ private val PLACEHOLDER_SIZE = 96.dp
 @Composable
 fun ArtistDetailScaffold(
     name: String,
+    artistId: String,
     thumbnail: Uri?,
     origin: Origin?,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    standIn: Uri? = null,
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
@@ -153,9 +180,21 @@ fun ArtistDetailScaffold(
     ) { insets ->
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val pictureHeight = maxHeight * PICTURE_HEIGHT
+            val pictureSide = max(maxWidth, pictureHeight)
             // The list starts under the bar, its first item fills the rest of the picture
             val pictureBelowBar = (pictureHeight - barHeight).coerceAtLeast(0.dp)
-            val models = remember(thumbnail) { listOfNotNull(thumbnailModel(thumbnail, null)) }
+            val picture = rememberSharedPicture(
+                artistPictureKey(artistId),
+                corners = 0,
+                // Round on their card
+                otherCorners = 50,
+            )
+            // Everything but the picture, shown once it landed, see pictureFirst
+            val contents = rememberContentsAfterPicture()
+            val models = remember(thumbnail, standIn) {
+                listOfNotNull(thumbnailModel(thumbnail, null), thumbnailModel(standIn, null))
+                    .distinct()
+            }
 
             Box(
                 Modifier
@@ -165,7 +204,11 @@ fun ArtistDetailScaffold(
                 Thumbnail(
                     models = models,
                     shape = RectangleShape,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .then(picture.modifier),
+                    // The card's picture is smaller, it only stands in
+                    minCachedSize = pictureSide,
                     placeholder = {
                         Icon(
                             painterResource(R.drawable.artist),
@@ -180,6 +223,7 @@ fun ArtistDetailScaffold(
                     blur = PICTURE_BLUR,
                     modifier = Modifier
                         .matchParentSize()
+                        .then(contents)
                         // More of it the farther the list went up, all of it once at the bar
                         .graphicsLayer {
                             val scrolled =
@@ -196,6 +240,8 @@ fun ArtistDetailScaffold(
                 Box(
                     Modifier
                         .matchParentSize()
+                        .then(picture.overlay)
+                        .then(contents)
                         .background(
                             Brush.verticalGradient(
                                 PICTURE_FADE_START to Color.Transparent,
@@ -215,6 +261,7 @@ fun ArtistDetailScaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = barHeight)
+                    .then(contents)
                     .fadeTop(LIST_FADE),
             ) {
                 item(key = "picture") {
@@ -233,6 +280,7 @@ fun ArtistDetailScaffold(
                 subtitle = subtitle,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
+                modifier = picture.overlay.then(contents),
             )
         }
     }
@@ -264,6 +312,7 @@ private fun ArtistTopBar(
     subtitle: String?,
     onBack: () -> Unit,
     onMore: (() -> Unit)?,
+    modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     TopAppBar(
         title = {
@@ -293,7 +342,7 @@ private fun ArtistTopBar(
             titleContentColor = Color.White,
             actionIconContentColor = Color.White,
         ),
-        modifier = Modifier.background(
+        modifier = modifier.background(
             Brush.verticalGradient(
                 0f to Color.Black.copy(alpha = BAR_SHADE_ALPHA),
                 1f to Color.Transparent,

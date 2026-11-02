@@ -36,11 +36,14 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.CardRowPlaceholder
+import me.knighthat.kreate3.ui.component.ItemRowPlaceholder
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.TextPlaceholder
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQuickQueueActions
@@ -66,26 +69,28 @@ fun OpenSubsonicArtistDetailScreen(
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val topSongs by viewModel.topSongs.collectAsStateWithLifecycle()
+    val description by viewModel.description.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
     val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
-    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+    val shownSongs = { (viewModel.topSongs.value as? LiveState.Ready)?.value?.songs.orEmpty() }
 
     CoverTheme(coverModels) {
         OpenSubsonicArtistDetailContent(
+            artistId = viewModel.artistId,
+            opened = viewModel.opened,
             state = state,
+            topSongs = topSongs,
+            description = description,
             onRetry = viewModel::load,
             onBack = onBack,
             onOpenAlbum = onOpenAlbum,
             onOpenSongs = onOpenSongs,
-            onAction = rememberQuickQueueActions(
-                shown = { (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty() },
-                songs = viewModel::allSongs,
-            ),
-            onSongClick = rememberSongTap(null) {
-                (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
-            },
+            onAction = rememberQuickQueueActions(shown = shownSongs, songs = viewModel::allSongs),
+            onSongClick = rememberSongTap(null, shownSongs),
             share = if (canShare) viewModel::shareLink else null,
             isFollowed = isFollowed,
             onToggleFollow = viewModel.follow::toggle,
@@ -98,12 +103,19 @@ fun OpenSubsonicArtistDetailScreen(
 }
 
 /**
+ * Every part shows as soon as it is there, the others stand in with placeholders until then.
+ *
+ * @param opened shown until [state] has the artist
  * @param share gives a link to the artist, `null` while the user may not share
  * @param isFollowed whether the artist is starred on the server, `null` turns Follow off
  */
 @Composable
 private fun OpenSubsonicArtistDetailContent(
+    artistId: String,
+    opened: OpenedArtist,
     state: LiveState<OpenSubsonicArtistDetail>,
+    topSongs: LiveState<TopSongs>,
+    description: LiveState<String?>,
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
@@ -119,41 +131,50 @@ private fun OpenSubsonicArtistDetailContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val artist = (state as? LiveState.Ready)?.value
+    val name = artist?.name ?: opened.name
+    val songs = (topSongs as? LiveState.Ready)?.value
 
     ArtistDetailScaffold(
-        name = artist?.name.orEmpty(),
-        thumbnail = artist?.thumbnail,
+        name = name.orEmpty(),
+        artistId = artistId,
+        thumbnail = artist?.thumbnail ?: opened.picture,
+        standIn = opened.picture,
         origin = Origin.OPEN_SUBSONIC,
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
         menu = { onDismiss ->
             ArtistMenu(
-                name = artist?.name,
+                name = name,
                 onDismiss = onDismiss,
-                onAction = onAction.takeIf { artist?.topSongs?.isNotEmpty() == true },
+                onAction = onAction.takeIf { songs?.songs?.isNotEmpty() == true },
                 isFollowed = isFollowed.takeIf { artist != null },
                 onToggleFollow = onToggleFollow,
                 share = if (share != null && artist != null) ({ share(artist.name) }) else null,
-                onOpenDetails = artist?.name?.let { { onOpenDetails(it) } },
+                onOpenDetails = name?.let { { onOpenDetails(it) } },
                 onOpenStatistics = onOpenStatistics,
             )
         },
     ) {
-        if (artist == null) {
+        if (state is LiveState.Failed) {
             item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
             return@ArtistDetailScaffold
         }
-        artist.description?.let {
-            item(key = "description") { DetailDescription(it) }
+        when (description) {
+            is LiveState.Ready -> description.value?.let {
+                item(key = "description") { DetailDescription(it) }
+            }
+
+            else -> item(key = "description") { TextPlaceholder() }
         }
-        if (artist.albums.isNotEmpty())
+        if (artist == null) {
             item(key = "albums") {
-                SectionTitle(
-                    pluralStringResource(
-                        R.plurals.unit_album,
-                        2
-                    ).replaceFirstChar { it.uppercase() })
+                SectionTitle(albumsTitle())
+                CardRowPlaceholder(ALBUM_CARD_WIDTH)
+            }
+        } else if (artist.albums.isNotEmpty()) {
+            item(key = "albums") {
+                SectionTitle(albumsTitle())
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -162,38 +183,53 @@ private fun OpenSubsonicArtistDetailContent(
                         AlbumItem(
                             it,
                             onClick = { onOpenAlbum(it) },
-                            modifier = Modifier.width(104.dp),
+                            modifier = Modifier.width(ALBUM_CARD_WIDTH.dp),
                         )
                     }
                 }
             }
-        if (artist.topSongs.isNotEmpty()) {
+        }
+        if (songs == null) {
+            item(key = "songs-title") {
+                SectionTitle(stringResource(R.string.section_header_top_songs))
+            }
+            items(SONG_PLACEHOLDERS, key = { "song-placeholder:$it" }) { ItemRowPlaceholder() }
+        } else if (songs.songs.isNotEmpty()) {
             item(key = "songs-title") {
                 SectionTitle(
                     stringResource(R.string.section_header_top_songs),
-                    onSeeMore = if (artist.hasMoreSongs) ({ onOpenSongs(artist.name) }) else null,
+                    onSeeMore = if (songs.hasMore) ({ onOpenSongs(name) }) else null,
                 )
             }
-            items(artist.topSongs, key = { it.mediaId }) {
+            items(songs.songs, key = { it.mediaId }) {
                 SongItem(it, onClick = { onSongClick(it) })
             }
         }
     }
 }
 
+/** Width of an album card in the row of the artist's albums. */
+private const val ALBUM_CARD_WIDTH = 104
+
+@Composable
+private fun albumsTitle(): String =
+    pluralStringResource(R.plurals.unit_album, 2).replaceFirstChar { it.uppercase() }
+
 @ScreenPreviews
 @Composable
 private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
     OpenSubsonicArtistDetailContent(
+        artistId = "",
+        opened = OpenedArtist("Neon Coast", null),
         state = LiveState.Ready(
             OpenSubsonicArtistDetail(
                 name = "Neon Coast",
                 thumbnail = null,
                 albums = previewAlbums(Origin.OPEN_SUBSONIC).take(3),
-                topSongs = previewSongs(Origin.OPEN_SUBSONIC),
-                hasMoreSongs = true,
             )
         ),
+        topSongs = LiveState.Ready(TopSongs(previewSongs(Origin.OPEN_SUBSONIC), hasMore = true)),
+        description = LiveState.Ready(null),
         onRetry = {},
         onBack = {},
         onOpenAlbum = {},
@@ -202,6 +238,36 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onSongClick = {},
         share = { Result.success("") },
         isFollowed = true,
+        onToggleFollow = {},
+        onOpenDetails = {},
+        onOpenStatistics = {},
+    )
+}
+
+/** The artist's page while their top songs and biography are still on the way. */
+@ScreenPreviews
+@Composable
+private fun OpenSubsonicArtistDetailLoadingPreview() = PreviewTheme {
+    OpenSubsonicArtistDetailContent(
+        artistId = "",
+        opened = OpenedArtist("Neon Coast", null),
+        state = LiveState.Ready(
+            OpenSubsonicArtistDetail(
+                name = "Neon Coast",
+                thumbnail = null,
+                albums = previewAlbums(Origin.OPEN_SUBSONIC).take(3),
+            )
+        ),
+        topSongs = LiveState.Loading,
+        description = LiveState.Loading,
+        onRetry = {},
+        onBack = {},
+        onOpenAlbum = {},
+        onOpenSongs = {},
+        onAction = {},
+        onSongClick = {},
+        share = null,
+        isFollowed = null,
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},

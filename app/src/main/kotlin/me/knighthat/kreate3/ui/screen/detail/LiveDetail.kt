@@ -314,7 +314,7 @@ fun LiveSectionRow(
         items(
             section.items,
             key = { (tab, item) -> "${tab.name}:${item.mediaId}" }) { (tab, item) ->
-            val modifier = Modifier.width(CARD_WIDTH.dp)
+            val modifier = Modifier.width(LIVE_CARD_WIDTH.dp)
             if (tab == Tab.ARTISTS) {
                 ArtistItem(
                     item,
@@ -328,4 +328,5 @@ fun LiveSectionRow(
     }
 }
 
-private const val CARD_WIDTH = 120
+/** Width of a card in a [LiveSectionRow]. */
+internal const val LIVE_CARD_WIDTH = 120
