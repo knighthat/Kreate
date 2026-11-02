@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate3.ui.screen.search
 
+import android.view.WindowManager
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -64,6 +66,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -122,6 +125,7 @@ import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
@@ -411,6 +415,8 @@ fun SearchScreen(
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val playlists = viewModel.playlists.collectAsLazyPagingItems()
+    // A suggested song plays alone, or starts a radio
+    val onPlaySong = rememberSongTap(Preferences.SEARCH_SONGS_TAP_RADIO) { emptyList() }
 
     // Records the search and opens its results, a blank text searches for nothing
     val search = { term: String ->
@@ -418,6 +424,26 @@ fun SearchScreen(
             viewModel.submit()
             // Opens on the first chosen kind, from the left
             onSearch(term.trim(), origin, Tab.entries.firstOrNull { it in categories } ?: Tab.SONGS)
+        }
+    }
+
+    // The search bar lifts itself over the keyboard; if the system also pans the window (its
+    // choice for the app's unspecified mode), the bar ends up a keyboard's height too high and
+    // the top bar out of sight
+    val window = LocalActivity.current?.window
+    DisposableEffect(window) {
+        val previous = window?.attributes?.softInputMode
+        // Deprecated for edge-to-edge windows, but still what keeps the system from panning
+        @Suppress("DEPRECATION")
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        onDispose {
+            if (previous == null) return@onDispose
+            // An unspecified adjust keeps the one set last, so pan is set back by name
+            val adjust = previous and WindowManager.LayoutParams.SOFT_INPUT_MASK_ADJUST
+            window.setSoftInputMode(
+                if (adjust != WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED) previous
+                else previous or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+            )
         }
     }
 
@@ -447,6 +473,7 @@ fun SearchScreen(
         onSearch = search,
         onOriginChange = { Preferences.SEARCH_ORIGIN.update(it.name) },
         onCategoryChange = viewModel::setCategory,
+        onPlaySong = onPlaySong,
         onOpenAlbum = onOpenAlbum,
         onOpenArtist = onOpenArtist,
         onOpenPlaylist = onOpenPlaylist,
@@ -483,6 +510,7 @@ private fun SearchContent(
     onSearch: (String) -> Unit,
     onOriginChange: (Origin) -> Unit,
     onCategoryChange: (Tab, Boolean) -> Unit,
+    onPlaySong: (MediaItem) -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     onOpenArtist: (MediaItem) -> Unit,
     onOpenPlaylist: (MediaItem) -> Unit,
@@ -581,7 +609,7 @@ private fun SearchContent(
                                 Tab.ALBUMS -> onOpenAlbum(it.item)
                                 Tab.ARTISTS -> onOpenArtist(it.item)
                                 Tab.PLAYLISTS -> onOpenPlaylist(it.item)
-                                Tab.SONGS -> {}
+                                Tab.SONGS -> onPlaySong(it.item)
                             }
                         },
                         trailing = { KindBadge(it.kind) },
@@ -655,6 +683,7 @@ private fun SearchPreview() = PreviewTheme {
         onSearch = {},
         onOriginChange = {},
         onCategoryChange = { _, _ -> },
+        onPlaySong = {},
         onOpenAlbum = {},
         onOpenArtist = {},
         onOpenPlaylist = {},

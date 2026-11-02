@@ -151,7 +151,7 @@ object Preferences : KoinComponent {
      */
     val SEARCH_ORIGIN by lazy { string("search_origin", "LOCAL") }
 
-    /** Like [HOME_SONGS_TAP_RADIO], for a song tapped in the search results. */
+    /** Like [HOME_SONGS_TAP_RADIO], for a song tapped in the search results or suggestions. */
     val SEARCH_SONGS_TAP_RADIO by lazy { boolean("search_songs_tap_radio", false) }
     //</editor-fold>
 
