@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -110,39 +111,65 @@ internal fun Throwable.shareFailure(resources: Resources, @PluralsRes kind: Int)
 }
 
 /**
- * The share button of a detail screen's top bar. A tap gets the link from [link], which may ask
- * the server, then opens the share sheet titled [title]. It is off while the link is on its way,
- * and a failure is posted to [LocalNotifier].
+ * The share button of a detail screen's top bar, see [rememberLinkShare].
  *
  * @param kind what is shared, like the plural `album`, for the failure message
  */
 @Composable
 fun ShareAction(title: String?, @PluralsRes kind: Int, link: suspend () -> Result<String>) {
+    val share = rememberLinkShare(title, kind, link)
+    ShareButton(enabled = share.enabled, onClick = { share.share() })
+}
+
+/** Sharing a link, see [rememberLinkShare]. */
+@Stable
+class LinkShare(
+    /** Off while the link is on its way. */
+    val enabled: Boolean,
+    private val start: (then: () -> Unit) -> Unit,
+) {
+
+    /** Gets the link and opens the share sheet, then runs [then], also when it failed. */
+    fun share(then: () -> Unit = {}) = start(then)
+}
+
+/**
+ * Sharing an item by a link: [LinkShare.share] gets the link from [link], which may ask the
+ * server, then opens the share sheet titled [title]. A failure is posted to [LocalNotifier].
+ *
+ * @param kind what is shared, like the plural `album`, for the failure message
+ */
+@Composable
+fun rememberLinkShare(
+    title: String?,
+    @PluralsRes kind: Int,
+    link: suspend () -> Result<String>,
+): LinkShare {
     val context = LocalContext.current
     val resources = LocalResources.current
     val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
+    val currentLink by rememberUpdatedState(link)
+    val currentTitle by rememberUpdatedState(title)
     var sharing by remember { mutableStateOf(false) }
 
-    ShareButton(
-        enabled = !sharing,
-        onClick = {
-            sharing = true
-            scope.launch {
-                link()
-                    .onSuccess { context.shareLink(title, it) }
-                    .onFailure {
-                        notifier.post(
-                            Message(
-                                it.shareFailure(resources, kind),
-                                MessageDuration.LONG
-                            )
+    return LinkShare(enabled = !sharing) { then ->
+        sharing = true
+        scope.launch {
+            currentLink()
+                .onSuccess { context.shareLink(currentTitle, it) }
+                .onFailure {
+                    notifier.post(
+                        Message(
+                            it.shareFailure(resources, kind),
+                            MessageDuration.LONG
                         )
-                    }
-                sharing = false
-            }
-        },
-    )
+                    )
+                }
+            sharing = false
+            then()
+        }
+    }
 }
 
 /** Sharing a song, see [rememberSongShare]. */

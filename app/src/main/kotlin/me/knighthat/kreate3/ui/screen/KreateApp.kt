@@ -76,6 +76,7 @@ import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.Account
 import me.knighthat.kreate3.ui.navigation.AlbumStatistics
 import me.knighthat.kreate3.ui.navigation.Albums
+import me.knighthat.kreate3.ui.navigation.ArtistDetails
 import me.knighthat.kreate3.ui.navigation.ArtistStatistics
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
@@ -144,6 +145,7 @@ import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailScreen
+import me.knighthat.kreate3.ui.screen.details.ArtistDetailsScreen
 import me.knighthat.kreate3.ui.screen.details.SongDetailsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
@@ -440,6 +442,14 @@ fun KreateApp(
                                     viewModel = routeViewModel(it),
                                 )
                             }
+                            entry<ArtistDetails> {
+                                ArtistDetailsScreen(
+                                    onBack = topLevel::pop,
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
                             entry<Disliked> {
                                 DislikedScreen(
                                     onBack = topLevel::pop,
@@ -525,6 +535,8 @@ fun KreateApp(
                                 LocalArtistDetailScreen(
                                     onBack = topLevel::pop,
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                    onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
+                                    onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
@@ -555,6 +567,8 @@ fun KreateApp(
                                     onOpenSongs = { name ->
                                         topLevel.push(OpenSubsonicArtistSongs(it.id, name))
                                     },
+                                    onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
+                                    onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
@@ -610,6 +624,8 @@ fun KreateApp(
                                         )
                                     },
                                     onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
+                                    onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
+                                    onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),

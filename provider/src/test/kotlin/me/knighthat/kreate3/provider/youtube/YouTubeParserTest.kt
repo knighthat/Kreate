@@ -192,6 +192,7 @@ class YouTubeParserTest {
         val page = parser.artistPage(daftPunk.id, fixture("artist"))!!
 
         assertEquals("Daft Punk", page.artist.name)
+        assertEquals("75.1M monthly audience", page.audience)
         assertTrue(page.description!!.startsWith("Daft Punk were"))
         assertEquals("OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs", page.songsPlaylistId)
 

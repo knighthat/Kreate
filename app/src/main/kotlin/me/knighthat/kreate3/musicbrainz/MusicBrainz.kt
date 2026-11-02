@@ -107,6 +107,68 @@ data class MusicBrainzRelease(
 )
 
 /**
+ * An artist [MusicBrainz.searchArtists] found.
+ *
+ * @property type the kind of artist, like `Person` or `Group`
+ * @property area where they are from, like `United Kingdom`
+ * @property disambiguation what tells them from artists of the same name, like `UK rock group`
+ * @property began when they were born or formed, `YYYY`, `YYYY-MM` or `YYYY-MM-DD`
+ * @property ended when they died or broke up, like [began]
+ * @property score how well they match the search, 0 to 100
+ */
+data class MusicBrainzArtistMatch(
+    val id: String,
+    val name: String,
+    val type: String?,
+    val area: String?,
+    val disambiguation: String?,
+    val began: String?,
+    val ended: String?,
+    val score: Int,
+)
+
+/**
+ * One artist of [MusicBrainz], with what is known about them.
+ *
+ * @property type the kind of artist, like `Person`, `Group` or `Orchestra`
+ * @property area where they are from, like `United Kingdom`
+ * @property began when they were born or formed, like `1970-06-27`
+ * @property beganIn where they were born or formed, like `London`
+ * @property ended when they died or broke up, `null` while they haven't
+ * @property endedIn where they died or broke up
+ * @property aliases other names they go by, the primary ones first, never [name] itself
+ * @property genres their genres, then the tags people gave them, the most voted first
+ * @property isnis their International Standard Name Identifiers
+ * @property links pages about them elsewhere, like their website
+ */
+data class MusicBrainzArtist(
+    val id: String,
+    val name: String,
+    val type: String?,
+    val area: String?,
+    val disambiguation: String?,
+    val began: String?,
+    val beganIn: String?,
+    val ended: String?,
+    val endedIn: String?,
+    val aliases: List<String>,
+    val genres: List<String>,
+    val isnis: List<String>,
+    val links: List<MusicBrainzLink>,
+) {
+
+    /** The artist's page on the MusicBrainz site. */
+    val url: String get() = "https://musicbrainz.org/artist/$id"
+}
+
+/**
+ * A page about an artist elsewhere.
+ *
+ * @property type what the page is, as MusicBrainz names it, like `official homepage` or `wikidata`
+ */
+data class MusicBrainzLink(val type: String, val url: String)
+
+/**
  * [MusicBrainz](https://musicbrainz.org), an open database of music anyone can edit. It is asked
  * at most once a second, all callers together, as its rules ask; a faster client is blocked.
  */
@@ -148,6 +210,49 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             parameter("inc", "artist-credits+releases+release-groups+isrcs+genres+tags")
         } ?: return@withContext null
         json.parseToJsonElement(body).jsonObject.toRecording()
+    }
+
+    /**
+     * The artists named [name], the best matches first, as MusicBrainz ranks them. The name is
+     * matched as a phrase first, word by word when that finds nothing.
+     *
+     * @throws IOException when MusicBrainz can't be reached or answers with an error
+     */
+    suspend fun searchArtists(name: String): List<MusicBrainzArtistMatch> =
+        withContext(Dispatchers.Default) {
+            searchArtistsBy(artistQuery(name, phrase = true))
+                .ifEmpty { searchArtistsBy(artistQuery(name, phrase = false)) }
+        }
+
+    /**
+     * The artist [searchArtists] finds that is most likely the one named [name]: of the best
+     * scored ones, the first with that very name, else with it in other letter case.
+     *
+     * @return `null` when nothing was found
+     */
+    suspend fun identifyArtist(name: String): MusicBrainzArtistMatch? =
+        searchArtists(name).best(name)
+
+    /**
+     * Everything about the artist [id].
+     *
+     * @return `null` when MusicBrainz has no such artist
+     * @throws IOException when MusicBrainz can't be reached or answers with an error
+     */
+    suspend fun artist(id: String): MusicBrainzArtist? = withContext(Dispatchers.Default) {
+        val body = request("artist/${id.encodeURLPathPart()}") {
+            parameter("inc", "aliases+genres+tags+url-rels")
+        } ?: return@withContext null
+        json.parseToJsonElement(body).jsonObject.toArtist()
+    }
+
+    private suspend fun searchArtistsBy(query: String): List<MusicBrainzArtistMatch> {
+        val body = request("artist") {
+            parameter("query", query)
+            parameter("limit", SEARCH_LIMIT)
+        } ?: return emptyList()
+        return json.parseToJsonElement(body).jsonObject.array("artists")
+            .map { it.jsonObject.toArtistMatch() }
     }
 
     private suspend fun search(query: String): List<MusicBrainzMatch> {
@@ -221,6 +326,56 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
         )
     }
 
+    private fun JsonObject.toArtistMatch(): MusicBrainzArtistMatch {
+        val lifeSpan = this["life-span"] as? JsonObject
+        return MusicBrainzArtistMatch(
+            id = string("id").orEmpty(),
+            name = string("name").orEmpty(),
+            type = string("type"),
+            area = (this["area"] as? JsonObject)?.string("name") ?: string("country"),
+            disambiguation = string("disambiguation"),
+            began = lifeSpan?.string("begin"),
+            ended = lifeSpan?.string("end"),
+            score = this["score"]?.jsonPrimitive?.intOrNull ?: 0,
+        )
+    }
+
+    private fun JsonObject.toArtist(): MusicBrainzArtist {
+        val name = string("name").orEmpty()
+        val lifeSpan = this["life-span"] as? JsonObject
+        val aliases = array("aliases").map { it.jsonObject }
+            .sortedByDescending { (it["primary"] as? JsonPrimitive)?.contentOrNull == "true" }
+            .mapNotNull { it.string("name") }
+            .filter { it != name }
+            .distinct()
+        val links = array("relations").map { it.jsonObject }
+            .filter { it.string("target-type") == "url" }
+            .mapNotNull { relation ->
+                val url = (relation["url"] as? JsonObject)?.string("resource")
+                    ?: return@mapNotNull null
+                MusicBrainzLink(relation.string("type") ?: "", url)
+            }
+            .distinctBy { it.url }
+            // Their own site first, the rest by what they are
+            .sortedWith(compareBy({ it.type != OFFICIAL_HOMEPAGE }, { it.type }))
+
+        return MusicBrainzArtist(
+            id = string("id").orEmpty(),
+            name = name,
+            type = string("type"),
+            area = (this["area"] as? JsonObject)?.string("name") ?: string("country"),
+            disambiguation = string("disambiguation"),
+            began = lifeSpan?.string("begin"),
+            beganIn = (this["begin-area"] as? JsonObject)?.string("name"),
+            ended = lifeSpan?.string("end"),
+            endedIn = (this["end-area"] as? JsonObject)?.string("name"),
+            aliases = aliases,
+            genres = (namesByVotes("genres") + namesByVotes("tags")).distinct(),
+            isnis = array("isnis").mapNotNull { it.jsonPrimitive.contentOrNull },
+            links = links,
+        )
+    }
+
     /** The artist credit with its join phrases, like `A feat. B`. */
     private fun JsonObject.credit(): String? =
         array("artist-credit").joinToString("") {
@@ -255,14 +410,30 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
         /** Characters Lucene reads as syntax, escaped in words searched one by one. */
         private val LUCENE_SYNTAX = Regex("""[+\-&|!(){}\[\]^"~*?:\\/]""")
 
-        private fun query(title: String, artist: String?, phrase: Boolean): String {
-            fun terms(text: String) =
-                if (phrase) "\"${text.replace("\\", "\\\\").replace("\"", "\\\"")}\""
-                else "(${text.replace(LUCENE_SYNTAX) { "\\" + it.value }})"
+        /** How MusicBrainz names an artist's own website among their links. */
+        private const val OFFICIAL_HOMEPAGE = "official homepage"
 
-            val recording = "recording:${terms(title.trim())}"
+        /** [text] as one phrase, or as words matched one by one. */
+        private fun terms(text: String, phrase: Boolean) =
+            if (phrase) "\"${text.replace("\\", "\\\\").replace("\"", "\\\"")}\""
+            else "(${text.replace(LUCENE_SYNTAX) { "\\" + it.value }})"
+
+        private fun artistQuery(name: String, phrase: Boolean): String =
+            "artist:${terms(name.trim(), phrase)}"
+
+        private fun query(title: String, artist: String?, phrase: Boolean): String {
+            val recording = "recording:${terms(title.trim(), phrase)}"
             val credit = artist?.trim()?.takeIf { it.isNotEmpty() } ?: return recording
-            return "$recording AND artist:${terms(credit)}"
+            return "$recording AND artist:${terms(credit, phrase)}"
+        }
+
+        @JvmName("bestArtist")
+        internal fun List<MusicBrainzArtistMatch>.best(name: String): MusicBrainzArtistMatch? {
+            val top = maxOfOrNull { it.score } ?: return null
+            val candidates = filter { it.score >= top - SCORE_MARGIN }
+            return candidates.firstOrNull { it.name == name.trim() }
+                ?: candidates.firstOrNull { it.name.equals(name.trim(), ignoreCase = true) }
+                ?: first()
         }
 
         internal fun List<MusicBrainzMatch>.best(

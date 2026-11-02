@@ -23,6 +23,11 @@ ui/screen/
   first released, ISRCs, genres, id opens musicbrainz.org), releases; search button = "Find the
   recording" dialog listing matches, a tap shows and keeps one; every fetched id is kept on the
   global scope when the song is in the library, else a "not kept" hint).
+  `ArtistDetailsScreen.kt` + `ArtistDetailsViewModel.kt` (artist menu's Details: best match of
+  `MusicBrainz.identifyArtist` by name, nothing kept; facts (type, area, born/formed, died/dissolved
+  by type, aliases, genres, ISNI, id), links (url relations, own site first); search button = "Find
+  the artist" dialog, a pick shows that artist for the page's life). Shares `Notice`, `Message`,
+  `SearchHint`, `Fact` with `SongDetailsScreen.kt`.
 - account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Disliked,
   Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
   `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`
@@ -92,10 +97,20 @@ ui/screen/
   tab is in the back stack),
   `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).
-- detail/ — `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as
-  content padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (
+- detail/ — `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
+  under a see-through top bar shaded from the top (name, under it the origin badge or a
+  `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and
+  scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
+  picture fades into its `BlurredCover` as the list goes up, fully blurred once the list's top
+  reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
+  next / Add to queue / Details / Statistics rows; used by all three artist screens),
+  `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as content
+  padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (
   `LiveDetailViewModel` (state re-filtered by `dislikedIds` through each subclass's
-  `withoutSongs`), `LiveState`, `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (
+  `withoutSongs`), `LiveState`, `LiveSectionRow`, `LiveDetailScreen`, `LiveStatus` (spinner or
+  failure + retry, alone)),
+  `ShareAction.kt` (`rememberLinkShare`/`LinkShare` behind `ShareAction` and the artist menu's
+  Share,
   OpenSubsonic share link on demand),
   `SourceToggle.kt` (bookmark/follow kept by a source: flips at once, sent in tap order on the app
   scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);

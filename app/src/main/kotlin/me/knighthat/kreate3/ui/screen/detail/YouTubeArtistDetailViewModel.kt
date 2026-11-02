@@ -50,6 +50,7 @@ data class YouTubeArtistDetail(
     val songsPlaylistId: String?,
     val sections: List<LiveSection>,
     val description: String? = null,
+    val audience: String? = null,
 )
 
 /**
@@ -124,6 +125,7 @@ class YouTubeArtistDetailViewModel(
         return YouTubeArtistDetail(
             name = page.artist.name,
             thumbnail = provider.artwork(page.artist.thumbnail, HEADER_ARTWORK),
+            audience = page.audience,
             topSongs = page.topSongs
                 .map {
                     it.toLiveMediaItem(

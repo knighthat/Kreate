@@ -356,10 +356,15 @@ fun ItemBadges(
 }
 
 /**
- * The [ItemBadge] of where an item comes from.
+ * The [ItemBadge] of where an item comes from, [tint] like other badges unless it sits on a
+ * picture.
  */
 @Composable
-fun OriginBadge(origin: Origin, size: Dp = BADGE_SIZE) = ItemBadge(
+fun OriginBadge(
+    origin: Origin,
+    size: Dp = BADGE_SIZE,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+) = ItemBadge(
     icon = origin.icon,
     contentDescription = when (origin) {
         Origin.LOCAL -> stringResource(R.string.semantic_on_this_device)
@@ -372,6 +377,7 @@ fun OriginBadge(origin: Origin, size: Dp = BADGE_SIZE) = ItemBadge(
                 stringResource(R.string.source_opensubsonicapi),
             )
     },
+    tint = tint,
     size = size,
 )
 

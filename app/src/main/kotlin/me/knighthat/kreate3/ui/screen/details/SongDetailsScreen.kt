@@ -145,7 +145,7 @@ private fun SongDetailsContent(
         SongDetailsState.NotFound -> Notice(padding) {
             val musicBrainz = stringResource(R.string.source_musicbrainz)
             Message(stringResource(R.string.screen_song_details_status_not_found, musicBrainz))
-            SearchHint()
+            SearchHint(stringResource(R.string.screen_song_details_hint_search, SEARCH_MARK))
         }
 
         is SongDetailsState.Failed -> Notice(padding) {
@@ -182,7 +182,7 @@ private fun SongDetailsContent(
 
 /** A message in the middle of the page, with what can be done about it under. */
 @Composable
-private fun Notice(padding: PaddingValues, content: @Composable () -> Unit) = Column(
+internal fun Notice(padding: PaddingValues, content: @Composable () -> Unit) = Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
     modifier = Modifier
@@ -192,17 +192,19 @@ private fun Notice(padding: PaddingValues, content: @Composable () -> Unit) = Co
 ) { content() }
 
 @Composable
-private fun Message(text: String) = Text(
+internal fun Message(text: String) = Text(
     text,
     style = MaterialTheme.typography.bodyLarge,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
     textAlign = TextAlign.Center,
 )
 
-/** Says to search with other words, with the icon of the search button in it. */
+/**
+ * Says to search with other words, with the icon of the search button in place of [SEARCH_MARK]
+ * in [hint].
+ */
 @Composable
-private fun SearchHint() {
-    val hint = stringResource(R.string.screen_song_details_hint_search, SEARCH_MARK)
+internal fun SearchHint(hint: String) {
     Text(
         text = buildAnnotatedString {
             // The icon takes the place of the mark, wherever the translation puts it
@@ -275,7 +277,7 @@ private fun RecordingFacts(recording: MusicBrainzRecording, onOpenLink: (String)
 }
 
 @Composable
-private fun Fact(label: String, value: String, onClick: (() -> Unit)? = null) = Row {
+internal fun Fact(label: String, value: String, onClick: (() -> Unit)? = null) = Row {
     Text(
         label,
         style = MaterialTheme.typography.bodyMedium,
@@ -444,11 +446,11 @@ private fun MatchRow(match: MusicBrainzMatch, isCurrent: Boolean, onClick: () ->
 private val MusicBrainzRelease.url: String get() = "https://musicbrainz.org/release/$id"
 
 private val LABEL_WIDTH = 120.dp
-private val MATCH_LIST_HEIGHT = 320.dp
+internal val MATCH_LIST_HEIGHT = 320.dp
 
 /** Where the search hint shows the icon of the search button. */
 private const val SEARCH_ICON = "search"
-private const val SEARCH_MARK = "⌕"
+internal const val SEARCH_MARK = "⌕"
 
 @ScreenPreviews
 @Composable

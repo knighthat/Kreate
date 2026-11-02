@@ -21,12 +21,9 @@ package me.knighthat.kreate3.ui.screen.detail
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,10 +39,8 @@ import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
-import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -62,6 +57,8 @@ import org.koin.androidx.compose.koinViewModel
 fun LocalArtistDetailScreen(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
@@ -82,13 +79,15 @@ fun LocalArtistDetailScreen(
         onSongClick = rememberSongTap(null, viewModel::allSongs),
         isFollowed = isFollowed,
         onToggleFollow = viewModel::toggleFollow,
+        onOpenDetails = onOpenDetails,
+        onOpenStatistics = onOpenStatistics,
         modifier = modifier,
         contentPadding = contentPadding,
     )
 }
 
 /**
- * @param isFollowed `null` hides the follow button, while it isn't known
+ * @param isFollowed `null` turns Follow off in the menu, while it isn't known
  */
 @Composable
 private fun LocalArtistDetailContent(
@@ -103,63 +102,62 @@ private fun LocalArtistDetailContent(
     onSongClick: (MediaItem) -> Unit,
     isFollowed: Boolean?,
     onToggleFollow: () -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    DetailScaffold(
-        title = name.orEmpty(),
+    ArtistDetailScaffold(
+        name = name.orEmpty(),
+        thumbnail = thumbnail,
+        origin = origin,
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            isFollowed?.let { FollowButton(it, onToggleFollow) }
+        menu = { onDismiss ->
+            ArtistMenu(
+                name = name,
+                onDismiss = onDismiss,
+                onAction = onAction,
+                isFollowed = isFollowed,
+                onToggleFollow = onToggleFollow,
+                share = null,
+                onOpenDetails = name?.let { { onOpenDetails(it) } },
+                onOpenStatistics = onOpenStatistics,
+            )
         },
-    ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = thumbnail,
-                    subtitle = null,
-                    shape = CircleShape,
-                    origin = origin,
-                )
-            }
-            item(key = "queue-actions") { QueueActionRow(onAction) }
-            if (albums.isNotEmpty()) {
-                item {
-                    SectionTitle(
-                        pluralStringResource(
-                            R.plurals.unit_album,
-                            2
-                        ).replaceFirstChar { it.uppercase() })
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(albums, key = { it.mediaId }) {
-                            AlbumItem(
-                                it,
-                                onClick = { onOpenAlbum(it) },
-                                modifier = Modifier.width(104.dp),
-                            )
-                        }
-                    }
-                }
-            }
+    ) {
+        if (albums.isNotEmpty()) {
             item {
                 SectionTitle(
                     pluralStringResource(
-                        R.plurals.unit_song,
+                        R.plurals.unit_album,
                         2
                     ).replaceFirstChar { it.uppercase() })
-            }
-            items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
-                songs[index]?.let {
-                    SongItem(it, onClick = { onSongClick(it) })
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(albums, key = { it.mediaId }) {
+                        AlbumItem(
+                            it,
+                            onClick = { onOpenAlbum(it) },
+                            modifier = Modifier.width(104.dp),
+                        )
+                    }
                 }
+            }
+        }
+        item {
+            SectionTitle(
+                pluralStringResource(
+                    R.plurals.unit_song,
+                    2
+                ).replaceFirstChar { it.uppercase() })
+        }
+        items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
+            songs[index]?.let {
+                SongItem(it, onClick = { onSongClick(it) })
             }
         }
     }
@@ -180,5 +178,7 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         onSongClick = {},
         isFollowed = false,
         onToggleFollow = {},
+        onOpenDetails = {},
+        onOpenStatistics = {},
     )
 }

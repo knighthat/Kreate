@@ -68,7 +68,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,7 +79,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -95,10 +93,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -111,21 +107,20 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.RepeatMode
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
+import me.knighthat.kreate3.ui.component.Blur
+import me.knighthat.kreate3.ui.component.BlurredCover
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.ItemBadges
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
-import me.knighthat.kreate3.ui.component.memoryCacheKey
 import me.knighthat.kreate3.ui.component.rememberSongThumbnails
 import me.knighthat.kreate3.ui.component.seekbar.SeekBar
 import org.koin.compose.koinInject
@@ -152,13 +147,6 @@ private const val BACKGROUND_FADE_START = 0.6f
 
 /** Stops of the eased gradients, more of them is smoother. */
 private const val EASED_STOPS = 12
-
-/**
- * How blurred a copy of the cover is: the edge in pixels it is loaded at and the radius of the
- * real blur over it. Stretched to the window, few pixels blur it on every Android version, the
- * real blur only smooths it where there is one.
- */
-private data class Blur(val sampleSize: Int, val radius: Dp)
 
 /** The copy behind the whole player. */
 private val HEAVY_BLUR = Blur(sampleSize = 16, radius = 64.dp)
@@ -861,33 +849,6 @@ private fun Modifier.mask(brush: DrawScope.() -> Brush): Modifier =
             drawContent()
             drawRect(brush = brush(), blendMode = BlendMode.DstIn)
         }
-
-/**
- * The cover blurred as much as [blur] says, filling [modifier] with its sides cut. It tries
- * [models] in order until one loads.
- */
-@Composable
-private fun BlurredCover(models: List<Any>, blur: Blur, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    var failed by remember(models) { mutableIntStateOf(0) }
-    val model = models.getOrNull(failed) ?: return
-    val request = remember(model, blur.sampleSize) {
-        ImageRequest.Builder(context)
-            .data(model)
-            .size(blur.sampleSize)
-            // A key of its own, a tiny picture must not stand in for a sharper one
-            .memoryCacheKey(memoryCacheKey(model)?.let { "blurred:${blur.sampleSize}:$it" })
-            .build()
-    }
-
-    AsyncImage(
-        model = request,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        onError = { failed++ },
-        modifier = modifier.blur(blur.radius),
-    )
-}
 
 /**
  * Lets the next item in a column start [amount] higher, over the bottom of this one. For room an

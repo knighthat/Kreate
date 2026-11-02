@@ -11,7 +11,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
   PlayPause/SeeMore/Config/SortOrder (newest/oldest first)/UndislikeAll/DeleteAllDownloads
   buttons, `FilterIconButton` (a filter as its icon alone, origin chips while Icon only),
-  `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
+  `BookmarkButton`/`FollowButton` (filled in the primary color while set), `MoreSheetButton` (⋮ that
+  opens a `ConfigSheet`, the artist pages'), `TileButton` (
   big icon+title+subtitle tile with busy spinner; wizard restore, Backup
   settings) (`.claude/rules/ui.md`).
 - `SongItem.kt`, `AlbumItem.kt`, `ArtistItem.kt`, `PlaylistItem.kt` — list/grid items. `SongItem`
@@ -26,9 +27,13 @@ ui/component/ (shared composables; each file that draws something ends with its 
   software's name from `OpenSubsonicServer`, else `source_opensubsonicapi`); `Resources` variant for
   messages, composable one (reads `Preferences`) for screens to pass to their content.
 - `ConfigSheet.kt` — `ConfigSheet` (a screen's options: a row of `LabeledIconButton` actions given
-  `close`, then options under a divider; opens on its content, `skipPartiallyExpanded`),
-  `ConfigToggle` (row with a trailing `Switch`). Used by the home tabs.
-- `SongMenu.kt` (2026-10-20) — `LabeledIconButton` (internal, the sheet's top row, `showLabel`; also
+  `close`, then `entries` and options under a divider; opens on its content,
+  `skipPartiallyExpanded`), `ConfigToggle` (row with a trailing `Switch`), `ConfigEntry` (an action
+  as a row, given `close` like the buttons; the artist menu's). Used by the home tabs.
+- `BlurredCover.kt` — `Blur` (sample size + radius) and `BlurredCover` (a few pixels of a cover
+  stretched and blurred, blurred on every Android version), for the full player and artist pages.
+- `SongMenu.kt` (2026-10-20) — `LabeledIconButton` / `LabeledIconToggle` (internal, the sheet's top
+  row, `showLabel`; the toggle also in the artist menu (Follow); also
   History's and `ConfigSheet`'s
   sheet), `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`

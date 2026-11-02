@@ -29,3 +29,12 @@ recordings are searched or picked.
   tags of their own (the release often has them). An unknown id answers 404. A merged id should
   answer with the recording it was merged into (a different `id`), per MusicBrainz, not probed; each
   fetch saves the id it got back for that case.
+- **Artist search** (`/artist?query=artist:"…"&fmt=json&limit=…`, probed 2026-11-01): each result
+  has `id`, `score`, `name`, `type` (`Person`, `Group`, …), `country`, `area.name`,
+  `disambiguation` (`UK rock group`) and `life-span` (`begin`, `end`, `ended`). `artist:"Queen"`
+  put the band first at 100, then Queen Latifah at 70; `identifyArtist` takes the first of the best
+  scored with the very name.
+- **Artist lookup** (`/artist/<id>?inc=aliases+genres+tags+url-rels`): adds `begin-area`/`end-area`,
+  `isnis[]`, `aliases[]` (`name`, `locale`, `primary`), `genres[]`/`tags[]` with `count`, and
+  `relations[]` (`type` like `official homepage`, `wikidata`, `allmusic`; `target-type: url`,
+  `url.resource`). Queen had 66 url relations.

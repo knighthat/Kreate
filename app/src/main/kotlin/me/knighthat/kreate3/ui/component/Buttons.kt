@@ -431,6 +431,14 @@ fun RandomButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Mod
     )
 
 /**
+ * Opens a sheet of the actions of a screen, like an artist's: [ConfigSheet] by a ⋮ button, for
+ * screens whose top bar shows no other action.
+ */
+@Composable
+fun MoreSheetButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.more_vert, stringResource(R.string.semantic_more), onClick, modifier)
+
+/**
  * Opens a menu of the actions used less often. Each item of [items] should call `close` once
  * tapped.
  */

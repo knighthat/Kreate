@@ -127,6 +127,8 @@ data class YouTubeAlbumPage(
  * the artist's id, `null` when the page has no subscribe button
  * @property subscribed whether the user is subscribed to [channelId], only meaningful for a page
  * asked in the session
+ * @property audience how many listen to them a month, as YouTube words it in the page's language,
+ * like "75.1M monthly audience", `null` when the page doesn't say
  */
 data class YouTubeArtistPage(
     val artist: Artist,
@@ -136,6 +138,7 @@ data class YouTubeArtistPage(
     val sections: List<YouTubeSection>,
     val channelId: String? = null,
     val subscribed: Boolean = false,
+    val audience: String? = null,
 )
 
 /**

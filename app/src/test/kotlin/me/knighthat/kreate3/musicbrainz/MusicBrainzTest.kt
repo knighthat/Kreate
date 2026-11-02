@@ -132,6 +132,88 @@ class MusicBrainzTest {
         assertEquals("Single", recording.releases.first().type)
     }
 
+    private fun artistMatch(id: String, name: String, score: Int = 100) =
+        MusicBrainzArtistMatch(id, name, null, null, null, null, null, score)
+
+    @Test
+    fun bestArtistPrefersTheSameNameThenOtherCaseAmongTheBestScored() {
+        val matches = listOf(
+            artistMatch("cover", "Queen Tribute"),
+            artistMatch("lower", "queen", score = 95),
+            artistMatch("exact", "Queen", score = 92),
+            artistMatch("poor", "Queen", score = 50),
+        )
+
+        assertEquals("exact", matches.best("Queen")?.id)
+        assertEquals("lower", matches.take(2).best("Queen")?.id)
+        // No such name: MusicBrainz's first
+        assertEquals("cover", matches.take(1).best("Queen")?.id)
+        assertNull(emptyList<MusicBrainzArtistMatch>().best("Queen"))
+    }
+
+    @Test
+    fun searchArtistsFallsBackToLooseWords() = runBlocking {
+        val found = """{"artists":[{"id":"a1","score":100,"name":"AC/DC","type":"Group",
+            "area":{"name":"Australia"},"life-span":{"begin":"1973"}}]}"""
+        val musicBrainz = musicBrainz { request ->
+            val query = request.url.parameters["query"].orEmpty()
+            HttpStatusCode.OK to (if (query.contains('"')) """{"artists":[]}""" else found)
+        }
+
+        val matches = musicBrainz.searchArtists("AC/DC")
+
+        assertEquals(
+            listOf(
+                MusicBrainzArtistMatch(
+                    "a1",
+                    "AC/DC",
+                    "Group",
+                    "Australia",
+                    null,
+                    "1973",
+                    null,
+                    100
+                )
+            ),
+            matches,
+        )
+        assertEquals("artist:\"AC/DC\"", requests[0].url.parameters["query"])
+        assertEquals("artist:(AC\\/DC)", requests[1].url.parameters["query"])
+    }
+
+    @Test
+    fun artistReadsAliasesLinksAndLifeSpan() = runBlocking {
+        val body = """{"id":"a1","name":"Queen","type":"Group","disambiguation":"UK rock group",
+            "area":{"name":"United Kingdom"},"begin-area":{"name":"London"},"end-area":null,
+            "life-span":{"begin":"1970-06-27","end":null,"ended":true},"isnis":["0000000115"],
+            "aliases":[{"name":"Queen","primary":true},{"name":"The Queen","primary":null},
+              {"name":"クイーン","primary":true}],
+            "genres":[{"name":"rock","count":9}],"tags":[{"name":"british","count":2}],
+            "relations":[
+              {"type":"wikidata","target-type":"url","url":{"resource":"https://www.wikidata.org/wiki/Q15862"}},
+              {"type":"official homepage","target-type":"url","url":{"resource":"https://queenonline.com"}},
+              {"type":"allmusic","target-type":"url","url":{"resource":"https://queenonline.com"}},
+              {"type":"member of band","target-type":"artist"}
+            ]}"""
+        val artist = musicBrainz { HttpStatusCode.OK to body }.artist("a1")!!
+
+        assertEquals("United Kingdom", artist.area)
+        assertEquals("1970-06-27", artist.began)
+        assertEquals("London", artist.beganIn)
+        assertNull(artist.ended)
+        assertEquals(listOf("クイーン", "The Queen"), artist.aliases)
+        assertEquals(listOf("rock", "british"), artist.genres)
+        assertEquals(listOf("0000000115"), artist.isnis)
+        assertEquals(
+            listOf(
+                MusicBrainzLink("official homepage", "https://queenonline.com"),
+                MusicBrainzLink("wikidata", "https://www.wikidata.org/wiki/Q15862"),
+            ),
+            artist.links,
+        )
+        assertNull(musicBrainz { HttpStatusCode.NotFound to "" }.artist("gone"))
+    }
+
     @Test
     fun aMissingRecordingIsNullAndOtherErrorsThrow() = runBlocking {
         assertNull(musicBrainz { HttpStatusCode.NotFound to "" }.recording("gone"))

@@ -41,6 +41,7 @@ import me.knighthat.kreate3.ui.navigation.LocalArtist
 /**
  * An artist of the OpenSubsonic server as their screen shows them.
  *
+ * @property albums the newest first, those without a year last
  * @property topSongs up to [TOP_SONGS] of their songs, see [OpenSubsonicProvider.topSongs]
  * @property hasMoreSongs whether [topSongs] may be only some of their songs, so the screen links to
  * every song: `false` when fewer than [TOP_SONGS] were found
@@ -119,7 +120,11 @@ class OpenSubsonicArtistDetailViewModel(
         OpenSubsonicArtistDetail(
             name = artist.name,
             thumbnail = artist.thumbnail,
-            albums = albums.map { it.item.toLiveMediaItem() }.distinctBy { it.mediaId },
+            // Newest first like the device's, the server gives them in its own order
+            albums = albums
+                .sortedWith(compareByDescending(nullsFirst()) { it.item.year })
+                .map { it.item.toLiveMediaItem() }
+                .distinctBy { it.mediaId },
             topSongs = top.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
             hasMoreSongs = top.size >= TOP_SONGS,
             description = biography.await(),

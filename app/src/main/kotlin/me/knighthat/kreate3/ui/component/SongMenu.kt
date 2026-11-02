@@ -433,7 +433,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        ReactionToggle(
+        LabeledIconToggle(
             isSet = reaction.reaction == Reaction.DISLIKED,
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_down,
@@ -442,7 +442,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             // Its message has an Undo the sheet would cover
             onClick = { close(reaction.toggleDislike) },
         )
-        ReactionToggle(
+        LabeledIconToggle(
             isSet = reaction.reaction == Reaction.LIKED,
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_up,
@@ -651,8 +651,12 @@ private fun MenuRow(
         .alpha(if (enabled) 1f else 0.38f),
 )
 
+/**
+ * A [LabeledIconButton] that is on or off: [setIcon] in the primary color while [isSet],
+ * [unsetIcon] otherwise.
+ */
 @Composable
-private fun ReactionToggle(
+internal fun LabeledIconToggle(
     isSet: Boolean,
     enabled: Boolean,
     @DrawableRes setIcon: Int,
@@ -713,7 +717,7 @@ private fun SongMenuPreview() = PreviewTheme {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                ReactionToggle(
+                LabeledIconToggle(
                     isSet = false,
                     enabled = true,
                     setIcon = R.drawable.thumb_down,
@@ -721,7 +725,7 @@ private fun SongMenuPreview() = PreviewTheme {
                     label = stringResource(R.string.menu_dislike),
                     onClick = {},
                 )
-                ReactionToggle(
+                LabeledIconToggle(
                     isSet = true,
                     enabled = true,
                     setIcon = R.drawable.thumb_up,
@@ -766,7 +770,7 @@ private fun SongMenuIconOnlyPreview() = PreviewTheme {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.width(360.dp),
             ) {
-                ReactionToggle(
+                LabeledIconToggle(
                     isSet = false,
                     enabled = true,
                     setIcon = R.drawable.thumb_down,
@@ -774,7 +778,7 @@ private fun SongMenuIconOnlyPreview() = PreviewTheme {
                     label = stringResource(R.string.menu_dislike),
                     onClick = {},
                 )
-                ReactionToggle(
+                LabeledIconToggle(
                     isSet = true,
                     enabled = true,
                     setIcon = R.drawable.thumb_up,

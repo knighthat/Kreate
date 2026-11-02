@@ -157,6 +157,20 @@ data class SongDetails(
     }
 }
 
+/**
+ * What MusicBrainz knows about the artist named [name], opened from an artist's page. The name is
+ * what they are searched by.
+ */
+@Serializable
+data class ArtistDetails(val name: String) : Route {
+
+    override val arguments: Bundle get() = Bundle().apply { putString(NAME, name) }
+
+    companion object {
+        const val NAME = "artistName"
+    }
+}
+
 /** How the profile listens to the songs of the album [albumId], opened from [Statistics]. */
 @Serializable
 data class AlbumStatistics(val albumId: String) : Route {

@@ -229,29 +229,42 @@ fun <T : Any> LiveDetailScreen(
         when (val current = state) {
             is LiveState.Ready -> content(current.value, innerPadding)
 
-            else -> Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
+            else -> LiveStatus(
+                current,
+                onRetry,
+                Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(24.dp),
-            ) {
-                if (current is LiveState.Failed)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text(
-                            text = current.reason,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
-                        )
-                        FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
-                    }
-                else CircularProgressIndicator()
-            }
+                    .padding(innerPadding),
+            )
         }
+    }
+}
+
+/**
+ * What a detail screen shows until its item arrived: a spinner, or why it failed with a way to
+ * try again, [onRetry]. Nothing once the item is [LiveState.Ready].
+ */
+@Composable
+fun LiveStatus(state: LiveState<*>, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    if (state is LiveState.Ready) return
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.padding(24.dp),
+    ) {
+        if (state is LiveState.Failed)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = state.reason,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+                FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
+            }
+        else CircularProgressIndicator()
     }
 }
 

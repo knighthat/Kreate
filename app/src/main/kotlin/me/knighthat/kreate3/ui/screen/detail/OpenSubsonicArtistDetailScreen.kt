@@ -20,12 +20,10 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -37,10 +35,8 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
-import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -60,6 +56,8 @@ fun OpenSubsonicArtistDetailScreen(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     onOpenSongs: (name: String?) -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
@@ -84,6 +82,8 @@ fun OpenSubsonicArtistDetailScreen(
         share = if (canShare) viewModel::shareLink else null,
         isFollowed = isFollowed,
         onToggleFollow = viewModel.follow::toggle,
+        onOpenDetails = onOpenDetails,
+        onOpenStatistics = onOpenStatistics,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -91,7 +91,7 @@ fun OpenSubsonicArtistDetailScreen(
 
 /**
  * @param share gives a link to the artist, `null` while the user may not share
- * @param isFollowed whether the artist is starred on the server, `null` hides the button
+ * @param isFollowed whether the artist is starred on the server, `null` turns Follow off
  */
 @Composable
 private fun OpenSubsonicArtistDetailContent(
@@ -105,71 +105,69 @@ private fun OpenSubsonicArtistDetailContent(
     share: (suspend (name: String?) -> Result<String>)?,
     isFollowed: Boolean?,
     onToggleFollow: () -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val artist = (state as? LiveState.Ready)?.value
 
-    LiveDetailScreen(
-        title = artist?.name.orEmpty(),
+    ArtistDetailScaffold(
+        name = artist?.name.orEmpty(),
+        thumbnail = artist?.thumbnail,
+        origin = Origin.OPEN_SUBSONIC,
         onBack = onBack,
-        state = state,
-        onRetry = onRetry,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
-            if (share != null && artist != null)
-                ShareAction(artist.name, R.plurals.unit_artist) { share(artist.name) }
+        menu = { onDismiss ->
+            ArtistMenu(
+                name = artist?.name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { artist?.topSongs?.isNotEmpty() == true },
+                isFollowed = isFollowed.takeIf { artist != null },
+                onToggleFollow = onToggleFollow,
+                share = if (share != null && artist != null) ({ share(artist.name) }) else null,
+                onOpenDetails = artist?.name?.let { { onOpenDetails(it) } },
+                onOpenStatistics = onOpenStatistics,
+            )
         },
-    ) { detail, innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = detail.thumbnail,
-                    subtitle = null,
-                    shape = CircleShape,
-                    origin = Origin.OPEN_SUBSONIC,
-                )
-            }
-            if (detail.topSongs.isNotEmpty())
-                item(key = "queue-actions") { QueueActionRow(onAction) }
-            detail.description?.let {
-                item(key = "description") { DetailDescription(it) }
-            }
-            if (detail.albums.isNotEmpty())
-                item(key = "albums") {
-                    SectionTitle(
-                        pluralStringResource(
-                            R.plurals.unit_album,
-                            2
-                        ).replaceFirstChar { it.uppercase() })
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(detail.albums, key = { it.mediaId }) {
-                            AlbumItem(
-                                it,
-                                onClick = { onOpenAlbum(it) },
-                                modifier = Modifier.width(104.dp),
-                            )
-                        }
+    ) {
+        if (artist == null) {
+            item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@ArtistDetailScaffold
+        }
+        artist.description?.let {
+            item(key = "description") { DetailDescription(it) }
+        }
+        if (artist.albums.isNotEmpty())
+            item(key = "albums") {
+                SectionTitle(
+                    pluralStringResource(
+                        R.plurals.unit_album,
+                        2
+                    ).replaceFirstChar { it.uppercase() })
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(artist.albums, key = { it.mediaId }) {
+                        AlbumItem(
+                            it,
+                            onClick = { onOpenAlbum(it) },
+                            modifier = Modifier.width(104.dp),
+                        )
                     }
                 }
-            if (detail.topSongs.isNotEmpty()) {
-                item(key = "songs-title") {
-                    SectionTitle(
-                        stringResource(R.string.section_header_top_songs),
-                        onSeeMore = if (detail.hasMoreSongs) ({ onOpenSongs(detail.name) }) else null,
-                    )
-                }
-                items(detail.topSongs, key = { it.mediaId }) {
-                    SongItem(it, onClick = { onSongClick(it) })
-                }
+            }
+        if (artist.topSongs.isNotEmpty()) {
+            item(key = "songs-title") {
+                SectionTitle(
+                    stringResource(R.string.section_header_top_songs),
+                    onSeeMore = if (artist.hasMoreSongs) ({ onOpenSongs(artist.name) }) else null,
+                )
+            }
+            items(artist.topSongs, key = { it.mediaId }) {
+                SongItem(it, onClick = { onSongClick(it) })
             }
         }
     }
@@ -197,5 +195,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         share = { Result.success("") },
         isFollowed = true,
         onToggleFollow = {},
+        onOpenDetails = {},
+        onOpenStatistics = {},
     )
 }

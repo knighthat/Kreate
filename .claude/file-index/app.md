@@ -48,7 +48,9 @@ Root
 - musicbrainz/`MusicBrainz.kt` — MusicBrainz web service client (Koin single in
   `KreateApplication`): recording `search` (phrase, then loose words), `identify` (`best`: top
   scores, length within 5 s, not live, most releases, earliest), `recording` lookup (credits, ISRCs,
-  genres + tags, releases); one request a second across callers, named User-Agent.
+  genres + tags, releases); artist `searchArtists`, `identifyArtist` (top scores, same name, then
+  other case), `artist` lookup (area, life span and places, aliases, genres, ISNIs, url links); one
+  request a second across callers, named User-Agent.
 - `ViewModelModule.kt` — Koin: every `viewModel { }` declaration. Add new ViewModels here.
 - backup/`Backup.kt` — zip export (`manifest.json`, `kreate.db` via VACUUM INTO, preference files;
   no secrets), `stage` (validate + unpack to `noBackupFilesDir/restore`, export current state to

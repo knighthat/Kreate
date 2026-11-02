@@ -516,6 +516,7 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 .map { it.copy(items = it.items.map { item -> item.creditedTo(name) }) },
             channelId = subscription.path("channelId").asString,
             subscribed = subscription.path("subscribed").asString == "true",
+            audience = header.path("monthlyListenerCount").text(),
         )
     }
 

@@ -19,10 +19,8 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -32,10 +30,8 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
-import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -60,6 +56,8 @@ fun YouTubeArtistDetailScreen(
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     onOpenPlaylist: (String) -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeArtistDetailViewModel = koinViewModel(),
@@ -83,6 +81,8 @@ fun YouTubeArtistDetailScreen(
         share = viewModel::shareLink,
         isFollowed = isFollowed,
         onToggleFollow = viewModel.follow::toggle,
+        onOpenDetails = onOpenDetails,
+        onOpenStatistics = onOpenStatistics,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -90,7 +90,7 @@ fun YouTubeArtistDetailScreen(
 
 /**
  * @param isFollowed whether the user is subscribed to the artist on YouTube, or follows them on
- * the device while signed out, `null` hides the button
+ * the device while signed out, `null` turns Follow off
  */
 @Composable
 private fun YouTubeArtistDetailContent(
@@ -105,54 +105,54 @@ private fun YouTubeArtistDetailContent(
     share: suspend () -> Result<String>,
     isFollowed: Boolean?,
     onToggleFollow: () -> Unit,
+    onOpenDetails: (name: String) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val artist = (state as? LiveState.Ready)?.value
 
-    LiveDetailScreen(
-        title = artist?.name.orEmpty(),
+    ArtistDetailScaffold(
+        name = artist?.name.orEmpty(),
+        thumbnail = artist?.thumbnail,
+        origin = Origin.YOUTUBE,
+        subtitle = artist?.audience,
         onBack = onBack,
-        state = state,
-        onRetry = onRetry,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
-            ShareAction(artist?.name, R.plurals.unit_artist, share)
+        menu = { onDismiss ->
+            ArtistMenu(
+                name = artist?.name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { artist?.topSongs?.isNotEmpty() == true },
+                isFollowed = isFollowed.takeIf { artist != null },
+                onToggleFollow = onToggleFollow,
+                share = share,
+                onOpenDetails = artist?.name?.let { { onOpenDetails(it) } },
+                onOpenStatistics = onOpenStatistics,
+            )
         },
-    ) { detail, innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = detail.thumbnail,
-                    subtitle = null,
-                    shape = CircleShape,
-                    origin = Origin.YOUTUBE,
+    ) {
+        if (artist == null) {
+            item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@ArtistDetailScaffold
+        }
+        artist.description?.let {
+            item(key = "description") { DetailDescription(it) }
+        }
+        if (artist.topSongs.isNotEmpty()) {
+            item(key = "songs-title") {
+                SectionTitle(
+                    stringResource(R.string.section_header_top_songs),
+                    onSeeMore = artist.songsPlaylistId?.let { id -> { onOpenPlaylist(id) } },
                 )
             }
-            if (detail.topSongs.isNotEmpty())
-                item(key = "queue-actions") { QueueActionRow(onAction) }
-            detail.description?.let {
-                item(key = "description") { DetailDescription(it) }
+            items(artist.topSongs, key = { it.mediaId }) {
+                SongItem(it, onClick = { onSongClick(it) })
             }
-            if (detail.topSongs.isNotEmpty()) {
-                item(key = "songs-title") {
-                    SectionTitle(
-                        stringResource(R.string.section_header_top_songs),
-                        onSeeMore = detail.songsPlaylistId?.let { id -> { onOpenPlaylist(id) } },
-                    )
-                }
-                items(detail.topSongs, key = { it.mediaId }) {
-                    SongItem(it, onClick = { onSongClick(it) })
-                }
-            }
-            items(detail.sections.size, key = { "section:$it" }) {
-                LiveSectionRow(detail.sections[it], onOpen, onSeeMore)
-            }
+        }
+        items(artist.sections.size, key = { "section:$it" }) {
+            LiveSectionRow(artist.sections[it], onOpen, onSeeMore)
         }
     }
 }
@@ -167,6 +167,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
                 thumbnail = null,
                 topSongs = previewSongs(Origin.YOUTUBE).take(5),
                 songsPlaylistId = "songs",
+                audience = "12.3M monthly audience",
                 sections = listOf(
                     LiveSection(
                         title = "Albums",
@@ -190,5 +191,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         share = { Result.success("") },
         isFollowed = false,
         onToggleFollow = {},
+        onOpenDetails = {},
+        onOpenStatistics = {},
     )
 }
