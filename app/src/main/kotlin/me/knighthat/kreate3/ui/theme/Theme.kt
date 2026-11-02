@@ -372,11 +372,7 @@ fun KreateTheme(
         themeMode == ThemeMode.THUMBNAIL && colorSeed.isSpecified -> seededColorScheme(
             seedColor = colorSeed,
             isDark = darkTheme,
-            contrastLevel = when (contrastLevel) {
-                ContrastLevel.NORMAL -> 0.0
-                ContrastLevel.MEDIUM -> 0.5
-                ContrastLevel.HIGH -> 1.0
-            },
+            contrastLevel = contrastLevel.seedContrast,
         )
 
         themeMode == ThemeMode.PITCH_BLACK ->
@@ -400,3 +396,10 @@ fun KreateTheme(
     }
 }
 
+/** How a seeded scheme, like [ThemeMode.THUMBNAIL]'s, takes this level. */
+internal val ContrastLevel.seedContrast: Double
+    get() = when (this) {
+        ContrastLevel.NORMAL -> 0.0
+        ContrastLevel.MEDIUM -> 0.5
+        ContrastLevel.HIGH -> 1.0
+    }

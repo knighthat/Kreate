@@ -253,6 +253,10 @@ fun KreateApp(
         onRouteOpened()
     }
     val currentRoute = topLevel.backStack.lastOrNull() as? Route
+    // Only the tabs have the bar, other screens have the mini player alone once something plays
+    val hasTabBar = currentRoute?.let(Tab::of) != null
+    val hasBottomBar =
+        hasTabBar || (currentRoute?.hasMiniPlayer == true && playing.hasMiniPlayer)
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
     val songMenu = remember { SongMenuHost() }
 
@@ -274,10 +278,8 @@ fun KreateApp(
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
                     bottomBar = {
-                        val route = topLevel.backStack.lastOrNull() as? Route
                         when {
-                            // Only the tabs have the bar
-                            route?.let(Tab::of) != null -> Column {
+                            hasTabBar -> Column {
                                 PlaybackMiniPlayer(miniPlayer, controller = playback)
                                 TabBar(
                                     selected = topLevel.currentTab,
@@ -286,7 +288,7 @@ fun KreateApp(
                             }
 
                             // Other screens cover the whole window until something plays
-                            route?.hasMiniPlayer == true && playing.hasMiniPlayer -> Surface(
+                            hasBottomBar -> Surface(
                                 color = MaterialTheme.colorScheme.surfaceContainer,
                             ) {
                                 // Without the bar, the mini player stays clear of the system's
@@ -322,6 +324,9 @@ fun KreateApp(
                                 .padding(miniPlayer.outside(barBottom))
                                 .consumeWindowInsets(barBottom)
                             val contentPadding = miniPlayer.inside
+                            // Pages that keep clear of the system's bar themselves, their colors
+                            // reach under it while no bar of the app is there
+                            val edgeModifier = if (hasBottomBar) paddingModifier else Modifier
 
                             entry<Songs> {
                                 HomeSongsScreen(
@@ -528,7 +533,7 @@ fun KreateApp(
                                     onBack = topLevel::pop,
                                     onOpenArtist = topLevel::push,
                                     onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
@@ -539,7 +544,7 @@ fun KreateApp(
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                                     onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
                                     onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
@@ -559,7 +564,7 @@ fun KreateApp(
                                     onBack = topLevel::pop,
                                     onOpenArtist = topLevel::push,
                                     onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
@@ -573,7 +578,7 @@ fun KreateApp(
                                     },
                                     onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
                                     onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
@@ -610,7 +615,7 @@ fun KreateApp(
                                     },
                                     onOpenArtist = topLevel::push,
                                     onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
@@ -632,7 +637,7 @@ fun KreateApp(
                                     onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
                                     onOpenDetails = { name -> topLevel.push(ArtistDetails(name)) },
                                     onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                    modifier = paddingModifier,
+                                    modifier = edgeModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )

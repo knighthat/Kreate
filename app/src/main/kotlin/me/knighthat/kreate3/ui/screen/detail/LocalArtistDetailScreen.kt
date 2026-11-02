@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,8 @@ import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -67,23 +70,28 @@ fun LocalArtistDetailScreen(
     val albums by viewModel.albums.collectAsState()
     val isFollowed by viewModel.isFollowed.collectAsState()
 
-    LocalArtistDetailContent(
-        name = artist?.name,
-        thumbnail = artist?.thumbnail,
-        origin = artist?.origin,
-        albums = albums,
-        songs = viewModel.songs.collectAsLazyPagingItems(),
-        onBack = onBack,
-        onOpenAlbum = onOpenAlbum,
-        onAction = rememberQueueActions(viewModel::allSongs),
-        onSongClick = rememberSongTap(null, viewModel::allSongs),
-        isFollowed = isFollowed,
-        onToggleFollow = viewModel::toggleFollow,
-        onOpenDetails = onOpenDetails,
-        onOpenStatistics = onOpenStatistics,
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    val cover = artist?.thumbnail
+    val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+
+    CoverTheme(coverModels) {
+        LocalArtistDetailContent(
+            name = artist?.name,
+            thumbnail = artist?.thumbnail,
+            origin = artist?.origin,
+            albums = albums,
+            songs = viewModel.songs.collectAsLazyPagingItems(),
+            onBack = onBack,
+            onOpenAlbum = onOpenAlbum,
+            onAction = rememberQueueActions(viewModel::allSongs),
+            onSongClick = rememberSongTap(null, viewModel::allSongs),
+            isFollowed = isFollowed,
+            onToggleFollow = viewModel::toggleFollow,
+            onOpenDetails = onOpenDetails,
+            onOpenStatistics = onOpenStatistics,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 /**

@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +45,8 @@ import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQuickQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -66,27 +69,32 @@ fun OpenSubsonicArtistDetailScreen(
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
     val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
-    OpenSubsonicArtistDetailContent(
-        state = state,
-        onRetry = viewModel::load,
-        onBack = onBack,
-        onOpenAlbum = onOpenAlbum,
-        onOpenSongs = onOpenSongs,
-        onAction = rememberQuickQueueActions(
-            shown = { (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty() },
-            songs = viewModel::allSongs,
-        ),
-        onSongClick = rememberSongTap(null) {
-            (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
-        },
-        share = if (canShare) viewModel::shareLink else null,
-        isFollowed = isFollowed,
-        onToggleFollow = viewModel.follow::toggle,
-        onOpenDetails = onOpenDetails,
-        onOpenStatistics = onOpenStatistics,
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+
+    CoverTheme(coverModels) {
+        OpenSubsonicArtistDetailContent(
+            state = state,
+            onRetry = viewModel::load,
+            onBack = onBack,
+            onOpenAlbum = onOpenAlbum,
+            onOpenSongs = onOpenSongs,
+            onAction = rememberQuickQueueActions(
+                shown = { (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty() },
+                songs = viewModel::allSongs,
+            ),
+            onSongClick = rememberSongTap(null) {
+                (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
+            },
+            share = if (canShare) viewModel::shareLink else null,
+            isFollowed = isFollowed,
+            onToggleFollow = viewModel.follow::toggle,
+            onOpenDetails = onOpenDetails,
+            onOpenStatistics = onOpenStatistics,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 /**

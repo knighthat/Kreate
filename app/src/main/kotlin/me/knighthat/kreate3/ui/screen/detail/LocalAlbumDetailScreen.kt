@@ -62,6 +62,7 @@ import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.navigation.Route
+import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -93,50 +94,55 @@ fun LocalAlbumDetailScreen(
     val moveFailed = stringResource(R.string.error_move_song)
     val orderReset = stringResource(R.string.snackbar_album_order_reset)
 
-    LocalAlbumDetailContent(
-        name = album?.name,
-        cover = album?.let {
-            it.thumbnail ?: it.id.toLongOrNull()
-                ?.takeIf { _ -> it.origin == Origin.LOCAL }?.let(::albumArtUri)
-        },
-        artists = album?.artists?.joinToString(", "),
-        year = album?.year,
-        summary = tracks.takeIf { it.isNotEmpty() }?.let { songs ->
-            resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
-        },
-        onOpenArtist = artist?.let { { onOpenArtist(it) } },
-        onOpenStatistics = onOpenStatistics,
-        origin = album?.origin,
-        isExplicit = album?.isExplicit == true,
-        songs = viewModel.songs.collectAsLazyPagingItems(),
-        isReordering = isReordering,
-        arranged = arranged,
-        onBack = onBack,
-        onAction = rememberQueueActions(viewModel::allSongs),
-        onSongClick = rememberSongTap(null, viewModel::allSongs),
-        onReorder = viewModel::reorder,
-        onResetOrder = {
-            viewModel.resetOrder { reset, undo ->
-                notifier.post(
-                    when {
-                        !reset -> Message(resetFailed)
-                        undo != null -> undoMessage(resources, orderReset, undo)
-                        else -> Message(orderReset)
-                    }
-                )
-            }
-        },
-        onMoveSong = { song, after ->
-            viewModel.moveSong(song.mediaId, after?.mediaId) { moved ->
-                if (!moved) notifier.post(moveFailed)
-            }
-        },
-        share = if (canShare) viewModel::shareLink else null,
-        isBookmarked = isBookmarked,
-        onToggleBookmark = viewModel::toggleBookmark,
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    val cover = album?.let {
+        it.thumbnail ?: it.id.toLongOrNull()
+            ?.takeIf { _ -> it.origin == Origin.LOCAL }?.let(::albumArtUri)
+    }
+    val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+
+    CoverTheme(coverModels) {
+        LocalAlbumDetailContent(
+            name = album?.name,
+            cover = cover,
+            artists = album?.artists?.joinToString(", "),
+            year = album?.year,
+            summary = tracks.takeIf { it.isNotEmpty() }?.let { songs ->
+                resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
+            },
+            onOpenArtist = artist?.let { { onOpenArtist(it) } },
+            onOpenStatistics = onOpenStatistics,
+            origin = album?.origin,
+            isExplicit = album?.isExplicit == true,
+            songs = viewModel.songs.collectAsLazyPagingItems(),
+            isReordering = isReordering,
+            arranged = arranged,
+            onBack = onBack,
+            onAction = rememberQueueActions(viewModel::allSongs),
+            onSongClick = rememberSongTap(null, viewModel::allSongs),
+            onReorder = viewModel::reorder,
+            onResetOrder = {
+                viewModel.resetOrder { reset, undo ->
+                    notifier.post(
+                        when {
+                            !reset -> Message(resetFailed)
+                            undo != null -> undoMessage(resources, orderReset, undo)
+                            else -> Message(orderReset)
+                        }
+                    )
+                }
+            },
+            onMoveSong = { song, after ->
+                viewModel.moveSong(song.mediaId, after?.mediaId) { moved ->
+                    if (!moved) notifier.post(moveFailed)
+                }
+            },
+            share = if (canShare) viewModel::shareLink else null,
+            isBookmarked = isBookmarked,
+            onToggleBookmark = viewModel::toggleBookmark,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 /**
