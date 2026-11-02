@@ -91,7 +91,7 @@ class OpenSubsonicArtistDetailViewModel(
     }
 
     /** What the screen shows of the artist until the server answers. */
-    val opened: OpenedArtist = savedStateHandle.openedArtist()
+    val opened: OpenedItem = savedStateHandle.openedItem()
 
     override val notFound: String get() = context.serverOff()
 

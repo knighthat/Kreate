@@ -102,6 +102,8 @@ fun LocalAlbumDetailScreen(
 
     CoverTheme(coverModels) {
         LocalAlbumDetailContent(
+            albumId = viewModel.albumId,
+            opened = viewModel.opened,
             name = album?.name,
             cover = cover,
             artists = album?.artists?.joinToString(", "),
@@ -146,6 +148,7 @@ fun LocalAlbumDetailScreen(
 }
 
 /**
+ * @param opened shown until the album is read
  * @param arranged every song in the album's order while they are moved, see
  * [LocalAlbumDetailViewModel.arranged]
  * @param onOpenArtist opens the album's artist, `null` while there is none to open
@@ -156,6 +159,8 @@ fun LocalAlbumDetailScreen(
  */
 @Composable
 private fun LocalAlbumDetailContent(
+    albumId: String,
+    opened: OpenedItem,
     name: String?,
     cover: Uri?,
     artists: String?,
@@ -202,8 +207,10 @@ private fun LocalAlbumDetailContent(
     val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
     AlbumDetailScaffold(
-        name = name.orEmpty(),
+        name = (name ?: opened.name).orEmpty(),
+        albumId = albumId,
         models = models,
+        standIn = opened.picture,
         artists = artists,
         year = year,
         summary = summary,
@@ -302,6 +309,8 @@ private fun LocalAlbumDetailContent(
 @Composable
 private fun LocalAlbumDetailPreview() = PreviewTheme {
     LocalAlbumDetailContent(
+        albumId = "",
+        opened = OpenedItem("Afterglow", null),
         name = "Afterglow",
         cover = null,
         artists = "Neon Coast",

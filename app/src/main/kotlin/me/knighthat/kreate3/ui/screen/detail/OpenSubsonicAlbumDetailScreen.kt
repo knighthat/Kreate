@@ -56,11 +56,13 @@ fun OpenSubsonicAlbumDetailScreen(
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
     val isBookmarked by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
 
-    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
     CoverTheme(coverModels) {
         OpenSubsonicAlbumDetailContent(
+            albumId = viewModel.albumId,
+            opened = viewModel.opened,
             state = state,
             onRetry = viewModel::load,
             onBack = onBack,
@@ -87,6 +89,8 @@ fun OpenSubsonicAlbumDetailScreen(
  */
 @Composable
 private fun OpenSubsonicAlbumDetailContent(
+    albumId: String,
+    opened: OpenedItem,
     state: LiveState<OpenSubsonicAlbumDetail>,
     onRetry: () -> Unit,
     onBack: () -> Unit,
@@ -107,8 +111,10 @@ private fun OpenSubsonicAlbumDetailContent(
     val artist = remember(album) { album?.songs?.albumArtistRoute(album.artists) }
 
     AlbumDetailScaffold(
-        name = album?.name.orEmpty(),
+        name = (album?.name ?: opened.name).orEmpty(),
+        albumId = albumId,
         models = models,
+        standIn = opened.picture,
         artists = album?.artists?.joinToString(", "),
         year = album?.year,
         summary = album?.songs?.takeIf { it.isNotEmpty() }?.let { songs ->
@@ -148,6 +154,8 @@ private fun OpenSubsonicAlbumDetailContent(
 @Composable
 private fun OpenSubsonicAlbumDetailPreview() = PreviewTheme {
     OpenSubsonicAlbumDetailContent(
+        albumId = "",
+        opened = OpenedItem("Afterglow", null),
         state = LiveState.Ready(
             OpenSubsonicAlbumDetail(
                 name = "Afterglow",

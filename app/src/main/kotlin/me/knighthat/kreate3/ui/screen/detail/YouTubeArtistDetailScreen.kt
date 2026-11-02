@@ -115,7 +115,7 @@ fun YouTubeArtistDetailScreen(
 @Composable
 private fun YouTubeArtistDetailContent(
     artistId: String,
-    opened: OpenedArtist,
+    opened: OpenedItem,
     picture: Uri?,
     state: LiveState<YouTubeArtistDetail>,
     onRetry: () -> Unit,
@@ -199,7 +199,7 @@ private fun YouTubeArtistDetailContent(
 private fun YouTubeArtistDetailPreview() = PreviewTheme {
     YouTubeArtistDetailContent(
         artistId = "",
-        opened = OpenedArtist("Neon Coast", null),
+        opened = OpenedItem("Neon Coast", null),
         picture = null,
         state = LiveState.Ready(
             YouTubeArtistDetail(
@@ -242,7 +242,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
 private fun YouTubeArtistDetailLoadingPreview() = PreviewTheme {
     YouTubeArtistDetailContent(
         artistId = "",
-        opened = OpenedArtist("Neon Coast", null),
+        opened = OpenedItem("Neon Coast", null),
         picture = null,
         state = LiveState.Loading,
         onRetry = {},

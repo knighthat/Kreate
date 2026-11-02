@@ -86,6 +86,9 @@ class YouTubeAlbumDetailViewModel(
         "LocalAlbum.ID is missing from the saved state"
     }
 
+    /** What the screen shows of the album until YouTube answers. */
+    val opened: OpenedItem = savedStateHandle.openedItem()
+
     override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_album)
 
     /** The playlist of the album's songs, which is what YouTube saves to the library. */

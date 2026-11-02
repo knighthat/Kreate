@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.plus
@@ -31,9 +32,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.core.net.toUri
+import androidx.lifecycle.SavedStateHandle
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.TooltipSide
+import me.knighthat.kreate3.ui.navigation.OPENED_NAME
+import me.knighthat.kreate3.ui.navigation.OPENED_PICTURE
+
+/**
+ * What the card or row an artist or album was opened from showed of it, see
+ * [me.knighthat.kreate3.ui.navigation.artistRoute] and
+ * [me.knighthat.kreate3.ui.navigation.albumRoute]. Its page shows it until it has its own.
+ *
+ * @property picture the picture as the card loaded it, the page's picture grows from it
+ */
+data class OpenedItem(val name: String?, val picture: Uri?)
+
+/** The [OpenedItem] in the arguments of a screen, nothing when opened by id alone. */
+internal fun SavedStateHandle.openedItem(): OpenedItem =
+    OpenedItem(get<String>(OPENED_NAME), get<String>(OPENED_PICTURE)?.toUri())
 
 /**
  * The frame of a detail screen: a small top bar with a back button, the [title] of the item and

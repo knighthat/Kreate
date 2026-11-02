@@ -100,7 +100,10 @@ ui/screen/
 - detail/ — `AlbumDetail.kt` (`AlbumDetailScaffold`: header in a tone-30 shade of the cover's color
   (`rememberCoverSeed`), cover at the start with badges, ALBUM, name, `ArtistLine` (tap opens the
   artist), song count + length beside it, the description under them; bar in the same color, name in
-  it once scrolled under. `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle / Play next / Add to
+  it once scrolled under; the cover grows from the album card (`sharedPicture`, same shape) with
+  the card's cover standing in, the rest fades in after it (`rememberContentsAfterPicture`, the
+  cover kept in the overlay meanwhile). `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle / Play
+  next / Add to
   queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
   `albumArtistRoute`: the credited artist the album names, else the first song's first. Used by the
   three album screens; tracks numbered by position.),
@@ -119,11 +122,12 @@ ui/screen/
   scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
   picture fades into its `BlurredCover` as the list goes up, fully blurred once the list's top
   reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
-  next / Add to queue / Details / Statistics rows; used by all three artist screens. `OpenedArtist`
-  (`SavedStateHandle.openedArtist()`): the opening card's name and picture, shown until the page has
-  its own; the header grows from the card (`sharedPicture`) with that picture standing in while the
-  large one loads),
-  `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as content
+  next / Add to queue / Details / Statistics rows; used by all three artist screens; the header
+  grows from the card (`sharedPicture`) with the card's picture standing in while the large one
+  loads),
+  `DetailScaffold.kt` (`OpenedItem` / `SavedStateHandle.openedItem()`: the name and picture of the
+  card an artist or album was opened from, shown until the page has its own; `contentPadding` added
+  to the bar's; lists take its padding as content
   padding), `DetailHeader.kt` (`DetailHeader`, unused since the redesigns; `DetailDescription`;
   `AlbumTrack` (track number in
   the cover's place), `DiscHeader`, `Resources.albumSummary`, `ArtistLine`; `DetailDescription`

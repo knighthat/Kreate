@@ -112,7 +112,7 @@ fun OpenSubsonicArtistDetailScreen(
 @Composable
 private fun OpenSubsonicArtistDetailContent(
     artistId: String,
-    opened: OpenedArtist,
+    opened: OpenedItem,
     state: LiveState<OpenSubsonicArtistDetail>,
     topSongs: LiveState<TopSongs>,
     description: LiveState<String?>,
@@ -220,7 +220,7 @@ private fun albumsTitle(): String =
 private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
     OpenSubsonicArtistDetailContent(
         artistId = "",
-        opened = OpenedArtist("Neon Coast", null),
+        opened = OpenedItem("Neon Coast", null),
         state = LiveState.Ready(
             OpenSubsonicArtistDetail(
                 name = "Neon Coast",
@@ -250,7 +250,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
 private fun OpenSubsonicArtistDetailLoadingPreview() = PreviewTheme {
     OpenSubsonicArtistDetailContent(
         artistId = "",
-        opened = OpenedArtist("Neon Coast", null),
+        opened = OpenedItem("Neon Coast", null),
         state = LiveState.Ready(
             OpenSubsonicArtistDetail(
                 name = "Neon Coast",

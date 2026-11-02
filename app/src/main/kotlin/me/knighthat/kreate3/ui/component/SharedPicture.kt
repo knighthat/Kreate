@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.OverlayClip
@@ -42,6 +43,8 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Density
@@ -77,8 +80,8 @@ private fun <T> moveSpec(): FiniteAnimationSpec<T> =
     tween(PICTURE_MOVE_MILLIS, easing = FastOutSlowInEasing)
 
 /**
- * The `NavEntry` metadata of a screen opened from a shared picture, like an artist's page from
- * their card. Opening it, the picture moves into place while the screens fade, then the rest of
+ * The `NavEntry` metadata of a screen opened from a shared picture, like an artist's or album's
+ * page from its card. Opening it, the picture moves into place while the screens fade, then the rest of
  * the screen shows ([rememberContentsAfterPicture]). Going back is a plain [screenTransform], the
  * picture stays with its screen (see `onlyAway` of [rememberSharedPicture]).
  */
@@ -87,6 +90,9 @@ internal fun pictureFirst(): Map<String, Any> =
 
 /** Key of an artist's picture, on their cards and at the top of their page. */
 internal fun artistPictureKey(artistId: String): String = "artist-picture:$artistId"
+
+/** Key of an album's cover, on its cards and in the header of its page. */
+internal fun albumPictureKey(albumId: String): String = "album-picture:$albumId"
 
 /**
  * A picture shared with the screen opened or gone back to, see [rememberSharedPicture].
@@ -119,16 +125,9 @@ internal fun rememberSharedPicture(
         ?: return remember(shape) { SharedPicture(Modifier.clip(shape), Modifier) }
     val screen = LocalNavAnimatedContentScope.current
     val morph = remember(corners, otherCorners) { MorphingClip(otherCorners, corners) }
-    val config = remember(screen, onlyAway) {
-        object : SharedContentConfig {
-            // Coming back, its screen enters from PreEnter; leaving, it is Visible
-            override val SharedContentState.isEnabled: Boolean
-                get() = !onlyAway || screen.transition.currentState == EnterExitState.Visible
-        }
-    }
 
     return with(shared) {
-        val state = rememberSharedContentState(key, config)
+        val state = rememberSharedContentState(key, rememberConfig(screen, onlyAway))
         SharedPicture(
             modifier = Modifier
                 // Outside the shared element, the size it lands at
@@ -156,17 +155,94 @@ internal fun rememberSharedPicture(
 }
 
 /**
- * For the parts of a screen of [pictureFirst] other than its picture: they fade in once the
- * picture landed. Leaving the screen, they go with it.
+ * Like the other [rememberSharedPicture], for a picture of the same [shape] on both screens, like
+ * an album's cover: it only moves and grows. The picture clips itself to [shape], its modifier
+ * doesn't.
  */
 @Composable
-internal fun rememberContentsAfterPicture(): Modifier {
-    LocalSharedTransitionScope.current ?: return Modifier
+internal fun rememberSharedPicture(
+    key: String,
+    shape: Shape,
+    onlyAway: Boolean = false,
+): SharedPicture {
+    val shared = LocalSharedTransitionScope.current
+        ?: return remember { SharedPicture(Modifier, Modifier) }
+    val screen = LocalNavAnimatedContentScope.current
+    val clip = remember(shape) { ShapeClip(shape) }
+
+    return with(shared) {
+        val state = rememberSharedContentState(key, rememberConfig(screen, onlyAway))
+        SharedPicture(
+            modifier = Modifier.sharedElement(
+                state,
+                screen,
+                boundsTransform = { _, _ -> moveSpec() },
+                clipInOverlayDuringTransition = clip,
+            ),
+            overlay = Modifier.renderInSharedTransitionScopeOverlay(
+                zIndexInOverlay = 1f,
+                renderInOverlay = { isTransitionActive && state.isMatchFound },
+            ),
+        )
+    }
+}
+
+/** Turns the match off while [screen] comes back, when the picture moves [onlyAway]. */
+@Composable
+private fun rememberConfig(screen: AnimatedVisibilityScope, onlyAway: Boolean) =
+    remember(screen, onlyAway) {
+        object : SharedContentConfig {
+            // Coming back, its screen enters from PreEnter; leaving, it is Visible
+            override val SharedContentState.isEnabled: Boolean
+                get() = !onlyAway || screen.transition.currentState == EnterExitState.Visible
+        }
+    }
+
+/**
+ * The rest of a screen of [pictureFirst], see [rememberContentsAfterPicture].
+ *
+ * @property modifier fades what it is on in once the picture landed; leaving the screen, that goes
+ * with it
+ * @property picture for a picture inside what [modifier] fades, like a cover in a list: it stays
+ * drawn over the screen until the rest shows, instead of fading in again with it
+ */
+internal class ContentsAfterPicture(val modifier: Modifier, val picture: Modifier)
+
+/** For the parts of a screen of [pictureFirst] other than its picture, see [ContentsAfterPicture]. */
+@Composable
+internal fun rememberContentsAfterPicture(): ContentsAfterPicture {
+    val shared = LocalSharedTransitionScope.current
+        ?: return remember { ContentsAfterPicture(Modifier, Modifier) }
     val alpha = LocalNavAnimatedContentScope.current.transition.animateFloat(
         transitionSpec = { tween(CONTENTS_FADE_MILLIS, delayMillis = PICTURE_MOVE_MILLIS) },
         label = "contents after picture",
     ) { if (it == EnterExitState.PreEnter) 0f else 1f }
-    return remember(alpha) { Modifier.graphicsLayer { this.alpha = alpha.value } }
+    return remember(alpha, shared) {
+        ContentsAfterPicture(
+            modifier = Modifier.graphicsLayer { this.alpha = alpha.value },
+            picture = with(shared) {
+                Modifier.renderInSharedTransitionScopeOverlay(renderInOverlay = { alpha.value < 1f })
+            },
+        )
+    }
+}
+
+/** Clips a moving picture to [shape], at the size it has at each moment. */
+private class ShapeClip(private val shape: Shape) : OverlayClip {
+
+    private val path = Path()
+
+    override fun getClipPath(
+        sharedContentState: SharedContentState,
+        bounds: Rect,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Path {
+        path.reset()
+        path.addOutline(shape.createOutline(bounds.size, layoutDirection, density))
+        path.translate(bounds.topLeft)
+        return path
+    }
 }
 
 /**

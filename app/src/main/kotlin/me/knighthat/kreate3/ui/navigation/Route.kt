@@ -227,10 +227,20 @@ data class SearchResults(val query: String, val origin: Origin, val tab: Tab) : 
     }
 }
 
+/**
+ * An album of the device's library. Opened from a card or a row, the album's screen shows the
+ * [name] and [picture] it had there until it has its own, the same for every album screen.
+ *
+ * @param picture the address of the picture as the card loaded it
+ */
 @Serializable
-data class LocalAlbum(val id: String) : Route {
+data class LocalAlbum(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
+    override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
 
     companion object {
         const val ID = "albumId"
@@ -250,21 +260,25 @@ data class LocalArtist(
     val picture: String? = null,
 ) : Route {
 
-    override val arguments: Bundle get() = artistArguments(id, name, picture)
+    override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
 
     companion object {
         const val ID = "artistId"
-        const val NAME = "artistShownName"
-        const val PICTURE = "artistShownPicture"
     }
 }
 
-/** What the screen of any artist reads, see [LocalArtist]. */
-private fun artistArguments(id: String, name: String?, picture: String?): Bundle =
+/** The argument with the name an artist or album was shown with where it was opened. */
+const val OPENED_NAME = "openedName"
+
+/** The argument with the address of the picture an artist or album was shown with there. */
+const val OPENED_PICTURE = "openedPicture"
+
+/** What the screen of an artist or album reads: its id under [idKey], and what it was shown with. */
+private fun openedArguments(idKey: String, id: String, name: String?, picture: String?): Bundle =
     Bundle().apply {
-        putString(LocalArtist.ID, id)
-        putString(LocalArtist.NAME, name)
-        putString(LocalArtist.PICTURE, picture)
+        putString(idKey, id)
+        putString(OPENED_NAME, name)
+        putString(OPENED_PICTURE, picture)
     }
 
 @Serializable
@@ -282,9 +296,13 @@ data class LocalPlaylist(val id: Long) : Route {
  * the album id from the same argument as [LocalAlbum].
  */
 @Serializable
-data class OpenSubsonicAlbum(val id: String) : Route {
+data class OpenSubsonicAlbum(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(LocalAlbum.ID, id) }
+    override val arguments: Bundle get() = openedArguments(LocalAlbum.ID, id, name, picture)
 }
 
 /**
@@ -297,7 +315,7 @@ data class OpenSubsonicArtist(
     val picture: String? = null,
 ) : Route {
 
-    override val arguments: Bundle get() = artistArguments(id, name, picture)
+    override val arguments: Bundle get() = openedArguments(LocalArtist.ID, id, name, picture)
 }
 
 /**
@@ -335,9 +353,13 @@ data class OpenSubsonicPlaylist(val id: String) : Route {
  * the same argument as [LocalAlbum].
  */
 @Serializable
-data class YouTubeAlbum(val id: String) : Route {
+data class YouTubeAlbum(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(LocalAlbum.ID, id) }
+    override val arguments: Bundle get() = openedArguments(LocalAlbum.ID, id, name, picture)
 }
 
 /**
@@ -350,7 +372,7 @@ data class YouTubeArtist(
     val picture: String? = null,
 ) : Route {
 
-    override val arguments: Bundle get() = artistArguments(id, name, picture)
+    override val arguments: Bundle get() = openedArguments(LocalArtist.ID, id, name, picture)
 }
 
 /**
@@ -408,7 +430,15 @@ private const val PLAYLIST_PREFIX = "VL"
 /**
  * The screen of an album, by where it comes from.
  */
-fun albumRoute(item: MediaItem): Route = albumRoute(item.origin, item.mediaId)
+fun albumRoute(item: MediaItem): Route {
+    val name = item.mediaMetadata.title?.toString()
+    val picture = item.mediaMetadata.artworkUri?.toString()
+    return when (item.origin) {
+        Origin.OPEN_SUBSONIC -> OpenSubsonicAlbum(item.mediaId, name, picture)
+        Origin.YOUTUBE -> YouTubeAlbum(item.mediaId, name, picture)
+        else -> LocalAlbum(item.mediaId, name, picture)
+    }
+}
 
 /** The screen of the album [id] of [origin], like the album of a song. */
 fun albumRoute(origin: Origin?, id: String): Route = when (origin) {

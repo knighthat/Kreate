@@ -86,13 +86,18 @@ ui/component/ (shared composables; each file that draws something ends with its 
   cards); used by the OpenSubsonic and YouTube artist pages.
 - `SharedPicture.kt` — `LocalSharedTransitionScope` (KreateApp's `SharedTransitionLayout` around
   `NavDisplay`), `screenTransform` (400 ms fade of every screen change), `pictureFirst()` (entry
-  metadata of the artist screens: opening, the picture moves for 350 ms while the screens fade,
+  metadata of the artist and album screens: opening, the picture moves for 350 ms while the screens
+  fade,
   then the rest fades in over 200 ms; going back is the plain fade),
-  `rememberSharedPicture(key, corners, otherCorners, onlyAway)`: shared element with its own clip
+  `rememberSharedPicture(key, corners, otherCorners, onlyAway)` (artists; a `(key, shape,
+  onlyAway)` overload for a same-shaped picture, album covers, `ShapeClip`): shared element with its
+  own clip
   in a `graphicsLayer` (none while moving), corners morphing in the overlay by how far it grew
   (`MorphingClip`), `overlay` for what lies over it (artist bar, bottom fade); `onlyAway` (the
-  artist card) turns the match off while its screen comes back, so nothing moves back;
-  `rememberContentsAfterPicture()`: the alpha of the rest of such a screen; `artistPictureKey`.
+  artist and album cards) turns the match off while its screen comes back, so nothing moves back;
+  `rememberContentsAfterPicture()` (`ContentsAfterPicture`): the alpha of the rest of such a
+  screen, and `picture` keeping a picture inside it in the overlay until it shows;
+  `artistPictureKey`, `albumPictureKey`.
 - `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
   and the search results tabs; drops labels under `LocalIconOnly`.
 - `Messages.kt` — `LocalNotifier`/`LocalMessageHost` (provided in `KreateApp`), `ShowMessages` (
@@ -124,8 +129,8 @@ ui/navigation/
 
 - `Route.kt` — every screen as a `Route` (Tab routes, Local*/OpenSubsonic*/YouTube* detail routes,
   SearchResults, YouTubeMore, settings, Account and its pages). `albumRoute`/`artistRoute` also take
-  `(origin, id)`; `artistRoute(item)` carries the card's name and picture (`LocalArtist.NAME`/
-  `PICTURE`, read as `OpenedArtist`).
+  `(origin, id)`; `artistRoute(item)`/`albumRoute(item)` carry the card's name and picture
+  (`OPENED_NAME`/`OPENED_PICTURE`, read as `OpenedItem`).
 - `Navigator.kt` (2026-10-20) — `Navigator(current, open)` + `LocalNavigator`, provided by
   KreateApp, for opening screens from components that don't own the back stack (song menu).
 - `TopLevelBackStack.kt` — one back stack per Tab.

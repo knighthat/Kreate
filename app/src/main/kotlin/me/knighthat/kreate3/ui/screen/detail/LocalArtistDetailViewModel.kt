@@ -61,7 +61,7 @@ class LocalArtistDetailViewModel(
     }
 
     /** What the screen shows of the artist until they are read. */
-    val opened: OpenedArtist = savedStateHandle.openedArtist()
+    val opened: OpenedItem = savedStateHandle.openedItem()
 
     val artist = repository.find(artistId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)

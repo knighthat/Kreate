@@ -63,11 +63,13 @@ fun YouTubeAlbumDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isBookmarked by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
 
-    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
     CoverTheme(coverModels) {
         YouTubeAlbumDetailContent(
+            albumId = viewModel.albumId,
+            opened = viewModel.opened,
             state = state,
             onRetry = viewModel::load,
             onBack = onBack,
@@ -96,6 +98,8 @@ fun YouTubeAlbumDetailScreen(
  */
 @Composable
 private fun YouTubeAlbumDetailContent(
+    albumId: String,
+    opened: OpenedItem,
     state: LiveState<YouTubeAlbumDetail>,
     onRetry: () -> Unit,
     onBack: () -> Unit,
@@ -118,8 +122,10 @@ private fun YouTubeAlbumDetailContent(
     val artist = remember(album) { album?.songs?.albumArtistRoute(album.artists) }
 
     AlbumDetailScaffold(
-        name = album?.name.orEmpty(),
+        name = (album?.name ?: opened.name).orEmpty(),
+        albumId = albumId,
         models = models,
+        standIn = opened.picture,
         artists = album?.artists?.joinToString(", "),
         year = album?.year,
         summary = album?.songs?.takeIf { it.isNotEmpty() }?.let { songs ->
@@ -162,6 +168,8 @@ private fun YouTubeAlbumDetailContent(
 @Composable
 private fun YouTubeAlbumDetailPreview() = PreviewTheme {
     YouTubeAlbumDetailContent(
+        albumId = "",
+        opened = OpenedItem("Afterglow", null),
         state = LiveState.Ready(
             YouTubeAlbumDetail(
                 name = "Afterglow",

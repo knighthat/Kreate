@@ -74,10 +74,10 @@ class YouTubeArtistDetailViewModel(
     }
 
     /** What the screen shows of the artist until YouTube answers. */
-    val opened: OpenedArtist = savedStateHandle.openedArtist()
+    val opened: OpenedItem = savedStateHandle.openedItem()
 
     /**
-     * [OpenedArtist.picture] at the size of the top of the page, shown there instead of the one
+     * [OpenedItem.picture] at the size of the top of the page, shown there instead of the one
      * of the page: the picture of the card grows into it.
      */
     val picture: Uri? = provider.artwork(opened.picture, HEADER_ARTWORK)

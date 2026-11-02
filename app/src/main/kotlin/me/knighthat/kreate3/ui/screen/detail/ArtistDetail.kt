@@ -74,8 +74,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.core.net.toUri
-import androidx.lifecycle.SavedStateHandle
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
@@ -95,7 +93,6 @@ import me.knighthat.kreate3.ui.component.artistPictureKey
 import me.knighthat.kreate3.ui.component.rememberContentsAfterPicture
 import me.knighthat.kreate3.ui.component.rememberSharedPicture
 import me.knighthat.kreate3.ui.component.thumbnailModel
-import me.knighthat.kreate3.ui.navigation.LocalArtist
 
 /** Share of the screen's height the artist's picture takes at the top, before it scrolls. */
 private const val PICTURE_HEIGHT = 0.4f
@@ -122,18 +119,6 @@ private val PLACEHOLDER_SIZE = 96.dp
 internal const val SONG_PLACEHOLDERS = 5
 
 /**
- * What the card or row an artist was opened from showed of them, see
- * [me.knighthat.kreate3.ui.navigation.artistRoute]. Their page shows it until it has its own.
- *
- * @property picture the picture as the card loaded it, the top of the page grows from it
- */
-data class OpenedArtist(val name: String?, val picture: Uri?)
-
-/** The [OpenedArtist] in the arguments of an artist's screen, nothing when opened by id alone. */
-internal fun SavedStateHandle.openedArtist(): OpenedArtist =
-    OpenedArtist(get<String>(LocalArtist.NAME), get<String>(LocalArtist.PICTURE)?.toUri())
-
-/**
  * The frame of an artist's page: their picture across the top, [PICTURE_HEIGHT] of the screen,
  * under a see-through top bar shaded at its top, with the [name], their badges under it, and a ⋮
  * button opening [menu]. The list ([content]) starts under the picture and scrolls over it, see
@@ -141,7 +126,7 @@ internal fun SavedStateHandle.openedArtist(): OpenedArtist =
  * the list's top reaches the bar.
  *
  * @param artistId whose page it is, the picture of their card grows into the top as it opens
- * @param standIn the picture the artist was opened with, see [OpenedArtist]: in memory already,
+ * @param standIn the picture the artist was opened with, see [OpenedItem]: in memory already,
  * it shows while [thumbnail] loads, which then fades in over it, and stands in for it when it fails
  * @param origin where the artist comes from, a badge under the name, none when `null`
  * @param subtitle shown under the name in place of the badges, like YouTube's monthly audience
@@ -223,7 +208,7 @@ fun ArtistDetailScaffold(
                     blur = PICTURE_BLUR,
                     modifier = Modifier
                         .matchParentSize()
-                        .then(contents)
+                        .then(contents.modifier)
                         // More of it the farther the list went up, all of it once at the bar
                         .graphicsLayer {
                             val scrolled =
@@ -241,7 +226,7 @@ fun ArtistDetailScaffold(
                     Modifier
                         .matchParentSize()
                         .then(picture.overlay)
-                        .then(contents)
+                        .then(contents.modifier)
                         .background(
                             Brush.verticalGradient(
                                 PICTURE_FADE_START to Color.Transparent,
@@ -261,7 +246,7 @@ fun ArtistDetailScaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = barHeight)
-                    .then(contents)
+                    .then(contents.modifier)
                     .fadeTop(LIST_FADE),
             ) {
                 item(key = "picture") {
@@ -280,7 +265,7 @@ fun ArtistDetailScaffold(
                 subtitle = subtitle,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
-                modifier = picture.overlay.then(contents),
+                modifier = picture.overlay.then(contents.modifier),
             )
         }
     }

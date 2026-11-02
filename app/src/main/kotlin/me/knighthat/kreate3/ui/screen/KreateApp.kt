@@ -549,7 +549,7 @@ fun KreateApp(
                                         )
                                     }
 
-                                    entry<LocalAlbum> {
+                                    entry<LocalAlbum>(metadata = pictureFirst()) {
                                         LocalAlbumDetailScreen(
                                             onBack = topLevel::pop,
                                             onOpenArtist = topLevel::push,
@@ -586,7 +586,7 @@ fun KreateApp(
                                     }
 
                                     // Items of external sources are fetched live and never stored
-                                    entry<OpenSubsonicAlbum> {
+                                    entry<OpenSubsonicAlbum>(metadata = pictureFirst()) {
                                         OpenSubsonicAlbumDetailScreen(
                                             onBack = topLevel::pop,
                                             onOpenArtist = topLevel::push,
@@ -632,7 +632,7 @@ fun KreateApp(
                                             viewModel = routeViewModel(it),
                                         )
                                     }
-                                    entry<YouTubeAlbum> {
+                                    entry<YouTubeAlbum>(metadata = pictureFirst()) {
                                         YouTubeAlbumDetailScreen(
                                             onBack = topLevel::pop,
                                             onOpen = { tab, item ->

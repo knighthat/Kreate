@@ -47,14 +47,18 @@ fun AlbumItem(
     modifier: Modifier = Modifier,
 ) {
     val metadata = item.mediaMetadata
+    val shape = MaterialTheme.shapes.medium
+    // Moves into the header of the album's page as it opens, it doesn't come back from there
+    val picture = rememberSharedPicture(albumPictureKey(item.mediaId), shape, onlyAway = true)
 
     Column(modifier = modifier.clickable(onClick = onClick)) {
         Thumbnail(
             uri = metadata.artworkUri,
-            shape = MaterialTheme.shapes.medium,
+            shape = shape,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .then(picture.modifier),
         )
         ItemBadges(item, reserveHeight = true, modifier = Modifier.padding(top = 6.dp))
         Text(

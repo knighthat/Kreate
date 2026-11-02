@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -96,9 +97,13 @@ import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
+import me.knighthat.kreate3.ui.component.albumPictureKey
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberContentsAfterPicture
+import me.knighthat.kreate3.ui.component.rememberSharedPicture
+import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.artistRoute
 import me.knighthat.kreate3.ui.theme.rememberCoverSeed
@@ -122,6 +127,9 @@ private val TINTED_BADGE_SIZE = 16.dp
  * same color, so it is one block with the header, and shows the name once the name has gone under
  * it.
  *
+ * @param albumId whose page it is, the cover of its card grows into the header as it opens
+ * @param standIn the cover the album was opened with, see [OpenedItem]: in memory already, it
+ * shows until [models] load
  * @param tint the color the header is a shade of, the cover's own by default; the theme's primary
  * while there is none
  * @param description what the source says about the album, `null` when it says nothing
@@ -132,6 +140,7 @@ private val TINTED_BADGE_SIZE = 16.dp
 @Composable
 fun AlbumDetailScaffold(
     name: String,
+    albumId: String,
     models: List<Any>,
     artists: String?,
     year: Int?,
@@ -142,6 +151,7 @@ fun AlbumDetailScaffold(
     onBack: () -> Unit,
     onOpenArtist: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    standIn: Uri? = null,
     tint: Color = rememberCoverSeed(models),
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
@@ -149,6 +159,12 @@ fun AlbumDetailScaffold(
     content: LazyListScope.() -> Unit,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    val covers = remember(models, standIn) {
+        (models + listOfNotNull(thumbnailModel(standIn, null))).distinct()
+    }
+    val picture = rememberSharedPicture(albumPictureKey(albumId), MaterialTheme.shapes.medium)
+    // Everything but the cover, shown once it landed, see pictureFirst
+    val contents = rememberContentsAfterPicture()
     val seed = tint.takeIf { it != Color.Unspecified } ?: MaterialTheme.colorScheme.primary
     val shade by animateColorAsState(
         remember(seed) { Color(Hct.fromInt(seed.toArgb()).withTone(TINT_TONE).toInt()) },
@@ -180,12 +196,15 @@ fun AlbumDetailScaffold(
                     end = insets.calculateEndPadding(direction),
                     bottom = insets.calculateBottomPadding(),
                 ),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(contents.modifier),
             ) {
                 item(key = "header") {
                     TintedHeader(
                         name = name,
-                        models = models,
+                        models = covers,
+                        cover = contents.picture.then(picture.modifier),
                         artists = artists,
                         year = year,
                         summary = summary,
@@ -207,6 +226,7 @@ fun AlbumDetailScaffold(
                 collapsed = collapsed,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
+                modifier = contents.modifier,
             )
         }
     }
@@ -218,6 +238,7 @@ fun AlbumDetailScaffold(
 private fun TintedHeader(
     name: String,
     models: List<Any>,
+    cover: Modifier,
     artists: String?,
     year: Int?,
     summary: String?,
@@ -254,6 +275,7 @@ private fun TintedHeader(
             shape = shape,
             modifier = Modifier
                 .size(TINTED_COVER_SIZE)
+                .then(cover)
                 .shadow(12.dp, shape),
         )
         Column(
@@ -305,6 +327,7 @@ private fun TintedTopBar(
     collapsed: Boolean,
     onBack: () -> Unit,
     onMore: (() -> Unit)?,
+    modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     val title by animateFloatAsState(if (collapsed) 1f else 0f, label = "album bar title")
 
@@ -326,6 +349,7 @@ private fun TintedTopBar(
             titleContentColor = Color.White,
             actionIconContentColor = Color.White,
         ),
+        modifier = modifier,
     )
 }
 
@@ -452,6 +476,7 @@ private fun AlbumDetailPreview() = PreviewTheme {
 
     AlbumDetailScaffold(
         name = "Afterglow",
+        albumId = "",
         models = models,
         artists = "Neon Coast",
         year = 2021,

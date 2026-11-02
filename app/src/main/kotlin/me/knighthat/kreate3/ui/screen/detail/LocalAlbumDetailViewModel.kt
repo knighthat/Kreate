@@ -65,6 +65,9 @@ class LocalAlbumDetailViewModel(
         "LocalAlbum.ID is missing from the saved state"
     }
 
+    /** What the screen shows of the album until it is read. */
+    val opened: OpenedItem = savedStateHandle.openedItem()
+
     val album = repository.find(albumId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
