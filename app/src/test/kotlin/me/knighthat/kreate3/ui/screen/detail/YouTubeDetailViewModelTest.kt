@@ -143,7 +143,8 @@ class YouTubeDetailViewModelTest {
 
         val album = (state as LiveState.Ready).value
         assertEquals("Album", album.name)
-        assertEquals("Artist · 2001", album.subtitle)
+        assertEquals(listOf("Artist"), album.artists)
+        assertEquals(2001, album.year)
         assertEquals(listOf("v1", "v2"), album.songs.map { it.mediaId })
         assertTrue(requests.single().contains("\"browseId\":\"MPREb_1\""))
         assertEquals("https://music.youtube.com/browse/MPREb_1", viewModel.shareLink().getOrNull())
