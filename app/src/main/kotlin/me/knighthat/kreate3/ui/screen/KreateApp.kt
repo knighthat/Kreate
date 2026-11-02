@@ -525,9 +525,11 @@ fun KreateApp(
 
                             entry<LocalAlbum> {
                                 LocalAlbumDetailScreen(
-                                    topLevel::pop,
-                                    paddingModifier,
-                                    contentPadding,
+                                    onBack = topLevel::pop,
+                                    onOpenArtist = topLevel::push,
+                                    onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -554,9 +556,11 @@ fun KreateApp(
                             // Items of external sources are fetched live and never stored
                             entry<OpenSubsonicAlbum> {
                                 OpenSubsonicAlbumDetailScreen(
-                                    topLevel::pop,
-                                    paddingModifier,
-                                    contentPadding,
+                                    onBack = topLevel::pop,
+                                    onOpenArtist = topLevel::push,
+                                    onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
+                                    modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -604,6 +608,8 @@ fun KreateApp(
                                             )
                                         )
                                     },
+                                    onOpenArtist = topLevel::push,
+                                    onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),

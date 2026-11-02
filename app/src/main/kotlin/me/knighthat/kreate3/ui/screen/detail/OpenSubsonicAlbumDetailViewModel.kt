@@ -46,7 +46,8 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
 data class OpenSubsonicAlbumDetail(
     val name: String?,
     val thumbnail: Uri?,
-    val subtitle: String?,
+    val artists: List<String>?,
+    val year: Int?,
     val songs: List<MediaItem>,
     val description: String? = null,
     val isExplicit: Boolean = false,
@@ -104,8 +105,8 @@ class OpenSubsonicAlbumDetailViewModel(
         OpenSubsonicAlbumDetail(
             name = album.name,
             thumbnail = album.thumbnail,
-            subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
-                .takeIf { it.isNotEmpty() }?.joinToString(" · "),
+            artists = album.artists,
+            year = album.year,
             songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
             description = notes.await(),
             isExplicit = album.isExplicit == true,

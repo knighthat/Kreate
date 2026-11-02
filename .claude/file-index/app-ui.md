@@ -28,7 +28,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   messages, composable one (reads `Preferences`) for screens to pass to their content.
 - `ConfigSheet.kt` — `ConfigSheet` (a screen's options: a row of `LabeledIconButton` actions given
   `close`, then `entries` and options under a divider; opens on its content,
-  `skipPartiallyExpanded`), `ConfigToggle` (row with a trailing `Switch`), `ConfigEntry` (an action
+  `skipPartiallyExpanded`), `ConfigToggle` (row with a trailing `Switch`), `ConfigEntry` (an action,
+  optional long press,
   as a row, given `close` like the buttons; the artist menu's). Used by the home tabs.
 - `BlurredCover.kt` — `Blur` (sample size + radius) and `BlurredCover` (a few pixels of a cover
   stretched and blurred, blurred on every Android version), for the full player and artist pages.
@@ -92,7 +93,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
   icons carry the content description.
 - `PreviewSamples.kt` (sample data, `previewItem` with album/media type/reaction for badges,
   `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark, `@ComponentPreviews` wrap-content
-  light+dark).
+  light+dark, `previewCover()` a made-up cover drawn as a `Bitmap`).
 - `Sliders.kt` — thin-track sliders on a private `BallSlider` (4dp track, number in a ball/pill
   thumb 26dp, 34dp while held, no gap, unit label under the middle, `leadingIcon`/`trailingIcon`
   slots, `held` overloads for previews): `LufsSlider` (-18..-10 LUFS in 0.5 steps, filled from a
@@ -127,5 +128,6 @@ ui/navigation/
 
 ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ChartColors.kt` (fixed chart
 palette per light/dark, `MaterialTheme.chartColors`, `Color.onChart()`), `ThumbnailSeed.kt` (
-`rememberThumbnailSeed`, runtime-only — `.claude/rules/storage.md`), `Type.kt` (Inter typography),
+`rememberThumbnailSeed`, `rememberCoverSeed(models)`, runtime-only — `.claude/rules/storage.md`),
+`Type.kt` (Inter typography),
 `KreateThemePreview.kt`.

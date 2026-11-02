@@ -49,8 +49,8 @@ charts: `.claude/docs/charts.md`.
   row holds actions, which close the sheet before running; `ConfigToggle`s under the divider apply
   at once and leave it open.
 - Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
-- Artist pages open theirs (`ArtistMenu`) from a ⋮ `MoreSheetButton`, the only action of their bar;
-  its less used actions are `ConfigEntry` rows (maintainer, 2026-11-01).
+- Artist and album pages open theirs (`ArtistMenu`, `AlbumMenu`) from a ⋮ `MoreSheetButton`, the
+  only action of their bar; its less used actions are `ConfigEntry` rows (maintainer, 2026-11-01).
 - Filters live in the screen's view model: kept while the screen is in the back stack (A > B > C,
   back to B keeps them), off when it is opened again. Never reset them from a `LaunchedEffect`, it
   also runs on coming back from a page and on rotation.

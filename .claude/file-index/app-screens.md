@@ -97,7 +97,14 @@ ui/screen/
   tab is in the back stack),
   `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).
-- detail/ — `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
+- detail/ — `AlbumDetail.kt` (`AlbumDetailScaffold`: header in a tone-30 shade of the cover's color
+  (`rememberCoverSeed`), cover at the start with badges, ALBUM, name, `ArtistLine` (tap opens the
+  artist), song count + length beside it, the description under them; bar in the same color, name in
+  it once scrolled under. `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle / Play next / Add to
+  queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
+  `albumArtistRoute`: the credited artist the album names, else the first song's first. Used by the
+  three album screens; tracks numbered by position. The framed-cover design is in `git stash`),
+  `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a
   `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and
   scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
@@ -105,7 +112,9 @@ ui/screen/
   reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
   next / Add to queue / Details / Statistics rows; used by all three artist screens),
   `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as content
-  padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (
+  padding), `DetailHeader.kt` (origin/explicit badges above the cover; `AlbumTrack` (track number in
+  the cover's place), `DiscHeader`, `Resources.albumSummary`, `ArtistLine`; `DetailDescription`
+  takes colors), `LiveDetail.kt` (
   `LiveDetailViewModel` (state re-filtered by `dislikedIds` through each subclass's
   `withoutSongs`), `LiveState`, `LiveSectionRow`, `LiveDetailScreen`, `LiveStatus` (spinner or
   failure + retry, alone)),
@@ -117,10 +126,11 @@ ui/screen/
   `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens
   have Bookmark, artist screens Follow: local columns, the server's star, YouTube's library save /
   subscription, or local columns while signed out of YouTube; the album screen of a `LOCAL`
-  album (not stored remote ones, they keep the server's order) has a more menu with Reorder: the
-  whole album loaded in `arranged`, `DragHandle`s where covers would be, a drop calls
-  `moveInAlbum` serialized by a `Mutex`, like the app's playlists; a long press on Reorder
-  (`ReorderMenuItem`, a menu row that takes long presses) asks to reset to the album's order);
+  album (not stored remote ones, they keep the server's order) has Reorder in `AlbumMenu`: the whole
+  album loaded in `arranged`, `DragHandle`s where track numbers would be, a drop calls
+  `moveInAlbum` serialized by a `Mutex`, like the app's playlists; a long press on Reorder asks to
+  reset to the album's order; `tracks` = every song at once for the header's count, length and
+  artist);
   `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more");
   `OpenSubsonicArtistSongsScreen/ViewModel.kt` (every song of a server artist, behind "See more" of
   the artist screen's 10 top songs: `getTopSongs` filled from `search3`; Play/Shuffle there start

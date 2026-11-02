@@ -79,6 +79,23 @@ fun rememberThumbnailSeed(item: MediaItem?, enabled: Boolean): Color {
 }
 
 /**
+ * The most fitting color of the first picture of [models] that loads, like an album's cover.
+ * [Color.Unspecified] until there is one, and while [models] is empty.
+ */
+@Composable
+fun rememberCoverSeed(models: List<Any>): Color {
+    val context = LocalContext.current
+    var seed by remember { mutableStateOf(Color.Unspecified) }
+
+    LaunchedEffect(models) {
+        seed = models.takeIf { it.isNotEmpty() }?.let { extractSeed(context, it) }
+            ?: Color.Unspecified
+    }
+
+    return seed
+}
+
+/**
  * The picture is most likely in memory already, the item that is playing shows it. It is found
  * by its key, which is what Coil caches it under. Its pixels can't be read when it is a hardware
  * bitmap, what the screens usually cache, so requests are made when no picture of [models] is

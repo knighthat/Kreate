@@ -49,7 +49,8 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
 data class YouTubeAlbumDetail(
     val name: String?,
     val thumbnail: Uri?,
-    val subtitle: String?,
+    val artists: List<String>?,
+    val year: Int?,
     val songs: List<MediaItem>,
     val sections: List<LiveSection>,
     val description: String? = null,
@@ -138,8 +139,8 @@ class YouTubeAlbumDetailViewModel(
         return YouTubeAlbumDetail(
             name = album.name,
             thumbnail = provider.artwork(album.thumbnail, HEADER_ARTWORK),
-            subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
-                .takeIf { it.isNotEmpty() }?.joinToString(" · "),
+            artists = album.artists,
+            year = album.year,
             songs = page.songs.map {
                 it.toLiveMediaItem(
                     provider.artwork(it.song.thumbnail ?: album.thumbnail, SONG_ARTWORK)

@@ -19,28 +19,26 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
-import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
-import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,6 +53,8 @@ fun YouTubeAlbumDetailScreen(
     onBack: () -> Unit,
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
+    onOpenArtist: (Route) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
@@ -77,6 +77,8 @@ fun YouTubeAlbumDetailScreen(
         share = viewModel::shareLink,
         isBookmarked = isBookmarked,
         onToggleBookmark = viewModel.bookmark::toggle,
+        onOpenArtist = onOpenArtist,
+        onOpenStatistics = onOpenStatistics,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -84,7 +86,7 @@ fun YouTubeAlbumDetailScreen(
 
 /**
  * @param isBookmarked whether the album is saved to the library on YouTube, or bookmarked on the
- * device while signed out, `null` hides the button
+ * device while signed out, `null` turns Bookmark off in the menu
  */
 @Composable
 private fun YouTubeAlbumDetailContent(
@@ -98,51 +100,54 @@ private fun YouTubeAlbumDetailContent(
     share: suspend () -> Result<String>,
     isBookmarked: Boolean?,
     onToggleBookmark: () -> Unit,
+    onOpenArtist: (Route) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val album = (state as? LiveState.Ready)?.value
+    val resources = LocalResources.current
+    val models =
+        remember(album?.thumbnail) { listOfNotNull(thumbnailModel(album?.thumbnail, null)) }
+    val artist = remember(album) { album?.songs?.albumArtistRoute(album.artists) }
 
-    LiveDetailScreen(
-        title = album?.name.orEmpty(),
+    AlbumDetailScaffold(
+        name = album?.name.orEmpty(),
+        models = models,
+        artists = album?.artists?.joinToString(", "),
+        year = album?.year,
+        summary = album?.songs?.takeIf { it.isNotEmpty() }?.let { songs ->
+            resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
+        },
+        origin = Origin.YOUTUBE,
+        isExplicit = album?.isExplicit == true,
+        description = album?.description,
         onBack = onBack,
-        state = state,
-        onRetry = onRetry,
+        onOpenArtist = artist?.let { { onOpenArtist(it) } },
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            if (album != null) isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
-            ShareAction(album?.name, R.plurals.unit_album, share)
+        menu = { onDismiss ->
+            AlbumMenu(
+                name = album?.name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { album?.songs?.isNotEmpty() == true },
+                isBookmarked = isBookmarked.takeIf { album != null },
+                onToggleBookmark = onToggleBookmark,
+                share = share,
+                onOpenArtist = artist?.let { { onOpenArtist(it) } },
+                onOpenStatistics = onOpenStatistics,
+            )
         },
-    ) { detail, innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = detail.thumbnail,
-                    subtitle = detail.subtitle,
-                    shape = MaterialTheme.shapes.medium,
-                    origin = Origin.YOUTUBE,
-                    isExplicit = detail.isExplicit,
-                )
-            }
-            item(key = "queue-actions") { QueueActionRow(onAction) }
-            detail.description?.let {
-                item(key = "description") { DetailDescription(it) }
-            }
-            items(detail.songs, key = { it.mediaId }) {
-                SongItem(
-                    it,
-                    onClick = { onSongClick(it) },
-                    showThumbnail = false,
-                    showAlbum = false,
-                )
-            }
-            items(detail.sections.size, key = { "section:$it" }) {
-                LiveSectionRow(detail.sections[it], onOpen, onSeeMore)
-            }
+    ) {
+        if (album == null) {
+            item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@AlbumDetailScaffold
+        }
+        itemsIndexed(album.songs, key = { _, it -> it.mediaId }) { index, song ->
+            AlbumTrack(song, index + 1, onClick = { onSongClick(song) })
+        }
+        items(album.sections.size, key = { "section:$it" }) {
+            LiveSectionRow(album.sections[it], onOpen, onSeeMore)
         }
     }
 }
@@ -155,7 +160,8 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
             YouTubeAlbumDetail(
                 name = "Afterglow",
                 thumbnail = null,
-                subtitle = "Album · Neon Coast · 2021",
+                artists = listOf("Neon Coast"),
+                year = 2021,
                 songs = previewSongs(Origin.YOUTUBE),
                 description = "Afterglow is the second album of Neon Coast, recorded over one " +
                         "summer by the sea. Its songs move from bright synths to quiet guitar " +
@@ -177,5 +183,7 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         share = { Result.success("") },
         isBookmarked = true,
         onToggleBookmark = {},
+        onOpenArtist = {},
+        onOpenStatistics = {},
     )
 }

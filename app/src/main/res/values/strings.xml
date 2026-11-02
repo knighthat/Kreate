@@ -338,6 +338,7 @@
     <string name="action_move_to_downloads">Move to downloads</string>
     <string name="action_remove_from_cache">Remove from cache</string>
     <string name="action_play">Play</string>
+    <string name="action_shuffle">Shuffle</string>
     <string name="action_play_next">Next</string>
     <string name="action_queue">Queue</string>
     <string name="action_pause">Pause</string>
@@ -501,6 +502,7 @@
     <string name="menu_details">Details</string>
     <string name="menu_play">Play</string>
     <string name="menu_follow">Follow</string>
+    <string name="menu_bookmark">Bookmark</string>
     <string name="menu_statistics">Statistics</string>
     <string name="menu_go_to">Go to %1$s</string>
     <string name="menu_title_artists">Artists</string>
@@ -723,6 +725,7 @@
     <string name="section_header_top_artists">Top artists</string>
     <string name="section_header_releases">Releases</string>
     <string name="section_header_links">Links</string>
+    <string name="section_header_disc">Disc %1$d</string>
     <string name="section_header_listening_by_source">Listening by source</string>
     <string name="section_header_listening_over_time">Listening over time</string>
     <string name="section_header_listening_by_hour">By hour of the day</string>

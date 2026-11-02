@@ -72,6 +72,14 @@ class LocalAlbumDetailViewModel(
         .toMediaItems()
         .cachedIn(viewModelScope)
 
+    /**
+     * Every song of the album at once, read again when the album changes, for the header's count,
+     * length and artist. Empty until read.
+     */
+    val tracks: StateFlow<List<MediaItem>> = album
+        .map { allSongs() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     /** Whether the user bookmarked the album, `null` until that is known. */
     val isBookmarked: StateFlow<Boolean?> = userAlbums.find(albumId)
         .map { it?.bookmarkedAt.isPositive }

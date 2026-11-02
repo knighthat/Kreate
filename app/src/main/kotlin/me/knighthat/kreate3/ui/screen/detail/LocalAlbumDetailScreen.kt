@@ -20,22 +20,11 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,14 +35,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -65,17 +51,17 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.source.local.albumArtUri
-import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.DragHandle
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.Route
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -88,6 +74,8 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun LocalAlbumDetailScreen(
     onBack: () -> Unit,
+    onOpenArtist: (Route) -> Unit,
+    onOpenStatistics: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalAlbumDetailViewModel = koinViewModel(),
@@ -97,8 +85,10 @@ fun LocalAlbumDetailScreen(
     val isBookmarked by viewModel.isBookmarked.collectAsState()
     val isReordering by viewModel.isReordering.collectAsState()
     val arranged by viewModel.arranged.collectAsState()
-    val notifier = LocalNotifier.current
+    val tracks by viewModel.tracks.collectAsState()
     val resources = LocalResources.current
+    val artist = remember(tracks, album) { tracks.albumArtistRoute(album?.artists) }
+    val notifier = LocalNotifier.current
     val resetFailed = stringResource(R.string.error_album_reset_order)
     val moveFailed = stringResource(R.string.error_move_song)
     val orderReset = stringResource(R.string.snackbar_album_order_reset)
@@ -109,12 +99,13 @@ fun LocalAlbumDetailScreen(
             it.thumbnail ?: it.id.toLongOrNull()
                 ?.takeIf { _ -> it.origin == Origin.LOCAL }?.let(::albumArtUri)
         },
-        subtitle = album?.let {
-            listOfNotNull(
-                it.artists?.joinToString(", "),
-                it.year?.toString()
-            ).takeIf { p -> p.isNotEmpty() }?.joinToString(" · ")
+        artists = album?.artists?.joinToString(", "),
+        year = album?.year,
+        summary = tracks.takeIf { it.isNotEmpty() }?.let { songs ->
+            resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
         },
+        onOpenArtist = artist?.let { { onOpenArtist(it) } },
+        onOpenStatistics = onOpenStatistics,
         origin = album?.origin,
         isExplicit = album?.isExplicit == true,
         songs = viewModel.songs.collectAsLazyPagingItems(),
@@ -151,22 +142,27 @@ fun LocalAlbumDetailScreen(
 /**
  * @param arranged every song in the album's order while they are moved, see
  * [LocalAlbumDetailViewModel.arranged]
+ * @param onOpenArtist opens the album's artist, `null` while there is none to open
  * @param onMoveSong moves a song to right after another one, to the start after `null`
  * @param onResetOrder puts the songs back in the album's own order
  * @param share gives the album's link, `null` when it has none
- * @param isBookmarked `null` hides the bookmark button, while it isn't known
+ * @param isBookmarked `null` turns Bookmark off in the menu, while it isn't known
  */
 @Composable
 private fun LocalAlbumDetailContent(
     name: String?,
     cover: Uri?,
-    subtitle: String?,
+    artists: String?,
+    year: Int?,
+    summary: String?,
     origin: Origin?,
     isExplicit: Boolean,
     songs: LazyPagingItems<MediaItem>,
     isReordering: Boolean,
     arranged: List<MediaItem>?,
     onBack: () -> Unit,
+    onOpenArtist: (() -> Unit)?,
+    onOpenStatistics: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     onReorder: (Boolean) -> Unit,
@@ -178,182 +174,123 @@ private fun LocalAlbumDetailContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    DetailScaffold(
-        title = name.orEmpty(),
+    val listState = rememberLazyListState()
+    // Changed at once by the finger, the album follows on the drop
+    var entries by remember(arranged) { mutableStateOf(arranged) }
+    // A drag handle keeps the callbacks it was first composed with, they find the song by
+    // key in this instead of trusting the list they caught then
+    val latestEntries by rememberUpdatedState(entries)
+    var dragFrom by remember { mutableIntStateOf(-1) }
+    val haptics = LocalHapticFeedback.current
+    val reorder = rememberReorderableLazyListState(listState, contentPadding) { from, to ->
+        // Their indices count the header too, the songs are found by key
+        entries = entries?.toMutableList()?.apply {
+            val fromIndex = indexOfFirst { it.mediaId == from.key }
+            val toIndex = indexOfFirst { it.mediaId == to.key }
+            if (fromIndex >= 0 && toIndex >= 0) add(toIndex, removeAt(fromIndex))
+        }
+        haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+    }
+    val lifted = MaterialTheme.colorScheme.surfaceContainerHighest
+    var confirmReset by remember { mutableStateOf(false) }
+    val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+
+    AlbumDetailScaffold(
+        name = name.orEmpty(),
+        models = models,
+        artists = artists,
+        year = year,
+        summary = summary,
+        origin = origin,
+        isExplicit = isExplicit,
+        description = null,
         onBack = onBack,
+        onOpenArtist = onOpenArtist,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
-            if (share != null) ShareAction(name, R.plurals.unit_album, share)
-        },
-    ) { innerPadding ->
-        val listState = rememberLazyListState()
-        // Changed at once by the finger, the album follows on the drop
-        var entries by remember(arranged) { mutableStateOf(arranged) }
-        // A drag handle keeps the callbacks it was first composed with, they find the song by
-        // key in this instead of trusting the list they caught then
-        val latestEntries by rememberUpdatedState(entries)
-        var dragFrom by remember { mutableIntStateOf(-1) }
-        val haptics = LocalHapticFeedback.current
-        val reorder = rememberReorderableLazyListState(listState, innerPadding) { from, to ->
-            // Their indices count the header's items too, the songs are found by key
-            entries = entries?.toMutableList()?.apply {
-                val fromIndex = indexOfFirst { it.mediaId == from.key }
-                val toIndex = indexOfFirst { it.mediaId == to.key }
-                if (fromIndex >= 0 && toIndex >= 0) add(toIndex, removeAt(fromIndex))
-            }
-            haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
-        }
-        val lifted = MaterialTheme.colorScheme.surfaceContainerHighest
-        var confirmReset by remember { mutableStateOf(false) }
-
-        LazyColumn(
-            state = listState,
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = cover,
-                    subtitle = subtitle,
-                    shape = MaterialTheme.shapes.medium,
-                    origin = origin,
-                    isExplicit = isExplicit,
-                )
-            }
-            item(key = "queue-actions") {
-                QueueActionRow(
-                    onAction = onAction,
-                    // A remote album keeps the order of its server
-                    menu = if (origin != Origin.LOCAL) null else { close ->
-                        ReorderMenuItem(
-                            isReordering = isReordering,
-                            // Stays on with fewer songs, so it can be turned off
-                            enabled = isReordering || songs.itemCount > 1,
-                            onClick = {
-                                close()
-                                onReorder(!isReordering)
-                            },
-                            onLongClick = {
-                                close()
-                                confirmReset = true
-                            },
-                        )
-                    },
-                )
-            }
-
-            val moving = entries
-            if (moving != null) {
-                items(moving, key = { it.mediaId }) { song ->
-                    ReorderableItem(reorder, key = song.mediaId) { isDragging ->
-                        // Still no covers, a handle takes the place of one
-                        SongItem(
-                            item = song,
-                            onClick = { onSongClick(song) },
-                            showThumbnail = false,
-                            showAlbum = false,
-                            thumbnailOverlay = {
-                                DragHandle(
-                                    handle = Modifier.draggableHandle(
-                                        onDragStarted = {
-                                            dragFrom = latestEntries.orEmpty()
-                                                .indexOfFirst { it.mediaId == song.mediaId }
-                                            haptics.performHapticFeedback(
-                                                HapticFeedbackType.GestureThresholdActivate
-                                            )
-                                        },
-                                        onDragStopped = {
-                                            val now = latestEntries.orEmpty()
-                                            val to =
-                                                now.indexOfFirst { it.mediaId == song.mediaId }
-                                            if (dragFrom >= 0 && to >= 0 && to != dragFrom)
-                                                onMoveSong(song, now.getOrNull(to - 1))
-                                            dragFrom = -1
-                                        },
-                                    ),
-                                )
-                            },
-                            // Opaque, the songs it passes over don't show through it
-                            modifier = if (isDragging) Modifier.background(lifted) else Modifier,
-                        )
-                    }
-                }
-            } else {
-                items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
-                    songs[index]?.let {
-                        SongItem(
-                            it,
-                            onClick = { onSongClick(it) },
-                            showThumbnail = false,
-                            showAlbum = false,
-                        )
-                    }
-                }
-            }
-        }
-
-        if (confirmReset)
-            AlertDialog(
-                onDismissRequest = { confirmReset = false },
-                title = { Text(stringResource(R.string.dialog_title_reset_the_order)) },
-                text = { Text(stringResource(R.string.dialog_body_reset_the_order)) },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            confirmReset = false
-                            onResetOrder()
-                        },
-                    ) { Text(stringResource(R.string.action_reset)) }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        confirmReset = false
-                    }) { Text(stringResource(R.string.action_cancel)) }
-                },
+        listState = listState,
+        menu = { onDismiss ->
+            AlbumMenu(
+                name = name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { songs.itemCount > 0 },
+                isBookmarked = isBookmarked,
+                onToggleBookmark = onToggleBookmark,
+                share = share,
+                onOpenArtist = onOpenArtist,
+                onOpenStatistics = onOpenStatistics,
+                // A remote album keeps the order of its server
+                isReordering = isReordering.takeIf { origin == Origin.LOCAL },
+                canReorder = songs.itemCount > 1,
+                onReorder = { onReorder(!isReordering) },
+                onResetOrder = { confirmReset = true },
             )
-    }
-}
-
-/**
- * Turns the reordering on or off, a long press calls [onLongClick]. Laid out like a
- * [DropdownMenuItem], which can't be long pressed.
- */
-@Composable
-private fun ReorderMenuItem(
-    isReordering: Boolean,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit,
-) {
-    val color = MaterialTheme.colorScheme.onSurface
-        .let { if (enabled) it else it.copy(alpha = DISABLED_ALPHA) }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .sizeIn(minWidth = 112.dp, maxWidth = 280.dp, minHeight = 48.dp)
-            .combinedClickable(enabled = enabled, onLongClick = onLongClick, onClick = onClick)
-            .padding(MenuDefaults.DropdownMenuItemContentPadding),
+        },
     ) {
-        Icon(
-            painterResource(if (isReordering) R.drawable.lock_open else R.drawable.lock),
-            contentDescription = null,
-            tint = color,
-        )
-        Text(
-            if (isReordering) stringResource(R.string.semantic_lock_the_order) else stringResource(R.string.semantic_reorder),
-            color = color,
-            style = MaterialTheme.typography.labelLarge,
-        )
+        val moving = entries
+        if (moving != null) {
+            items(moving, key = { it.mediaId }) { song ->
+                ReorderableItem(reorder, key = song.mediaId) { isDragging ->
+                    // Still no covers, a handle takes the place of one
+                    SongItem(
+                        item = song,
+                        onClick = { onSongClick(song) },
+                        showThumbnail = false,
+                        showAlbum = false,
+                        showBadges = false,
+                        thumbnailOverlay = {
+                            DragHandle(
+                                handle = Modifier.draggableHandle(
+                                    onDragStarted = {
+                                        dragFrom = latestEntries.orEmpty()
+                                            .indexOfFirst { it.mediaId == song.mediaId }
+                                        haptics.performHapticFeedback(
+                                            HapticFeedbackType.GestureThresholdActivate
+                                        )
+                                    },
+                                    onDragStopped = {
+                                        val now = latestEntries.orEmpty()
+                                        val to =
+                                            now.indexOfFirst { it.mediaId == song.mediaId }
+                                        if (dragFrom >= 0 && to >= 0 && to != dragFrom)
+                                            onMoveSong(song, now.getOrNull(to - 1))
+                                        dragFrom = -1
+                                    },
+                                ),
+                            )
+                        },
+                        // Opaque, the songs it passes over don't show through it
+                        modifier = if (isDragging) Modifier.background(lifted) else Modifier,
+                    )
+                }
+            }
+        } else {
+            items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
+                songs[index]?.let { AlbumTrack(it, index + 1, onClick = { onSongClick(it) }) }
+            }
+        }
     }
-}
 
-/** How much of its color a disabled menu item keeps, like Material's. */
-private const val DISABLED_ALPHA = 0.38f
+    if (confirmReset)
+        AlertDialog(
+            onDismissRequest = { confirmReset = false },
+            title = { Text(stringResource(R.string.dialog_title_reset_the_order)) },
+            text = { Text(stringResource(R.string.dialog_body_reset_the_order)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmReset = false
+                        onResetOrder()
+                    },
+                ) { Text(stringResource(R.string.action_reset)) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    confirmReset = false
+                }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+}
 
 @ScreenPreviews
 @Composable
@@ -361,13 +298,17 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
     LocalAlbumDetailContent(
         name = "Afterglow",
         cover = null,
-        subtitle = "Neon Coast · 2021",
+        artists = "Neon Coast",
+        year = 2021,
+        summary = "6 songs · 23 minutes",
         origin = Origin.LOCAL,
         isExplicit = true,
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         isReordering = false,
         arranged = null,
         onBack = {},
+        onOpenArtist = {},
+        onOpenStatistics = {},
         onAction = {},
         onSongClick = {},
         onReorder = {},

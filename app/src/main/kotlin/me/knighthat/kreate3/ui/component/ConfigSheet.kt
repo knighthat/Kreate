@@ -19,7 +19,8 @@
 package me.knighthat.kreate3.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -114,19 +115,23 @@ private fun ConfigSheetContent(
 /**
  * An action of a [ConfigSheet] as a row, for the ones used less than its buttons. Unless
  * [enabled], the row is grayed out and can't be tapped.
+ *
+ * @param onLongClick what a long press does, nothing when `null`
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConfigEntry(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit,
 ) = ListItem(
     headlineContent = { Text(label) },
     leadingContent = { Icon(painterResource(icon), contentDescription = null) },
     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     modifier = Modifier
-        .clickable(enabled = enabled, onClick = onClick)
+        .combinedClickable(enabled = enabled, onLongClick = onLongClick, onClick = onClick)
         // The look of a disabled button
         .alpha(if (enabled) 1f else 0.38f),
 )

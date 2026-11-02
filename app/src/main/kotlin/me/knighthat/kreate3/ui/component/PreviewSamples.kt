@@ -19,6 +19,11 @@
 package me.knighthat.kreate3.ui.component
 
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Shader
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
@@ -148,3 +153,38 @@ fun previewPlaylists(origin: Origin = Origin.LOCAL): List<MediaItem> = listOf(
     previewItem("Focus", "On this device", origin = origin),
     previewItem("Gym", "On this device", origin = origin),
 )
+
+/**
+ * A made-up album cover drawn in code, a sun over the sea at dusk, for previews that need a
+ * picture. Coil loads a [Bitmap] like any other picture.
+ */
+fun previewCover(size: Int = 512): Bitmap {
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val horizon = size * 0.62f
+    paint.shader = LinearGradient(
+        0f, 0f, 0f, horizon,
+        intArrayOf(0xFF1B1F4B.toInt(), 0xFF8E3B6B.toInt(), 0xFFF29A5B.toInt()),
+        null,
+        Shader.TileMode.CLAMP,
+    )
+    canvas.drawRect(0f, 0f, size.toFloat(), horizon, paint)
+    paint.shader = null
+    paint.color = 0xFFFFD27A.toInt()
+    canvas.drawCircle(size / 2f, horizon, size * 0.2f, paint)
+    paint.shader = LinearGradient(
+        0f, horizon, 0f, size.toFloat(),
+        0xFF2A3C6E.toInt(), 0xFF0E1530.toInt(),
+        Shader.TileMode.CLAMP,
+    )
+    canvas.drawRect(0f, horizon, size.toFloat(), size.toFloat(), paint)
+    paint.shader = null
+    paint.color = 0x66FFD27A
+    for (i in 1..5) {
+        val y = horizon + i * size * 0.06f
+        val half = size * (0.2f - i * 0.03f)
+        canvas.drawRect(size / 2f - half, y, size / 2f + half, y + size * 0.012f, paint)
+    }
+    return bitmap
+}
