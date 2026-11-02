@@ -31,6 +31,8 @@ charts: `.claude/docs/charts.md`.
   empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
   their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
   measures into the `MiniPlayerSpace` it's given.
+- Flows are collected with `collectAsStateWithLifecycle()`, never `collectAsState()`, except the
+  lifecycle's own `currentStateFlow` (`KreateApp.kt`, `Messages.kt`), which must keep collecting.
 - A composable reads strings from `LocalResources.current` (`resources.getString`, or a helper
   taking `Resources`), never through `LocalContext.current`: `LocalResources` changes with the
   configuration (locale) and recomposes, the context doesn't. Keep `LocalContext` only for what

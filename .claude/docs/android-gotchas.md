@@ -157,3 +157,15 @@ older versions get it from `AppLanguage.wrap` (`Locale.setDefault`). For the dev
 or region read `Resources.getSystem().configuration.locales[0]`, which keeps the system
 configuration (`youTubeRegion()` in `YouTubeRegion.kt` does this for System). Only checked by
 reading the code, not on a device.
+
+## The keyboard: pan vs `imePadding()`
+
+`KreateActivity` sets no `windowSoftInputMode`, and Android resolves the unspecified mode to **pan**
+(`dumpsys window windows`: `sim={adjust=pan}`). A screen that lifts a bar with
+`imePadding()` is then moved twice whenever the keyboard opens before the bar has moved (coming back
+to a screen that asks for focus at once): the bar sits a keyboard's height above the keyboard and
+the top of the screen goes out of sight. `SearchScreen` switches the window to
+`SOFT_INPUT_ADJUST_RESIZE` while it is shown. Setting the old mode back needs care:
+`setSoftInputMode(0)` is ignored, and the window keeps the last adjust while the mode is
+unspecified, so an unspecified mode is set back as `SOFT_INPUT_ADJUST_PAN` by name. The app-wide
+mode stays pan because the other screens with text fields have no `imePadding()`.
