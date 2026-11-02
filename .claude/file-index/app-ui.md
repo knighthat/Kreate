@@ -129,7 +129,8 @@ ui/navigation/
 ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ChartColors.kt` (fixed chart
 palette per light/dark, `MaterialTheme.chartColors`, `Color.onChart()`), `ThumbnailSeed.kt` (
 `rememberThumbnailSeed`, `rememberCoverSeed(models)`, runtime-only — `.claude/rules/storage.md`),
-`CoverTheme.kt` (`CoverTheme(models)`: an album or artist page seeds its own colors from its cover
+`CoverTheme.kt` (`CoverTheme(models)`: an album, artist or playlist page seeds its own colors from
+its cover
 while the theme is Thumbnail and the player is empty; `seedContrast` in `Theme.kt`),
 `Type.kt` (Inter typography),
 `KreateThemePreview.kt`.

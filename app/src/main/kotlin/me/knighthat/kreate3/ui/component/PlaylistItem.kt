@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
 
 /** How many covers make a grid, fewer show the first one alone. */
-private const val GRID_COVERS = 4
+internal const val GRID_COVERS = 4
 
 /** Colorfulness of the background behind a playlist's initial, in HCT chroma. */
 private const val INITIAL_CHROMA = 36.0
@@ -121,11 +122,16 @@ fun PlaylistItem(
 }
 
 /**
- * The first four of [covers] in two rows of two, each with the fallback of [Thumbnail].
+ * The first four of [covers] in two rows of two, each with the fallback of [Thumbnail], clipped
+ * to [shape]. Also a playlist page's cover.
  */
 @Composable
-private fun CoverGrid(covers: List<Any>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.clip(MaterialTheme.shapes.small)) {
+internal fun CoverGrid(
+    covers: List<Any>,
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.small,
+) {
+    Column(modifier = modifier.clip(shape)) {
         covers.take(GRID_COVERS).chunked(2).forEach { row ->
             Row(
                 modifier = Modifier

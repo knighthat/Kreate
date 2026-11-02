@@ -208,6 +208,9 @@ internal val LIBRARY_ADD_ICONS = setOf("LIBRARY_ADD", "BOOKMARK_BORDER")
 /** Browse id of the songs, albums and artists related to a song. */
 internal const val RELATED_PREFIX = "MPTRt"
 
+/** What YouTube puts between the parts of a subtitle, like "35 tracks • 1 hour". */
+internal const val SUBTITLE_SEPARATOR = "•"
+
 /** `MUSIC_VIDEO_TYPE_*` of a song published as audio only. */
 internal const val VIDEO_TYPE_AUDIO = "MUSIC_VIDEO_TYPE_ATV"
 

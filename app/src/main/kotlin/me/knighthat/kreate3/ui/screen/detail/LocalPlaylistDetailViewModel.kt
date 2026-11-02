@@ -93,6 +93,10 @@ class LocalPlaylistDetailViewModel(
             songRepository.listOfPlaylist(playlistId).mapNotNull { it.toMediaItem() }
         }
 
+    /** How many songs [songs] has right now and how long they are together, in milliseconds. */
+    suspend fun totals(): Pair<Int, Long> =
+        allSongs().let { songs -> songs.size to songs.sumOf { it.mediaMetadata.durationMs ?: 0 } }
+
     /** Switches [editMode] to [mode], loading [arranged] for [CoverEditMode.REORDER]. */
     fun edit(mode: CoverEditMode) {
         if (mode == _editMode.value) return

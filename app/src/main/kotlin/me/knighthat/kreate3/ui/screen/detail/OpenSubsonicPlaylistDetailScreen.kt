@@ -19,31 +19,25 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -59,20 +53,28 @@ fun OpenSubsonicPlaylistDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
 
-    OpenSubsonicPlaylistDetailContent(
-        state = state,
-        onRetry = viewModel::load,
-        onBack = onBack,
-        onAction = rememberQueueActions {
-            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-        },
-        onSongClick = rememberSongTap(null) {
-            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-        },
-        share = if (canShare) viewModel::shareLink else null,
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val firstCovers = (state as? LiveState.Ready)?.value?.songs.orEmpty()
+    val coverModels = remember(cover, firstCovers) {
+        listOfNotNull(thumbnailModel(cover, null)).ifEmpty { firstCovers.songCovers().take(1) }
+    }
+
+    CoverTheme(coverModels) {
+        OpenSubsonicPlaylistDetailContent(
+            state = state,
+            onRetry = viewModel::load,
+            onBack = onBack,
+            onAction = rememberQueueActions {
+                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+            },
+            onSongClick = rememberSongTap(null) {
+                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+            },
+            share = if (canShare) viewModel::shareLink else null,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 /**
@@ -90,48 +92,43 @@ private fun OpenSubsonicPlaylistDetailContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val playlist = (state as? LiveState.Ready)?.value
+    val resources = LocalResources.current
+    val cover = playlist?.thumbnail
+    val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+    val songCovers = remember(playlist?.songs) { playlist?.songs.orEmpty().songCovers() }
 
-    LiveDetailScreen(
-        title = playlist?.name.orEmpty(),
+    PlaylistDetailScaffold(
+        name = playlist?.name.orEmpty(),
+        models = models,
+        songCovers = songCovers,
+        owner = null,
+        summary = playlist?.songs?.takeIf { it.isNotEmpty() }?.let { songs ->
+            resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
+        },
+        origin = Origin.OPEN_SUBSONIC,
         onBack = onBack,
-        state = state,
-        onRetry = onRetry,
+        onPlay = if (playlist?.songs?.isNotEmpty() == true) ({ onAction(QueueAction.PLAY) }) else null,
+        onShuffle = { onAction(QueueAction.SHUFFLE) },
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = {
-            if (share != null && playlist != null)
-                ShareAction(playlist.name, R.plurals.unit_playlist) { share(playlist.name) }
+        menu = { onDismiss ->
+            PlaylistMenu(
+                name = playlist?.name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { playlist?.songs?.isNotEmpty() == true },
+                share = if (share != null && playlist != null) ({ share(playlist.name) }) else null,
+            )
         },
-    ) { detail, innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = detail.thumbnail,
-                    subtitle = null,
-                    shape = MaterialTheme.shapes.medium,
-                    origin = Origin.OPEN_SUBSONIC,
-                )
-            }
-            item(key = "queue-actions") { QueueActionRow(onAction) }
-            items(detail.songs, key = { it.mediaId }) {
-                SongItem(it, onClick = { onSongClick(it) })
-            }
-            if (detail.songs.isEmpty())
-                item(key = "empty") {
-                    Text(
-                        text = stringResource(R.string.status_playlist_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    )
-                }
+    ) {
+        if (playlist == null) {
+            item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@PlaylistDetailScaffold
         }
+        items(playlist.songs, key = { it.mediaId }) {
+            SongItem(it, onClick = { onSongClick(it) })
+        }
+        if (playlist.songs.isEmpty())
+            item(key = "empty") { EmptyPlaylist() }
     }
 }
 

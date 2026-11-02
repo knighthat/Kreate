@@ -544,7 +544,21 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 ?: header.path("description").text(),
             songs = contents.items().filterIsInstance<SongItem>().map { it.song },
             continuation = continuationOf(shelf, contents),
+            summary = summaryOf(header.path("secondSubtitle")),
         )
+    }
+
+    /**
+     * How many songs and how long, the last two parts of a playlist's second subtitle: a user's
+     * playlist puts its views first, like "68 views • 35 tracks • 1 hour, 8 minutes".
+     */
+    private fun summaryOf(subtitle: JsonElement?): String? {
+        val runs = subtitle.runs()
+        val parts = runs.filterNot { it.text.isBlank() || it.text.trim() == SUBTITLE_SEPARATOR }
+        if (parts.isEmpty()) return null
+        // The separator YouTube put between them, in the page's language
+        val separator = runs.firstOrNull { it.text.trim() == SUBTITLE_SEPARATOR }?.text ?: " • "
+        return parts.takeLast(2).joinToString(separator) { it.text }
     }
 
     /** The next songs of a playlist. */

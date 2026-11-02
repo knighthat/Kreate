@@ -53,6 +53,7 @@ data class YouTubePlaylistDetail(
     val name: String,
     val thumbnail: Uri?,
     val subtitle: String?,
+    val summary: String? = null,
 )
 
 /**
@@ -102,6 +103,7 @@ class YouTubePlaylistDetailViewModel(
             name = page.playlist.name,
             thumbnail = provider.artwork(page.playlist.thumbnail, HEADER_ARTWORK),
             subtitle = page.author,
+            summary = page.summary,
         )
     }
 

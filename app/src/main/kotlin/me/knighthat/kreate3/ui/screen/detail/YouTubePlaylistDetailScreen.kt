@@ -20,34 +20,29 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 
 /** Songs from the end of the list at which the next ones are asked for. */
@@ -68,19 +63,27 @@ fun YouTubePlaylistDetailScreen(
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val hasMore by viewModel.hasMore.collectAsStateWithLifecycle()
 
-    YouTubePlaylistDetailContent(
-        state = state,
-        songs = songs,
-        hasMore = hasMore,
-        onLoadMore = viewModel::loadMore,
-        onRetry = viewModel::load,
-        onBack = onBack,
-        onAction = rememberQueueActions { viewModel.songs.value },
-        onSongClick = rememberSongTap(null) { viewModel.songs.value },
-        share = viewModel::shareLink,
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    val cover = (state as? LiveState.Ready)?.value?.thumbnail
+    val firstCovers = songs
+    val coverModels = remember(cover, firstCovers) {
+        listOfNotNull(thumbnailModel(cover, null)).ifEmpty { firstCovers.songCovers().take(1) }
+    }
+
+    CoverTheme(coverModels) {
+        YouTubePlaylistDetailContent(
+            state = state,
+            songs = songs,
+            hasMore = hasMore,
+            onLoadMore = viewModel::loadMore,
+            onRetry = viewModel::load,
+            onBack = onBack,
+            onAction = rememberQueueActions { viewModel.songs.value },
+            onSongClick = rememberSongTap(null) { viewModel.songs.value },
+            share = viewModel::shareLink,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 /**
@@ -102,56 +105,52 @@ private fun YouTubePlaylistDetailContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val playlist = (state as? LiveState.Ready)?.value
+    val cover = playlist?.thumbnail
+    val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
+    val songCovers = remember(songs) { songs.songCovers() }
 
-    LiveDetailScreen(
-        title = playlist?.name.orEmpty(),
+    PlaylistDetailScaffold(
+        name = playlist?.name.orEmpty(),
+        models = models,
+        songCovers = songCovers,
+        owner = playlist?.subtitle,
+        // Its songs come part after part, YouTube says how many and how long
+        summary = playlist?.summary,
+        origin = Origin.YOUTUBE,
         onBack = onBack,
-        state = state,
-        onRetry = onRetry,
+        onPlay = if (songs.isNotEmpty()) ({ onAction(QueueAction.PLAY) }) else null,
+        onShuffle = { onAction(QueueAction.SHUFFLE) },
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = { ShareAction(playlist?.name, R.plurals.unit_playlist, share) },
-    ) { detail, innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                DetailHeader(
-                    uri = detail.thumbnail,
-                    subtitle = detail.subtitle,
-                    shape = MaterialTheme.shapes.medium,
-                    origin = Origin.YOUTUBE,
-                )
-            }
-            item(key = "queue-actions") { QueueActionRow(onAction) }
-            itemsIndexed(songs, key = { _, it -> it.mediaId }) { index, song ->
-                if (index >= songs.size - PREFETCH_DISTANCE) LaunchedEffect(songs.size) { onLoadMore() }
-                SongItem(song, onClick = { onSongClick(song) })
-            }
-            if (songs.isEmpty() && !hasMore)
-                item(key = "empty") {
-                    Text(
-                        text = stringResource(R.string.status_playlist_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    )
-                }
-            if (hasMore)
-                item(key = "more") {
-                    LaunchedEffect(songs.size) { onLoadMore() }
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    ) { CircularProgressIndicator() }
-                }
+        menu = { onDismiss ->
+            PlaylistMenu(
+                name = playlist?.name,
+                onDismiss = onDismiss,
+                onAction = onAction.takeIf { songs.isNotEmpty() },
+                share = share,
+            )
+        },
+    ) {
+        if (playlist == null) {
+            item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
+            return@PlaylistDetailScaffold
         }
+        itemsIndexed(songs, key = { _, it -> it.mediaId }) { index, song ->
+            if (index >= songs.size - PREFETCH_DISTANCE) LaunchedEffect(songs.size) { onLoadMore() }
+            SongItem(song, onClick = { onSongClick(song) })
+        }
+        if (songs.isEmpty() && !hasMore)
+            item(key = "empty") { EmptyPlaylist() }
+        if (hasMore)
+            item(key = "more") {
+                LaunchedEffect(songs.size) { onLoadMore() }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                ) { CircularProgressIndicator() }
+            }
     }
 }
 
@@ -163,7 +162,8 @@ private fun YouTubePlaylistDetailPreview() = PreviewTheme {
             YouTubePlaylistDetail(
                 name = "Road trip",
                 thumbnail = null,
-                subtitle = "Neon Coast · 42 songs",
+                subtitle = "Neon Coast",
+                summary = "42 songs • 2 hours",
             )
         ),
         songs = previewSongs(Origin.YOUTUBE),

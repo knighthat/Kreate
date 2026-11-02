@@ -246,6 +246,7 @@ class YouTubeParserTest {
             parser.playlistPage("OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs", fixture("pl_top"))!!
 
         assertEquals("Top songs", page.playlist.name)
+        assertEquals("150 songs • 47+ hours", page.summary)
         assertEquals("OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs", page.playlist.remoteId)
         assertEquals(5, page.songs.size)
         assertNotNull(page.continuation)

@@ -143,6 +143,8 @@ data class YouTubeArtistPage(
 
 /**
  * @property author who made the playlist, like "YouTube Music"
+ * @property summary how many songs and how long, as YouTube words it in the page's language, like
+ * "150 songs • 47+ hours", `null` when the page doesn't say
  * @property songs the first songs, in the playlist's order
  * @property continuation gives the next songs to [YouTubeProvider.playlistSongs], `null` when
  * [songs] are all of them
@@ -153,6 +155,7 @@ data class YouTubePlaylistPage(
     val description: String?,
     val songs: List<RemoteSong>,
     val continuation: String?,
+    val summary: String? = null,
 )
 
 /**

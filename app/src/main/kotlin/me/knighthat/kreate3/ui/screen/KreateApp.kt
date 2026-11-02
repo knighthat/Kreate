@@ -551,9 +551,9 @@ fun KreateApp(
                             }
                             entry<LocalPlaylist> {
                                 LocalPlaylistDetailScreen(
-                                    topLevel::pop,
-                                    paddingModifier,
-                                    contentPadding,
+                                    onBack = topLevel::pop,
+                                    modifier = edgeModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -593,9 +593,9 @@ fun KreateApp(
                             }
                             entry<OpenSubsonicPlaylist> {
                                 OpenSubsonicPlaylistDetailScreen(
-                                    topLevel::pop,
-                                    paddingModifier,
-                                    contentPadding,
+                                    onBack = topLevel::pop,
+                                    modifier = edgeModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -655,9 +655,9 @@ fun KreateApp(
                             }
                             entry<YouTubePlaylist> {
                                 YouTubePlaylistDetailScreen(
-                                    topLevel::pop,
-                                    paddingModifier,
-                                    contentPadding,
+                                    onBack = topLevel::pop,
+                                    modifier = edgeModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }

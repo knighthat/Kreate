@@ -103,7 +103,16 @@ ui/screen/
   it once scrolled under. `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle / Play next / Add to
   queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
   `albumArtistRoute`: the credited artist the album names, else the first song's first. Used by the
-  three album screens; tracks numbered by position. The framed-cover design is in `git stash`),
+  three album screens; tracks numbered by position.),
+  `PlaylistDetail.kt` (`PlaylistDetailScaffold`: the playlist's picture, else a 2 × 2 grid of its
+  song covers (`songCovers`, `CoverGrid`), the first alone with fewer, a playlist icon with none,
+  framed on a blurred copy that fades into the page; origin badge, name, owner (YouTube author),
+  count · length (YouTube's own "35 tracks • 1 hour" from the page), Play + Shuffle buttons; bar
+  see-through, then the blurred cover under a scrim with name + count · length once the name scrolls
+  under; pages wrapped in `CoverTheme` (picture, else first song cover); the app's playlist counts
+  every song again when its paging refreshes (`totals`). `PlaylistMenu`: Play next / Add to queue /
+  Share buttons, move / remove switches as rows for the app's playlists. `EmptyPlaylist`. Used by
+  the three playlist screens),
   `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a
   `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and
@@ -112,7 +121,8 @@ ui/screen/
   reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
   next / Add to queue / Details / Statistics rows; used by all three artist screens),
   `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as content
-  padding), `DetailHeader.kt` (origin/explicit badges above the cover; `AlbumTrack` (track number in
+  padding), `DetailHeader.kt` (`DetailHeader`, unused since the redesigns; `DetailDescription`;
+  `AlbumTrack` (track number in
   the cover's place), `DiscHeader`, `Resources.albumSummary`, `ArtistLine`; `DetailDescription`
   takes colors), `LiveDetail.kt` (
   `LiveDetailViewModel` (state re-filtered by `dislikedIds` through each subclass's
