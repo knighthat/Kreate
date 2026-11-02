@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.provider.opensubsonic
 
 import android.net.Uri
+import android.util.Log
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -50,6 +51,8 @@ private fun JsonObject.string(name: String): String? = get(name)?.jsonPrimitive?
 /** Line breaks of HTML: `<br>` and the end of a paragraph. */
 private val HTML_BREAK = Regex("""(?i)<br\s*/?>|</p>""")
 private val HTML_TAG = Regex("""<[^>]*>""")
+
+private const val TAG = "OpenSubsonicMappers"
 private val HTML_NUMBER = Regex("""&#(\d+);""")
 private val BLANK_LINES = Regex("""\n{3,}""")
 
@@ -81,16 +84,21 @@ internal fun htmlToText(html: String): String? =
         .ifEmpty { null }
 
 /** When the item was starred, `null` when it isn't or the date can't be read. */
+/** The item's id, `null` (logged) when the server sent none: the item is then left out. */
+private fun JsonObject.idOrSkip(kind: String): String? =
+    string("id") ?: null.also { Log.w(TAG, "Left out a $kind the server sent without an id") }
+
 private fun JsonObject.starred(): Instant? =
     string("starred")?.let { runCatching { Instant.parse(it) }.getOrNull() }
 
-internal fun JsonObject.toAlbum(cover: (String) -> Uri?): RemoteItem<Album> {
+internal fun JsonObject.toAlbum(cover: (String) -> Uri?): RemoteItem<Album>? {
+    val id = idOrSkip("album") ?: return null
     // OpenSubsonic lists every artist, Subsonic only has one name
     val artists = array("artists")?.mapNotNull { it.jsonObject.string("name") }?.ifEmpty { null }
         ?: listOfNotNull(string("artist"))
 
     val album = Album(
-        id = string("id")!!,
+        id = id,
         origin = Origin.OPEN_SUBSONIC,
         name = string("name") ?: string("title"),
         thumbnail = string("coverArt")?.let(cover),
@@ -104,7 +112,8 @@ internal fun JsonObject.toAlbum(cover: (String) -> Uri?): RemoteItem<Album> {
 /**
  * A song, `Child` in the API. Its album and artists only carry what the song knows about them.
  */
-internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
+internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong? {
+    val id = idOrSkip("song") ?: return null
     val artists = array("artists")
         ?.mapNotNull { it.jsonObject.toArtistOrNull() }
         ?.ifEmpty { null }
@@ -118,7 +127,7 @@ internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
     val albumId = string("albumId")
 
     val song = Song(
-        id = string("id")!!,
+        id = id,
         origin = Origin.OPEN_SUBSONIC,
         name = string("title"),
         thumbnail = string("coverArt")?.let(cover),
@@ -150,11 +159,12 @@ internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
  * when the song plays. `null` when the file has no ReplayGain tags or the server is plain
  * Subsonic.
  */
-internal fun JsonObject.toSongFormat(): SongFormat {
+internal fun JsonObject.toSongFormat(): SongFormat? {
+    val songId = idOrSkip("song format") ?: return null
     val replayGain = get("replayGain") as? JsonObject
     val adjustment = (replayGain?.number("trackGain") ?: replayGain?.number("albumGain"))
     return SongFormat(
-        songId = string("id")!!,
+        songId = songId,
         tag = RAW_FORMAT,
         mimetype = string("contentType") ?: "audio/*",
         // In kbps
@@ -200,9 +210,9 @@ private fun JsonObject.explicit(): Boolean? = when (string("explicitStatus")) {
     else -> null
 }
 
-internal fun JsonObject.toArtist(cover: (String) -> Uri?): RemoteItem<Artist> {
+internal fun JsonObject.toArtist(cover: (String) -> Uri?): RemoteItem<Artist>? {
     val artist = Artist(
-        id = string("id")!!,
+        id = idOrSkip("artist") ?: return null,
         origin = Origin.OPEN_SUBSONIC,
         name = string("name"),
         thumbnail = string("coverArt")?.let(cover),
@@ -210,11 +220,11 @@ internal fun JsonObject.toArtist(cover: (String) -> Uri?): RemoteItem<Artist> {
     return RemoteItem(artist, starred())
 }
 
-internal fun JsonObject.toPlaylist(cover: (String) -> Uri?): UserPlaylist =
+internal fun JsonObject.toPlaylist(cover: (String) -> Uri?): UserPlaylist? =
     UserPlaylist(
         origin = Origin.OPEN_SUBSONIC,
         // A playlist always has a name, the server may still send none
         name = string("name").orEmpty(),
         thumbnail = string("coverArt")?.let(cover),
-        remoteId = string("id")!!,
+        remoteId = idOrSkip("playlist") ?: return null,
     )

@@ -186,7 +186,7 @@ class OpenSubsonicProvider internal constructor(
                 "size" to PAGE_SIZE.toString(),
                 "offset" to albums.size.toString(),
             )["albumList2"]?.jsonObject?.array("album").orEmpty()
-            page.mapTo(albums) { it.jsonObject.toAlbum(::coverUri) }
+            page.mapNotNullTo(albums) { it.jsonObject.toAlbum(::coverUri) }
         } while (page.size == PAGE_SIZE)
 
         return albums
@@ -204,7 +204,7 @@ class OpenSubsonicProvider internal constructor(
 
         return call("getArtists")["artists"]?.jsonObject?.array("index").orEmpty()
             .flatMap { it.jsonObject.array("artist").orEmpty() }
-            .map { it.jsonObject.toArtist(::coverUri) }
+            .mapNotNull { it.jsonObject.toArtist(::coverUri) }
             .filter { !starredOnly || it.starredAt != null }
     }
 
@@ -218,7 +218,7 @@ class OpenSubsonicProvider internal constructor(
         serverUrl ?: return null
 
         return call("getPlaylists")["playlists"]?.jsonObject?.array("playlist").orEmpty()
-            .map { it.jsonObject.toPlaylist(::coverUri) }
+            .mapNotNull { it.jsonObject.toPlaylist(::coverUri) }
     }
 
     /**
@@ -250,13 +250,16 @@ class OpenSubsonicProvider internal constructor(
         )["searchResult3"]?.jsonObject ?: throw ServerException(ServerCheck.NotSubsonic)
 
         // A server may still list a kind it was asked none of
+        val listedSongs = found.array("song").orEmpty().take(songs)
+        val listedAlbums = found.array("album").orEmpty().take(albums)
+        val listedArtists = found.array("artist").orEmpty().take(artists)
         return OpenSubsonicSearch(
-            songs = found.array("song").orEmpty().take(songs)
-                .map { it.jsonObject.toSong(::coverUri) },
-            albums = found.array("album").orEmpty().take(albums)
-                .map { it.jsonObject.toAlbum(::coverUri) },
-            artists = found.array("artist").orEmpty().take(artists)
-                .map { it.jsonObject.toArtist(::coverUri) },
+            songs = listedSongs.mapNotNull { it.jsonObject.toSong(::coverUri) },
+            albums = listedAlbums.mapNotNull { it.jsonObject.toAlbum(::coverUri) },
+            artists = listedArtists.mapNotNull { it.jsonObject.toArtist(::coverUri) },
+            songsListed = listedSongs.size,
+            albumsListed = listedAlbums.size,
+            artistsListed = listedArtists.size,
         )
     }
 
@@ -297,8 +300,9 @@ class OpenSubsonicProvider internal constructor(
 
         val album = call("getAlbum", "id" to albumId)["album"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return album.toAlbum(::coverUri) to album.array("song").orEmpty()
-            .map { it.jsonObject.toSong(::coverUri) }
+        return (album.toAlbum(::coverUri)
+            ?: throw ServerException(ServerCheck.NotSubsonic)) to album.array("song").orEmpty()
+            .mapNotNull { it.jsonObject.toSong(::coverUri) }
     }
 
     /**
@@ -334,8 +338,9 @@ class OpenSubsonicProvider internal constructor(
 
         val artist = call("getArtist", "id" to artistId)["artist"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return artist.toArtist(::coverUri) to artist.array("album").orEmpty()
-            .map { it.jsonObject.toAlbum(::coverUri) }
+        return (artist.toArtist(::coverUri)
+            ?: throw ServerException(ServerCheck.NotSubsonic)) to artist.array("album").orEmpty()
+            .mapNotNull { it.jsonObject.toAlbum(::coverUri) }
     }
 
     /**
@@ -357,7 +362,7 @@ class OpenSubsonicProvider internal constructor(
         val top = try {
             val found = call("getTopSongs", "artist" to name, "count" to count.toString())
             (found["topSongs"] as? JsonObject)?.array("song").orEmpty()
-                .map { it.jsonObject.toSong(::coverUri) }
+                .mapNotNull { it.jsonObject.toSong(::coverUri) }
                 .theirs()
         } catch (e: ServerException) {
             if (e.check !is ServerCheck.Rejected) throw e
@@ -413,8 +418,9 @@ class OpenSubsonicProvider internal constructor(
 
         val playlist = call("getPlaylist", "id" to playlistId)["playlist"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return playlist.toPlaylist(::coverUri) to playlist.array("entry").orEmpty()
-            .map { it.jsonObject.toSong(::coverUri) }
+        return (playlist.toPlaylist(::coverUri)
+            ?: throw ServerException(ServerCheck.NotSubsonic)) to playlist.array("entry").orEmpty()
+            .mapNotNull { it.jsonObject.toSong(::coverUri) }
     }
 
     /**
@@ -428,7 +434,7 @@ class OpenSubsonicProvider internal constructor(
 
         val starred = call("getStarred2")["starred2"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return starred.array("song").orEmpty().map { it.jsonObject.toSong(::coverUri) }
+        return starred.array("song").orEmpty().mapNotNull { it.jsonObject.toSong(::coverUri) }
     }
 
     /**
@@ -481,7 +487,7 @@ class OpenSubsonicProvider internal constructor(
         // A server with nothing similar may leave the object out
         val response = call("getSimilarSongs2", "id" to songId, "count" to count.toString())
         val similar = response["similarSongs2"]?.jsonObject ?: return emptyList()
-        return similar.array("song").orEmpty().map { it.jsonObject.toSong(::coverUri) }
+        return similar.array("song").orEmpty().mapNotNull { it.jsonObject.toSong(::coverUri) }
     }
 
     /**

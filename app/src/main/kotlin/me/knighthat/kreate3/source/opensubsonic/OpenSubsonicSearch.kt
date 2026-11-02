@@ -98,34 +98,43 @@ private class OpenSubsonicSearchPagingSource(
         val offset = params.key ?: 0
         val size = params.loadSize
 
-        val items = try {
+        val found = try {
             if (tab == Tab.PLAYLISTS)
-                playlists()
+                playlists().let { Found(it, it.size) }
             else
                 page(offset, size)
         } catch (e: ServerException) {
             return LoadResult.Error(e)
         }
 
-        // A short page is the last, and the playlists come in one
-        val next = if (tab == Tab.PLAYLISTS || items.size < size) null else offset + items.size
-        return LoadResult.Page(items, prevKey = null, nextKey = next)
+        // A short page is the last, counted as the server sent it: an item left out without an
+        // id doesn't end the search. The playlists come in one.
+        val next =
+            if (tab == Tab.PLAYLISTS || found.listed < size) null else offset + found.listed
+        return LoadResult.Page(found.items, prevKey = null, nextKey = next)
     }
 
-    private suspend fun page(offset: Int, size: Int): List<MediaItem> {
+    /**
+     * @property listed how many items the server sent, more than [items] when some had no id
+     */
+    private class Found(val items: List<MediaItem>, val listed: Int)
+
+    private suspend fun page(offset: Int, size: Int): Found {
         val found = provider.searchLibrary(
             query,
             songs = if (tab == Tab.SONGS) size else 0,
             albums = if (tab == Tab.ALBUMS) size else 0,
             artists = if (tab == Tab.ARTISTS) size else 0,
             offset = offset,
-        ) ?: return emptyList()
+        ) ?: return Found(emptyList(), 0)
 
         return when (tab) {
-            Tab.SONGS -> found.songs.map { it.toLiveMediaItem() }
-            Tab.ALBUMS -> found.albums.map { it.item.toLiveMediaItem() }
-            Tab.ARTISTS -> found.artists.map { it.item.toLiveMediaItem() }
-            Tab.PLAYLISTS -> emptyList()
+            Tab.SONGS -> Found(found.songs.map { it.toLiveMediaItem() }, found.songsListed)
+            Tab.ALBUMS -> Found(found.albums.map { it.item.toLiveMediaItem() }, found.albumsListed)
+            Tab.ARTISTS ->
+                Found(found.artists.map { it.item.toLiveMediaItem() }, found.artistsListed)
+
+            Tab.PLAYLISTS -> Found(emptyList(), 0)
         }
     }
 

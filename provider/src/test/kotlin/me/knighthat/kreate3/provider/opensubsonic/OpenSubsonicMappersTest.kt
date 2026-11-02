@@ -48,7 +48,7 @@ class OpenSubsonicMappersTest {
             """{"id":"a1","name":"Album","artist":"One & Two","year":2001,"coverArt":"al-1",
                 "artists":[{"id":"x","name":"One"},{"id":"y","name":"Two"}],
                 "starred":"2024-05-01T10:00:00Z","explicitStatus":"clean"}"""
-        ).toAlbum(cover)
+        ).toAlbum(cover)!!
 
         assertEquals(
             Album(
@@ -69,14 +69,14 @@ class OpenSubsonicMappersTest {
     @Test
     fun aSubsonicAlbumHasOneArtistName() {
         val album =
-            json("""{"id":"a1","name":"Album","artist":"Solo","artists":[]}""").toAlbum(cover).item
+            json("""{"id":"a1","name":"Album","artist":"Solo","artists":[]}""").toAlbum(cover)!!.item
 
         assertEquals(listOf("Solo"), album.artists)
     }
 
     @Test
     fun anAlbumWithoutArtistOrYearHasNone() {
-        val album = json("""{"id":"a1","title":"From title","year":0}""").toAlbum(cover).item
+        val album = json("""{"id":"a1","title":"From title","year":0}""").toAlbum(cover)!!.item
 
         assertEquals("From title", album.name)
         assertNull(album.artists)
@@ -87,7 +87,7 @@ class OpenSubsonicMappersTest {
 
     @Test
     fun anUnreadableStarIsNoStar() {
-        assertNull(json("""{"id":"a1","starred":"yesterday"}""").toAlbum(cover).starredAt)
+        assertNull(json("""{"id":"a1","starred":"yesterday"}""").toAlbum(cover)!!.starredAt)
     }
     //</editor-fold>
 
@@ -99,7 +99,7 @@ class OpenSubsonicMappersTest {
                 "artist":"One","displayAlbumArtist":"Various","year":1999,"coverArt":"c",
                 "artists":[{"id":"x","name":"One"},{"id":"y","name":"Two"},{"name":"No id"}],
                 "explicitStatus":"explicit","starred":"2024-05-01T10:00:00Z"}"""
-        ).toSong(cover)
+        ).toSong(cover)!!
 
         assertEquals("s1", song.song.id)
         assertEquals("Song", song.song.name)
@@ -127,7 +127,7 @@ class OpenSubsonicMappersTest {
     fun aSubsonicSongHasOneArtist() {
         val song =
             json("""{"id":"s1","artistId":"x","artist":"One","album":"Album","albumId":"a1"}""")
-                .toSong(cover)
+                .toSong(cover)!!
 
         assertEquals(listOf(Artist("x", Origin.OPEN_SUBSONIC, "One")), song.artists)
         assertEquals(listOf("One"), song.album?.artists)
@@ -135,7 +135,7 @@ class OpenSubsonicMappersTest {
 
     @Test
     fun aSongWithoutAlbumOrArtistHasNeither() {
-        val song = json("""{"id":"s1","artist":"Name without id","track":0}""").toSong(cover)
+        val song = json("""{"id":"s1","artist":"Name without id","track":0}""").toSong(cover)!!
 
         assertNull(song.album)
         assertNull(song.song.albumPosition)
@@ -146,7 +146,7 @@ class OpenSubsonicMappersTest {
     @Test
     fun anArtistKeepsItsStar() {
         val (artist, starredAt) = json("""{"id":"r1","name":"Abba","coverArt":"ar-1","starred":"2023-01-02T03:04:05Z"}""")
-            .toArtist(cover)
+            .toArtist(cover)!!
 
         assertEquals(Artist("r1", Origin.OPEN_SUBSONIC, "Abba"), artist)
         assertEquals(Instant.parse("2023-01-02T03:04:05Z"), starredAt)
@@ -159,7 +159,7 @@ class OpenSubsonicMappersTest {
         val format = json(
             """{"id":"s1","contentType":"audio/flac","bitRate":1012,"size":31415926,
                 "replayGain":{"trackGain":-7.5,"albumGain":-6,"trackPeak":0.98}}"""
-        ).toSongFormat()
+        ).toSongFormat()!!
 
         // The server's ReplayGain as given
         assertEquals(
@@ -170,25 +170,36 @@ class OpenSubsonicMappersTest {
 
     @Test
     fun formatFallsBackToTheAlbumGain() {
-        val format = json("""{"id":"s1","replayGain":{"albumGain":-2}}""").toSongFormat()
+        val format = json("""{"id":"s1","replayGain":{"albumGain":-2}}""").toSongFormat()!!
         assertEquals(-2f, format.gain!!, 0f)
     }
 
     @Test
     fun formatWithoutReplayGainHasNoGain() {
-        val format = json("""{"id":"s1","replayGain":{}}""").toSongFormat()
+        val format = json("""{"id":"s1","replayGain":{}}""").toSongFormat()!!
         assertEquals(SongFormat("s1", RAW_FORMAT, "audio/*"), format)
-        assertNull(json("""{"id":"s1","bitRate":0,"size":0}""").toSongFormat().gain)
+        assertNull(json("""{"id":"s1","bitRate":0,"size":0}""").toSongFormat()!!.gain)
     }
     //</editor-fold>
 
     @Test
     fun aPlaylistAlwaysHasAName() {
-        val playlist = json("""{"id":"p1"}""").toPlaylist(cover)
+        val playlist = json("""{"id":"p1"}""").toPlaylist(cover)!!
 
         assertEquals("", playlist.name)
         assertEquals("p1", playlist.remoteId)
         assertEquals(0L, playlist.id)
+    }
+
+    @Test
+    fun anItemWithoutAnIdIsLeftOut() {
+        val noId = json("""{"name":"No id","title":"No id"}""")
+
+        assertNull(noId.toAlbum(cover))
+        assertNull(noId.toSong(cover))
+        assertNull(noId.toArtist(cover))
+        assertNull(noId.toPlaylist(cover))
+        assertNull(noId.toSongFormat())
     }
 
     @Test

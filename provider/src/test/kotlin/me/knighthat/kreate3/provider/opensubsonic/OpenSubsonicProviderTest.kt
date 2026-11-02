@@ -606,6 +606,18 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun aSearchCountsTheSongsLeftOutWithoutAnId() = runBlocking {
+        val found = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","searchResult3":{
+                "song":[{"id":"s1","title":"Waterloo"},{"title":"No id"},{"id":"s3","title":"SOS"}]}}}"""
+        }.searchLibrary("abba", songs = 3, albums = 0, artists = 0)!!
+
+        assertEquals(listOf("s1", "s3"), found.songs.map { it.song.id })
+        // Three were listed, so a page of three isn't taken for the last one
+        assertEquals(3, found.songsListed)
+    }
+
+    @Test
     fun aBlankSearchAsksNothing() = runBlocking {
         assertEquals(SearchResults.EMPTY, provider().search("  "))
         assertTrue(requests.isEmpty())

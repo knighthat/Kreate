@@ -25,9 +25,16 @@ import me.knighthat.kreate3.database.repository.RemoteSong
 
 /**
  * What a search of the server's library found, each kind in the server's order, best match first.
+ *
+ * @property songsListed how many songs the server sent, the ones left out without an id too: a
+ * page shorter than asked is the last, not one with fewer [songs]. Like [albumsListed] and
+ * [artistsListed].
  */
 data class OpenSubsonicSearch(
     val songs: List<RemoteSong>,
     val albums: List<RemoteItem<Album>>,
     val artists: List<RemoteItem<Artist>>,
+    val songsListed: Int = songs.size,
+    val albumsListed: Int = albums.size,
+    val artistsListed: Int = artists.size,
 )
