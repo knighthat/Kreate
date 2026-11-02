@@ -21,6 +21,9 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Release builds are minified and resource-shrunk by R8; obfuscation is off (`-dontobfuscate`).
 - Enum values use SCREAMING_SNAKE_CASE (`NORMAL`, `AUTOMATIC_DYNAMIC`), not PascalCase.
 - In a class or object, declare properties before functions.
+- An `if` with an `else` puts each branch body on its own line, indented under its `if`/`else`
+  (`else if` too); only a one-line `if (a) b else c` stays on one line. When any branch body spans
+  more than one line, every branch gets braces (`} else {`).
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.

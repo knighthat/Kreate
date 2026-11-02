@@ -32,10 +32,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import me.knighthat.kreate3.playback.SleepTimerCommands.RESTART
-import me.knighthat.kreate3.playback.SleepTimerCommands.START
-import me.knighthat.kreate3.playback.SleepTimerCommands.restartExtras
-import me.knighthat.kreate3.playback.SleepTimerCommands.startArgs
 import me.knighthat.kreate3.preferences.Preferences
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -163,8 +159,10 @@ internal class SleepTimerRunner(
             val ended = player.playbackState == Player.STATE_ENDED ||
                     !player.isPlaying && player.currentMediaItem?.mediaId == endedSong
             if (ended)
-                if (player.hasNextMediaItem()) player.seekToNextMediaItem()
-                else player.seekToDefaultPosition()
+                if (player.hasNextMediaItem())
+                    player.seekToNextMediaItem()
+                else
+                    player.seekToDefaultPosition()
 
             val timer = duration?.let(SleepTimer::after) ?: SleepTimer.EndOfSong()
             // Android 16 gives audio focus to an app in the background only while its service

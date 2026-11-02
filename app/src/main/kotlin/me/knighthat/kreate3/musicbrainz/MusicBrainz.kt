@@ -415,8 +415,10 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
 
         /** [text] as one phrase, or as words matched one by one. */
         private fun terms(text: String, phrase: Boolean) =
-            if (phrase) "\"${text.replace("\\", "\\\\").replace("\"", "\\\"")}\""
-            else "(${text.replace(LUCENE_SYNTAX) { "\\" + it.value }})"
+            if (phrase)
+                "\"${text.replace("\\", "\\\\").replace("\"", "\\\"")}\""
+            else
+                "(${text.replace(LUCENE_SYNTAX) { "\\" + it.value }})"
 
         private fun artistQuery(name: String, phrase: Boolean): String =
             "artist:${terms(name.trim(), phrase)}"

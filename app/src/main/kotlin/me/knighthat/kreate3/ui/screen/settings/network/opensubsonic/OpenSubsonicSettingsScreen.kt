@@ -495,8 +495,10 @@ private fun OpenSubsonicSettingsContent(
             title = stringResource(R.string.setting_title_direct_play),
             // Without the cache every song streams directly, the setting waits for it
             summary = stringResource(
-                if (songCacheOff) R.string.setting_description_direct_play_status_cache_off
-                else R.string.setting_description_direct_play,
+                if (songCacheOff)
+                    R.string.setting_description_direct_play_status_cache_off
+                else
+                    R.string.setting_description_direct_play,
                 server
             ),
             checked = directPlay,

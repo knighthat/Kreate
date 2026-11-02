@@ -152,9 +152,9 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         // The song leaves or rejoins the lists, a like only changes its button
         if (to != Reaction.DISLIKED) return@launch
 
-        val text = if (removing)
+        val text = if (removing) {
             resources.getString(R.string.snackbar_removed_from_dislike)
-        else {
+        } else {
             val title = item.songTitle()?.let { resources.getString(R.string.quoted, it) }
                 ?: resources.getString(R.string.snackbar_this_song)
             resources.getString(R.string.snackbar_disliked, title)
@@ -164,8 +164,10 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
                 // The dislike back, it leaves the queue again
                 if (removing) playback.drop(songId)
                 save(
-                    if (removing) R.string.snackbar_change_dislike_song
-                    else R.string.snackbar_change_remove_dislike
+                    if (removing)
+                        R.string.snackbar_change_dislike_song
+                    else
+                        R.string.snackbar_change_remove_dislike
                 ) { before }
             }
         })

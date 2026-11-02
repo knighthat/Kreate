@@ -218,8 +218,10 @@ private fun DownloadedContent(
                 item(key = "empty") {
                     Text(
                         stringResource(
-                            if (filtered) R.string.screen_downloaded_status_no_matches
-                            else R.string.screen_downloaded_status_nothing_downloaded
+                            if (filtered)
+                                R.string.screen_downloaded_status_no_matches
+                            else
+                                R.string.screen_downloaded_status_nothing_downloaded
                         ),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -299,8 +301,10 @@ private fun DeleteAllDownloadsDialog(
     text = {
         Text(
             stringResource(
-                if (filtered) R.string.dialog_body_delete_all_downloads_shown
-                else R.string.dialog_body_delete_all_downloads
+                if (filtered)
+                    R.string.dialog_body_delete_all_downloads_shown
+                else
+                    R.string.dialog_body_delete_all_downloads
             )
         )
     },
@@ -342,13 +346,17 @@ private fun DownloadedSample(storage: StorageUse) {
         // A disliked song shows only with its toggle on, marked by its badge
         val disliked = index == 2
         DownloadedRow(
-            if (disliked) previewItem(
-                "A disliked song",
-                "Artist · Album",
-                origin = Origin.OPEN_SUBSONIC,
-                mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
-                disliked = true,
-            ) else item,
+            if (disliked) {
+                previewItem(
+                    "A disliked song",
+                    "Artist · Album",
+                    origin = Origin.OPEN_SUBSONIC,
+                    mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
+                    disliked = true,
+                )
+            } else {
+                item
+            },
             files[index % files.size],
             disliked,
         )

@@ -96,8 +96,10 @@ class ArtistDetailsViewModel(
     fun load() {
         val id = picked
         fetch {
-            if (id != null) musicBrainz.artist(id)
-            else musicBrainz.identifyArtist(name)?.let { musicBrainz.artist(it.id) }
+            if (id != null)
+                musicBrainz.artist(id)
+            else
+                musicBrainz.identifyArtist(name)?.let { musicBrainz.artist(it.id) }
         }
     }
 
@@ -150,8 +152,10 @@ class ArtistDetailsViewModel(
 
     private fun failure(e: Exception): String {
         val musicBrainz = context.getString(R.string.source_musicbrainz)
-        return if (e is IOException) context.getString(R.string.error_unreachable, musicBrainz)
-        else context.getString(R.string.error_artist_details, musicBrainz)
+        return if (e is IOException)
+            context.getString(R.string.error_unreachable, musicBrainz)
+        else
+            context.getString(R.string.error_artist_details, musicBrainz)
     }
 
     private companion object {

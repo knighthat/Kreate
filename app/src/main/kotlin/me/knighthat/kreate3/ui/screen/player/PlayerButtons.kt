@@ -156,8 +156,10 @@ private fun SleepTimerButton(controller: PlaybackController) = Box {
         SLEEP_TIMER_MINUTES.forEach { minutes ->
             // A running timer counts down, no row stays its match
             SleepTimerItem(
-                if (minutes == 60) pluralStringResource(R.plurals.hour, 1, 1)
-                else pluralStringResource(R.plurals.minute, minutes, minutes),
+                if (minutes == 60)
+                    pluralStringResource(R.plurals.hour, 1, 1)
+                else
+                    pluralStringResource(R.plurals.minute, minutes, minutes),
                 isChecked = false,
             ) {
                 open = false
@@ -226,8 +228,10 @@ private fun SleepTimerControls(timer: SleepTimer, controller: PlaybackController
             Text(removeStep.buttonLabel(add = false))
         }
         val toggleDescription =
-            if (timer.isPaused) stringResource(R.string.semantic_resume_the_sleep_timer)
-            else stringResource(R.string.semantic_pause_the_sleep_timer)
+            if (timer.isPaused)
+                stringResource(R.string.semantic_resume_the_sleep_timer)
+            else
+                stringResource(R.string.semantic_pause_the_sleep_timer)
         Tooltip(toggleDescription) {
             IconButton(onClick = { controller.changeSleepTimer(SleepTimerAction.TOGGLE_PAUSE) }) {
                 Icon(
@@ -254,13 +258,14 @@ private fun SleepTimerItem(label: String, isChecked: Boolean, onClick: () -> Uni
         text = { Text(label) },
         // Room for the check on every row, the labels line up
         leadingIcon = {
-            if (isChecked)
+            if (isChecked) {
                 Icon(
                     painterResource(R.drawable.check),
                     contentDescription = stringResource(R.string.semantic_set)
                 )
-            else
+            } else {
                 Spacer(Modifier.size(24.dp))
+            }
         },
         onClick = onClick,
     )

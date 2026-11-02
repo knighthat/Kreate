@@ -43,7 +43,8 @@ internal suspend fun Context.streamQuality(
             if (youTube.isSignedIn())
                 Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM to
                         Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM
-            else Preferences.YOUTUBE_QUALITY_WIFI to Preferences.YOUTUBE_QUALITY_MOBILE
+            else
+                Preferences.YOUTUBE_QUALITY_WIFI to Preferences.YOUTUBE_QUALITY_MOBILE
 
         Origin.OPEN_SUBSONIC ->
             Preferences.OPEN_SUBSONIC_QUALITY_WIFI to Preferences.OPEN_SUBSONIC_QUALITY_MOBILE

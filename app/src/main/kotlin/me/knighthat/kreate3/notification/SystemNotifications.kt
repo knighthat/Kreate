@@ -58,7 +58,8 @@ internal fun Context.notificationBuilder(channel: AppChannel): NotificationCompa
         .setPriority(
             if (channel.importance >= NotificationManagerCompat.IMPORTANCE_DEFAULT)
                 NotificationCompat.PRIORITY_DEFAULT
-            else NotificationCompat.PRIORITY_LOW
+            else
+                NotificationCompat.PRIORITY_LOW
         )
         .setSilent(channel.isSilent)
 }

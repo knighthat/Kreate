@@ -26,5 +26,7 @@ import me.knighthat.kreate3.model.Origin
  * enum's, never the user's input.
  */
 internal fun originFilter(origins: Set<Origin>): String =
-    if (origins.isEmpty()) ""
-    else origins.joinToString(prefix = "AND origin IN (", postfix = ")") { "'${it.name}'" }
+    if (origins.isEmpty())
+        ""
+    else
+        origins.joinToString(prefix = "AND origin IN (", postfix = ")") { "'${it.name}'" }

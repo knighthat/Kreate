@@ -93,8 +93,10 @@ class YouTubeDetailViewModelTest {
         UserSongRepository::class.java.classLoader,
         arrayOf(UserSongRepository::class.java),
     ) { _, method, _ ->
-        if (method.name == "dislikedIds") disliked
-        else throw UnsupportedOperationException(method.name)
+        if (method.name == "dislikedIds")
+            disliked
+        else
+            throw UnsupportedOperationException(method.name)
     } as UserSongRepository
 
     private fun provider(

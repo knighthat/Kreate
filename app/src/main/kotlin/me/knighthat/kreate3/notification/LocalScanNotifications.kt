@@ -70,8 +70,10 @@ class LocalScanNotifications(private val context: Context) {
     fun measuring(measured: Int, total: Int) {
         val now = SystemClock.elapsedRealtime()
         // The songs that failed last time are tried again, their old notifications go
-        if (measuringShownAt == 0L) cancelFailures()
-        else if (now - measuringShownAt < PROGRESS_INTERVAL_MS) return
+        if (measuringShownAt == 0L)
+            cancelFailures()
+        else if (now - measuringShownAt < PROGRESS_INTERVAL_MS)
+            return
         measuringShownAt = now
 
         context.notify(
@@ -126,16 +128,18 @@ class LocalScanNotifications(private val context: Context) {
             summary
                 // The header of the group, the only text of the summary that shows from Android 7 on
                 .setSubText(
-                    if (shown.size == failed.size)
+                    if (shown.size == failed.size) {
                         context.getString(
                             R.string.notification_local_scan_subtitle_measured,
                             analyzed,
                             total
                         )
-                    else context.getString(
-                        R.string.notification_local_scan_subtitle_failures_listed,
-                        analyzed, total, shown.size, failed.size,
-                    )
+                    } else {
+                        context.getString(
+                            R.string.notification_local_scan_subtitle_failures_listed,
+                            analyzed, total, shown.size, failed.size,
+                        )
+                    }
                 )
                 .setGroup(FAILED_GROUP)
                 .setGroupSummary(true)

@@ -53,7 +53,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import me.knighthat.kreate3.provider.youtube.PoTokenWebView.Companion.create
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
@@ -323,8 +322,10 @@ internal class PoTokenWebView private constructor(
         closed = true
         scope.cancel()
         // The page calls back on another thread, a WebView is only touched on the main one
-        if (Looper.myLooper() == Looper.getMainLooper()) destroy()
-        else Handler(Looper.getMainLooper()).post { destroy() }
+        if (Looper.myLooper() == Looper.getMainLooper())
+            destroy()
+        else
+            Handler(Looper.getMainLooper()).post { destroy() }
     }
 
     @MainThread

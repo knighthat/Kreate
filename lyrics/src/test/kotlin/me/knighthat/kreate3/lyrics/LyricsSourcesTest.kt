@@ -146,8 +146,10 @@ class LyricsSourcesTest {
     fun lyricsPlusMovesOnToTheNextMirror() = runBlocking {
         val source = LyricsPlusSource(
             client { request ->
-                if (request.url.host == "down.test") HttpStatusCode.BadGateway to ""
-                else HttpStatusCode.OK to lyricsPlusBody
+                if (request.url.host == "down.test")
+                    HttpStatusCode.BadGateway to ""
+                else
+                    HttpStatusCode.OK to lyricsPlusBody
             },
             json,
             listOf("https://down.test", "https://up.test"),
@@ -165,8 +167,10 @@ class LyricsSourcesTest {
     fun lyricsPlusHasNothingWhenAMirrorFoundNothing() = runBlocking {
         val source = LyricsPlusSource(
             client { request ->
-                if (request.url.host == "down.test") HttpStatusCode.BadGateway to ""
-                else HttpStatusCode.NotFound to """{"error":{}}"""
+                if (request.url.host == "down.test")
+                    HttpStatusCode.BadGateway to ""
+                else
+                    HttpStatusCode.NotFound to """{"error":{}}"""
             },
             json,
             listOf("https://down.test", "https://empty.test"),

@@ -57,9 +57,12 @@ object AppRestart {
     @OptIn(ExperimentalCoroutinesApi::class)
     val needed: Flow<Boolean> = read
         .flatMapLatest { used ->
-            if (used.isEmpty()) flowOf(false)
-            else combine(used.map { (preference, value) -> preference.state.map { it != value } }) {
-                it.any { changed -> changed }
+            if (used.isEmpty()) {
+                flowOf(false)
+            } else {
+                combine(used.map { (preference, value) -> preference.state.map { it != value } }) {
+                    it.any { changed -> changed }
+                }
             }
         }
         .distinctUntilChanged()

@@ -358,8 +358,10 @@ class DataSourceResolverTest {
     @Test
     fun streamReadOneRangeAtATimeIsSkipped() {
         answer = { refused ->
-            if ("ANDROID_VR" in refused) stream("WEB_REMIX")
-            else stream("ANDROID_VR", rangeSize = 1_000_000)
+            if ("ANDROID_VR" in refused)
+                stream("WEB_REMIX")
+            else
+                stream("ANDROID_VR", rangeSize = 1_000_000)
         }
         assertEquals("WEB_REMIX", (resolve(Origin.YOUTUBE, "v1").customData as QueuedSong).client)
         assertEquals(listOf(emptySet(), setOf("ANDROID_VR")), asked)
@@ -379,8 +381,10 @@ class DataSourceResolverTest {
     fun songWithCachedPartsGetsAStreamOfTheSameFile() {
         cached[QueuedSong(Origin.YOUTUBE, "v1").cacheKey] = 2_000
         answer = { refused ->
-            if ("VISIONOS" in refused) stream("WEB_REMIX", contentLength = 2_000)
-            else stream("VISIONOS", contentLength = 3_000)
+            if ("VISIONOS" in refused)
+                stream("WEB_REMIX", contentLength = 2_000)
+            else
+                stream("VISIONOS", contentLength = 3_000)
         }
 
         assertEquals("WEB_REMIX", (resolve(Origin.YOUTUBE, "v1").customData as QueuedSong).client)
@@ -398,10 +402,14 @@ class DataSourceResolverTest {
         val key = QueuedSong(Origin.YOUTUBE, "v1").cacheKey
         cached[key] = 2_000
         answer = { refused ->
-            if (refused.isEmpty()) stream(
-                "VISIONOS",
-                contentLength = 3_000
-            ) else null
+            if (refused.isEmpty()) {
+                stream(
+                    "VISIONOS",
+                    contentLength = 3_000
+                )
+            } else {
+                null
+            }
         }
 
         assertEquals("VISIONOS", (resolve(Origin.YOUTUBE, "v1").customData as QueuedSong).client)

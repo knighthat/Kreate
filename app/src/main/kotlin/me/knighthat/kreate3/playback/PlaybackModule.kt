@@ -164,5 +164,7 @@ private fun songMediaSourceFactory(songs: DataSource.Factory): MediaSource.Facto
 
 /** Loads [seconds] of the next song ahead, nothing when it isn't positive. */
 internal fun preloadConfiguration(seconds: Int): ExoPlayer.PreloadConfiguration =
-    if (seconds <= 0) ExoPlayer.PreloadConfiguration.DEFAULT
-    else ExoPlayer.PreloadConfiguration(seconds.seconds.inWholeMicroseconds)
+    if (seconds <= 0)
+        ExoPlayer.PreloadConfiguration.DEFAULT
+    else
+        ExoPlayer.PreloadConfiguration(seconds.seconds.inWholeMicroseconds)

@@ -274,8 +274,9 @@ class PlaybackControllerImpl(
             val where = if (
                 start != null && start + ids.size <= count &&
                 ids.indices.all { controller.getMediaItemAt(start + it).mediaId == ids[it] }
-            ) (start until start + ids.size).toSet()
-            else {
+            ) {
+                (start until start + ids.size).toSet()
+            } else {
                 // Moved or removed meanwhile, the copies added were the last ones
                 val found = HashSet<Int>()
                 for (id in ids) (count - 1 downTo 0)
@@ -370,7 +371,8 @@ class PlaybackControllerImpl(
                 controller = connected
                 connected.addListener(object : Player.Listener {
                     override fun onEvents(player: Player, events: Player.Events) {
-                        if (events.contains(Player.EVENT_TIMELINE_CHANGED)) publishQueue(connected)
+                        if (events.contains(Player.EVENT_TIMELINE_CHANGED))
+                            publishQueue(connected)
                         else if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED))
                             publishShuffledOrder(connected)
                         publish(

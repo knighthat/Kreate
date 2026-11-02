@@ -241,8 +241,10 @@ internal fun QueueButtons(
         isOn = reordering,
         dimmed = isShuffled,
         onClick = {
-            if (isShuffled) notifier.post(turnShuffleOff)
-            else onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER)
+            if (isShuffled)
+                notifier.post(turnShuffleOff)
+            else
+                onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER)
         },
     )
     ModeButton(
@@ -267,8 +269,10 @@ internal fun QueueButtons(
                 confirmClear = false
                 onModeChange(CoverEditMode.NONE)
                 // Nothing is left to play then, the player closes by itself
-                if (removeCurrent) controller.stopUndoable(resources, notifier)
-                else controller.clearUndoable(resources, notifier)
+                if (removeCurrent)
+                    controller.stopUndoable(resources, notifier)
+                else
+                    controller.clearUndoable(resources, notifier)
             },
         )
 }

@@ -106,8 +106,10 @@ class DownloadedViewModel(
     val choices: StateFlow<List<Origin>> =
         combine(downloaded, _origins) { rows, chosen ->
             val offered = rows.orEmpty().mapNotNull { it.item.origin }.toSet() + chosen
-            if (offered.size <= 1 && chosen.isEmpty()) emptyList()
-            else Origin.entries.filter { it in offered }
+            if (offered.size <= 1 && chosen.isEmpty())
+                emptyList()
+            else
+                Origin.entries.filter { it in offered }
         }.stateIn(viewModelScope, WHILE_SHOWN, emptyList())
 
     /** The whole downloads of the origins shown, and disliked ones if shown, `null` until known. */

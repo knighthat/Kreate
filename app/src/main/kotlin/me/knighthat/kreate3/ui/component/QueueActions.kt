@@ -153,11 +153,14 @@ internal fun PlaybackController.clearUndoable(resources: Resources, notifier: No
 
 /** "Will play next", or how many songs will when there are several. */
 internal fun willPlayNext(resources: Resources, songs: Int): String =
-    if (songs == 1) resources.getString(R.string.snackbar_will_play_next_one)
-    else resources.getString(
-        R.string.snackbar_will_play_next_many,
-        resources.getQuantityString(R.plurals.song, songs, songs),
-    )
+    if (songs == 1) {
+        resources.getString(R.string.snackbar_will_play_next_one)
+    } else {
+        resources.getString(
+            R.string.snackbar_will_play_next_many,
+            resources.getQuantityString(R.plurals.song, songs, songs),
+        )
+    }
 
 /**
  * Starts a new queue from [song], tapped in [songs]: with [radio] it plays [song] followed by
@@ -335,7 +338,7 @@ fun QueueActionRow(
  */
 @Composable
 fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    if (LocalIconOnly.current)
+    if (LocalIconOnly.current) {
     // Play stays the main action, filled like its labeled button
         Tooltip(stringResource(R.string.semantic_play)) {
             FilledIconButton(onClick = onClick, modifier = modifier) {
@@ -345,8 +348,9 @@ fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
                 )
             }
         }
-    else
+    } else {
         LabeledButton("Play", R.drawable.play_arrow, onClick, modifier)
+    }
 }
 
 /**

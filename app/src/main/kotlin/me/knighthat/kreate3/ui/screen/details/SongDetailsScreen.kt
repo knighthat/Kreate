@@ -209,8 +209,9 @@ internal fun SearchHint(hint: String) {
         text = buildAnnotatedString {
             // The icon takes the place of the mark, wherever the translation puts it
             val start = hint.indexOf(SEARCH_MARK)
-            if (start < 0) append(hint)
-            else {
+            if (start < 0) {
+                append(hint)
+            } else {
                 append(hint.substring(0, start))
                 appendInlineContent(SEARCH_ICON, SEARCH_MARK)
                 append(hint.substring(start + SEARCH_MARK.length))
@@ -287,8 +288,10 @@ internal fun Fact(label: String, value: String, onClick: (() -> Unit)? = null) =
     Text(
         value,
         style = MaterialTheme.typography.bodyMedium,
-        color = if (onClick == null) MaterialTheme.colorScheme.onSurface
-        else MaterialTheme.colorScheme.primary,
+        color = if (onClick == null)
+            MaterialTheme.colorScheme.onSurface
+        else
+            MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .weight(1f)
             .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick)),
@@ -412,13 +415,15 @@ private fun MatchRow(match: MusicBrainzMatch, isCurrent: Boolean, onClick: () ->
         .clickable(onClick = onClick)
         .padding(vertical = 6.dp),
 ) {
-    if (isCurrent)
+    if (isCurrent) {
         Icon(
             painterResource(R.drawable.check),
             contentDescription = null,
             modifier = Modifier.size(24.dp),
         )
-    else Spacer(Modifier.size(24.dp))
+    } else {
+        Spacer(Modifier.size(24.dp))
+    }
     Column(modifier = Modifier.weight(1f)) {
         Text(
             match.title,

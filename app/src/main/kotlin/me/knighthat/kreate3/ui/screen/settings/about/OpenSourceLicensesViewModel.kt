@@ -72,8 +72,10 @@ class OpenSourceLicensesViewModel(private val context: Context) : ViewModel() {
     val shown: StateFlow<List<LibraryRow>?> =
         combine(flow { emit(load()) }, _query) { libraries, query ->
             val typed = query.trim()
-            if (typed.isEmpty()) libraries
-            else libraries.filter { typed in it.name || it.author?.contains(typed) == true }
+            if (typed.isEmpty())
+                libraries
+            else
+                libraries.filter { typed in it.name || it.author?.contains(typed) == true }
         }.flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 

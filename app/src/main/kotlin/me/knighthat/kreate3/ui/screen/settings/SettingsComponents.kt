@@ -217,8 +217,10 @@ fun MainSwitch(
         onCheckedChange = onCheckedChange,
         shape = MaterialTheme.shapes.extraLarge,
         color =
-            if (checked) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surfaceContainerHighest,
+            if (checked)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),

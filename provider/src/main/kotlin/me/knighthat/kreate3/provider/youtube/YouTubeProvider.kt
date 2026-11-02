@@ -242,8 +242,10 @@ class YouTubeProvider internal constructor(
         filter: YouTubeSearchFilter,
         continuation: String? = null,
     ): YouTubePage<YouTubeItem> = parser.searchPage(
-        if (continuation == null) innerTube.search(query, filter.params)
-        else innerTube.continuation(Endpoint.SEARCH, continuation)
+        if (continuation == null)
+            innerTube.search(query, filter.params)
+        else
+            innerTube.continuation(Endpoint.SEARCH, continuation)
     )
 
     /**
@@ -292,8 +294,10 @@ class YouTubeProvider internal constructor(
 
     /** What YouTube Music suggests while [input] is being typed. */
     suspend fun suggestions(input: String): YouTubeSuggestions =
-        if (input.isBlank()) YouTubeSuggestions(emptyList(), emptyList())
-        else parser.suggestions(innerTube.suggestions(input))
+        if (input.isBlank())
+            YouTubeSuggestions(emptyList(), emptyList())
+        else
+            parser.suggestions(innerTube.suggestions(input))
 
     /**
      * The song with its album and artists.
@@ -391,8 +395,10 @@ class YouTubeProvider internal constructor(
         continuation: String? = null
     ): YouTubePage<YouTubeItem> =
         parser.browsePage(
-            if (continuation == null) innerTube.browse(endpoint.browseId, endpoint.params)
-            else innerTube.continuation(Endpoint.BROWSE, continuation)
+            if (continuation == null)
+                innerTube.browse(endpoint.browseId, endpoint.params)
+            else
+                innerTube.continuation(Endpoint.BROWSE, continuation)
         )
 
     /**
@@ -402,8 +408,10 @@ class YouTubeProvider internal constructor(
      */
     suspend fun home(continuation: String? = null): YouTubePage<YouTubeSection> =
         parser.homePage(
-            if (continuation == null) innerTube.browse(HOME)
-            else innerTube.continuation(Endpoint.BROWSE, continuation)
+            if (continuation == null)
+                innerTube.browse(HOME)
+            else
+                innerTube.continuation(Endpoint.BROWSE, continuation)
         )
 
     /**
@@ -420,8 +428,10 @@ class YouTubeProvider internal constructor(
     ): YouTubePage<SongItem> {
         require(songId != null || playlistId != null) { "A queue starts from a song or a playlist" }
         return parser.queue(
-            if (continuation == null) innerTube.next(songId, playlistId)
-            else innerTube.continuation(Endpoint.NEXT, continuation, playlistId)
+            if (continuation == null)
+                innerTube.next(songId, playlistId)
+            else
+                innerTube.continuation(Endpoint.NEXT, continuation, playlistId)
         )
     }
 
@@ -464,8 +474,10 @@ class YouTubeProvider internal constructor(
             page.sections.map { section ->
                 async {
                     val more = section.more?.takeIf { it.browseId.startsWith(DISCOGRAPHY_PREFIX) }
-                    if (more == null) section.items
-                    else browse(more).items.map { it.creditedTo(name) }
+                    if (more == null)
+                        section.items
+                    else
+                        browse(more).items.map { it.creditedTo(name) }
                 }
             }.awaitAll()
         }.flatten().filterIsInstance<AlbumItem>().map { it.album }.distinctBy { it.id }

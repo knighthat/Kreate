@@ -21,7 +21,6 @@ package me.knighthat.kreate3.ui.screen.account
 import androidx.compose.runtime.Immutable
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.database.model.PlayPeriod
-import me.knighthat.kreate3.ui.screen.account.HistoryBuckets.Companion.MAX_YEARS
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.time.Instant
@@ -93,11 +92,14 @@ internal class HistoryBuckets(now: Long, private val zone: TimeZone) {
         // The year k ago starts the day after the date (k + 1) years before today
         for (years in 1..MAX_YEARS) {
             val yearStart =
-                if (years == MAX_YEARS) Long.MIN_VALUE
-                else (today.clone() as Calendar).apply {
-                    add(Calendar.MONTH, -12 * (years + 1))
-                    add(Calendar.DAY_OF_MONTH, 1)
-                }.timeInMillis
+                if (years == MAX_YEARS) {
+                    Long.MIN_VALUE
+                } else {
+                    (today.clone() as Calendar).apply {
+                        add(Calendar.MONTH, -12 * (years + 1))
+                        add(Calendar.DAY_OF_MONTH, 1)
+                    }.timeInMillis
+                }
             spans += HistorySpan(HistoryBucket(HistoryPeriod.YEARS, years), yearStart, end)
             end = yearStart
         }

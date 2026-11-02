@@ -695,16 +695,22 @@ private fun ShowPreferenceFailures(notifier: Notifier) {
             )
             val message = when (failure.store) {
                 PreferenceFailure.Store.SETTINGS ->
-                    if (failure.saving) R.string.snackbar_couldnt_save_settings
-                    else R.string.snackbar_couldnt_load_settings
+                    if (failure.saving)
+                        R.string.snackbar_couldnt_save_settings
+                    else
+                        R.string.snackbar_couldnt_load_settings
 
                 PreferenceFailure.Store.SECRETS ->
-                    if (failure.saving) R.string.snackbar_couldnt_save_credentials
-                    else R.string.snackbar_couldnt_load_credentials
+                    if (failure.saving)
+                        R.string.snackbar_couldnt_save_credentials
+                    else
+                        R.string.snackbar_couldnt_load_credentials
 
                 PreferenceFailure.Store.GLOBAL ->
-                    if (failure.saving) R.string.snackbar_couldnt_save_global_settings
-                    else R.string.snackbar_couldnt_load_global_settings
+                    if (failure.saving)
+                        R.string.snackbar_couldnt_save_global_settings
+                    else
+                        R.string.snackbar_couldnt_load_global_settings
             }
             val text = resources.getString(message, reason)
             notifier.post(Message(text, MessageDuration.LONG, dismissable = true))

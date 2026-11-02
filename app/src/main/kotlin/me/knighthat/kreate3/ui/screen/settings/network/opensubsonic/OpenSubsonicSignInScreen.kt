@@ -282,7 +282,9 @@ private fun CredentialField(
                     }
                 }
             }
-        } else null,
+        } else {
+            null
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = if (hidden) KeyboardType.Password else KeyboardType.Text,
             autoCorrectEnabled = false,

@@ -211,8 +211,10 @@ internal fun ArtistLine(
             modifier = Modifier
                 .weight(1f, fill = false)
                 .then(
-                    if (onOpenArtist != null) Modifier.clickable(onClick = onOpenArtist)
-                    else Modifier
+                    if (onOpenArtist != null)
+                        Modifier.clickable(onClick = onOpenArtist)
+                    else
+                        Modifier
                 ),
         )
     }

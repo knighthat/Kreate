@@ -107,7 +107,7 @@ private fun DownloadQueueContent(
         ),
         modifier = Modifier.fillMaxSize(),
     ) {
-        if (unfinished.isEmpty())
+        if (unfinished.isEmpty()) {
             item(key = "empty") {
                 Text(
                     stringResource(R.string.screen_download_queue_status_nothing),
@@ -118,7 +118,9 @@ private fun DownloadQueueContent(
                         .wrapContentSize(Alignment.Center),
                 )
             }
-        else waitingFor?.let { item(key = "waiting") { WaitingLine(it) } }
+        } else {
+            waitingFor?.let { item(key = "waiting") { WaitingLine(it) } }
+        }
 
         items(unfinished, key = { it.download.item.mediaId }) {
             UnfinishedItem(it, actions, showBadges = false)
@@ -199,12 +201,13 @@ private fun DownloadState(download: UnfinishedDownload, modifier: Modifier = Mod
     val ring = Modifier.size(40.dp)
     when (download.stage) {
         DownloadStage.DOWNLOADING ->
-            if (percent == null) CircularProgressIndicator(
-                ring,
-                color = Color.White,
-                strokeWidth = 3.dp
-            )
-            else {
+            if (percent == null) {
+                CircularProgressIndicator(
+                    ring,
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            } else {
                 ProgressRing(percent, ring)
                 Text(
                     stringResource(R.string.percent, percent),

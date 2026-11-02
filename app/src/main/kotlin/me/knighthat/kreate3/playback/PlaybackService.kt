@@ -312,11 +312,14 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
     /** Why a voice request for [query] plays nothing, for the user. */
     private fun voiceFailure(query: String): String =
-        if (query.isBlank()) getString(R.string.error_nothing_to_play)
-        else getString(
-            R.string.error_voice_search_no_match,
-            getString(R.string.quoted, query.trim())
-        )
+        if (query.isBlank()) {
+            getString(R.string.error_nothing_to_play)
+        } else {
+            getString(
+                R.string.error_voice_search_no_match,
+                getString(R.string.quoted, query.trim())
+            )
+        }
 
     /**
      * Plays what a voice request the app was sent asks for, see [voiceQueue]. The queue is
@@ -571,11 +574,14 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
             // Auto usually asks for everything at once, the session cuts what doesn't fit
             val from = page.toLong() * pageSize
-            val shown = if (from >= children.size) emptyList()
-            else children.subList(
-                from.toInt(),
-                minOf(children.size.toLong(), from + pageSize).toInt()
-            )
+            val shown = if (from >= children.size) {
+                emptyList()
+            } else {
+                children.subList(
+                    from.toInt(),
+                    minOf(children.size.toLong(), from + pageSize).toInt()
+                )
+            }
             LibraryResult.ofItemList(shown, params)
         }
     }
@@ -671,7 +677,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 notification,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
-                else 0,
+                else
+                    0,
             )
         } catch (e: IllegalStateException) {
             // ForegroundServiceStartNotAllowedException, from Android 12 on

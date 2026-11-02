@@ -129,8 +129,10 @@ class DownloadedSongStore(
                 CoverKind.NONE, CoverKind.DOWNLOADED -> song.copy(thumbnail = thumbnail)
                 // The user's own stays while its file is there
                 CoverKind.CUSTOM ->
-                    if (song.thumbnail?.path?.let(::File)?.exists() == true) song
-                    else song.copy(thumbnail = thumbnail)
+                    if (song.thumbnail?.path?.let(::File)?.exists() == true)
+                        song
+                    else
+                        song.copy(thumbnail = thumbnail)
 
                 CoverKind.OTHER -> song
             }

@@ -259,13 +259,14 @@ private fun PlayerSettingsContent(
             title = stringResource(R.string.setting_title_load_next_song_ahead),
             value = preloadSeconds,
             range = 0..MAX_SECONDS,
-            summary = if (preloadSeconds == 0)
+            summary = if (preloadSeconds == 0) {
                 stringResource(R.string.setting_description_load_next_song_ahead_off)
-            else
+            } else {
                 stringResource(
                     R.string.setting_description_load_next_song_ahead,
                     seconds(preloadSeconds)
-                ),
+                )
+            },
             onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
         )
         ChoiceSetting(
@@ -279,13 +280,14 @@ private fun PlayerSettingsContent(
             title = stringResource(R.string.setting_title_give_up_loading_after),
             value = stallSeconds,
             range = 0..MAX_SECONDS,
-            summary = if (stallSeconds == 0)
+            summary = if (stallSeconds == 0) {
                 stringResource(R.string.setting_description_give_up_loading_after_off)
-            else
+            } else {
                 stringResource(
                     R.string.setting_description_give_up_loading_after,
                     seconds(stallSeconds)
-                ),
+                )
+            },
             onSelect = { Preferences.PLAYBACK_STALL_SECONDS.update(it) },
         )
 
@@ -311,13 +313,14 @@ private fun PlayerSettingsContent(
             title = stringResource(R.string.setting_title_load_ahead),
             value = if (bufferAhead == 0) WHOLE_SONG_STOP else bufferAhead,
             range = 1..WHOLE_SONG_STOP,
-            summary = if (bufferAhead == 0)
+            summary = if (bufferAhead == 0) {
                 stringResource(
                     R.string.setting_description_load_ahead_unlimited,
                     stringResource(R.string.app_name),
                 )
-            else
-                stringResource(R.string.setting_description_load_ahead, seconds(bufferAhead)),
+            } else {
+                stringResource(R.string.setting_description_load_ahead, seconds(bufferAhead))
+            },
             number = { if (it == WHOLE_SONG_STOP) "∞" else it.toString() },
             onSelect = {
                 Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(if (it == WHOLE_SONG_STOP) 0 else it)
@@ -367,8 +370,10 @@ private fun PlayerSettingsContent(
             checked = historyPaused,
             onCheckedChange = { Preferences.PLAYBACK_HISTORY_PAUSED.update(it) },
             summary = stringResource(
-                if (historyPaused) R.string.setting_description_pause_history_on
-                else R.string.setting_description_pause_history_off
+                if (historyPaused)
+                    R.string.setting_description_pause_history_on
+                else
+                    R.string.setting_description_pause_history_off
             ),
         )
         NumberSetting(

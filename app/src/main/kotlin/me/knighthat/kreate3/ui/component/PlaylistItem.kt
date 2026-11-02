@@ -110,12 +110,14 @@ fun PlaylistItem(
             modifier = modifier,
             showThumbnail = false,
             thumbnailOverlay = {
-                if (covers.isEmpty())
+                if (covers.isEmpty()) {
                     EmptyCover(
                         item.mediaMetadata.title?.toString().orEmpty(),
                         Modifier.matchParentSize()
                     )
-                else CoverGrid(covers, Modifier.matchParentSize())
+                } else {
+                    CoverGrid(covers, Modifier.matchParentSize())
+                }
             },
         )
     }
@@ -168,14 +170,14 @@ private fun EmptyCover(name: String, modifier: Modifier = Modifier) {
         shape = MaterialTheme.shapes.small,
         modifier = modifier,
         placeholder = {
-            if (initial == null)
+            if (initial == null) {
                 Icon(
                     painter = painterResource(R.drawable.queue_music),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
-            else {
+            } else {
                 val (background, content) = remember(name, dark) { initialColors(name, dark) }
                 Box(
                     contentAlignment = Alignment.Center,

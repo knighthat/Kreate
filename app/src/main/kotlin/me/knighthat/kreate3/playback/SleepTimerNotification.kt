@@ -35,8 +35,6 @@ import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.notification.notify
-import me.knighthat.kreate3.playback.SleepTimerNotification.Companion.FOREGROUND_ID
-import me.knighthat.kreate3.playback.SleepTimerNotification.Companion.ID
 import java.util.Date
 import kotlin.time.Duration
 
@@ -98,14 +96,17 @@ internal class SleepTimerNotification(private val context: Context) {
                     !timer.isPaused,
                 )
                 setChronometerCountDown(R.id.sleep_timer_left, true)
-            } else
+            } else {
                 setTextViewText(
                     R.id.sleep_timer_song_end,
                     context.getString(
-                        if (timer.isPaused) R.string.notification_sleep_timer_subtitle_on_hold
-                        else R.string.notification_sleep_timer_subtitle_until_song_ends
+                        if (timer.isPaused)
+                            R.string.notification_sleep_timer_subtitle_on_hold
+                        else
+                            R.string.notification_sleep_timer_subtitle_until_song_ends
                     ),
                 )
+            }
 
             setTextViewText(R.id.sleep_timer_remove, removeStep.buttonLabel(add = false))
             setContentDescription(
@@ -125,8 +126,10 @@ internal class SleepTimerNotification(private val context: Context) {
             setContentDescription(
                 R.id.sleep_timer_toggle,
                 context.getString(
-                    if (timer.isPaused) R.string.semantic_resume_the_sleep_timer
-                    else R.string.semantic_pause_the_sleep_timer
+                    if (timer.isPaused)
+                        R.string.semantic_resume_the_sleep_timer
+                    else
+                        R.string.semantic_pause_the_sleep_timer
                 ),
             )
             button(R.id.sleep_timer_toggle, SleepTimerAction.TOGGLE_PAUSE)

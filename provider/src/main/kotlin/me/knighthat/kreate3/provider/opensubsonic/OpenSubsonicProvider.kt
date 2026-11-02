@@ -154,8 +154,10 @@ class OpenSubsonicProvider internal constructor(
         return when (val answer = request("ping", credentials)) {
             is Answer.Failure -> answer.check
             is Answer.Response ->
-                if (answer.ok) ServerCheck.Success(answer.info)
-                else ServerCheck.Rejected(answer.errorCode, answer.errorMessage)
+                if (answer.ok)
+                    ServerCheck.Success(answer.info)
+                else
+                    ServerCheck.Rejected(answer.errorCode, answer.errorMessage)
         }
     }
 
@@ -660,13 +662,16 @@ class OpenSubsonicProvider internal constructor(
         return when (val answer = request(method, credentials, params.toList(), body)) {
             is Answer.Failure -> throw ServerException(answer.check)
             is Answer.Response ->
-                if (answer.ok) answer.envelope
-                else throw ServerException(
-                    ServerCheck.Rejected(
-                        answer.errorCode,
-                        answer.errorMessage
+                if (answer.ok) {
+                    answer.envelope
+                } else {
+                    throw ServerException(
+                        ServerCheck.Rejected(
+                            answer.errorCode,
+                            answer.errorMessage
+                        )
                     )
-                )
+                }
         }
     }
 
@@ -836,8 +841,9 @@ class OpenSubsonicProvider internal constructor(
         OpenSubsonicAuth.PASSWORD -> {
             val username = settings.username()
             val password = settings.password()
-            if (username.isEmpty() || password.isEmpty()) null
-            else {
+            if (username.isEmpty() || password.isEmpty()) {
+                null
+            } else {
                 val salt = ByteArray(8).also(SecureRandom()::nextBytes).toHex()
                 val token = MessageDigest.getInstance("MD5")
                     .digest((password + salt).toByteArray()).toHex()
@@ -864,18 +870,19 @@ class OpenSubsonicProvider internal constructor(
         // Decoding a large library's answer takes long, never on the caller's thread, which may
         // be the main one
         val answer = try {
-            if (body == null)
+            if (body == null) {
                 client().submitForm(
                     url = url,
                     formParameters = parameters {
                         values.forEach { (key, value) -> append(key, value) }
                     },
                 ).bodyAsText()
-            else
+            } else {
                 client().post(url) {
                     values.forEach { (key, value) -> parameter(key, value) }
                     setBody(TextContent(body.toString(), ContentType.Application.Json))
                 }.bodyAsText()
+            }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

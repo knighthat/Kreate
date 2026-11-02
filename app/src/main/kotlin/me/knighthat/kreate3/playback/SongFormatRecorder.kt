@@ -141,8 +141,10 @@ class SongFormatRecorder(
     }
 
     private suspend fun formatsOf(songId: String, isStored: Boolean): List<SongFormat> =
-        if (isStored) songs.formatsOf(songId).first()
-        else pendingFormatsOf(songId)
+        if (isStored)
+            songs.formatsOf(songId).first()
+        else
+            pendingFormatsOf(songId)
 
     private suspend fun hasFormat(songId: String, tag: String, isStored: Boolean): Boolean =
         formatsOf(songId, isStored).any { it.tag == tag }

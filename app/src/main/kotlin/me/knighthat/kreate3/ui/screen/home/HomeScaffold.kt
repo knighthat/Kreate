@@ -218,9 +218,9 @@ private fun HomeToolbar(
                 .padding(start = 16.dp, end = if (lined) 18.dp else 16.dp),
         ) {
             choices.forEach {
-                if (iconOnly)
+                if (iconOnly) {
                     OriginToggle(it, it in selected) { onToggleOrigin(it) }
-                else
+                } else {
                     FilterChip(
                         selected = it in selected,
                         onClick = { onToggleOrigin(it) },
@@ -234,6 +234,7 @@ private fun HomeToolbar(
                             )
                         },
                     )
+                }
             }
         }
         // Ends the chips, a bit taller than them

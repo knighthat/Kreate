@@ -170,8 +170,9 @@ private fun PlaybackMiniPlayer(controller: PlaybackController) {
             // What's left of a drag up past the start opens the player
             if (next == 0f) sheet?.dragBy(delta + pulled)
             pulled = next
-        } else
+        } else {
             sheet?.dragBy(delta)
+        }
     }
 
     MiniPlayer(

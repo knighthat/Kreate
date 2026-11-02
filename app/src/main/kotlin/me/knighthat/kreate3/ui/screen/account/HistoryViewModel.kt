@@ -122,10 +122,13 @@ class HistoryViewModel(
                 val rows = page.flatMap<PeriodPlay, HistoryEntry> {
                     listOfNotNull(it.toRow(query, withDate = !headers))
                 }
-                if (!headers) rows
-                else rows.insertSeparators<HistoryEntry, HistoryEntry> { before, after ->
-                    after?.takeIf { before?.period != it.period }
-                        ?.let { HistoryHeader(it.period, spans[it.period].bucket, query) }
+                if (!headers) {
+                    rows
+                } else {
+                    rows.insertSeparators<HistoryEntry, HistoryEntry> { before, after ->
+                        after?.takeIf { before?.period != it.period }
+                            ?.let { HistoryHeader(it.period, spans[it.period].bucket, query) }
+                    }
                 }
             }
         }.cachedIn(viewModelScope)
@@ -238,6 +241,7 @@ class HistoryViewModel(
             time,
             if (withDate)
                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_TIME
-            else DateUtils.FORMAT_SHOW_TIME,
+            else
+                DateUtils.FORMAT_SHOW_TIME,
         )
 }

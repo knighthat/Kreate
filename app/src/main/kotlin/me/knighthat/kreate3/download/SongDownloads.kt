@@ -601,7 +601,8 @@ class SongDownloads(
                     totalBytes = download.contentLength.takeIf { it != C.LENGTH_UNSET.toLong() },
                     failure = if (stage == DownloadStage.FAILED)
                         synchronized(this@SongDownloads) { failures[download.request.id] }
-                    else null,
+                    else
+                        null,
                 )
             }
             synchronized(this@SongDownloads) {

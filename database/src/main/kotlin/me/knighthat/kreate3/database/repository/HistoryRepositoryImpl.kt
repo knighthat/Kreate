@@ -105,22 +105,25 @@ internal class HistoryRepositoryImpl(
         origins: Set<Origin>,
         newestFirst: Boolean,
     ): Flow<PagingData<PeriodPlay>> =
-        if (periods.isEmpty()) flowOf(PagingData.empty())
-        else scope.observe(PagingData.empty()) { userId ->
-            database.pagedFlow(
-                PeriodPlayRow::toModel,
-                "playback_history",
-                "user_song_view",
-                pageSize = LARGE_PAGE_SIZE,
-            ) {
-                playbackHistoryDao.pagedPeriodPlays(
-                    periodPlays(
-                        userId,
-                        periods,
-                        origins,
-                        newestFirst
+        if (periods.isEmpty()) {
+            flowOf(PagingData.empty())
+        } else {
+            scope.observe(PagingData.empty()) { userId ->
+                database.pagedFlow(
+                    PeriodPlayRow::toModel,
+                    "playback_history",
+                    "user_song_view",
+                    pageSize = LARGE_PAGE_SIZE,
+                ) {
+                    playbackHistoryDao.pagedPeriodPlays(
+                        periodPlays(
+                            userId,
+                            periods,
+                            origins,
+                            newestFirst
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -129,26 +132,32 @@ internal class HistoryRepositoryImpl(
         origins: Set<Origin>,
         newestFirst: Boolean,
     ): List<PeriodPlay> =
-        if (periods.isEmpty()) emptyList()
-        else playbackHistoryDao
-            .listPeriodPlays(periodPlays(scope.awaitId(), periods, origins, newestFirst))
-            .map(PeriodPlayRow::toModel)
+        if (periods.isEmpty()) {
+            emptyList()
+        } else {
+            playbackHistoryDao
+                .listPeriodPlays(periodPlays(scope.awaitId(), periods, origins, newestFirst))
+                .map(PeriodPlayRow::toModel)
+        }
 
     override fun periodSummaries(
         periods: List<PlayPeriod>,
         origins: Set<Origin>,
     ): Flow<List<PeriodSummary>> =
-        if (periods.isEmpty()) flowOf(emptyList())
-        else scope.observe(emptyList()) { userId ->
-            playbackHistoryDao.observeSummaries(
-                RoomRawQuery(
-                    sql = "SELECT p.period AS period, COUNT(*) AS plays, " +
-                            "COUNT(DISTINCT h.song_id) AS songs, " +
-                            "SUM(h.time_spent) AS time_spent " +
-                            "${playsIn(periods, origins)} GROUP BY p.period",
-                    onBindStatement = { it.bindText(1, userId) },
-                )
-            ).map { rows -> rows.map(PeriodSummaryRow::toModel) }
+        if (periods.isEmpty()) {
+            flowOf(emptyList())
+        } else {
+            scope.observe(emptyList()) { userId ->
+                playbackHistoryDao.observeSummaries(
+                    RoomRawQuery(
+                        sql = "SELECT p.period AS period, COUNT(*) AS plays, " +
+                                "COUNT(DISTINCT h.song_id) AS songs, " +
+                                "SUM(h.time_spent) AS time_spent " +
+                                "${playsIn(periods, origins)} GROUP BY p.period",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                ).map { rows -> rows.map(PeriodSummaryRow::toModel) }
+            }
         }
 
     override suspend fun recordPlay(songId: String, timeSpent: Duration): Long =

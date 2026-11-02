@@ -477,16 +477,20 @@ fun PlaylistMenu(
             val removing = mode == CoverEditMode.REMOVE
             ConfigEntry(
                 icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
-                label = if (reordering) stringResource(R.string.semantic_lock_the_order)
-                else stringResource(R.string.semantic_unlock_to_move_songs),
+                label = if (reordering)
+                    stringResource(R.string.semantic_lock_the_order)
+                else
+                    stringResource(R.string.semantic_unlock_to_move_songs),
                 enabled = canEdit,
             ) {
                 close { onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER) }
             }
             ConfigEntry(
                 icon = R.drawable.delete,
-                label = if (removing) stringResource(R.string.semantic_stop_removing_songs)
-                else stringResource(R.string.semantic_remove_songs),
+                label = if (removing)
+                    stringResource(R.string.semantic_stop_removing_songs)
+                else
+                    stringResource(R.string.semantic_remove_songs),
                 enabled = canEdit,
             ) {
                 close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }

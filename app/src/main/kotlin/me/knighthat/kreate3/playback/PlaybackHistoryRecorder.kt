@@ -118,8 +118,9 @@ class PlaybackHistoryRecorder(
         if (ended) {
             session++
             savedSongId = null
-        } else
+        } else {
             savedSongId = songId
+        }
     }
 
     /** Writes the plays in the order they were sent, [session] tells a new play from an update. */
@@ -128,9 +129,9 @@ class PlaybackHistoryRecorder(
         var lastId = 0L
         for (play in plays)
             try {
-                if (play.session == lastSession)
+                if (play.session == lastSession) {
                     history.updatePlay(lastId, play.timeSpent)
-                else {
+                } else {
                     lastId = history.recordPlay(play.songId, play.timeSpent)
                     lastSession = play.session
                 }

@@ -144,8 +144,10 @@ private fun YouTubeSettingsContent(
                 stringResource(R.string.source_ytm)
             ),
             summary = stringResource(
-                if (enabled) R.string.setting_description_use_youtube_account_on
-                else R.string.setting_description_use_youtube_account_off,
+                if (enabled)
+                    R.string.setting_description_use_youtube_account_on
+                else
+                    R.string.setting_description_use_youtube_account_off,
                 stringResource(R.string.source_ytm)
             ),
             checked = enabled,
@@ -174,12 +176,16 @@ private fun YouTubeSettingsContent(
                     summary = state.account.handle
                         ?: stringResource(R.string.status_signed_in),
                     onClick = if (canSwitch) ({ pickChannel = true }) else null,
-                    trailing = if (canSwitch) ({
-                        Icon(
-                            painterResource(R.drawable.chevron_right),
-                            contentDescription = stringResource(R.string.semantic_switch_channel)
-                        )
-                    }) else null,
+                    trailing = if (canSwitch) {
+                        ({
+                            Icon(
+                                painterResource(R.drawable.chevron_right),
+                                contentDescription = stringResource(R.string.semantic_switch_channel)
+                            )
+                        })
+                    } else {
+                        null
+                    },
                 )
 
                 YouTubeAccountState.Ended -> SettingsItem(
@@ -295,19 +301,20 @@ private fun name(region: String, locale: Locale): String =
  */
 @Composable
 private fun YouTubeQualitySettings(signedIn: Boolean) =
-    if (signedIn)
+    if (signedIn) {
         StreamQualitySettings(
             wifi = Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM,
             mobile = Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM,
             label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
         )
-    else
+    } else {
         StreamQualitySettings(
             wifi = Preferences.YOUTUBE_QUALITY_WIFI,
             mobile = Preferences.YOUTUBE_QUALITY_MOBILE,
             label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
             options = StreamQuality.entries - StreamQuality.ORIGINAL,
         )
+    }
 
 @ScreenPreviews
 @Composable

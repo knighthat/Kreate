@@ -189,8 +189,10 @@ private fun DislikedContent(
                     item(key = "empty") {
                         Text(
                             stringResource(
-                                if (filtered) R.string.screen_disliked_status_no_matches
-                                else R.string.screen_disliked_status_nothing_disliked
+                                if (filtered)
+                                    R.string.screen_disliked_status_no_matches
+                                else
+                                    R.string.screen_disliked_status_nothing_disliked
                             ),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -250,26 +252,28 @@ internal fun OriginChips(
 ) {
     val iconOnly = LocalIconOnly.current
     choices.forEach {
-        if (iconOnly)
+        if (iconOnly) {
             FilterIconButton(
                 it.icon,
                 stringResource(it.sourceRes),
                 selected = it in selected,
                 onToggle = { onToggleOrigin(it) },
             )
-        else FilterChip(
-            selected = it in selected,
-            onClick = { onToggleOrigin(it) },
-            label = { Text(stringResource(it.sourceRes)) },
-            leadingIcon = {
-                // The label says the same, nothing more for screen readers
-                Icon(
-                    painter = painterResource(it.icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize),
-                )
-            },
-        )
+        } else {
+            FilterChip(
+                selected = it in selected,
+                onClick = { onToggleOrigin(it) },
+                label = { Text(stringResource(it.sourceRes)) },
+                leadingIcon = {
+                    // The label says the same, nothing more for screen readers
+                    Icon(
+                        painter = painterResource(it.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                    )
+                },
+            )
+        }
     }
 }
 
@@ -281,8 +285,10 @@ private fun UndislikeAllDialog(filtered: Boolean, onConfirm: () -> Unit, onDismi
         text = {
             Text(
                 stringResource(
-                    if (filtered) R.string.dialog_body_undislike_all_shown
-                    else R.string.dialog_body_undislike_all
+                    if (filtered)
+                        R.string.dialog_body_undislike_all_shown
+                    else
+                        R.string.dialog_body_undislike_all
                 )
             )
         },

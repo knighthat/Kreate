@@ -109,13 +109,14 @@ internal fun LyricsButtons(
                     text = { Text(source.name) },
                     // Room for the check on every row, the names line up
                     leadingIcon = {
-                        if (shown?.source == source.name)
+                        if (shown?.source == source.name) {
                             Icon(
                                 painterResource(R.drawable.check),
                                 contentDescription = stringResource(R.string.semantic_shown)
                             )
-                        else
+                        } else {
                             Spacer(Modifier.size(24.dp))
+                        }
                     },
                     onClick = {
                         menu = null
@@ -151,13 +152,14 @@ internal fun LyricsButtons(
                     text = { Text(stringResource(timing.labelRes)) },
                     // Room for the check on every row, the labels line up
                     leadingIcon = {
-                        if ((controls.sync ?: loaded) == timing)
+                        if ((controls.sync ?: loaded) == timing) {
                             Icon(
                                 painterResource(R.drawable.check),
                                 contentDescription = stringResource(R.string.semantic_shown)
                             )
-                        else
+                        } else {
                             Spacer(Modifier.size(24.dp))
+                        }
                     },
                     onClick = {
                         menu = null

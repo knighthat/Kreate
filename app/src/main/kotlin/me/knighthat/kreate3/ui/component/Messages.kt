@@ -100,8 +100,10 @@ fun ShowMessages(notifier: Notifier, host: SnackbarHostState) {
                 )
             }
             val result =
-                if (timeout == null) show()
-                else withTimeoutOrNull(timeout) { show() } ?: SnackbarResult.Dismissed
+                if (timeout == null)
+                    show()
+                else
+                    withTimeoutOrNull(timeout) { show() } ?: SnackbarResult.Dismissed
             if (result == SnackbarResult.ActionPerformed) message.onAction()
         }
     }

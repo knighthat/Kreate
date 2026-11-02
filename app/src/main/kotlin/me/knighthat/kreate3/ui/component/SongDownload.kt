@@ -145,7 +145,9 @@ internal fun SongDownloadAction(
                     deleting = false
                     downloads.resume(origin, item.mediaId)
                 }
-            } else null,
+            } else {
+                null
+            },
             onDelete = {
                 deleting = false
                 downloads.delete(origin, item.mediaId)
@@ -196,9 +198,9 @@ private fun CachedSongDialog(
     title = { Text(stringResource(R.string.dialog_title_cached_song)) },
     text = {
         val cached = plan.cached
-        if (plan.movesCache || cached == null)
+        if (plan.movesCache || cached == null) {
             Text(stringResource(R.string.dialog_body_cached_song_move))
-        else
+        } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = stringResource(R.string.dialog_body_cached_song_worse_1),
@@ -212,6 +214,7 @@ private fun CachedSongDialog(
                     )
                 )
             }
+        }
     },
     confirmButton = {
         DialogButtons(onDismiss) {
@@ -219,8 +222,10 @@ private fun CachedSongDialog(
                 TextButton(onClick = onDownload) {
                     Text(
                         stringResource(
-                            if (plan.movesCache) R.string.action_move_to_downloads
-                            else R.string.action_download
+                            if (plan.movesCache)
+                                R.string.action_move_to_downloads
+                            else
+                                R.string.action_download
                         )
                     )
                 }
@@ -247,16 +252,20 @@ private fun DeleteDownloadDialog(
     title = {
         Text(
             stringResource(
-                if (isRunning) R.string.dialog_title_stop_download
-                else R.string.dialog_title_delete_download
+                if (isRunning)
+                    R.string.dialog_title_stop_download
+                else
+                    R.string.dialog_title_delete_download
             )
         )
     },
     text = {
         Text(
             stringResource(
-                if (isRunning) R.string.dialog_body_stop_download
-                else R.string.dialog_body_delete_download,
+                if (isRunning)
+                    R.string.dialog_body_stop_download
+                else
+                    R.string.dialog_body_delete_download,
                 stringResource(R.string.quoted, title),
             )
         )

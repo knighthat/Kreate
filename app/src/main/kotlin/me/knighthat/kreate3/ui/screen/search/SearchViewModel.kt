@@ -196,8 +196,10 @@ class SearchViewModel(
         combine(query, _origin, ::Pair)
             .flatMapLatest { (query, origin) ->
                 // Online catalogs suggest through liveSuggestions
-                if (query.isEmpty() || origin != Origin.LOCAL) flowOf(PagingData.empty())
-                else search(query)
+                if (query.isEmpty() || origin != Origin.LOCAL)
+                    flowOf(PagingData.empty())
+                else
+                    search(query)
             }
             .cachedIn(viewModelScope)
 

@@ -93,7 +93,7 @@ class ProfilesActivity : ComponentActivity() {
         val context = LocalContext.current
         val resources = LocalResources.current
         // The active profile shows since when it is active, the others when they were last used
-        val subtitle = if (isActive)
+        val subtitle = if (isActive) {
             user.activeSince?.let {
                 resources.getString(
                     R.string.screen_profiles_status_active_since,
@@ -104,13 +104,14 @@ class ProfilesActivity : ComponentActivity() {
                     ),
                 )
             }
-        else
+        } else {
             user.lastSeen?.let {
                 resources.getString(
                     R.string.screen_profiles_status_last_seen,
                     DateUtils.getRelativeTimeSpanString(it.toEpochMilliseconds()),
                 )
             }
+        }
 
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
             // Stripe marks the active profile, inactive ones keep the space so names stay aligned

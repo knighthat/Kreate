@@ -153,9 +153,9 @@ class LoudnessAnalyzer(private val context: Context) {
 
     private fun ByteBuffer.readSamples(encoding: Int, into: FloatArray, count: Int) {
         order(ByteOrder.nativeOrder())
-        if (encoding == AudioFormat.ENCODING_PCM_FLOAT)
+        if (encoding == AudioFormat.ENCODING_PCM_FLOAT) {
             asFloatBuffer().get(into, 0, count)
-        else {
+        } else {
             val shorts = asShortBuffer()
             for (i in 0 until count) into[i] = shorts.get(i) / 32768f
         }

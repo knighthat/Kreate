@@ -138,8 +138,10 @@ private fun YouTubeMoreContent(
                 key = items.itemKey { (tab, item) -> "${tab.name}:${item.mediaId}" },
             ) { index ->
                 items[index]?.let { (tab, item) ->
-                    if (tab == Tab.ARTISTS) ArtistItem(item, onClick = { onOpen(tab, item) })
-                    else AlbumItem(item, onClick = { onOpen(tab, item) })
+                    if (tab == Tab.ARTISTS)
+                        ArtistItem(item, onClick = { onOpen(tab, item) })
+                    else
+                        AlbumItem(item, onClick = { onOpen(tab, item) })
                 }
             }
         }

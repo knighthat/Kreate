@@ -400,7 +400,9 @@ class OpenSubsonicLibraryTest {
                 sending.complete(Unit)
                 release.await()
                 """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Busy"}}}"""
-            } else default(method)
+            } else {
+                default(method)
+            }
         }
 
         val liking = scope.async { runCatching { library.react("s9") { liked } } }

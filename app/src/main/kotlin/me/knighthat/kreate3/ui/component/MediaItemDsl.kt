@@ -266,8 +266,10 @@ fun UserPlaylist.toMediaItem(): MediaItem =
         setTitle(name)
         setSubtitle(
             subtitle(
-                if (isMonthly) GlobalContext.get().get<Context>()
-                    .getString(R.string.playlist_type_monthly) else null,
+                if (isMonthly)
+                    GlobalContext.get().get<Context>().getString(R.string.playlist_type_monthly)
+                else
+                    null,
                 GlobalContext.get().get<Context>().resources.sourceName(origin)
             )
         )

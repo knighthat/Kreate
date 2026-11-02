@@ -58,8 +58,10 @@ internal fun parseLyricsPlus(text: String): LyricsContent? {
         val main = LyricsLine(
             start = start,
             end = end,
-            text = if (words.isEmpty()) entry.string("text").orEmpty().trim()
-            else words.joinToString("") { it.text }.trim(),
+            text = if (words.isEmpty())
+                entry.string("text").orEmpty().trim()
+            else
+                words.joinToString("") { it.text }.trim(),
             words = words,
         )
         val backingWords = backing.toWords()

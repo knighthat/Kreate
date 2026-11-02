@@ -195,8 +195,9 @@ class KreateActivity : ComponentActivity() {
                     openRoute = routeRequested,
                     onRouteOpened = { openRoute.value = null },
                 )
-            } else
+            } else {
                 SetupWizardScreen()
+            }
         }
     }
 

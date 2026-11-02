@@ -214,8 +214,10 @@ private fun DataSettingsContent(
             )
         }
         val cacheWarning = { used: String, bytes: Long ->
-            if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_cache, used)
-            else resources.getString(R.string.dialog_body_shrink_cache, used, size(bytes))
+            if (bytes <= 0)
+                resources.getString(R.string.dialog_body_turn_off_cache, used)
+            else
+                resources.getString(R.string.dialog_body_shrink_cache, used, size(bytes))
         }
 
         SettingsSection(stringResource(R.string.setting_header_storage))
@@ -274,8 +276,10 @@ private fun DataSettingsContent(
             onSave = { GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.update(it) },
             // Downloads apply at once, nothing to restart for
             shrinkWarning = { used, bytes ->
-                if (bytes <= 0) resources.getString(R.string.dialog_body_turn_off_downloads, used)
-                else resources.getString(R.string.dialog_body_shrink_downloads, used, size(bytes))
+                if (bytes <= 0)
+                    resources.getString(R.string.dialog_body_turn_off_downloads, used)
+                else
+                    resources.getString(R.string.dialog_body_shrink_downloads, used, size(bytes))
             },
             onRestart = null,
             wipe = onDeleteAllDownloads?.let {
@@ -326,8 +330,10 @@ private fun DataSettingsContent(
             checked = downloadOnLowBattery,
             onCheckedChange = { Preferences.DOWNLOAD_ON_LOW_BATTERY.update(it) },
             summary = stringResource(
-                if (downloadOnLowBattery) R.string.setting_description_download_on_low_battery_on
-                else R.string.setting_description_download_on_low_battery_off
+                if (downloadOnLowBattery)
+                    R.string.setting_description_download_on_low_battery_on
+                else
+                    R.string.setting_description_download_on_low_battery_off
             ),
         )
         SwitchSetting(
@@ -349,8 +355,10 @@ private fun DataSettingsContent(
                     R.string.setting_description_memory_cache,
                     stringResource(R.string.percent, it)
                 )
-                if (appWide || defaultProfileOnly == null) description
-                else "$description\n$defaultProfileOnly"
+                if (appWide || defaultProfileOnly == null)
+                    description
+                else
+                    "$description\n$defaultProfileOnly"
             },
             enabled = appWide,
         )
@@ -445,8 +453,10 @@ private fun StorageSetting(
             title = {
                 Text(
                     stringResource(
-                        if (picked <= 0) R.string.dialog_title_turn_off
-                        else R.string.dialog_title_shrink_cache
+                        if (picked <= 0)
+                            R.string.dialog_title_turn_off
+                        else
+                            R.string.dialog_title_shrink_cache
                     )
                 )
             },
@@ -560,8 +570,10 @@ private fun SizeDialog(
                     label = {
                         Text(
                             stringResource(
-                                if (binary) R.string.setting_title_size_in_mib
-                                else R.string.setting_title_size_in_mb
+                                if (binary)
+                                    R.string.setting_title_size_in_mib
+                                else
+                                    R.string.setting_title_size_in_mb
                             )
                         )
                     },
@@ -572,7 +584,8 @@ private fun SizeDialog(
                         Text(
                             if (picked == null)
                                 stringResource(R.string.setting_description_between, 0, max)
-                            else sizeLabel(resources, picked, binary)
+                            else
+                                sizeLabel(resources, picked, binary)
                         )
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

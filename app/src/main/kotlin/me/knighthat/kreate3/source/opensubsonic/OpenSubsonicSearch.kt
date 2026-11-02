@@ -99,8 +99,10 @@ private class OpenSubsonicSearchPagingSource(
         val size = params.loadSize
 
         val items = try {
-            if (tab == Tab.PLAYLISTS) playlists()
-            else page(offset, size)
+            if (tab == Tab.PLAYLISTS)
+                playlists()
+            else
+                page(offset, size)
         } catch (e: ServerException) {
             return LoadResult.Error(e)
         }

@@ -286,14 +286,18 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 private fun staticColorScheme(darkTheme: Boolean, contrastLevel: ContrastLevel): ColorScheme =
-    if (darkTheme) when (contrastLevel) {
-        ContrastLevel.NORMAL -> darkScheme()
-        ContrastLevel.MEDIUM -> mediumContrastDarkColorScheme()
-        ContrastLevel.HIGH -> highContrastDarkColorScheme()
-    } else when (contrastLevel) {
-        ContrastLevel.NORMAL -> lightScheme()
-        ContrastLevel.MEDIUM -> mediumContrastLightColorScheme()
-        ContrastLevel.HIGH -> highContrastLightColorScheme()
+    if (darkTheme) {
+        when (contrastLevel) {
+            ContrastLevel.NORMAL -> darkScheme()
+            ContrastLevel.MEDIUM -> mediumContrastDarkColorScheme()
+            ContrastLevel.HIGH -> highContrastDarkColorScheme()
+        }
+    } else {
+        when (contrastLevel) {
+            ContrastLevel.NORMAL -> lightScheme()
+            ContrastLevel.MEDIUM -> mediumContrastLightColorScheme()
+            ContrastLevel.HIGH -> highContrastLightColorScheme()
+        }
     }
 
 /**

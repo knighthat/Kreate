@@ -51,8 +51,10 @@ private const val MAX_BOOST_DB = 6f
  * song; a song louder than the target is cut, a quieter one is boosted, up to [MAX_BOOST_DB].
  */
 internal fun normalizationDb(gain: Float?, targetLufs: Float = REFERENCE_LUFS.toFloat()): Float =
-    if (gain == null) 0f
-    else ((targetLufs - REFERENCE_LUFS).toFloat() - gain).coerceIn(-MAX_CUT_DB, MAX_BOOST_DB)
+    if (gain == null)
+        0f
+    else
+        ((targetLufs - REFERENCE_LUFS).toFloat() - gain).coerceIn(-MAX_CUT_DB, MAX_BOOST_DB)
 
 /**
  * The gain, over [REFERENCE_LUFS], of a song whose [replayGain] brings it to [taggedLufs]: a

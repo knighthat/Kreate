@@ -57,10 +57,12 @@ class CoverFiles(context: Context) {
     fun kindOf(cover: Uri?): CoverKind {
         val file = cover?.file() ?: return if (cover == null) CoverKind.NONE else CoverKind.OTHER
         val folder = file.parentFile
-        return if (folder == downloads) CoverKind.DOWNLOADED
+        return if (folder == downloads)
+            CoverKind.DOWNLOADED
         else if (folder?.name == CUSTOM_DIRECTORY && folder.parentFile?.parentFile == profiles)
             CoverKind.CUSTOM
-        else CoverKind.OTHER
+        else
+            CoverKind.OTHER
     }
 
     /** The file of the cover downloaded from [address] in [size], see [SMALL_COVER]. */

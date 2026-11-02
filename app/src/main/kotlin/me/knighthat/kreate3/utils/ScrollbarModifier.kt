@@ -60,9 +60,9 @@ fun Modifier.verticalScrollbar(
         alpha.animateTo(1f, tween(durationMillis = 150))
 
         snapshotFlow { state.isScrollInProgress }.collectLatest { scrolling ->
-            if (scrolling)
+            if (scrolling) {
                 alpha.animateTo(1f, tween(durationMillis = 150))
-            else {
+            } else {
                 delay(800)
                 alpha.animateTo(0f, tween(durationMillis = 500))
             }

@@ -78,8 +78,10 @@ class GroupStatisticsViewModel(
 ) : ViewModel() {
 
     val group: StatisticsGroup =
-        if (savedStateHandle.contains(AlbumStatistics.ID)) StatisticsGroup.ALBUM
-        else StatisticsGroup.ARTIST
+        if (savedStateHandle.contains(AlbumStatistics.ID))
+            StatisticsGroup.ALBUM
+        else
+            StatisticsGroup.ARTIST
 
     private val id: String = checkNotNull(
         savedStateHandle[if (group == StatisticsGroup.ALBUM) AlbumStatistics.ID else ArtistStatistics.ID]

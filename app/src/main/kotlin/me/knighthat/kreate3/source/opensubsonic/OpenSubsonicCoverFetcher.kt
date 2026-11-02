@@ -75,20 +75,26 @@ class OpenSubsonicCoverFetcher(
      */
     private suspend fun shrinkOriginal(bytes: ByteArray): ByteArray =
         withContext(Dispatchers.Default) {
-            if (pictureSide(bytes) >= LARGE_COVER) bytes
-            else encodeCover(bytes, LARGE_COVER) ?: bytes
+            if (pictureSide(bytes) >= LARGE_COVER)
+                bytes
+            else
+                encodeCover(bytes, LARGE_COVER) ?: bytes
         }
 
     class Factory(private val provider: OpenSubsonicProvider) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             val uri = data.toString().toAndroidUri()
-            return if (provider.isCoverUri(uri)) OpenSubsonicCoverFetcher(
-                uri,
-                options,
-                provider,
-                imageLoader.diskCache,
-            ) else null
+            return if (provider.isCoverUri(uri)) {
+                OpenSubsonicCoverFetcher(
+                    uri,
+                    options,
+                    provider,
+                    imageLoader.diskCache,
+                )
+            } else {
+                null
+            }
         }
     }
 }

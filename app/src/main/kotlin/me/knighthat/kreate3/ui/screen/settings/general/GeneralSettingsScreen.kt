@@ -88,8 +88,10 @@ private fun GeneralSettingsContent(
             checked = exitOnBack,
             onCheckedChange = { Preferences.EXIT_ON_BACK.update(it) },
             summary = stringResource(
-                if (exitOnBack) R.string.setting_description_exit_on_back_on
-                else R.string.setting_description_exit_on_back_off
+                if (exitOnBack)
+                    R.string.setting_description_exit_on_back_on
+                else
+                    R.string.setting_description_exit_on_back_off
             ),
         )
         if (exitOnBack) {

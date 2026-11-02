@@ -166,11 +166,11 @@ internal class VoiceSearch(
             }
 
             // Nothing while the server is off or not set up, see OPEN_SUBSONIC_ENABLED
-            Origin.OPEN_SUBSONIC -> if (tab == Tab.PLAYLISTS)
+            Origin.OPEN_SUBSONIC -> if (tab == Tab.PLAYLISTS) {
                 openSubsonic.libraryPlaylists().orEmpty()
                     .filter { it.name.contains(term, ignoreCase = true) }
                     .map { it.toLiveMediaItem() }
-            else {
+            } else {
                 val found = openSubsonic.searchLibrary(
                     term,
                     songs = if (tab == Tab.SONGS) SERVER_RESULTS else 0,
@@ -192,10 +192,13 @@ internal class VoiceSearch(
     /** What [match] plays: a song with songs like it, or the songs of a collection. */
     private suspend fun queueOf(match: Match): List<MediaItem> =
         if (match.tab == Tab.SONGS) {
-            if (match.item.mediaMetadata.isPlayable == true) withSimilar(match.item)
-            else emptyList()
-        } else
+            if (match.item.mediaMetadata.isPlayable == true)
+                withSimilar(match.item)
+            else
+                emptyList()
+        } else {
             library.songsOf(match.tab, match.item)
+        }
 
     /** [seed] followed by up to [RADIO_SIZE] songs like it, as the app's radio. */
     private suspend fun withSimilar(seed: MediaItem): List<MediaItem> {

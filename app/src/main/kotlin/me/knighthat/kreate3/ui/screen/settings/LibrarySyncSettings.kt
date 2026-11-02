@@ -48,16 +48,20 @@ internal fun syncModeDescription(mode: SyncMode, @PluralsRes plural: Int): Strin
 /** Liked songs on [source] are synced while [on]. */
 @Composable
 internal fun syncSongsDescription(on: Boolean, source: String): String = stringResource(
-    if (on) R.string.setting_description_sync_liked_songs_on
-    else R.string.setting_description_sync_liked_songs_off,
+    if (on)
+        R.string.setting_description_sync_liked_songs_on
+    else
+        R.string.setting_description_sync_liked_songs_off,
     source,
 )
 
 /** The playlists on [source] are synced while [on]. */
 @Composable
 internal fun syncPlaylistsDescription(on: Boolean, source: String): String = stringResource(
-    if (on) R.string.setting_description_sync_playlists_on
-    else R.string.setting_description_sync_playlists_off,
+    if (on)
+        R.string.setting_description_sync_playlists_on
+    else
+        R.string.setting_description_sync_playlists_off,
     source,
 )
 

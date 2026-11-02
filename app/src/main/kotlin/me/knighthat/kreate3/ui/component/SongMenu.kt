@@ -416,8 +416,10 @@ private fun rememberSongArtists(item: MediaItem): List<SongArtist> {
         // Only the picker shows names, a single artist is gone to without one
         if (known.size < 2 || known.all { it.name != null }) return@produceState
         value = known.map {
-            if (it.name != null) it
-            else SongArtist(it.id, library.find(it.id).first()?.name, it.route)
+            if (it.name != null)
+                it
+            else
+                SongArtist(it.id, library.find(it.id).first()?.name, it.route)
         }
     }
     return artists
@@ -533,8 +535,10 @@ private fun SongMenuActions(
             ),
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
         ) {
-            if (artists.size == 1) close { navigator.open(artists.single().route) }
-            else onPickArtist()
+            if (artists.size == 1)
+                close { navigator.open(artists.single().route) }
+            else
+                onPickArtist()
         }
     actions.forEach { action ->
         MenuRow(action.icon, action.label) { close(action.onClick) }
@@ -693,8 +697,9 @@ internal fun LabeledIconButton(
     if (showLabel) {
         button()
         ButtonLabel(label, enabled)
-    } else
+    } else {
         Tooltip(label, content = button)
+    }
 }
 
 @Composable

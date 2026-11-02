@@ -364,12 +364,15 @@ data class YouTubeMore(val title: String, val browseId: String, val params: Stri
  * like an artist's videos, opens that playlist.
  */
 fun youTubeMoreRoute(title: String, more: YouTubeBrowse): Route =
-    if (more.browseId.startsWith(PLAYLIST_PREFIX)) YouTubePlaylist(
-        more.browseId.removePrefix(
-            PLAYLIST_PREFIX
+    if (more.browseId.startsWith(PLAYLIST_PREFIX)) {
+        YouTubePlaylist(
+            more.browseId.removePrefix(
+                PLAYLIST_PREFIX
+            )
         )
-    )
-    else YouTubeMore(title, more.browseId, more.params)
+    } else {
+        YouTubeMore(title, more.browseId, more.params)
+    }
 
 /** Browse id of a YouTube playlist is this followed by the playlist's id. */
 private const val PLAYLIST_PREFIX = "VL"

@@ -115,9 +115,9 @@ internal fun SyncedLyricsList(
         if (dragged) return@LaunchedEffect
         val target = (listState.layoutInfo.viewportSize.height * FOCUS_FRACTION).toInt()
         val shown = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == focus }
-        if (shown != null)
+        if (shown != null) {
             listState.animateScrollBy((shown.offset - target).toFloat())
-        else {
+        } else {
             listState.scrollToItem(focus)
             listState.scrollBy(-target.toFloat())
         }

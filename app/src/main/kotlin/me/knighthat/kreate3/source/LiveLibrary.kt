@@ -80,7 +80,8 @@ suspend fun livePlaylists(openSubsonic: OpenSubsonicProvider, youTube: YouTubePr
     {
         if (Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.value)
             openSubsonic.libraryPlaylists()?.map { it.toLiveMediaItem() }
-        else null
+        else
+            null
     },
     youTubeSection(LibrarySection.PLAYLISTS) {
         youTube.libraryPlaylists()?.map {

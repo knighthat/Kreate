@@ -92,16 +92,20 @@ class YouTubeArtistDetailViewModel(
         notifier,
         send = { on ->
             val artist = onDevice
-            if (artist != null) device.setFollowed(artist, on)
-            else provider.subscribe(checkNotNull(channelId), on)
+            if (artist != null)
+                device.setFollowed(artist, on)
+            else
+                provider.subscribe(checkNotNull(channelId), on)
         },
         failure = { e, on ->
-            if (onDevice != null)
+            if (onDevice != null) {
                 context.getString(if (on) R.string.error_follow_artist else R.string.error_unfollow_artist)
-            else e.youTubeFailure(
-                context.resources,
-                if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
-            )
+            } else {
+                e.youTubeFailure(
+                    context.resources,
+                    if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
+                )
+            }
         },
     )
 

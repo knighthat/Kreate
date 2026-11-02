@@ -110,17 +110,20 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
             // The song has to be in the database before a playlist can have it
             songs.store(item.mediaId, item.origin)
             val undo = add()
-            if (undo == null) Message(
-                resources.getString(
-                    R.string.snackbar_already_in_playlist,
-                    playlist
+            if (undo == null) {
+                Message(
+                    resources.getString(
+                        R.string.snackbar_already_in_playlist,
+                        playlist
+                    )
                 )
-            )
-            else undoMessage(
-                resources,
-                resources.getString(R.string.snackbar_added_to_playlist, playlist),
-                undoing(playlist, undo),
-            )
+            } else {
+                undoMessage(
+                    resources,
+                    resources.getString(R.string.snackbar_added_to_playlist, playlist),
+                    undoing(playlist, undo),
+                )
+            }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -134,8 +137,10 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         playlists = playlists,
         add = { playlist ->
             write(playlist.name) {
-                if (!repository.addSong(playlist.id, item.mediaId)) null
-                else suspend { repository.removeSong(playlist.id, item.mediaId) }
+                if (!repository.addSong(playlist.id, item.mediaId))
+                    null
+                else
+                    suspend { repository.removeSong(playlist.id, item.mediaId) }
             }
         },
         create = { name ->

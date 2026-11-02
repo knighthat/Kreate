@@ -83,12 +83,15 @@ internal class SelfSignedTrustManager(
     ) {
         val host = (socket as? SSLSocket)?.handshakeSession?.peerHost
         check(chain, authType, host) {
-            if (system is X509ExtendedTrustManager) system.checkServerTrusted(
-                chain,
-                authType,
-                socket
-            )
-            else system.checkServerTrusted(chain, authType)
+            if (system is X509ExtendedTrustManager) {
+                system.checkServerTrusted(
+                    chain,
+                    authType,
+                    socket
+                )
+            } else {
+                system.checkServerTrusted(chain, authType)
+            }
         }
     }
 
@@ -98,12 +101,15 @@ internal class SelfSignedTrustManager(
         engine: SSLEngine?
     ) {
         check(chain, authType, engine?.peerHost) {
-            if (system is X509ExtendedTrustManager) system.checkServerTrusted(
-                chain,
-                authType,
-                engine
-            )
-            else system.checkServerTrusted(chain, authType)
+            if (system is X509ExtendedTrustManager) {
+                system.checkServerTrusted(
+                    chain,
+                    authType,
+                    engine
+                )
+            } else {
+                system.checkServerTrusted(chain, authType)
+            }
         }
     }
 

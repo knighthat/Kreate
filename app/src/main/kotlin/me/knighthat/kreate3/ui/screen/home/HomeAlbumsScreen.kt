@@ -98,8 +98,10 @@ fun HomeAlbumsScreen(
         onRandom = {
             scope.launch {
                 val picked = viewModel.random()
-                if (picked != null) onOpen(picked)
-                else notifier.post(nothingToPick)
+                if (picked != null)
+                    onOpen(picked)
+                else
+                    notifier.post(nothingToPick)
             }
         },
         onPlayRandom = { playRandom(QueueAction.PLAY) },

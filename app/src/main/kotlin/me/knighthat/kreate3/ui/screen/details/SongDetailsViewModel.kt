@@ -149,8 +149,10 @@ class SongDetailsViewModel(
         loading = viewModelScope.launch {
             _state.value = try {
                 val recording = block()
-                if (recording == null) SongDetailsState.NotFound
-                else SongDetailsState.Loaded(recording, keep(recording.id))
+                if (recording == null)
+                    SongDetailsState.NotFound
+                else
+                    SongDetailsState.Loaded(recording, keep(recording.id))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -174,8 +176,10 @@ class SongDetailsViewModel(
 
     private fun failure(e: Exception): String {
         val musicBrainz = context.getString(R.string.source_musicbrainz)
-        return if (e is IOException) context.getString(R.string.error_unreachable, musicBrainz)
-        else context.getString(R.string.error_song_details, musicBrainz)
+        return if (e is IOException)
+            context.getString(R.string.error_unreachable, musicBrainz)
+        else
+            context.getString(R.string.error_song_details, musicBrainz)
     }
 
     private companion object {

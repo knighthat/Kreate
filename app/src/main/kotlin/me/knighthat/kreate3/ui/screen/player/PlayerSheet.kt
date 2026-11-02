@@ -899,8 +899,10 @@ internal fun ModeButton(
     dimmed: Boolean = false,
 ) = Tooltip(description) {
     IconButton(onClick = onClick, enabled = enabled) {
-        val tint = if (isOn) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.onSurfaceVariant
+        val tint = if (isOn)
+            MaterialTheme.colorScheme.primary
+        else
+            MaterialTheme.colorScheme.onSurfaceVariant
         Icon(
             painter = painterResource(icon),
             contentDescription = description,

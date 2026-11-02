@@ -268,8 +268,10 @@ private fun HistoryContent(
                     item(key = "empty") {
                         Text(
                             stringResource(
-                                if (filtered) R.string.screen_history_status_no_matches
-                                else R.string.screen_history_status_nothing_played
+                                if (filtered)
+                                    R.string.screen_history_status_no_matches
+                                else
+                                    R.string.screen_history_status_nothing_played
                             ),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -416,8 +418,10 @@ private fun ClearHistoryDialog(filtered: Boolean, onClear: () -> Unit, onDismiss
         text = {
             Text(
                 stringResource(
-                    if (filtered) R.string.dialog_body_clear_history_shown
-                    else R.string.dialog_body_clear_history
+                    if (filtered)
+                        R.string.dialog_body_clear_history_shown
+                    else
+                        R.string.dialog_body_clear_history
                 )
             )
         },
@@ -521,26 +525,28 @@ private fun HistorySheet(
                     modifier = Modifier.padding(horizontal = 16.dp),
                 ) {
                     choices.forEach {
-                        if (iconOnly)
+                        if (iconOnly) {
                             FilterIconButton(
                                 it.icon,
                                 stringResource(it.sourceRes),
                                 selected = it in selected,
                                 onToggle = { onToggleOrigin(it) },
                             )
-                        else FilterChip(
-                            selected = it in selected,
-                            onClick = { onToggleOrigin(it) },
-                            label = { Text(stringResource(it.sourceRes)) },
-                            leadingIcon = {
-                                // The label says the same, nothing more for screen readers
-                                Icon(
-                                    painter = painterResource(it.icon),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                )
-                            },
-                        )
+                        } else {
+                            FilterChip(
+                                selected = it in selected,
+                                onClick = { onToggleOrigin(it) },
+                                label = { Text(stringResource(it.sourceRes)) },
+                                leadingIcon = {
+                                    // The label says the same, nothing more for screen readers
+                                    Icon(
+                                        painter = painterResource(it.icon),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }

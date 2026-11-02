@@ -329,9 +329,9 @@ internal fun LyricsPage(
                 }
             }
         }
-        value = if (query == null)
+        value = if (query == null) {
             LyricsState.Missing
-        else
+        } else {
             loadLyrics(
                 query = query,
                 request = request,
@@ -341,6 +341,7 @@ internal fun LyricsPage(
                 stored = { songs.lyricsOf(item.mediaId, it).first() },
                 save = save,
             )
+        }
     }
     LaunchedEffect(controls, state) {
         controls.shown = state as? LyricsState.Found
@@ -390,13 +391,15 @@ private fun LyricsPageContent(
                 shown.credit
             ).joinToString("\n")
             val content by produceState(shown.content, shown, sync) {
-                value = if (sync == null) shown.content
-                else withContext(Dispatchers.Default) { shown.content.coarsenedTo(sync) }
+                value = if (sync == null)
+                    shown.content
+                else
+                    withContext(Dispatchers.Default) { shown.content.coarsenedTo(sync) }
             }
             val drawn = content
-            if (drawn is SyncedLyrics)
+            if (drawn is SyncedLyrics) {
                 SyncedLyricsList(drawn, footer, isPlaying, controller, contentPadding, modifier)
-            else
+            } else {
                 Column(
                     modifier = modifier
                         .fillMaxSize()
@@ -416,6 +419,7 @@ private fun LyricsPageContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
         }
 
         else -> Box(
@@ -447,8 +451,9 @@ private fun LyricsPageContent(
                             buildAnnotatedString {
                                 // The icon takes the place of the mark, wherever the translation puts it
                                 val start = hint.indexOf(CHANGE_SOURCE_MARK)
-                                if (start < 0) append(hint)
-                                else {
+                                if (start < 0) {
+                                    append(hint)
+                                } else {
                                     append(hint.substring(0, start))
                                     appendInlineContent(CHANGE_SOURCE_ICON, CHANGE_SOURCE_MARK)
                                     append(hint.substring(start + CHANGE_SOURCE_MARK.length))

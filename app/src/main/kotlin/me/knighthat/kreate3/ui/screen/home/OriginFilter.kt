@@ -56,8 +56,10 @@ class OriginFilter(
     val choices: StateFlow<List<Origin>> =
         combine(stored, liveItems, selected) { db, live, chosen ->
             val offered = db + live.mapNotNull { it.origin } + chosen
-            if (offered.size <= 1 && chosen.isEmpty()) emptyList()
-            else Origin.entries.filter { it in offered }
+            if (offered.size <= 1 && chosen.isEmpty())
+                emptyList()
+            else
+                Origin.entries.filter { it in offered }
         }.stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     /** The items of `liveItems` the filter shows. */

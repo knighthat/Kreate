@@ -434,8 +434,10 @@ private fun BallSlider(
                             .wrapContentWidth(unbounded = true)
                             .height(ball)
                             .then(
-                                if (ballWidth == null) Modifier.widthIn(min = ball)
-                                else Modifier.width(ballWidth + ball - BALL_SIZE)
+                                if (ballWidth == null)
+                                    Modifier.widthIn(min = ball)
+                                else
+                                    Modifier.width(ballWidth + ball - BALL_SIZE)
                             )
                             .background(MaterialTheme.colorScheme.primary, CircleShape)
                             .padding(horizontal = BALL_PADDING),

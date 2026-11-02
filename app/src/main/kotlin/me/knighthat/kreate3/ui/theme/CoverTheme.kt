@@ -52,7 +52,8 @@ fun CoverTheme(models: List<Any>, content: @Composable () -> Unit) {
     val colorScheme = remember(enabled, seed, isDark, contrastLevel, app) {
         if (enabled && seed.isSpecified)
             seededColorScheme(seed, isDark, contrastLevel = contrastLevel.seedContrast)
-        else app
+        else
+            app
     }
     MaterialTheme(
         colorScheme = colorScheme,

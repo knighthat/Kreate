@@ -80,9 +80,12 @@ internal class SongLoadControl(
         val ahead = aheadUs ?: Long.MAX_VALUE
         val toStart = toStartSeconds().seconds.inWholeMicroseconds.coerceIn(0, ahead)
         val needed =
-            if (parameters.rebuffering) toStart.coerceAtLeast(AFTER_RUNNING_OUT_US)
-                .coerceAtMost(ahead)
-            else toStart
+            if (parameters.rebuffering) {
+                toStart.coerceAtLeast(AFTER_RUNNING_OUT_US)
+                    .coerceAtMost(ahead)
+            } else {
+                toStart
+            }
         val buffered = Util.getPlayoutDurationForMediaDuration(
             parameters.bufferedDurationUs,
             parameters.playbackSpeed,

@@ -332,7 +332,8 @@ internal class AutoLibrary(
         // A playlist of a source is found by its id there, one of the app by its database id
         val key = if (tab == Tab.PLAYLISTS && origin != Origin.LOCAL)
             item.remoteId ?: item.mediaId
-        else item.mediaId
+        else
+            item.mediaId
         return AutoNode.Collection(tab, origin, key)
     }
 

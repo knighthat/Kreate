@@ -441,8 +441,10 @@ fun SearchScreen(
             // An unspecified adjust keeps the one set last, so pan is set back by name
             val adjust = previous and WindowManager.LayoutParams.SOFT_INPUT_MASK_ADJUST
             window.setSoftInputMode(
-                if (adjust != WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED) previous
-                else previous or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                if (adjust != WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED)
+                    previous
+                else
+                    previous or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
             )
         }
     }
@@ -522,7 +524,7 @@ private fun SearchContent(
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    val suggestions = if (origin == Origin.LOCAL)
+    val suggestions = if (origin == Origin.LOCAL) {
         suggestionsOf(
             mapOf(
                 Tab.SONGS to songs,
@@ -531,10 +533,12 @@ private fun SearchContent(
                 Tab.ARTISTS to artists,
             ).filterKeys { it in categories }
         )
-    else live.items
-        // Online catalogs suggest every kind, only the chosen ones show
-        .filter { (kind, _) -> kind in categories }
-        .map { (kind, item) -> Suggestion(kind, item) }
+    } else {
+        live.items
+            // Online catalogs suggest every kind, only the chosen ones show
+            .filter { (kind, _) -> kind in categories }
+            .map { (kind, item) -> Suggestion(kind, item) }
+    }
 
     val miniPlayerSpace = rememberMiniPlayerSpace()
     Scaffold(
@@ -593,7 +597,7 @@ private fun SearchContent(
                     .padding(innerPadding)
                     .padding(16.dp),
             )
-        } else
+        } else {
             // Clear of the search bar, but running under the mini player, see MiniPlayerSpace
             LazyColumn(
                 contentPadding = miniPlayerSpace.inside,
@@ -633,8 +637,10 @@ private fun SearchContent(
                     if (suggestions.isNotEmpty() || live.queries.isNotEmpty())
                         item(key = "recent-title") {
                             SectionTitle(
-                                if (text.isBlank()) stringResource(R.string.section_header_recent_searches)
-                                else stringResource(R.string.section_header_searches)
+                                if (text.isBlank())
+                                    stringResource(R.string.section_header_recent_searches)
+                                else
+                                    stringResource(R.string.section_header_searches)
                             )
                         }
                     items(recent, key = { "recent:" + it.query }) { recentSearch ->
@@ -649,6 +655,7 @@ private fun SearchContent(
                     }
                 }
             }
+        }
     }
 
     if (showConfig)

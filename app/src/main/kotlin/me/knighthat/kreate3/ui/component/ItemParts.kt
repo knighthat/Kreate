@@ -113,7 +113,8 @@ fun thumbnailModel(uri: Uri?, localSongId: Long?): Any? {
     val cover = uri?.coverSource()
     return if (localSongId != null && (cover == null || cover.isAlbumArt()))
         LocalCover(localSongId, cover)
-    else cover
+    else
+        cover
 }
 
 /** Key a picture of [model] has in Coil's memory cache, `null` when it can't be told. */
@@ -219,17 +220,22 @@ fun Thumbnail(
             if (!sharp && standIn == null) standIn = key
             sharp
         }
-        if (cached == null) ThumbnailOrder(models, standIn)
-        else ThumbnailOrder(listOf(cached) + (models - cached), null)
+        if (cached == null)
+            ThumbnailOrder(models, standIn)
+        else
+            ThumbnailOrder(listOf(cached) + (models - cached), null)
     }
     var failed by remember(order) { mutableIntStateOf(0) }
     val model = order.models.getOrNull(failed)
     val request = remember(model, order.standIn) {
-        if (model == null || order.standIn == null) model
-        else ImageRequest.Builder(context)
-            .data(model)
-            .placeholderMemoryCacheKey(order.standIn)
-            .build()
+        if (model == null || order.standIn == null) {
+            model
+        } else {
+            ImageRequest.Builder(context)
+                .data(model)
+                .placeholderMemoryCacheKey(order.standIn)
+                .build()
+        }
     }
     var loaded by remember(model) { mutableStateOf(false) }
 
@@ -239,16 +245,16 @@ fun Thumbnail(
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        if (model == null && placeholder != null && order.models.isEmpty())
+        if (model == null && placeholder != null && order.models.isEmpty()) {
             placeholder()
-        else if (model == null)
+        } else if (model == null) {
             Image(
                 painter = painterResource(R.drawable.image_not_available),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.matchParentSize(),
             )
-        else {
+        } else {
             if (!loaded) LoadingShimmer(Modifier.matchParentSize())
             AsyncImage(
                 model = request,
@@ -431,7 +437,7 @@ fun ItemRow(
             .combinedClickable(onLongClick = onLongClick, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
-        if (showThumbnail)
+        if (showThumbnail) {
             Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE)) {
                 Thumbnail(
                     models = thumbnails
@@ -441,8 +447,9 @@ fun ItemRow(
                 )
                 thumbnailOverlay?.invoke(this)
             }
-        else if (thumbnailOverlay != null)
+        } else if (thumbnailOverlay != null) {
             Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE), content = thumbnailOverlay)
+        }
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it
         Column(modifier = Modifier.weight(1f)) {

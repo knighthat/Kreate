@@ -131,7 +131,8 @@ private fun StatisticsContent(
                     stringResource(
                         if (period == StatisticsPeriod.THIS_MONTH)
                             R.string.screen_statistics_status_nothing_this_month
-                        else R.string.screen_statistics_status_nothing_played
+                        else
+                            R.string.screen_statistics_status_nothing_played
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -71,7 +71,8 @@ private fun Context.overTime(
     val format = if (step == Calendar.MONTH)
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_NO_MONTH_DAY or
                 DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_YEAR
-    else DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
+    else
+        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
 
     val calendar = Calendar.getInstance(zone).apply {
         timeInMillis = first

@@ -41,8 +41,10 @@ class TopLevelBackStack internal constructor(
 
     /** What to render: the start tab's stack, then the current tab's stack on top of it. */
     val backStack: List<NavKey>
-        get() = if (currentTab == START) stacks.getValue(START)
-        else stacks.getValue(START) + stacks.getValue(currentTab)
+        get() = if (currentTab == START)
+            stacks.getValue(START)
+        else
+            stacks.getValue(START) + stacks.getValue(currentTab)
 
     fun switchTab(tab: Tab) {
         this.tab.value = tab
@@ -54,8 +56,10 @@ class TopLevelBackStack internal constructor(
 
     fun pop() {
         val stack = stacks.getValue(currentTab)
-        if (stack.size > 1) stack.removeLastOrNull()
-        else tab.value = START
+        if (stack.size > 1)
+            stack.removeLastOrNull()
+        else
+            tab.value = START
     }
 
     companion object {

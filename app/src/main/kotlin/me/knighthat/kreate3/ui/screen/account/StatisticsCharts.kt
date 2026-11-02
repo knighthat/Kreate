@@ -281,9 +281,12 @@ private fun inHours(ticks: List<Duration>) = ticks.getOrNull(1)?.let { it >= 1.h
 private fun TimeAxisTitle(ticks: List<Duration>, modifier: Modifier = Modifier) {
     val top = ticks.last()
     val title =
-        if (inHours(ticks)) top.inWholeHours.toInt()
-            .let { pluralStringResource(R.plurals.unit_hour, it) }
-        else top.inWholeMinutes.toInt().let { pluralStringResource(R.plurals.unit_minute, it) }
+        if (inHours(ticks)) {
+            top.inWholeHours.toInt()
+                .let { pluralStringResource(R.plurals.unit_hour, it) }
+        } else {
+            top.inWholeMinutes.toInt().let { pluralStringResource(R.plurals.unit_minute, it) }
+        }
     Box(contentAlignment = Alignment.Center, modifier = modifier.height(BAR_HEIGHT)) {
         Text(
             title.replaceFirstChar { it.titlecase() },

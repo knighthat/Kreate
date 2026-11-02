@@ -41,7 +41,6 @@ import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.LocalScanNotifications
-import me.knighthat.kreate3.source.local.LoudnessWorker.Companion.PARALLELISM
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -94,8 +93,9 @@ class LoudnessWorker(
                         flow { emit(songId to measure(analyzer, songId, decoding)) }
                     }
                     .collect { (songId, format) ->
-                        if (format == null) failed += songId
-                        else {
+                        if (format == null) {
+                            failed += songId
+                        } else {
                             songs.saveFormat(format)
                             // Once each run, a file the index and the file system disagree on would repeat forever
                             done += songId

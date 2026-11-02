@@ -172,15 +172,16 @@ fun TileButton(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxHeight(),
         ) {
-            if (busy)
+            if (busy) {
                 CircularProgressIndicator(Modifier.size(56.dp))
-            else
+            } else {
             // The button already says what it does
                 Icon(
                     painterResource(icon),
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )
+            }
 
             Spacer(Modifier.height(24.dp))
 
@@ -330,16 +331,17 @@ fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier 
     Tooltip(stringResource(if (isPlaying) R.string.semantic_pause else R.string.semantic_play)) {
         IconButton(onClick = onClick, modifier = modifier) {
             Crossfade(targetState = isPlaying, label = "PlayPauseIcon") { playing ->
-                if (playing)
+                if (playing) {
                     Icon(
                         painterResource(R.drawable.pause),
                         contentDescription = stringResource(R.string.semantic_pause)
                     )
-                else
+                } else {
                     Icon(
                         painterResource(R.drawable.play_arrow),
                         contentDescription = stringResource(R.string.semantic_play)
                     )
+                }
             }
         }
     }

@@ -105,7 +105,8 @@ abstract class LiveDetailViewModel<T : Any>(
     val state: StateFlow<LiveState<T>> = combine(_state, disliked) { state, ids ->
         if (state is LiveState.Ready && ids.isNotEmpty())
             LiveState.Ready(state.value.withoutSongs(ids))
-        else state
+        else
+            state
     }
         .flowOn(background)
         .stateIn(viewModelScope, SharingStarted.Eagerly, LiveState.Loading)
@@ -133,12 +134,15 @@ abstract class LiveDetailViewModel<T : Any>(
             } catch (e: YouTubeException) {
                 val youTube = context.getString(R.string.source_ytm)
                 LiveState.Failed(
-                    if (e.status == null) context.getString(R.string.error_unreachable, youTube)
-                    else context.getString(
-                        R.string.error_source_refused,
-                        youTube,
-                        e.message.orEmpty()
-                    )
+                    if (e.status == null) {
+                        context.getString(R.string.error_unreachable, youTube)
+                    } else {
+                        context.getString(
+                            R.string.error_source_refused,
+                            youTube,
+                            e.message.orEmpty()
+                        )
+                    }
                 )
             } catch (e: ServerException) {
                 LiveState.Failed(e.reason(context))
@@ -251,7 +255,7 @@ fun LiveStatus(state: LiveState<*>, onRetry: () -> Unit, modifier: Modifier = Mo
         contentAlignment = Alignment.Center,
         modifier = modifier.padding(24.dp),
     ) {
-        if (state is LiveState.Failed)
+        if (state is LiveState.Failed) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -264,7 +268,9 @@ fun LiveStatus(state: LiveState<*>, onRetry: () -> Unit, modifier: Modifier = Mo
                 )
                 FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
             }
-        else CircularProgressIndicator()
+        } else {
+            CircularProgressIndicator()
+        }
     }
 }
 
@@ -309,12 +315,15 @@ fun LiveSectionRow(
             section.items,
             key = { (tab, item) -> "${tab.name}:${item.mediaId}" }) { (tab, item) ->
             val modifier = Modifier.width(CARD_WIDTH.dp)
-            if (tab == Tab.ARTISTS) ArtistItem(
-                item,
-                onClick = { onOpen(tab, item) },
-                modifier = modifier
-            )
-            else AlbumItem(item, onClick = { onOpen(tab, item) }, modifier = modifier)
+            if (tab == Tab.ARTISTS) {
+                ArtistItem(
+                    item,
+                    onClick = { onOpen(tab, item) },
+                    modifier = modifier
+                )
+            } else {
+                AlbumItem(item, onClick = { onOpen(tab, item) }, modifier = modifier)
+            }
         }
     }
 }

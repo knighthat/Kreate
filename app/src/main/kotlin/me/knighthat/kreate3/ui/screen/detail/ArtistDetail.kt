@@ -183,9 +183,12 @@ fun ArtistDetailScaffold(
                         // More of it the farther the list went up, all of it once at the bar
                         .graphicsLayer {
                             val scrolled =
-                                if (listState.firstVisibleItemIndex > 0) 1f
-                                else listState.firstVisibleItemScrollOffset /
-                                        pictureBelowBar.toPx().coerceAtLeast(1f)
+                                if (listState.firstVisibleItemIndex > 0) {
+                                    1f
+                                } else {
+                                    listState.firstVisibleItemScrollOffset /
+                                            pictureBelowBar.toPx().coerceAtLeast(1f)
+                                }
                             alpha = scrolled.coerceIn(0f, 1f)
                         },
                 )
@@ -266,15 +269,17 @@ private fun ArtistTopBar(
         title = {
             Column {
                 Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (subtitle != null)
+                if (subtitle != null) {
                     Text(
                         subtitle,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                else origin?.let {
-                    Row { OriginBadge(it, BADGE_SIZE, tint = Color.White) }
+                } else {
+                    origin?.let {
+                        Row { OriginBadge(it, BADGE_SIZE, tint = Color.White) }
+                    }
                 }
             }
         },

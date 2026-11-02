@@ -102,8 +102,10 @@ class HomeSongsViewModel(
             // The cache isn't in the database, its songs are picked from the pages
             .let { pages ->
                 combine(pages, _filters, songDownloads.songs) { page, filters, storage ->
-                    if (!filters.cachedOnly && !filters.downloadedOnly) page
-                    else page.filter { filters.keeps(it, storage) }
+                    if (!filters.cachedOnly && !filters.downloadedOnly)
+                        page
+                    else
+                        page.filter { filters.keeps(it, storage) }
                 }
             }
 

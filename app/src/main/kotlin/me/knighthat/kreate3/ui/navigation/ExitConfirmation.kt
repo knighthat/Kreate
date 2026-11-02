@@ -100,8 +100,10 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
 
             else -> asking = scope.launch {
                 val message = resources.getString(
-                    if (swiped || context.usesGestureNavigation()) R.string.snackbar_exit_swipe
-                    else R.string.snackbar_exit_press
+                    if (swiped || context.usesGestureNavigation())
+                        R.string.snackbar_exit_swipe
+                    else
+                        R.string.snackbar_exit_press
                 )
                 snackbar.currentSnackbarData?.dismiss()
                 withTimeoutOrNull(timeout.coerceAtLeast(1).seconds) {

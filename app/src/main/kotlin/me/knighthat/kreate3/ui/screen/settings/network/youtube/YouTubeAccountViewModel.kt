@@ -98,13 +98,16 @@ class YouTubeAccountViewModel(
                         provider.account()?.let { YouTubeAccountState.SignedIn(it) }
                             ?: YouTubeAccountState.SignedOut
                     } catch (e: YouTubeException) {
-                        if (e.signedOut) YouTubeAccountState.Ended
-                        else YouTubeAccountState.Failed(
-                            e.message ?: context.getString(
-                                R.string.setting_description_account_status_unreachable,
-                                context.getString(R.string.source_ytm),
+                        if (e.signedOut) {
+                            YouTubeAccountState.Ended
+                        } else {
+                            YouTubeAccountState.Failed(
+                                e.message ?: context.getString(
+                                    R.string.setting_description_account_status_unreachable,
+                                    context.getString(R.string.source_ytm),
+                                )
                             )
-                        )
+                        }
                     }
                 )
             }

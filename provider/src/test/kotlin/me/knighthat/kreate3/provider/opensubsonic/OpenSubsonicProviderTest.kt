@@ -216,8 +216,10 @@ class OpenSubsonicProviderTest {
             val count = if (offset == 0) 500 else 2
             val albums = (0 until count).joinToString(",") { i ->
                 val n = offset + i
-                if (n == 0) """{"id":"a0","name":"First","artist":"Solo","year":2001,"starred":"2024-05-01T10:00:00Z","explicitStatus":"explicit"}"""
-                else """{"id":"a$n","name":"Album $n","artists":[{"id":"x","name":"One"},{"id":"y","name":"Two"}]}"""
+                if (n == 0)
+                    """{"id":"a0","name":"First","artist":"Solo","year":2001,"starred":"2024-05-01T10:00:00Z","explicitStatus":"explicit"}"""
+                else
+                    """{"id":"a$n","name":"Album $n","artists":[{"id":"x","name":"One"},{"id":"y","name":"Two"}]}"""
             }
             """{"subsonic-response":{"status":"ok","version":"1.16.1","albumList2":{"album":[$albums]}}}"""
         }
@@ -715,7 +717,8 @@ class OpenSubsonicProviderTest {
         val server = provider { request ->
             if (request.url.encodedPath.endsWith("/getShares"))
                 """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{}}}"""
-            else """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"not found"}}}"""
+            else
+                """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"not found"}}}"""
         }
 
         val error = assertThrows(ServerException::class.java) {
@@ -766,7 +769,8 @@ class OpenSubsonicProviderTest {
             provider(FakeSettings(auth = OpenSubsonicAuth.API_KEY, username = "")) { request ->
                 if (request.url.encodedPath.endsWith("/tokenInfo"))
                     """{"subsonic-response":{"status":"ok","version":"1.16.1","tokenInfo":{"username":"keyed"}}}"""
-                else USER_MAY_SHARE
+                else
+                    USER_MAY_SHARE
             }.shareRole()
 
         assertEquals(true, role)

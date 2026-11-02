@@ -45,8 +45,10 @@ data class ServerStream(val uri: Uri, val format: SongFormat?, val maxBitRate: I
      * @return `null` when the server sent the file as it is, or when the format was known
      */
     fun answeredFormat(songId: String, contentType: String?, sourceType: String?): SongFormat? =
-        if (format != null) null
-        else answeredFormat(songId, maxBitRate ?: return null, contentType, sourceType)
+        if (format != null)
+            null
+        else
+            answeredFormat(songId, maxBitRate ?: return null, contentType, sourceType)
 }
 
 /** See [ServerStream.answeredFormat], for a stream asked at most [maxBitRate] kbps. */

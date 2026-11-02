@@ -85,10 +85,14 @@ internal fun encodeCover(original: ByteArray, side: Int): ByteArray? {
     val bitmap = BitmapFactory.decodeByteArray(original, 0, original.size, decode) ?: return null
 
     val scale = side.toFloat() / maxOf(bitmap.width, bitmap.height)
-    val scaled = if (scale < 1f) bitmap.scale(
-        (bitmap.width * scale).roundToInt().coerceAtLeast(1),
-        (bitmap.height * scale).roundToInt().coerceAtLeast(1),
-    ) else bitmap
+    val scaled = if (scale < 1f) {
+        bitmap.scale(
+            (bitmap.width * scale).roundToInt().coerceAtLeast(1),
+            (bitmap.height * scale).roundToInt().coerceAtLeast(1),
+        )
+    } else {
+        bitmap
+    }
     val encoded = try {
         val format =
             if (scaled.hasAlpha()) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG

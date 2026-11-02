@@ -36,8 +36,10 @@ internal fun List<MediaItem>.withoutDisliked(disliked: Set<String>): List<MediaI
 internal fun List<Pair<Tab, MediaItem>>.withoutDislikedSongs(
     disliked: Set<String>,
 ): List<Pair<Tab, MediaItem>> =
-    if (disliked.isEmpty()) this
-    else filterNot { (tab, item) -> tab == Tab.SONGS && item.mediaId in disliked }
+    if (disliked.isEmpty())
+        this
+    else
+        filterNot { (tab, item) -> tab == Tab.SONGS && item.mediaId in disliked }
 
 /**
  * The pages without the songs whose id is in [disliked], also the ones disliked while they show.

@@ -324,13 +324,15 @@ private fun ArtistMatchRow(match: MusicBrainzArtistMatch, isCurrent: Boolean, on
             .clickable(onClick = onClick)
             .padding(vertical = 6.dp),
     ) {
-        if (isCurrent)
+        if (isCurrent) {
             Icon(
                 painterResource(R.drawable.check),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
             )
-        else Spacer(Modifier.size(24.dp))
+        } else {
+            Spacer(Modifier.size(24.dp))
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 match.name,

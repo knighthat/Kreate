@@ -431,8 +431,10 @@ fun AlbumMenu(
             if (isReordering != null)
                 ConfigEntry(
                     icon = if (isReordering) R.drawable.lock_open else R.drawable.lock,
-                    label = if (isReordering) stringResource(R.string.semantic_lock_the_order)
-                    else stringResource(R.string.semantic_reorder),
+                    label = if (isReordering)
+                        stringResource(R.string.semantic_lock_the_order)
+                    else
+                        stringResource(R.string.semantic_reorder),
                     // Stays on with fewer songs, so it can be turned off
                     enabled = isReordering || canReorder,
                     onLongClick = { close(onResetOrder) },

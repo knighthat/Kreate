@@ -103,8 +103,10 @@ class DislikedViewModel(
     val choices: StateFlow<List<Origin>> =
         combine(songRepository.dislikedOrigins(), _origins) { stored, chosen ->
             val offered = stored + chosen
-            if (offered.size <= 1 && chosen.isEmpty()) emptyList()
-            else Origin.entries.filter { it in offered }
+            if (offered.size <= 1 && chosen.isEmpty())
+                emptyList()
+            else
+                Origin.entries.filter { it in offered }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     /** The disliked songs of the origins shown, in the order picked, a page at a time. */

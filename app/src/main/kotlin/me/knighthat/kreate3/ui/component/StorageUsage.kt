@@ -156,7 +156,7 @@ fun StorageUsage(storage: StorageUse, modifier: Modifier = Modifier) = Column(mo
     val userColor = MaterialTheme.colorScheme.primary
     val othersColor = userColor.copy(alpha = .4f)
 
-    if (storage.shared)
+    if (storage.shared) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "${stringResource(R.string.statistics_storage_this_user)} ${storage.user}",
@@ -169,7 +169,9 @@ fun StorageUsage(storage: StorageUse, modifier: Modifier = Modifier) = Column(mo
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    else Text(ofLimit(storage.user), style = MaterialTheme.typography.labelLarge)
+    } else {
+        Text(ofLimit(storage.user), style = MaterialTheme.typography.labelLarge)
+    }
 
     Spacer(Modifier.height(8.dp))
 

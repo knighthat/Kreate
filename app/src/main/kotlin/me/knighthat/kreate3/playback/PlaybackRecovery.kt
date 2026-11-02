@@ -138,7 +138,9 @@ class PlaybackRecovery(
                 if (now > loaded) {
                     loaded = now
                     waited = 0
-                } else waited++
+                } else {
+                    waited++
+                }
             }
             val item = player.currentMediaItem
             Log.w(TAG, "Gave up loading ${item?.mediaId}, nothing loaded for $seconds s")

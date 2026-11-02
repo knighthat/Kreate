@@ -200,16 +200,17 @@ private fun UiSettingsPreview() = PreviewTheme {
 private fun binarySizesSummary(binary: Boolean): String {
     val locale = LocalResources.current.configuration.locales[0]
     val count = { n: Int -> "%d".format(locale, n) }
-    return if (binary)
+    return if (binary) {
         stringResource(
             R.string.setting_description_binary_sizes,
             stringResource(R.string.mib, count(1024)),
             stringResource(R.string.gib, count(1)),
         )
-    else
+    } else {
         stringResource(
             R.string.setting_description_binary_sizes,
             stringResource(R.string.mb, count(1000)),
             stringResource(R.string.gb, count(1)),
         )
+    }
 }

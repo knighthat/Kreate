@@ -105,16 +105,20 @@ class YouTubeAlbumDetailViewModel(
         notifier,
         send = { on ->
             val album = onDevice
-            if (album != null) device.setBookmarked(album, on)
-            else provider.saveAlbum(checkNotNull(playlistId), on)
+            if (album != null)
+                device.setBookmarked(album, on)
+            else
+                provider.saveAlbum(checkNotNull(playlistId), on)
         },
         failure = { e, on ->
-            if (onDevice != null)
+            if (onDevice != null) {
                 context.getString(if (on) R.string.error_bookmark_album else R.string.error_remove_bookmark)
-            else e.youTubeFailure(
-                context.resources,
-                if (on) R.string.snackbar_change_save_album else R.string.snackbar_change_remove_album
-            )
+            } else {
+                e.youTubeFailure(
+                    context.resources,
+                    if (on) R.string.snackbar_change_save_album else R.string.snackbar_change_remove_album
+                )
+            }
         },
     )
 

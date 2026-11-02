@@ -76,8 +76,9 @@ class OpenSubsonicSettingsViewModel(
             attempt,
         ) { enabled, url, _, _, _ -> enabled && url.isNotBlank() }
             .transformLatest { ready ->
-                if (!ready) emit(CheckState.Idle)
-                else {
+                if (!ready) {
+                    emit(CheckState.Idle)
+                } else {
                     emit(CheckState.Checking)
                     emit(CheckState.Done(provider.ping()))
                 }
@@ -92,8 +93,9 @@ class OpenSubsonicSettingsViewModel(
         }
             .distinctUntilChanged()
             .transformLatest { (reachable, set) ->
-                if (!reachable || set == null) emit(CheckState.Idle)
-                else {
+                if (!reachable || set == null) {
+                    emit(CheckState.Idle)
+                } else {
                     emit(CheckState.Checking)
                     emit(CheckState.Done(provider.checkCredentials()))
                 }

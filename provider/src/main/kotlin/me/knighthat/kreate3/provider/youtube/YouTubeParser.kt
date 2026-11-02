@@ -659,4 +659,5 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
 internal fun YouTubeItem.creditedTo(artist: String?): YouTubeItem =
     if (this is AlbumItem && album.artists == null && artist != null)
         AlbumItem(album.copy(artists = listOf(artist)))
-    else this
+    else
+        this

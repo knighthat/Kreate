@@ -96,7 +96,8 @@ private fun SignInStatus(@StringRes reason: Int?, innerPadding: PaddingValues) =
     ) {
         if (reason != null)
             Text(stringResource(reason), textAlign = TextAlign.Center)
-        else CircularProgressIndicator()
+        else
+            CircularProgressIndicator()
     }
 
 /**

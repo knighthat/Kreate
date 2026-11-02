@@ -387,16 +387,20 @@ private fun Import(
                 ready -> stringResource(R.string.wizard_backup_ready)
                 else -> stringResource(R.string.wizard_restore_a_backup)
             },
-            subtitle = if (ready) stringResource(R.string.wizard_backup_ready_description)
-            else stringResource(R.string.wizard_restore_a_backup_description),
+            subtitle = if (ready)
+                stringResource(R.string.wizard_backup_ready_description)
+            else
+                stringResource(R.string.wizard_restore_a_backup_description),
             onClick = { picker.launch(arrayOf("application/zip", "application/octet-stream")) },
             busy = importing,
-            colors = if (ready)
+            colors = if (ready) {
                 ButtonDefaults.filledTonalButtonColors(
                     containerColor = if (dark) Color(0xFF1E4D24) else Color(0xFFC6EFC0),
                     contentColor = if (dark) Color(0xFFB8F0B0) else Color(0xFF0A3A12),
                 )
-            else ButtonDefaults.filledTonalButtonColors(),
+            } else {
+                ButtonDefaults.filledTonalButtonColors()
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -499,8 +503,9 @@ private fun TermOfService() {
             text = buildAnnotatedString {
                 // The name of the license is the link, wherever the translation puts it
                 val start = distributed.indexOf(LICENSE_NAME)
-                if (start < 0) append(distributed)
-                else {
+                if (start < 0) {
+                    append(distributed)
+                } else {
                     append(distributed.substring(0, start))
                     withLink(LinkAnnotation.Url(LICENSE_URL)) { append(LICENSE_NAME) }
                     append(distributed.substring(start + LICENSE_NAME.length))

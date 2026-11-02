@@ -406,8 +406,10 @@ class DownloadNotifications(
             .setAction(action.intentAction)
             .setData(id.toUri())
         // Playing has to put the service in the foreground first
-        return if (action == DownloadedSongAction.PLAY) foregroundService(intent)
-        else PendingIntent.getService(context, 0, intent, PENDING_FLAGS)
+        return if (action == DownloadedSongAction.PLAY)
+            foregroundService(intent)
+        else
+            PendingIntent.getService(context, 0, intent, PENDING_FLAGS)
     }
 
     /** Adds the download again, once more with its retries. */
