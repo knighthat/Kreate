@@ -28,17 +28,23 @@
     <string name="notification_sleep_timer_subtitle_channel">Time left until the music pauses, with buttons to change it</string>
     <string name="notification_local_scan_title_scanning">Scanning music</string>
     <string name="notification_local_scan_title_scanned">Music scan finished</string>
+    <!-- %1$s is a counted plural, e.g. "12 songs". Found on the device by a scan for local music -->
     <string name="notification_local_scan_subtitle_scanned">%1$s scanned</string>
     <string name="notification_local_scan_title_measuring">Measuring loudness</string>
+    <!-- %1$d is the number of songs processed so far, %2$d the total, both whole numbers, shown as a fraction, e.g. 3/10 -->
     <string name="notification_local_scan_subtitle_progress">%1$d/%2$d</string>
     <string name="notification_local_scan_title_measured">Loudness measured</string>
+    <!-- %1$d is the number of songs whose loudness was measured, %2$d the total, both whole numbers. "Measured" = the loudness (volume level) of the song was analyzed -->
     <string name="notification_local_scan_subtitle_measured">%1$d/%2$d measured</string>
+    <!-- Whole numbers. %1$d = songs measured, %2$d = total songs, %3$d = failures listed in the notification (shown as child notifications), %4$d = all failures. Measured = the loudness of the song was analyzed -->
     <string name="notification_local_scan_subtitle_failures_listed">%1$d/%2$d, %3$d of %4$d failures listed</string>
+    <!-- %1$s is the internal id of a song (text/number, not translated), used as its name when the song has no title -->
     <string name="notification_local_scan_title_song">Song %1$s</string>
     <string name="notification_sleep_timer_title_running">Sleep timer</string>
     <string name="notification_sleep_timer_title_finished">Sleep timer finished</string>
     <string name="notification_sleep_timer_subtitle_on_hold">On hold</string>
     <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
+    <!-- %1$s is a clock time of the device, e.g. 22:30. The sleep timer paused the music at that time -->
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
     <string name="notification_other_title_resuming">Resuming music</string>
     <string name="notification_other_title_starting">Starting music</string>

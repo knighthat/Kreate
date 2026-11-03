@@ -19,6 +19,7 @@
 <!-- Dialog titles and bodies. -->
 <resources>
     <string name="dialog_title_certificate_changed">Certificate changed</string>
+    <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
     <string name="dialog_body_certificate_changed">%1$s presents a different self-signed certificate than the one you trusted. If you didn\'t replace it, someone may be pretending to be your server.</string>
     <string name="dialog_title_choose_a_channel">Choose a channel</string>
     <string name="dialog_title_clear_the_queue">Clear the queue?</string>
@@ -26,6 +27,7 @@
     <string name="dialog_body_clear_the_queue_2">Remove currently playing song</string>
     <string name="dialog_body_clear_the_queue_3">This will stop the player and close the fullscreen player</string>
     <string name="dialog_title_forget_certificate">Forget certificate?</string>
+    <!-- %1$s is the host name or address of the user's own server. Certificate = the server's security certificate -->
     <string name="dialog_body_forget_certificate">The next certificate %1$s presents will be trusted without asking.</string>
     <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
@@ -38,10 +40,13 @@
     <string name="dialog_title_cached_song">Cached song</string>
     <string name="dialog_body_cached_song_move">It will be moved to your downloads and kept on this device until you delete it.</string>
     <string name="dialog_body_cached_song_worse_1">The cached copy is worse than the quality set now, so the song will be downloaded again.</string>
+    <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
     <string name="dialog_body_cached_song_worse_2">Cached: %1$s\nDownloads in: %2$s</string>
     <string name="dialog_title_delete_download">Delete download?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
     <string name="dialog_body_delete_download">%1$s will be removed from this device. It can still be streamed.</string>
     <string name="dialog_title_stop_download">Stop download?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
     <string name="dialog_body_stop_download">%1$s won\'t be downloaded.</string>
     <string name="dialog_title_restore_a_backup">Restore a backup?</string>
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
@@ -62,18 +67,25 @@
     <string name="dialog_title_delete_every_download">Delete every profile\'s downloads?</string>
     <string name="dialog_body_delete_every_download">Every downloaded song is removed from this device, for every profile. They can still be streamed.</string>
     <string name="dialog_title_shrink_cache">Smaller than what\'s stored</string>
+    <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
     <string name="dialog_body_shrink_cache">%1$s is stored, more than %2$s. Once the app restarts, what doesn\'t fit is removed, what was used least recently first.</string>
     <string name="dialog_title_turn_off">Turn it off?</string>
+    <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
     <string name="dialog_body_turn_off_cache">%1$s is stored. Once the app restarts, all of it is removed and nothing new is kept.</string>
+    <!-- %1$s is the space the downloaded songs take, a file size with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
     <string name="dialog_body_turn_off_downloads">Downloads take %1$s. None are deleted, but no new song can be downloaded.</string>
+    <!-- %1$s is the space the downloaded songs take, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
     <string name="dialog_body_shrink_downloads">Downloads take %1$s, more than %2$s. None are deleted, but new downloads are refused until there is room.</string>
     <string name="dialog_title_search_lyrics">Search lyrics</string>
     <string name="dialog_title_find_recording">Find the recording</string>
     <string name="dialog_body_find_recording_no_matches">No recordings found</string>
     <string name="dialog_title_find_artist">Find the artist</string>
     <string name="dialog_body_find_artist_no_matches">No artists found</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
     <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
     <string name="dialog_title_sign_out_of_opensubsonic">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">The saved username, password and API key are removed. You can sign in again any time.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
 </resources>

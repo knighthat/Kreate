@@ -54,6 +54,7 @@
     <string name="setting_description_data">Caches, downloads and the room they take</string>
     <string name="setting_description_player">How songs play and what is kept of them</string>
     <string name="setting_description_ui">Theme, language and what you interact with</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of a music source, e.g. YouTube Music (proper noun) -->
     <string name="setting_description_network">Connections, your %1$s server and %2$s account</string>
     <string name="setting_description_backup">Save or restore your profiles, settings and library</string>
     <string name="setting_description_about">Version, license and the open source libraries used</string>
@@ -69,6 +70,7 @@
     <string name="setting_description_report_issue">Tell about a bug or ask for a feature, on GitHub</string>
 
     <!-- common -->
+    <!-- Two whole numbers: %1$d is the smallest and %2$d the largest value the user may enter. Shown when the entered number is out of range -->
     <string name="setting_description_between">Between %1$d and %2$d</string>
 
     <!-- data -->
@@ -81,14 +83,18 @@
     <string name="setting_title_size_in_mib">Size in MiB</string>
     <string name="setting_title_size_in_mb">Size in MB</string>
     <string name="setting_title_binary_sizes">Binary units</string>
+    <!-- %1$s and %2$s are file sizes, e.g. "1024 MiB is shown as 1 GiB" (binary units) or "1000 MB is shown as 1 GB" (decimal units). "Shown as" = displayed in the app -->
     <string name="setting_description_binary_sizes">%1$s is shown as %2$s</string>
 
     <!-- general -->
     <string name="setting_title_scan_interval">Scan interval</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 minutes" (a counted plural). How often the app looks for new music files on the device -->
     <string name="setting_description_scan_interval">Search for new local media every %1$s</string>
     <string name="setting_title_parallel_downloads">Downloads at once</string>
+    <!-- %1$s is a counted plural of songs, e.g. "2 songs". "Download" is a verb here (the songs are downloaded), "the others" are the other songs in the queue -->
     <string name="setting_description_parallel_downloads">%1$s download at the same time, the others wait</string>
     <string name="setting_title_download_retries">Download retries</string>
+    <!-- %1$s is a counted plural of times, e.g. "3 times". How often a failing download is attempted again -->
     <string name="setting_description_download_retries">A failing download is tried %1$s more before it fails</string>
     <string name="setting_title_download_wifi_only">Only download on Wi-Fi</string>
     <string name="setting_description_download_wifi_only">Downloads wait for unmetered network to continue</string>
@@ -103,6 +109,7 @@
     <string name="setting_description_exit_on_back_on">Going back from the first screen closes the app</string>
     <string name="setting_description_exit_on_back_off">Going back from the first screen keeps the app open</string>
     <string name="setting_title_confirm_exit">Confirm exit</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How long the app waits before a confirmation can be dismissed; "dismissing confirmation" = closing the exit confirmation -->
     <string name="setting_description_confirm_exit_status_on">Wait %1$s before dismissing confirmation</string>
     <string name="setting_description_confirm_exit_status_off">No confirmation</string>
     <string name="setting_title_notification_opens_player">Open player from notification</string>
@@ -125,13 +132,16 @@
     <string name="setting_description_read_timeout">Time a server may go quiet mid-answer</string>
     <string name="setting_title_retries">Retries</string>
     <string name="setting_description_retries">Requests that got a server error are sent again</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Configure" is a verb (imperative), the title of a row that opens that source's settings -->
     <string name="setting_title_configure_source">Configure %1$s</string>
 
     <!-- proxy -->
     <string name="setting_title_use_a_proxy">Use a proxy</string>
     <string name="setting_description_proxy_status_off">Off, requests go straight to their servers</string>
     <string name="setting_description_proxy_status_incomplete">Nothing is sent until it has a host and port. Tap to set them</string>
+    <!-- %1$s is a protocol and an address, e.g. "SOCKS5 · 192.168.1.2:1080" (not translated). Proxy = a server that relays network traffic -->
     <string name="setting_description_proxy_status_on">Through %1$s. Tap to change it</string>
+    <!-- %1$s is the name of a music source or server, e.g. YouTube Music (proper noun). The source has its own proxy switched off, so the app's proxy is used; the Network page is a screen of this app -->
     <string name="setting_description_proxy_source_off">Off, requests to %1$s go through the proxy on the Network page</string>
     <string name="setting_proxy_title_host">Host</string>
     <string name="setting_proxy_title_port">Port</string>
@@ -150,9 +160,13 @@
     <string name="setting_title_sync_playlists">Sync playlists</string>
     <string name="setting_title_sync_albums">Sync albums</string>
     <string name="setting_title_sync_artists">Sync artists</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); synced = kept the same on the source and in the app's own database -->
     <string name="setting_description_sync_liked_songs_on">Liked songs on %1$s are synced with the local database</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); "pulled" = fetched from the source -->
     <string name="setting_description_sync_liked_songs_off">Liked songs aren\'t pulled from %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Your playlists" = the user's own; synced = kept the same on the source and in the app's own database -->
     <string name="setting_description_sync_playlists_on">Your playlists on %1$s are synced with the local database</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Your playlists" = the user's own; "pulled" = fetched from the source -->
     <string name="setting_description_sync_playlists_off">Your playlists aren\'t pulled from %1$s</string>
     <string name="setting_description_sync_albums_status_off">Doesn\'t pull albums</string>
     <string name="setting_description_sync_artists_status_off">Doesn\'t pull artists</string>
@@ -169,12 +183,15 @@
     <string name="setting_title_keep_the_queue">Keep the queue</string>
     <string name="setting_description_keep_the_queue">Pick up where you left off after the app closes</string>
     <string name="setting_title_save_interval">Save interval</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How often the playback queue is saved; "the song plays" = is being played -->
     <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
+    <!-- %1$s is a duration, e.g. "10 seconds". How much of the next song is fetched before the current one ends ("load" = download into memory, not upload) -->
     <string name="setting_description_load_next_song_ahead">Load the first %1$s of the next song early</string>
     <string name="setting_description_load_next_song_ahead_off">Only load the next song when it starts</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
     <string name="setting_title_give_up_loading_after">Give up loading after</string>
+    <!-- %1$s is a duration, e.g. "30 seconds". How long the app waits for a song to load before it reports a failure -->
     <string name="setting_description_give_up_loading_after">Wait %1$s before declaring a failure</string>
     <string name="setting_description_give_up_loading_after_off">Wait until the network times out</string>
     <string name="setting_title_even_out_loudness">Even out loudness</string>
@@ -182,10 +199,13 @@
     <string name="setting_description_target_loudness_status_disabled">Even out loudness is disabled</string>
     <string name="setting_title_target_loudness">Target loudness</string>
     <string name="setting_title_load_ahead">Load ahead</string>
+    <!-- %1$s is a duration, e.g. "30 seconds". How far ahead of the playback position the song is loaded (downloaded into memory) -->
     <string name="setting_description_load_ahead">Load up to %1$s ahead</string>
+    <!-- %1$s is the name of this app, Kreate. With no limit the app loads the whole song -->
     <string name="setting_description_load_ahead_unlimited">Load as much as %1$s can</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). Seeking back = moving the playback position backwards; "it" = the part of the song already played -->
     <string name="setting_description_keep_what_was_played">Seeking back up to %1$s doesn\'t load it again</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>
@@ -211,8 +231,11 @@
     <string name="setting_description_back_up">Save your profiles, settings and library to a file. Passwords and sign ins stay on this device, they are never in a backup.</string>
 
     <!-- YouTube -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Title of a switch: "Use" is a verb (imperative); "account" is the user's login on that source -->
     <string name="setting_title_use_youtube_account">Use %1$s account</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the user's saved songs, playlists and artists; "this account" = the signed-in account -->
     <string name="setting_description_use_youtube_account_on">Your %1$s library is synced with this account</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). The source is used without logging in; "library" = the user's saved songs, playlists and artists -->
     <string name="setting_description_use_youtube_account_off">%1$s is used without signing in, your library isn\'t synced</string>
     <string name="setting_title_sign_in">Sign in</string>
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
@@ -223,6 +246,7 @@
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
 
     <!-- OpenSubsonic -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Contacted" = no network requests are sent to it -->
     <string name="setting_description_use_opensubsonic">%1$s isn\'t contacted while this is off</string>
     <string name="setting_title_server_address">Server address</string>
     <string name="setting_title_trusted_until_now">Trusted until now</string>
@@ -235,38 +259,61 @@
     <string name="setting_title_api_key">API key</string>
     <string name="setting_title_direct_play">Direct play</string>
     <string name="setting_title_replay_gain_reference">ReplayGain reference</string>
+    <!-- %1$s is a loudness value, e.g. "-14 LUFS"; %2$s is the name of the user's OpenSubsonic server (proper noun, shown with a possessive 's). ReplayGain = a volume-levelling tag stored in audio files; "the loudness ... bring songs to" = the target level -->
     <string name="setting_description_replay_gain_reference">%1$s, the loudness %2$s\'s ReplayGain tags bring songs to</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Songs are played straight from the server ("streamed") and not saved in the app's song cache -->
     <string name="setting_description_direct_play">Streams songs from %1$s without keeping them in the song cache</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The song cache (temporary copies of songs) is switched off -->
     <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from %1$s always stream directly</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
     <string name="setting_title_account_status_signed_out">%1$s signed you out</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may change this shared setting -->
     <string name="setting_description_default_profile_only">Shared by every profile, only %1$s can change it</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may create or restore a backup -->
     <string name="setting_description_backup_status_default_profile_only">Only %1$s can back up or restore</string>
 
     <!-- statuses of one setting -->
     <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
+    <!-- %1$s is the user's account name on YouTube Music (a person's name or handle, gender unknown, not translated) -->
     <string name="setting_description_configure_youtube_status_signed_in_as">Signed in as %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
     <string name="setting_description_configure_youtube_status_signed_out">%1$s signed you out</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">No server set</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
     <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
     <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
     <string name="setting_description_configure_opensubsonic_status_certificate_changed">%1$s\'s certificate changed</string>
+    <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Not an %1$s server</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
+    <!-- %1$s is the reason the account check failed, a short text such as "Can't reach YouTube Music". "Tap" = touch the row to try again -->
     <string name="setting_description_account_status_failed">%1$s, tap to try again</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection -->
     <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
     <string name="setting_description_server_status_checking">Checking %1$s…</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
     <string name="setting_description_server_status_unreachable">Can\'t reach %1$s: %2$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "its own" = a self-signed certificate that the server made itself -->
     <string name="setting_description_server_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted. If it uses its own, allow self-signed certificates</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "review" = look at the new certificate and decide whether to trust it -->
     <string name="setting_description_server_status_certificate_changed">%1$s\'s certificate changed. Tap to review it</string>
+    <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). "This address" = the address the user entered, which isn't a server that speaks it -->
     <string name="setting_description_server_status_not_opensubsonic">This address is not an %1$s server</string>
     <string name="setting_description_sign_in_status_checking">Signing in…</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Wrong username or password</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Invalid API key</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
     <string name="setting_description_sign_in_status_refused">%1$s refused to sign in (%2$d)</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
     <string name="setting_description_sign_in_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
     <string name="setting_description_sign_in_status_certificate_changed">%1$s\'s certificate changed</string>
     <string name="setting_description_sign_in_status_not_signed_in">Not signed in</string>
     <string name="setting_description_sign_in_status_start_syncing">Sign in to start syncing</string>
+    <!-- %1$s is the user's account name (username) on their OpenSubsonic server (a person's name or handle, gender unknown, not translated) -->
     <string name="setting_description_sign_in_status_signed_in_as">Signed in as %1$s</string>
     <string name="setting_description_sign_in_status_signed_in_with_api_key">Signed in with an API key</string>
     <string name="setting_description_sign_in_status_waiting_for_server">Waiting for server to complete authentication</string>

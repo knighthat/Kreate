@@ -26,6 +26,7 @@
     <string name="status_unlimited">Unlimited</string>
     <string name="status_not_set">Not set</string>
     <string name="optional">Optional</string>
+    <!-- %1$s is a counted time period, e.g. "3 days" or "1 hour", from the plurals day, week, month and year. English word order: the period comes first, then "ago" -->
     <string name="status_ago">%1$s ago</string>
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>

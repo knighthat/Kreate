@@ -21,8 +21,10 @@
     <string name="app_name" translatable="false">Kreate</string>
     <string name="lufs_symbol" translatable="false">LUFS</string>
     <string name="percent_sign" translatable="false">%</string>
+    <!-- %1$d is a whole number, the percentage sign follows it -->
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
+    <!-- %1$s is any title or name the app shows between quotes (song, playlist, search text...). Use the quotation marks of your language -->
     <string name="quoted">\"%1$s\"</string>
     <string name="sleep_timer_to_end_of_song">Until the song ends</string>
     <string name="playlist_type_monthly">Monthly</string>
@@ -35,16 +37,27 @@
     <string name="source_lrclib" translatable="false">LRCLIB</string>
     <string name="source_musicbrainz" translatable="false">MusicBrainz</string>
 
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="bytes">%1$s B</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="kib">%1$s KiB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="mib">%1$s MiB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="gib">%1$s GiB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="tib">%1$s TiB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="pib">%1$s PiB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="kb">%1$s kB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="mb">%1$s MB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="gb">%1$s GB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="tb">%1$s TB</string>
+    <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="pb">%1$s PB</string>
     <string name="lufs" translatable="false">%1$s LUFS</string>
 </resources>

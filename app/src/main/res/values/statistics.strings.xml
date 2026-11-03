@@ -22,11 +22,15 @@
     <string name="statistics_summary_title_plays">Plays</string>
     <string name="statistics_summary_title_songs">Songs</string>
     <string name="statistics_summary_title_artists">Artists</string>
+    <!-- %1$s is a signed percentage, e.g. +12% or -5%. "vs" = compared with; the previous calendar month -->
     <string name="statistics_change_vs_last_month">%1$s vs last month</string>
     <string name="statistics_storage_this_user">This user</string>
     <string name="statistics_storage_all_users">All users</string>
+    <!-- %1$s is the space used and %2$s the limit set by the user, both file sizes with unit, e.g. "1.2 GB of 5 GB" -->
     <string name="statistics_storage_of_limit">%1$s of %2$s</string>
+    <!-- %1$s is the used space and %2$s the total space of the device's storage, both file sizes with unit, e.g. "64 GB of 128 GB used" -->
     <string name="statistics_storage_device_used">%1$s of %2$s used</string>
+    <!-- %1$s is the name of this app, Kreate; %2$s is a file size with unit, e.g. 1.2 GB. The storage the app occupies -->
     <string name="statistics_storage_app_uses">%1$s uses %2$s</string>
     <string name="statistics_storage_image_cache">Image cache</string>
     <string name="statistics_storage_song_cache">Song cache</string>
@@ -56,6 +60,7 @@
     <string name="details_first_released">First released</string>
     <string name="details_isrc">ISRC</string>
     <string name="details_genres">Genres</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). The string labels the identifier (ID) that database gave to the song or artist, shown next to it -->
     <string name="details_musicbrainz_id">%1$s ID</string>
     <string name="details_type">Type</string>
     <string name="details_area">Area</string>

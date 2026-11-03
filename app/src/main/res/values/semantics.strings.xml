@@ -37,7 +37,9 @@
     <string name="semantic_downloaded">Downloaded</string>
     <string name="semantic_cached">Cached</string>
     <string name="semantic_follow">Follow</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
     <string name="semantic_from_opensubsonic">From the %1$s server</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
     <string name="semantic_from_youtube">From %1$s</string>
     <string name="semantic_go_to_the_song_playing">Go to the song playing</string>
     <string name="semantic_larger">Larger</string>
