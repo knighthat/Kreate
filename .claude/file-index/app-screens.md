@@ -195,7 +195,12 @@ ui/screen/
   while disabled), `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
-  call. `general/GeneralSettingsScreen.kt` (library scan, navigation), `data/DataSettingsScreen.kt`
+  call. `ProxySettings.kt` (switch + a Server row opening `ProxyEditorScreen.kt`: HTTP/SOCKS5
+  radios, host and port on one row, username, optional password disabled without a username,
+  Clear (saves an empty proxy) / Save in the top bar; answers a `ProxyConfig` through
+  `rememberRouteResult`),
+  `CredentialField.kt` (one-line credential field with show/hide eye, optional placeholder).
+  `general/GeneralSettingsScreen.kt` (library scan, navigation), `data/DataSettingsScreen.kt`
   + `DataSettingsViewModel.kt` (Storage: `DeviceStorageUsage.kt` bar of the device with the app's
     parts (`StoragePart`: image cache, song cache, downloads, download covers, lyrics) and other
     apps, then image disk cache, song cache, song downloads as `StorageUsage` bars, polled every 2
@@ -223,7 +228,8 @@ ui/screen/
     `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, "Sign
     in" row with the check's status, direct play (disabled while the song cache is Off, value kept),
     quality sliders, ReplayGain reference (LUFS), library; `OpenSubsonicSignInScreen.kt`: a
-    segmented button per sign-in way, Sign out / Save in the top bar), `backup/` (
+    segmented button per sign-in way (fields are `CredentialField`), Sign out / Save in the top
+    bar), `backup/` (
   `BackupSettingsScreen.kt` +
   `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
     licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +

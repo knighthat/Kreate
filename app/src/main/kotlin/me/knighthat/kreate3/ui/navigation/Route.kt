@@ -205,6 +205,13 @@ data object Downloaded : Route
 @Serializable
 data object DownloadQueue : Route
 
+/**
+ * Where a proxy is and how to sign in to it, opened for an answer by [rememberRouteResult] under
+ * [key]; the values themselves never go on the back stack, the password is one of them.
+ */
+@Serializable
+data class ProxyEditor(val key: String) : Route
+
 /** Google's sign in page, the session it leaves is kept for YouTube. */
 @Serializable
 data object YouTubeSignIn : Route

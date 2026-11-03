@@ -21,47 +21,19 @@ package me.knighthat.kreate3.ui.screen.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secret
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
-
-private fun ProxyType.label(): String = when (this) {
-    ProxyType.HTTP -> "HTTP"
-    ProxyType.SOCKS -> "SOCKS5"
-}
+import me.knighthat.kreate3.ui.navigation.ProxyEditor
+import me.knighthat.kreate3.ui.navigation.rememberRouteResult
 
 /**
- * A host name or an IP address, without a scheme, a port or a path. An empty one is accepted,
- * it clears the host.
- *
- * @return a check that gives the reason the host is not acceptable, `null` when it is
- */
-@Composable
-private fun hostValidator(): (String) -> String? {
-    val scheme = stringResource(R.string.setting_description_host_scheme)
-    val hostOnly = stringResource(R.string.setting_description_host_only)
-    return { host ->
-        when {
-            "://" in host -> scheme
-            host.any { it.isWhitespace() || it == '/' } -> hostOnly
-            else -> null
-        }
-    }
-}
-
-@Composable
-private fun portValidator(): (String) -> String? {
-    val range = stringResource(R.string.setting_description_port_range)
-    return { port -> if (port.isEmpty() || port.toIntOrNull() in 1..65535) null else range }
-}
-
-/**
- * The proxy every request of a source, or of the whole app, goes through: whether it is used,
- * its kind, where it is and how to sign in to it. Only the switch shows while it is off.
+ * The proxy every request of a source, or of the whole app, goes through, as one row: its switch
+ * says whether it is used, and a tap on its texts (while on) opens [ProxyEditorScreen] with where
+ * it is and how to sign in to it, saved once the page answers.
  *
  * @param source what the requests go to, like "YouTube", `null` for the app's proxy, which a
  * source's own proxy overrides
@@ -84,108 +56,63 @@ fun ProxySettings(
     val secret by password.collectAsStateWithLifecycle()
     val appProxy by Preferences.NETWORK_PROXY_ENABLED.collectAsStateWithLifecycle()
 
+    val editor = rememberRouteResult<ProxyConfig, ProxyConfig>(::ProxyEditor) {
+        type.update(it.type)
+        host.update(it.host)
+        port.update(it.port)
+        username.update(it.username)
+        password.update(it.password)
+    }
+
     ProxySettings(
         source = source,
         on = on,
-        kind = kind,
-        address = address,
-        number = number,
-        user = user,
-        secret = secret,
+        proxy = ProxyConfig(kind, address, number, user, secret),
         appProxy = appProxy,
         onEnabledChange = { enabled.update(it) },
-        onTypeChange = { type.update(it) },
-        onHostChange = { host.update(it) },
-        onPortChange = { port.update(it) },
-        onUsernameChange = { username.update(it) },
-        onPasswordChange = { password.update(it) },
+        onEdit = { editor.launch(it) },
     )
 }
 
 /**
- * [ProxySettings] with the values given, each change goes to its callback.
+ * [ProxySettings] with the values given.
  *
- * @param number the port, `0` while there is none
  * @param appProxy whether the app's proxy is on, which a source's own proxy overrides
+ * @param onEdit called with the saved [proxy] to open its page
  */
 @Composable
 fun ProxySettings(
     source: String?,
     on: Boolean,
-    kind: ProxyType,
-    address: String,
-    number: Int,
-    user: String,
-    secret: String,
+    proxy: ProxyConfig,
     appProxy: Boolean,
     onEnabledChange: (Boolean) -> Unit,
-    onTypeChange: (ProxyType) -> Unit,
-    onHostChange: (String) -> Unit,
-    onPortChange: (Int) -> Unit,
-    onUsernameChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
+    onEdit: (ProxyConfig) -> Unit,
 ) {
-    val validateHost = hostValidator()
-    val validatePort = portValidator()
-
-    val incomplete = on && (address.isBlank() || number == 0)
     SettingsSection(stringResource(R.string.setting_header_proxy))
-    SwitchSetting(
+    // Saved values stay while it is off, they are used again once it is back on
+    SwitchPageSetting(
         title = stringResource(R.string.setting_title_use_a_proxy),
         summary = when {
-            source == null && incomplete -> stringResource(R.string.setting_description_proxy_app_incomplete)
-
-            source == null -> stringResource(R.string.setting_description_proxy_app)
-            incomplete -> stringResource(
-                R.string.setting_description_proxy_source_incomplete,
+            !on && source != null && appProxy -> stringResource(
+                R.string.setting_description_proxy_source_off,
                 source
             )
 
-            !on && appProxy -> stringResource(R.string.setting_description_proxy_source_off, source)
-            else -> stringResource(R.string.setting_description_proxy_source, source)
+            !on -> stringResource(R.string.setting_description_proxy_status_off)
+            proxy.host.isBlank() || proxy.port == 0 ->
+                stringResource(R.string.setting_description_proxy_status_incomplete)
+
+            else -> stringResource(
+                R.string.setting_description_proxy_status_on,
+                // Protocol names and addresses are never translated
+                "${proxy.type.label()} · ${proxy.host}:${proxy.port}"
+            )
         },
         checked = on,
         onCheckedChange = onEnabledChange,
+        onClick = { onEdit(proxy) },
     )
-    // Saved values stay when hidden, they are used again once the setting is back on
-    if (!on) return
-
-    ChoiceSetting(
-        title = stringResource(R.string.setting_proxy_title_type),
-        value = kind,
-        options = ProxyType.entries,
-        label = ProxyType::label,
-        onSelect = onTypeChange,
-    )
-    TextSetting(
-        title = stringResource(R.string.setting_proxy_title_host),
-        value = address,
-        placeholder = "proxy.example.com",
-        keyboardType = KeyboardType.Uri,
-        validate = validateHost,
-        onSave = { onHostChange(it.trim()) },
-    )
-    TextSetting(
-        title = stringResource(R.string.setting_proxy_title_port),
-        value = if (number == 0) "" else number.toString(),
-        keyboardType = KeyboardType.Number,
-        validate = { validatePort(it.trim()) },
-        onSave = { onPortChange(it.trim().toIntOrNull() ?: 0) },
-    )
-    TextSetting(
-        title = stringResource(R.string.setting_title_username),
-        value = user,
-        summary = user.ifEmpty { stringResource(R.string.setting_description_username_status_none) },
-        onSave = { onUsernameChange(it.trim()) },
-    )
-    if (user.isNotEmpty())
-        TextSetting(
-            title = stringResource(R.string.setting_title_password),
-            value = secret,
-            summary = if (secret.isEmpty()) "" else "•".repeat(8),
-            hidden = true,
-            onSave = onPasswordChange,
-        )
 }
 
 /** [ProxySettings] of a proxy that is off, for previews. */
@@ -193,16 +120,8 @@ fun ProxySettings(
 internal fun PreviewProxySettings(source: String?) = ProxySettings(
     source = source,
     on = false,
-    kind = ProxyType.HTTP,
-    address = "",
-    number = 0,
-    user = "",
-    secret = "",
+    proxy = ProxyConfig(),
     appProxy = false,
     onEnabledChange = {},
-    onTypeChange = {},
-    onHostChange = {},
-    onPortChange = {},
-    onUsernameChange = {},
-    onPasswordChange = {},
+    onEdit = {},
 )

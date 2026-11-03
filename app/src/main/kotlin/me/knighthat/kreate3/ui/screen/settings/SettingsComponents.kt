@@ -21,10 +21,14 @@ package me.knighthat.kreate3.ui.screen.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -41,6 +45,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -48,6 +53,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -187,6 +193,43 @@ fun SwitchSetting(
         trailing = { Switch(checked = checked, onCheckedChange = null) },
     )
 }
+
+/**
+ * A setting that is on or off with a page of its own: the switch at the end, past a divider, flips
+ * it, and a tap on the texts calls [onClick] to open the page, only while it is [checked].
+ */
+@Composable
+fun SwitchPageSetting(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Min),
+) {
+    SettingsItem(
+        title = title,
+        summary = summary,
+        onClick = if (checked) onClick else null,
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+    )
+    VerticalDivider(Modifier.height(SWITCH_DIVIDER_HEIGHT))
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = Modifier.padding(horizontal = 16.dp),
+    )
+}
+
+/** Height of the line between the texts and the switch of a [SwitchPageSetting]. */
+private val SWITCH_DIVIDER_HEIGHT = 32.dp
 
 /**
  * What a settings row says under its title, cut to two lines. A note after a line break (who may

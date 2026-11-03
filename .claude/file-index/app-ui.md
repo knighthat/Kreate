@@ -137,6 +137,9 @@ ui/navigation/
   KreateApp, for opening screens from components that don't own the back stack (song menu).
 - `TopLevelBackStack.kt` — one back stack per Tab.
 - `RouteViewModel.kt` — `routeExtras`: route args → ViewModel `SavedStateHandle`.
+- `RouteResults.kt` — pages opened for an answer like an activity result: `rememberRouteResult`
+  (key saved, `RouteLauncher.launch(input)`, answer delivered once the opener is back),
+  `RouteResults` Koin single holding inputs and answers in memory (`ProxyEditor` uses it).
 - `ExitConfirmation.kt` — PredictiveBackHandler at the bottom of the stack (composed before
   NavDisplay in `KreateApp`): `EXIT_ON_BACK` off swallows back; on, `EXIT_CONFIRMATION_TIMEOUT`
   above 0 shows "

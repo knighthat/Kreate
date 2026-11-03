@@ -155,6 +155,9 @@
 
     <!-- proxy -->
     <string name="setting_title_use_a_proxy">Use a proxy</string>
+    <string name="setting_description_proxy_status_off">Off, requests go straight to their servers</string>
+    <string name="setting_description_proxy_status_incomplete">Nothing is sent until it has a host and port. Tap to set them</string>
+    <string name="setting_description_proxy_status_on">Through %1$s. Tap to change it</string>
     <string name="setting_description_proxy_app_incomplete">Nothing is sent until the host and port are set, except to sources with a proxy of their own</string>
     <string name="setting_description_proxy_app">Every request goes through it, except to sources with a proxy of their own</string>
     <string name="setting_description_proxy_source_incomplete">Nothing is sent to %1$s until the host and port are set</string>
@@ -354,6 +357,7 @@
     <string name="status_signed_in">Signed in</string>
     <string name="status_unlimited">Unlimited</string>
     <string name="status_not_set">Not set</string>
+    <string name="optional">Optional</string>
     <string name="status_ago">%1$s ago</string>
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>
@@ -394,6 +398,7 @@
     <string name="screen_title_about">About</string>
     <string name="screen_title_open_source_licenses">Open source licenses</string>
     <string name="screen_title_voice_search">Voice search</string>
+    <string name="screen_title_proxy">Proxy</string>
     <!--</editor-fold>-->
 
     <!--<editor-fold defaultstate="collapsed" desc="Tabs">-->

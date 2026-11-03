@@ -106,6 +106,7 @@ import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSignIn
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Playlists
+import me.knighthat.kreate3.ui.navigation.ProxyEditor
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
 import me.knighthat.kreate3.ui.navigation.SearchResults
@@ -161,6 +162,7 @@ import me.knighthat.kreate3.ui.screen.player.PlayerSheetValue
 import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
+import me.knighthat.kreate3.ui.screen.settings.ProxyEditorScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.about.AboutScreen
 import me.knighthat.kreate3.ui.screen.settings.about.OpenSourceLicensesScreen
@@ -191,7 +193,7 @@ private val Route.hasMiniPlayer: Boolean
         OpenSubsonicSettings, OpenSubsonicSignIn, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
-        is SearchResults -> false
+        is SearchResults, is ProxyEditor -> false
         else -> true
     }
 
@@ -534,6 +536,7 @@ fun KreateApp(
                                         )
                                     }
                                     entry<OpenSubsonicSignIn> { OpenSubsonicSignInScreen(topLevel::pop) }
+                                    entry<ProxyEditor> { ProxyEditorScreen(it.key, topLevel::pop) }
                                     entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
                                     entry<About> {
                                         AboutScreen(

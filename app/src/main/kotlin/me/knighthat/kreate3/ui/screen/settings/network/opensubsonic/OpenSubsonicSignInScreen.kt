@@ -24,12 +24,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -42,12 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
@@ -56,10 +48,10 @@ import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
-import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
+import me.knighthat.kreate3.ui.screen.settings.CredentialField
 
 /**
  * The credentials of the OpenSubsonic server, a segment per way to sign in. Nothing is kept until
@@ -245,55 +237,6 @@ private fun OpenSubsonicSignInContent(
             }
         }
     }
-}
-
-/**
- * A field of one line for a credential. With [hidden] it shows as dots, and an eye button at its
- * end shows or hides the text.
- */
-@Composable
-private fun CredentialField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    hidden: Boolean,
-    imeAction: ImeAction,
-) {
-    var revealed by rememberSaveable { mutableStateOf(false) }
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        singleLine = true,
-        trailingIcon = if (hidden) {
-            {
-                val description = stringResource(
-                    if (revealed) R.string.semantic_hide_text else R.string.semantic_show_text
-                )
-                Tooltip(description) {
-                    IconButton(onClick = { revealed = !revealed }) {
-                        Icon(
-                            painterResource(
-                                if (revealed) R.drawable.visibility_off else R.drawable.visibility
-                            ),
-                            contentDescription = description,
-                        )
-                    }
-                }
-            }
-        } else {
-            null
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = if (hidden) KeyboardType.Password else KeyboardType.Text,
-            autoCorrectEnabled = false,
-            imeAction = imeAction,
-        ),
-        visualTransformation =
-            if (hidden && !revealed) PasswordVisualTransformation() else VisualTransformation.None,
-        modifier = Modifier.fillMaxWidth(),
-    )
 }
 
 @ScreenPreviews

@@ -51,6 +51,7 @@ rebuilt per proxy with own pool; `youTubeProxy()`, `isYouTubeHost()`); `OpenSubs
 proxy too. App: `source/SourceNetworkClient.kt` (Coil routes YouTube hosts to
 `YouTubeProvider.httpClient()`), `SongDataSource` has a YouTube upstream (
 `YouTubeProvider.streamClient()`), settings `ProxySettings.kt` (section at the end of both source
-pages; `PreviewProxySettings` is an off proxy for previews), `network/youtube/SignInProxy.kt` (
+pages and the Network page, its values edited on `ProxyEditorScreen.kt`; `PreviewProxySettings` is
+an off proxy for previews), `network/youtube/SignInProxy.kt` (
 androidx.webkit ProxyController override while the sign-in
 screen shows; SOCKS with a username refused, Chromium can't sign in to SOCKS).
