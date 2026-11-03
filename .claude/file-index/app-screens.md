@@ -190,7 +190,8 @@ ui/screen/
   list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
   dialog)/Section, MainSwitch (page-top switch), SettingsSummary (row text: title 1 line, summary
   2), Switch/Choice/Radio/Number/Text settings, Slider setting (`StopSlider`, optional end icons),
-  SecondSetting/PercentSetting/LufsSetting (slider rows saved on release, optional summary, dimmed
+  SecondSetting/PercentSetting/CountSetting/LufsSetting (slider rows saved on release, optional
+  summary, dimmed
   while disabled), `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
@@ -215,7 +216,7 @@ ui/screen/
     "Request new language" rows (both open the Crowdin project; translate hidden while System or
     English is picked); Layout: icon only, playlist
     initial, binary units; app icon),
-  `network/NetworkSettingsScreen.kt` (timeouts/retries + "
+    `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
     page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (

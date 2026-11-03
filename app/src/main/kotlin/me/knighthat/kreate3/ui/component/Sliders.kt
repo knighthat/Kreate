@@ -270,6 +270,54 @@ private fun PercentSlider(
 )
 
 /**
+ * A slider for a count from the start of [range] to its end, stopping at every whole number, laid
+ * out like [SecondSlider]: the count in the ball, [unit] of it under the middle of the track,
+ * [leadingIcon] and [trailingIcon] at the ends (none by default).
+ */
+@Composable
+fun CountSlider(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    range: IntRange,
+    unit: @Composable (Int) -> String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onValueChangeFinished: (() -> Unit)? = null,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+) = CountSlider(
+    value, onValueChange, range, unit, null, modifier, enabled, onValueChangeFinished, leadingIcon,
+    trailingIcon,
+)
+
+/** The [CountSlider] held or not as [held] says, or as the finger does while it's `null`. */
+@Composable
+private fun CountSlider(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    range: IntRange,
+    unit: @Composable (Int) -> String,
+    held: Boolean?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onValueChangeFinished: (() -> Unit)? = null,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+) = WholeSlider(
+    value = value,
+    onValueChange = onValueChange,
+    range = range,
+    number = Int::toString,
+    unit = unit,
+    held = held,
+    modifier = modifier,
+    enabled = enabled,
+    onValueChangeFinished = onValueChangeFinished,
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon,
+)
+
+/**
  * A slider through [stops] stops in order, [value] being the one it's on (from `0`), laid out like
  * [SecondSlider] with an empty ball and nothing under the track: for values that have no number,
  * like a quality. [leadingIcon] and [trailingIcon] stand at the ends (none by default).
@@ -564,6 +612,22 @@ private fun PercentSliderPreview() = PreviewTheme {
             // Held, the ball grown
             PercentSlider(value = 150, onValueChange = {}, range = 80..200, held = true)
             PercentSlider(value = 120, onValueChange = {}, range = 80..200, enabled = false)
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun CountSliderPreview() = PreviewTheme {
+    Surface {
+        var value by remember { mutableIntStateOf(3) }
+        val times = @Composable { it: Int -> pluralStringResource(R.plurals.unit_time, it) }
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            CountSlider(value = value, onValueChange = { value = it }, range = 0..10, unit = times)
+            CountSlider(value = 1, onValueChange = {}, range = 0..10, unit = times)
+            // Held, the ball grown
+            CountSlider(value = 5, onValueChange = {}, range = 0..10, unit = times, held = true)
+            CountSlider(value = 2, onValueChange = {}, range = 0..10, unit = times, enabled = false)
         }
     }
 }

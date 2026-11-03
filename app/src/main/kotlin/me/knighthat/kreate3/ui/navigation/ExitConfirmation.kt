@@ -67,9 +67,9 @@ private fun Activity.exit() {
 /**
  * Handles going back from the first screen, where it would close the app, when [atBottom].
  *
- * While [Preferences.EXIT_ON_BACK] is off going back there does nothing. While on, without
- * [Preferences.EXIT_CONFIRMATION] the app closes at once; with it, the first time shows a message on [snackbar] for
- * [Preferences.EXIT_CONFIRMATION_TIMEOUT] seconds and going back again meanwhile leaves the app.
+ * While [Preferences.EXIT_ON_BACK] is off going back there does nothing. While on, with
+ * [Preferences.EXIT_CONFIRMATION_TIMEOUT] at `0` the app closes at once; otherwise the first time
+ * shows a message on [snackbar] for that many seconds and going back again meanwhile leaves the app.
  * Once the message is gone, the next time asks again.
  *
  * Compose it before the screens, so a screen that handles going back itself comes first.
@@ -77,8 +77,8 @@ private fun Activity.exit() {
 @Composable
 fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
     val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
-    val confirm by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val timeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
+    val confirm = timeout > 0
 
     val activity = LocalActivity.current
     val context = LocalContext.current
@@ -106,7 +106,7 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
                         R.string.snackbar_exit_press
                 )
                 snackbar.currentSnackbarData?.dismiss()
-                withTimeoutOrNull(timeout.coerceAtLeast(1).seconds) {
+                withTimeoutOrNull(timeout.seconds) {
                     snackbar.showSnackbar(
                         message,
                         duration = SnackbarDuration.Indefinite

@@ -118,9 +118,11 @@ ui/component/ (shared composables; each file that draws something ends with its 
   mark at -14, "LUFS", fixed-width pill, volume down/up icons) and
   `SecondSlider` (whole seconds of an `IntRange`, filled from the start, "seconds", `number` for
   what the ball shows, hourglass -/+ icons) and `PercentSlider` (whole percents, "%", no default
-  icons) and `StopSlider` (index of n stops, empty ball, nothing under it), all on a private
+  icons) and `CountSlider` (whole numbers, caller's `unit`, no default icons) and `StopSlider`
+  (index of n stops, empty ball, nothing under it), all on a private
   `WholeSlider`; `SliderIcon` (icon with an optional small badge). Used by `SecondSetting`/
-  `PercentSetting`/`LufsSetting`/`SliderSetting` and the Data size dialog. The thumb keeps one
+  `PercentSetting`/`CountSetting`/`LufsSetting`/`SliderSetting` and the Data size dialog. The thumb
+  keeps one
   shape: the maintainer rejected pointed corners at the track ends.
 - seekbar/`SeekBar.kt` — the full player's seek bar (moved out of PlayerSheet.kt by the maintainer),
   with previews and a private fake `PlaybackController`.
@@ -136,8 +138,9 @@ ui/navigation/
 - `TopLevelBackStack.kt` — one back stack per Tab.
 - `RouteViewModel.kt` — `routeExtras`: route args → ViewModel `SavedStateHandle`.
 - `ExitConfirmation.kt` — PredictiveBackHandler at the bottom of the stack (composed before
-  NavDisplay in `KreateApp`): `EXIT_ON_BACK` off swallows back; on, `EXIT_CONFIRMATION` shows "
-  Press/Swipe again to exit" for `EXIT_CONFIRMATION_TIMEOUT` s (swipe = progress events or
+  NavDisplay in `KreateApp`): `EXIT_ON_BACK` off swallows back; on, `EXIT_CONFIRMATION_TIMEOUT`
+  above 0 shows "
+  Press/Swipe again to exit" for that many s (0 exits at once) (swipe = progress events or
   navigation_mode 2), second back moves the task back (API 31+) or finishes. Settings: General →
   Navigation.
 - `StorageUsage.kt` — `StorageUse` (user/all/limit bytes and texts, `shared`, `limited`; off = 0,

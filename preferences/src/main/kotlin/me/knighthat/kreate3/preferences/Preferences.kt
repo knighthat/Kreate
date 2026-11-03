@@ -72,12 +72,9 @@ object Preferences : KoinComponent {
     val PLAYLIST_INITIAL by lazy { boolean("playlist_initial", false) }
 
     /**
-     * Going back from the first screen asks to go back again before the app closes, see
-     * [EXIT_CONFIRMATION_TIMEOUT]. Only while [EXIT_ON_BACK] is on.
+     * Seconds going back from the first screen waits for a second time before the app closes, it
+     * asks again after; `0` closes it at once. Only while [EXIT_ON_BACK] is on.
      */
-    val EXIT_CONFIRMATION by lazy { boolean("exit_confirmation", true) }
-
-    /** Seconds [EXIT_CONFIRMATION] waits for the second time, it asks again after. */
     val EXIT_CONFIRMATION_TIMEOUT by lazy { int("exit_confirmation_timeout", 2) }
 
     /** Going back from the first screen closes the app; while off it does nothing there. */

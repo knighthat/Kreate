@@ -126,16 +126,15 @@
     <string name="setting_title_download_lyrics">Download lyrics</string>
     <string name="setting_description_download_lyrics">Keeps a song\'s lyrics from your lyrics source once it\'s fully downloaded</string>
     <string name="setting_title_memory_cache">Memory cache</string>
-    <string name="setting_description_memory_cache">%1$s of app memory. Keep recently seen images in even faster cache pool</string>
+    <string name="setting_description_memory_cache">Keep recently seen images in even faster cache pool</string>
     <string name="setting_title_exit_on_back">Exit on back</string>
     <string name="setting_description_exit_on_back_on">Going back from the first screen closes the app</string>
     <string name="setting_description_exit_on_back_off">Going back from the first screen keeps the app open</string>
     <string name="setting_title_confirm_exit">Confirm exit</string>
-    <string name="setting_description_confirm_exit">Go back twice from the first screen to exit</string>
+    <string name="setting_description_confirm_exit_status_on">Wait %1$s before dismissing confirmation</string>
+    <string name="setting_description_confirm_exit_status_off">No confirmation</string>
     <string name="setting_title_notification_opens_player">Open player from notification</string>
     <string name="setting_description_notification_opens_player">Tapping the media notification opens the full player</string>
-    <string name="setting_title_confirmation_time">Confirmation time</string>
-    <string name="setting_description_confirmation_time">Wait for %1$s before dismissing confirmation</string>
 
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>
@@ -147,9 +146,11 @@
 
     <!-- network -->
     <string name="setting_title_connect_timeout">Connect timeout</string>
+    <string name="setting_description_connect_timeout">Time to reach a server before giving up</string>
     <string name="setting_title_read_timeout">Read timeout</string>
+    <string name="setting_description_read_timeout">Time a server may go quiet mid-answer</string>
     <string name="setting_title_retries">Retries</string>
-    <string name="setting_description_retries">Requests that got a server error are sent again. Applies from the next launch</string>
+    <string name="setting_description_retries">Requests that got a server error are sent again</string>
     <string name="setting_title_configure_source">Configure %1$s</string>
 
     <!-- proxy -->

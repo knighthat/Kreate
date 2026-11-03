@@ -58,19 +58,21 @@ import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SliderIcon
 import me.knighthat.kreate3.ui.component.StopSlider
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.PercentSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import kotlin.math.roundToLong
+import kotlin.math.roundToInt
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPreference
 
 private const val MIB = 1024L * 1024
@@ -344,23 +346,23 @@ private fun DataSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_header_images))
-        NumberSetting(
+        val memoryPercent = (memoryCache * 100).roundToInt()
+        PercentSetting(
             title = stringResource(R.string.setting_title_memory_cache),
-            value = (memoryCache * 100).roundToLong(),
-            min = 5,
-            max = 50,
-            onSave = { GlobalPreferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
-            note = {
-                val description = stringResource(
-                    R.string.setting_description_memory_cache,
-                    stringResource(R.string.percent, it)
-                )
+            value = memoryPercent,
+            range = 5..50,
+            onSelect = { GlobalPreferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
+            summary = stringResource(
+                R.string.setting_description_memory_cache
+            ).let { description ->
                 if (appWide || defaultProfileOnly == null)
                     description
                 else
                     "$description\n$defaultProfileOnly"
             },
             enabled = appWide,
+            leadingIcon = { SliderIcon(R.drawable.memory, R.drawable.remove) },
+            trailingIcon = { SliderIcon(R.drawable.memory, R.drawable.add) },
         )
     }
 }

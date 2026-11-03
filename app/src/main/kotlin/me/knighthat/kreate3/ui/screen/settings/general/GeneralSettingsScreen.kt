@@ -29,6 +29,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
@@ -41,14 +42,12 @@ import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val scanInterval by Preferences.LOCAL_SCAN_INTERVAL.collectAsStateWithLifecycle()
     val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
-    val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
     val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
 
     GeneralSettingsContent(
         scanInterval = scanInterval,
         exitOnBack = exitOnBack,
-        exitConfirmation = exitConfirmation,
         exitTimeout = exitTimeout,
         notificationOpensPlayer = notificationOpensPlayer,
         onBack = onBack,
@@ -60,7 +59,6 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 private fun GeneralSettingsContent(
     scanInterval: Int,
     exitOnBack: Boolean,
-    exitConfirmation: Boolean,
     exitTimeout: Int,
     notificationOpensPlayer: Boolean,
     onBack: () -> Unit,
@@ -95,25 +93,22 @@ private fun GeneralSettingsContent(
             ),
         )
         if (exitOnBack) {
-            SwitchSetting(
+            val off = stringResource(R.string.status_off)
+            // 0 seconds closes the app at once
+            SecondSetting(
                 title = stringResource(R.string.setting_title_confirm_exit),
-                checked = exitConfirmation,
-                onCheckedChange = { Preferences.EXIT_CONFIRMATION.update(it) },
-                summary = stringResource(R.string.setting_description_confirm_exit),
-            )
-            NumberSetting(
-                title = stringResource(R.string.setting_title_confirmation_time),
-                value = exitTimeout.toLong(),
-                min = 1,
-                max = 10,
-                onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
-                note = {
+                value = exitTimeout,
+                range = 0..10,
+                onSelect = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it) },
+                summary = if (exitTimeout == 0) {
+                    stringResource(R.string.setting_description_confirm_exit_status_off)
+                } else {
                     stringResource(
-                        R.string.setting_description_confirmation_time,
-                        pluralStringResource(R.plurals.second, it.toInt(), it)
+                        R.string.setting_description_confirm_exit_status_on,
+                        pluralStringResource(R.plurals.second, exitTimeout, exitTimeout)
                     )
                 },
-                enabled = exitConfirmation,
+                number = { if (it == 0) off else it.toString() },
             )
         }
         SwitchSetting(
@@ -131,7 +126,6 @@ private fun GeneralSettingsPreview() = PreviewTheme {
     GeneralSettingsContent(
         scanInterval = 30,
         exitOnBack = true,
-        exitConfirmation = true,
         exitTimeout = 2,
         notificationOpensPlayer = true,
         onBack = {},

@@ -63,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.AppRestart
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.ui.component.CountSlider
 import me.knighthat.kreate3.ui.component.LufsSlider
 import me.knighthat.kreate3.ui.component.PercentSlider
 import me.knighthat.kreate3.ui.component.RestartAppButton
@@ -387,6 +388,40 @@ fun SecondSetting(
             // A tap moves and lets go in one frame, read the position it left
             onValueChangeFinished = { if (position != value) onSelect(position) },
             number = number,
+        )
+    }
+}
+
+/**
+ * A setting of a count in [range], picked on a [CountSlider] whose ball shows the count and whose
+ * track has [unit] of it under. The setting changes only when the slider is let go. While not
+ * [enabled] the row is dimmed and the slider doesn't move.
+ *
+ * @param summary under the title, like why it's off; none when `null`
+ */
+@Composable
+fun CountSetting(
+    title: String,
+    value: Int,
+    range: IntRange,
+    unit: @Composable (Int) -> String,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
+
+    SliderRow(title, summary, enabled, modifier) {
+        CountSlider(
+            value = position,
+            onValueChange = { position = it },
+            range = range,
+            unit = unit,
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
         )
     }
 }

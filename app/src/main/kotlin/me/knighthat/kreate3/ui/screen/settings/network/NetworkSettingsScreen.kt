@@ -36,9 +36,10 @@ import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
-import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
+import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -185,44 +186,27 @@ private fun NetworkSettingsContent(
         restartApp = true
     ) {
         SettingsSection(stringResource(R.string.setting_header_requests))
-        NumberSetting(
+        SecondSetting(
             title = stringResource(R.string.setting_title_connect_timeout),
-            value = connectTimeout.toLong(),
-            min = 1,
-            max = 120,
-            onSave = { Preferences.NETWORK_CONNECT_TIMEOUT.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_restart_required,
-                    pluralStringResource(R.plurals.second, it.toInt(), it)
-                )
-            },
+            value = connectTimeout,
+            range = 1..120,
+            summary = stringResource(R.string.setting_description_connect_timeout),
+            onSelect = { Preferences.NETWORK_CONNECT_TIMEOUT.update(it) },
         )
-        NumberSetting(
+        SecondSetting(
             title = stringResource(R.string.setting_title_read_timeout),
-            value = readTimeout.toLong(),
-            min = 1,
-            max = 300,
-            onSave = { Preferences.NETWORK_READ_TIMEOUT.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_restart_required,
-                    pluralStringResource(R.plurals.second, it.toInt(), it)
-                )
-            },
+            value = readTimeout,
+            range = 1..300,
+            summary = stringResource(R.string.setting_description_read_timeout),
+            onSelect = { Preferences.NETWORK_READ_TIMEOUT.update(it) },
         )
-        NumberSetting(
+        CountSetting(
             title = stringResource(R.string.setting_title_retries),
-            value = maxRetries.toLong(),
-            min = 0,
-            max = 10,
-            onSave = { Preferences.NETWORK_MAX_RETRIES.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_restart_required,
-                    pluralStringResource(R.plurals.time, it.toInt(), it)
-                )
-            },
+            value = maxRetries,
+            range = 0..10,
+            unit = { pluralStringResource(R.plurals.unit_time, it) },
+            summary = stringResource(R.string.setting_description_retries),
+            onSelect = { Preferences.NETWORK_MAX_RETRIES.update(it) },
         )
 
         proxy()
