@@ -129,17 +129,19 @@ private fun GeneralSettingsContent(
             summary = stringResource(R.string.setting_description_notification_opens_player),
         )
 
-        SettingsSection(stringResource(R.string.setting_header_album_and_artist_pages))
         val actionLabels = labelsOf(QueueAction.entries) { it.labelRes }
+        SettingsSection(stringResource(R.string.setting_header_albums))
         ChoiceSetting(
-            title = stringResource(R.string.setting_title_album_page_button),
+            title = stringResource(R.string.setting_title_page_button),
             value = albumPageAction,
             options = QueueAction.entries,
             label = actionLabels,
             onSelect = { Preferences.ALBUM_PAGE_ACTION.update(it) },
         )
+
+        SettingsSection(stringResource(R.string.setting_header_artists))
         ChoiceSetting(
-            title = stringResource(R.string.setting_title_artist_page_button),
+            title = stringResource(R.string.setting_title_page_button),
             value = artistPageAction,
             options = QueueAction.entries,
             label = actionLabels,
