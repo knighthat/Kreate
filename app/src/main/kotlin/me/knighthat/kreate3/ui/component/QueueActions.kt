@@ -58,6 +58,7 @@ import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.songTitle
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import org.koin.compose.koinInject
@@ -88,12 +89,10 @@ fun PlaybackController.queue(
         QueueAction.PLAY_NEXT -> playNext(playable)
     }
     val text = when (action) {
-        QueueAction.ENQUEUE -> resources.getString(
-            R.string.snackbar_added_to_queue,
-            resources.getQuantityString(R.plurals.song, playable.size, playable.size),
-        )
+        QueueAction.ENQUEUE ->
+            resources.getString(R.string.snackbar_added_to_queue, songsLabel(resources, playable))
 
-        QueueAction.PLAY_NEXT -> willPlayNext(resources, playable.size)
+        QueueAction.PLAY_NEXT -> willPlayNext(resources, playable)
 
         else -> return null
     }
@@ -135,16 +134,18 @@ internal fun PlaybackController.clearUndoable(resources: Resources, notifier: No
     })
 }
 
-/** "Will play next", or how many songs will when there are several. */
-internal fun willPlayNext(resources: Resources, songs: Int): String =
-    if (songs == 1) {
-        resources.getString(R.string.snackbar_will_play_next_one)
-    } else {
-        resources.getString(
-            R.string.snackbar_will_play_next_many,
-            resources.getQuantityString(R.plurals.song, songs, songs),
-        )
-    }
+/** The song's quoted title when [songs] is one, else how many there are, like "3 songs". */
+internal fun songsLabel(resources: Resources, songs: List<MediaItem>): String {
+    val title = songs.singleOrNull()?.songTitle()
+    return if (title != null)
+        resources.getString(R.string.quoted, title)
+    else
+        resources.getQuantityString(R.plurals.song, songs.size, songs.size)
+}
+
+/** "Will play next", saying which song, or how many songs when there are several. */
+internal fun willPlayNext(resources: Resources, songs: List<MediaItem>): String =
+    resources.getString(R.string.snackbar_will_play_next, songsLabel(resources, songs))
 
 /**
  * Starts a new queue from [song], tapped in [songs]: with [radio] it plays [song] followed by

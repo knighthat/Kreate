@@ -24,7 +24,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.provider.MediaStore
-import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -87,17 +87,41 @@ internal fun Context.shareLink(title: String?, link: String) {
     startActivity(Intent.createChooser(send, null))
 }
 
-/** What to tell the user when no link could be made for a [kind], like the plural `album`. */
-internal fun Throwable.shareFailure(resources: Resources, @PluralsRes kind: Int): String {
-    val noun = resources.getQuantityString(kind, 1)
+/** What a link shares: the texts for when no link could be made, with and without its title. */
+enum class ShareKind(
+    @param:StringRes val unsupported: Int,
+    @param:StringRes val unsupportedUnnamed: Int,
+    @param:StringRes val cantShare: Int,
+    @param:StringRes val cantShareUnnamed: Int,
+) {
+    SONG(
+        R.string.error_share_unsupported_song, R.string.error_share_unsupported_song_unnamed,
+        R.string.error_cant_share_song, R.string.error_cant_share_song_unnamed
+    ),
+    ALBUM(
+        R.string.error_share_unsupported_album, R.string.error_share_unsupported_album_unnamed,
+        R.string.error_cant_share_album, R.string.error_cant_share_album_unnamed
+    ),
+    ARTIST(
+        R.string.error_share_unsupported_artist, R.string.error_share_unsupported_artist_unnamed,
+        R.string.error_cant_share_artist, R.string.error_cant_share_artist_unnamed
+    ),
+    PLAYLIST(
+        R.string.error_share_unsupported_playlist,
+        R.string.error_share_unsupported_playlist_unnamed,
+        R.string.error_cant_share_playlist,
+        R.string.error_cant_share_playlist_unnamed
+    ),
+}
+
+/** What to tell the user when no link could be made for the [kind] item titled [title]. */
+internal fun Throwable.shareFailure(resources: Resources, title: String?, kind: ShareKind): String {
     val server = resources.openSubsonicName()
     return when ((this as? ServerException)?.check) {
         // The button only shows to an account that may share, so the server doesn't share this
-        is ServerCheck.Rejected -> resources.getString(
-            R.string.error_share_unsupported,
-            server,
-            noun
-        )
+        is ServerCheck.Rejected ->
+            resources.named(title, kind.unsupported, kind.unsupportedUnnamed, server)
+
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
         is ServerCheck.CertificateChanged -> resources.getString(
@@ -105,18 +129,18 @@ internal fun Throwable.shareFailure(resources: Resources, @PluralsRes kind: Int)
             server
         )
 
-        null -> message ?: resources.getString(R.string.error_cant_share, noun)
-        else -> resources.getString(R.string.error_cant_share, noun)
+        null -> message ?: resources.named(title, kind.cantShare, kind.cantShareUnnamed)
+        else -> resources.named(title, kind.cantShare, kind.cantShareUnnamed)
     }
 }
 
 /**
  * The share button of a detail screen's top bar, see [rememberLinkShare].
  *
- * @param kind what is shared, like the plural `album`, for the failure message
+ * @param kind what is shared, for the failure message
  */
 @Composable
-fun ShareAction(title: String?, @PluralsRes kind: Int, link: suspend () -> Result<String>) {
+fun ShareAction(title: String?, kind: ShareKind, link: suspend () -> Result<String>) {
     val share = rememberLinkShare(title, kind, link)
     ShareButton(enabled = share.enabled, onClick = { share.share() })
 }
@@ -137,12 +161,12 @@ class LinkShare(
  * Sharing an item by a link: [LinkShare.share] gets the link from [link], which may ask the
  * server, then opens the share sheet titled [title]. A failure is posted to [LocalNotifier].
  *
- * @param kind what is shared, like the plural `album`, for the failure message
+ * @param kind what is shared, for the failure message
  */
 @Composable
 fun rememberLinkShare(
     title: String?,
-    @PluralsRes kind: Int,
+    kind: ShareKind,
     link: suspend () -> Result<String>,
 ): LinkShare {
     val context = LocalContext.current
@@ -161,7 +185,7 @@ fun rememberLinkShare(
                 .onFailure {
                     notifier.post(
                         Message(
-                            it.shareFailure(resources, kind),
+                            it.shareFailure(resources, currentTitle, kind),
                             MessageDuration.LONG
                         )
                     )
@@ -229,7 +253,7 @@ fun rememberSongShare(
                         .onFailure {
                             notifier.post(
                                 Message(
-                                    it.shareFailure(resources, R.plurals.unit_song),
+                                    it.shareFailure(resources, title, ShareKind.SONG),
                                     MessageDuration.LONG
                                 )
                             )

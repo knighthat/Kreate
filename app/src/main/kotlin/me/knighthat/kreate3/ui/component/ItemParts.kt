@@ -93,7 +93,7 @@ internal val Origin.sourceRes: Int
     get() = when (this) {
         Origin.LOCAL -> R.string.source_local
         Origin.YOUTUBE -> R.string.source_ytm
-        Origin.OPEN_SUBSONIC -> R.string.source_opensubsonicapi
+        Origin.OPEN_SUBSONIC -> R.string.source_opensubsonic
     }
 
 /** The icon of the origin, on item badges and origin chips. */
@@ -385,7 +385,7 @@ fun OriginBadge(
         Origin.OPEN_SUBSONIC ->
             stringResource(
                 R.string.semantic_from_opensubsonic,
-                stringResource(R.string.source_opensubsonicapi),
+                stringResource(R.string.source_opensubsonic),
             )
     },
     tint = tint,

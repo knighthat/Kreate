@@ -71,7 +71,15 @@ class YouTubePlaylistDetailViewModel(
         "YouTubePlaylist.ID is missing from the saved state"
     }
 
-    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_playlist)
+    /** What the screen shows of the playlist until YouTube answers. */
+    private val opened: OpenedItem = savedStateHandle.openedItem()
+
+    override val notFound: String
+        get() = context.youTubeNotFound(
+            opened.name,
+            R.string.error_source_not_found_playlist,
+            R.string.error_source_not_found_playlist_unnamed
+        )
 
     private val _songs = MutableStateFlow(emptyList<MediaItem>())
     private val _hasMore = MutableStateFlow(false)

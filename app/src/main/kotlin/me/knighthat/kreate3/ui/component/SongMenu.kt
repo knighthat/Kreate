@@ -496,7 +496,7 @@ private fun SongMenuActions(
             close {
                 val items = listOf(item)
                 playback.playNext(items)
-                notifier.post(undoMessage(resources, willPlayNext(resources, 1)) {
+                notifier.post(undoMessage(resources, willPlayNext(resources, items)) {
                     playback.unqueue(
                         items
                     )
@@ -525,15 +525,13 @@ private fun SongMenuActions(
     if (navigator != null && album != null)
         MenuRow(
             R.drawable.album,
-            stringResource(R.string.menu_go_to, pluralStringResource(R.plurals.unit_album, 1))
+            stringResource(R.string.menu_go_to_album)
         ) { close { navigator.open(album) } }
     if (navigator != null && artists.isNotEmpty())
         MenuRow(
             icon = R.drawable.artist,
-            label = stringResource(
-                R.string.menu_go_to,
-                pluralStringResource(R.plurals.unit_artist, artists.size),
-            ),
+            label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size)
+                .replaceFirstChar { it.uppercase() },
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
         ) {
             if (artists.size == 1)

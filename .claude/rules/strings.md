@@ -9,14 +9,43 @@ paths:
 What stays a literal: `ui.md`.
 
 Only English (`values/`) is in the repo. Translations come from Crowdin (`crowdin.yml`) and are
-merged into `values-*/` before a build; never add or edit a translation folder here.
+merged into `values-*/` before each release; never add or edit a translation folder here.
+
+## Files
+
+English texts sit in `values/*.strings.xml`, one file per kind of text, picked by the key prefix
+(`plurals.xml` stays one file). Add a string to its file; Crowdin sees a moved string as new, so
+never move keys between files.
+
+| File                        | Prefixes                                             |
+|-----------------------------|------------------------------------------------------|
+| `common.strings.xml`        | `app_name`, `source_*`, units, other single words    |
+| `statuses.strings.xml`      | `status_*`                                           |
+| `settings.strings.xml`      | `setting_*`                                          |
+| `actions.strings.xml`       | `action_*`, `menu_*`                                 |
+| `screens.strings.xml`       | `screen_*`, `details_*`, `tab_*`, `section_header_*` |
+| `semantics.strings.xml`     | `semantic_*`                                         |
+| `wizard.strings.xml`        | `wizard_*`                                           |
+| `dialogs.strings.xml`       | `dialog_*`                                           |
+| `messages.strings.xml`      | `error_*`, `snackbar_*`                              |
+| `statistics.strings.xml`    | `statistics_*`                                       |
+| `notifications.strings.xml` | `notification_*`                                     |
+| `constants.strings.xml`     | `constant_*`                                         |
 
 ## Format
 
-- Every placeholder in `strings.xml` and `plurals.xml` is positional, even when there is only one:
+- Every placeholder in `*.strings.xml` and `plurals.xml` is positional, even when there is only one:
   `%1$s`, `%1$d`, never `%s` or `%d`. Translations reorder them.
+- Never plug a noun, a verb or an action from another string into a sentence ("Go to
+  %1$s", "Couldn't
+  %1$s"): translations decline and conjugate it. One full string per noun or action
+  (`menu_go_to_album`, `error_like_song`); only names, counts and reasons are placeholders.
+- Never say "this song" or "the album" alone: name one item with its quoted title (`quoted`),
+  several by
+  count (`songsLabel`). `snackbar_this_*` ("this song") is only for when the name isn't known yet
+  (`itemName`).
 - Never write a source's name inside another string: `source_local`, `source_ytm`,
-  `source_opensubsonicapi` (and `source_lrclib` …) carry them; pass those as the arguments
+  `source_opensubsonic` (and `source_lrclib` …) carry them; pass those as the arguments
   (`stringResource(R.string.x, stringResource(R.string.source_ytm))`).
 - Texts in `plurals.xml` are lowercase; a heading or label capitalizes them in code
   (`replaceFirstChar`).
@@ -35,7 +64,7 @@ are two keys). An action can be several words (`action_sign_out`).
 | Button text                                                                                  | `action_*` (`action_save`, `action_search`)                                                                                                                                                                                                              |
 | Single word for a status, not tied to one setting                                            | `status_*` (`status_off`)                                                                                                                                                                                                                                |
 | Other single word, unit symbol                                                               | named after the word (`mib`); `quoted` = `\"%1$s\"`, `percent` = `%1$d%%`                                                                                                                                                                                |
-| Screen title (top bar, row that opens it, a wizard page)                                     | `screen_title_*`; YouTube and OpenSubsonic screens use `source_ytm` / `source_opensubsonicapi`                                                                                                                                                           |
+| Screen title (top bar, row that opens it, a wizard page)                                     | `screen_title_*`; YouTube and OpenSubsonic screens use `source_ytm` / `source_opensubsonic`                                                                                                                                                              |
 | Tab label (library bottom bar, player)                                                       | `tab_*`                                                                                                                                                                                                                                                  |
 | Setting row                                                                                  | `setting_title_*`, `setting_description_*`                                                                                                                                                                                                               |
 | Header naming a group of settings (`SettingsSection`)                                        | `setting_header_*`; a header and a row with the same text share one key                                                                                                                                                                                  |
@@ -43,7 +72,7 @@ are two keys). An action can be several words (`action_sign_out`).
 | Heading of a group in a list or sheet                                                        | `section_header_*`                                                                                                                                                                                                                                       |
 | Label of a statistic (tile caption, a value's name)                                          | `statistics_*`; one song's `statistics_song_*`, album's `statistics_album_*`, artist's `statistics_artist_*`                                                                                                                                             |
 | Icon description (`contentDescription`, an icon button's `description`), entry of a ⋮ button | `semantic_*` (`semantic_search`)                                                                                                                                                                                                                         |
-| Other menu item / heading of a menu page                                                     | `menu_*` / `menu_title_*`; going to a noun is `menu_go_to` with the plural as argument                                                                                                                                                                   |
+| Other menu item / heading of a menu page                                                     | `menu_*` / `menu_title_*`; going to a noun is `menu_go_to_{noun}`, one string each                                                                                                                                                                       |
 | Dialog                                                                                       | `dialog_title_{dialog}`, `dialog_body_{dialog}` (several: `_1`, `_2`); buttons `action_*`                                                                                                                                                                |
 | Error the user sees                                                                          | `error_*`                                                                                                                                                                                                                                                |
 | Snackbar message                                                                             | `snackbar_*` (its error part `error_*`)                                                                                                                                                                                                                  |
@@ -52,6 +81,10 @@ are two keys). An action can be several words (`action_sign_out`).
 | Setup-wizard-only text                                                                       | `wizard_*`; words shared with the app (Skip, Next, Theme, …) use their usual keys                                                                                                                                                                        |
 | Enum value                                                                                   | `constant_{enum class}_{value}` (`constant_sync_mode_liked`), via `labelRes` in `EnumLabels.kt`, `labelsOf` for choices; per-source meaning puts the source in the name (`constant_stream_quality_ytm_low`); only exception `sleep_timer_to_end_of_song` |
 
+- An action that failed on one item is `error_{action}` taking its quoted name (`error_like_song`),
+  `error_{action}_unnamed` when the name isn't known yet (`error_cant_share_album_unnamed`). A
+  source
+  that didn't take a change is `error_sync_failed` with a reason from `error_reason_*`.
 - Plurals: `second` is `%1$d second` / `%1$d seconds`; `unit_second` is `second` / `seconds`. A noun
   shown in singular or plural (not a `tab_*` or `screen_title_*`) is a plural `unit_{noun}`
   (`unit_album`), never cut from another string. A plural with no number in its text is still a

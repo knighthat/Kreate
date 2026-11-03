@@ -29,7 +29,7 @@ Root
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
 - `AppLanguage.kt` — app language, per profile in `Preferences.LANGUAGE` (empty = the device's):
   `available` from `BuildConfig.LANGUAGES` (English + the `values-*` folders with
-  `strings.xml`, listed by `app/build.gradle.kts`), `displayName` in the language itself,
+  a `*.strings.xml`, listed by `app/build.gradle.kts`), `displayName` in the language itself,
   country/script only when two share a language; `select` (settings), `follow` (started by
   `KreateApplication`: shows each profile's language once it loads, a restored one too) and
   `takeFromSystem` (config change: a pick in the system's settings goes to the active profile). What
@@ -167,6 +167,12 @@ Compose.
 
 utils/ — `PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
 `Modifier.verticalScrollbar`).
+
+English texts: `res/values/*.strings.xml` by kind (`common` app name, sources, units; `statuses`;
+`settings`; `actions` buttons and menus; `screens` titles, tabs, section headers, screen texts;
+`semantics` icon descriptions; `wizard`; `dialogs`; `messages` errors and snackbars; `statistics`;
+`notifications`; `constants` enum values), `res/values/plurals.xml`; which prefix goes where:
+`.claude/rules/strings.md`.
 
 res: `res/resources.properties` (default `en-US`, for the generated locale config),
 `res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated

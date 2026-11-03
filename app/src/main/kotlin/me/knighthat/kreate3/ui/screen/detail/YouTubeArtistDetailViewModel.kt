@@ -82,7 +82,12 @@ class YouTubeArtistDetailViewModel(
      */
     val picture: Uri? = provider.artwork(opened.picture, HEADER_ARTWORK)
 
-    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_artist)
+    override val notFound: String
+        get() = context.youTubeNotFound(
+            opened.name,
+            R.string.error_source_not_found_artist,
+            R.string.error_source_not_found_artist_unnamed
+        )
 
     /** The channel subscribed to, which may not be the artist's id. */
     @Volatile
@@ -107,13 +112,14 @@ class YouTubeArtistDetailViewModel(
                 provider.subscribe(checkNotNull(channelId), on)
         },
         failure = { e, on ->
+            val artist = context.resources.itemName(opened.name, R.string.snackbar_this_artist)
             if (onDevice != null) {
-                context.getString(if (on) R.string.error_follow_artist else R.string.error_unfollow_artist)
-            } else {
-                e.youTubeFailure(
-                    context.resources,
-                    if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
+                context.getString(
+                    if (on) R.string.error_follow_artist else R.string.error_unfollow_artist,
+                    artist
                 )
+            } else {
+                e.youTubeFailure(context.resources, artist)
             }
         },
     )

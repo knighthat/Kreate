@@ -40,11 +40,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Translations aren't in the repo, Crowdin merges them into res/ before the build
-        // (crowdin.yml). The language setting lists English and every folder with texts,
-        // "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
+        // Translations aren't in the repo, they are merged into res/ before each release
+        // (crowdin.yml). This only counts the supported languages: English and every folder with
+        // texts, "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
         val languages = file("src/main/res")
-            .listFiles { dir -> dir.name.startsWith("values-") && dir.resolve("strings.xml").isFile }
+            .listFiles { dir ->
+                dir.name.startsWith("values-")
+                        && dir.listFiles { f -> f.name.endsWith(".strings.xml") }.orEmpty()
+                    .isNotEmpty()
+            }
             .orEmpty()
             //noinspection WrongGradleMethod
             .map { dir ->

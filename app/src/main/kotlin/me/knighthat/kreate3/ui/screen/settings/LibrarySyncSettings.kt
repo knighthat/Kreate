@@ -18,9 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.settings
 
-import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.SyncMode
@@ -28,22 +26,25 @@ import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
 
-/** "Sync songs" and the like, [plural] naming what is synced. */
+/** What [mode] does to the synced albums. */
 @Composable
-internal fun syncTitle(@PluralsRes plural: Int): String =
-    stringResource(R.string.setting_title_sync, pluralStringResource(plural, 2))
+internal fun syncAlbumsDescription(mode: SyncMode): String = stringResource(
+    when (mode) {
+        SyncMode.OFF -> R.string.setting_description_sync_albums_status_off
+        SyncMode.LIKED -> R.string.setting_description_sync_albums_status_liked
+        SyncMode.ALL -> R.string.setting_description_sync_albums_status_all
+    }
+)
 
-/** What [mode] does to the albums or artists [plural] names. */
+/** What [mode] does to the synced artists. */
 @Composable
-internal fun syncModeDescription(mode: SyncMode, @PluralsRes plural: Int): String =
-    stringResource(
-        when (mode) {
-            SyncMode.OFF -> R.string.setting_description_sync_status_off
-            SyncMode.LIKED -> R.string.setting_description_sync_status_liked
-            SyncMode.ALL -> R.string.setting_description_sync_status_all
-        },
-        pluralStringResource(plural, 2),
-    )
+internal fun syncArtistsDescription(mode: SyncMode): String = stringResource(
+    when (mode) {
+        SyncMode.OFF -> R.string.setting_description_sync_artists_status_off
+        SyncMode.LIKED -> R.string.setting_description_sync_artists_status_liked
+        SyncMode.ALL -> R.string.setting_description_sync_artists_status_all
+    }
+)
 
 /** Liked songs on [source] are synced while [on]. */
 @Composable
@@ -93,16 +94,22 @@ internal fun LibrarySyncSettings(
     val mode = if (checked) SyncMode.LIKED else SyncMode.OFF
     val (title, summary) = when (section) {
         LibrarySection.SONGS ->
-            syncTitle(R.plurals.unit_song) to syncSongsDescription(checked, source)
+            stringResource(R.string.setting_title_sync_songs) to syncSongsDescription(
+                checked,
+                source
+            )
 
         LibrarySection.ALBUMS ->
-            syncTitle(R.plurals.unit_album) to syncModeDescription(mode, R.plurals.unit_album)
+            stringResource(R.string.setting_title_sync_albums) to syncAlbumsDescription(mode)
 
         LibrarySection.ARTISTS ->
-            syncTitle(R.plurals.unit_artist) to syncModeDescription(mode, R.plurals.unit_artist)
+            stringResource(R.string.setting_title_sync_artists) to syncArtistsDescription(mode)
 
         LibrarySection.PLAYLISTS ->
-            syncTitle(R.plurals.unit_playlist) to syncPlaylistsDescription(checked, source)
+            stringResource(R.string.setting_title_sync_playlists) to syncPlaylistsDescription(
+                checked,
+                source
+            )
     }
     SwitchSetting(
         title = title,

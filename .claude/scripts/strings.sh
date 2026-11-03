@@ -17,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Looks up string resources of every module's res/values (strings.xml, plurals.xml) without
+# Looks up string resources of every module's res/values (*.strings.xml, plurals.xml) without
 # reading the files whole. Prints file:line, key and text; plurals as `one | other`.
 #
 #   strings.sh <key>...        keys starting with it (a key that exists exactly is marked "=")

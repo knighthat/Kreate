@@ -95,45 +95,56 @@ class SourceToggle(
     }
 }
 
+/** [name] in quotes, or [fallback], like "this album", while the name isn't known. */
+internal fun Resources.itemName(name: String?, @StringRes fallback: Int): String =
+    name?.let { getString(R.string.quoted, it) } ?: getString(fallback)
+
 /**
- * What to tell the user when the OpenSubsonic server didn't take a change, like "bookmark the
- * album" for [change].
+ * [withName] filled with [args] and the quoted [name], or [without] filled with [args] alone while
+ * the name isn't known.
  */
-internal fun Exception.serverFailure(resources: Resources, @StringRes change: Int): String {
-    val what = resources.getString(change)
-    val server = resources.openSubsonicName()
-    return when ((this as? ServerException)?.check) {
-        is ServerCheck.Rejected ->
-            resources.getString(R.string.error_source_change_refused, what, server)
-
-        is ServerCheck.Unreachable,
-        is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> resources.getString(
-            R.string.error_source_change_unreachable,
-            what,
-            server
-        )
-
-        else -> resources.getString(R.string.error_source_change_failed, what, server)
-    }
+internal fun Resources.named(
+    name: String?,
+    @StringRes withName: Int,
+    @StringRes without: Int,
+    vararg args: Any,
+): String {
+    val known = name?.takeIf { it.isNotBlank() } ?: return getString(without, *args)
+    return getString(withName, *args, getString(R.string.quoted, known))
 }
 
 /**
- * What to tell the user when YouTube didn't take a change, like "save the album" for [change].
+ * What to tell the user when the OpenSubsonic server didn't take a change to [item], see
+ * [itemName]. The change is already reverted.
  */
-internal fun Exception.youTubeFailure(resources: Resources, @StringRes change: Int): String {
-    val e = this as? YouTubeException
-    val what = resources.getString(change)
-    val youTube = resources.getString(R.string.source_ytm)
-    return when {
-        e == null -> resources.getString(R.string.error_source_change_failed, what, youTube)
-        e.signedOut -> resources.getString(R.string.error_source_change_signed_out, what, youTube)
-        e.status == null -> resources.getString(
-            R.string.error_source_change_unreachable,
-            what,
-            youTube
-        )
+internal fun Exception.serverFailure(resources: Resources, item: String): String {
+    val server = resources.openSubsonicName()
+    val reason = when ((this as? ServerException)?.check) {
+        is ServerCheck.Rejected -> resources.getString(R.string.error_reason_refused, server)
+        is ServerCheck.Unreachable -> resources.getString(R.string.error_reason_unreachable, server)
+        is ServerCheck.UntrustedCertificate ->
+            resources.getString(R.string.error_server_certificate_untrusted, server)
 
-        else -> resources.getString(R.string.error_source_change_refused, what, youTube)
+        is ServerCheck.CertificateChanged ->
+            resources.getString(R.string.error_reason_certificate_changed, server)
+
+        else -> resources.getString(R.string.error_reason_unknown)
     }
+    return resources.getString(R.string.error_sync_failed, item, reason)
+}
+
+/**
+ * What to tell the user when YouTube didn't take a change to [item], see [itemName]. The change
+ * is already reverted.
+ */
+internal fun Exception.youTubeFailure(resources: Resources, item: String): String {
+    val e = this as? YouTubeException
+    val youTube = resources.getString(R.string.source_ytm)
+    val reason = when {
+        e == null -> resources.getString(R.string.error_reason_unknown)
+        e.signedOut -> resources.getString(R.string.error_reason_signed_out, youTube)
+        e.status == null -> resources.getString(R.string.error_reason_unreachable, youTube)
+        else -> resources.getString(R.string.error_reason_refused, youTube)
+    }
+    return resources.getString(R.string.error_sync_failed, item, reason)
 }

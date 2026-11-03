@@ -38,7 +38,7 @@ charts: `.claude/docs/charts.md`.
   configuration (locale) and recomposes, the context doesn't. Keep `LocalContext` only for what
   needs a `Context` (starting activities, image loaders). View models keep their `Context` and
   pass `context.resources` to such helpers.
-- Text stays a literal (not in `strings.xml`) only for: the labels of a setting's values (not
+- Text stays a literal (not in a `*.strings.xml`) only for: the labels of a setting's values (not
   extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated), and
   preview-only text.
 - `Notifier` drops a message without a channel while no screen listens, and `ShowMessages`

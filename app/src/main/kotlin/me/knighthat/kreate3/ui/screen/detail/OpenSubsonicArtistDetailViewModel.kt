@@ -136,10 +136,10 @@ class OpenSubsonicArtistDetailViewModel(
                 )
             ) throw ServerException(ServerCheck.Disabled)
         },
-        failure = { e, on ->
+        failure = { e, _ ->
             e.serverFailure(
                 context.resources,
-                if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
+                context.resources.itemName(opened.name, R.string.snackbar_this_artist)
             )
         },
     )

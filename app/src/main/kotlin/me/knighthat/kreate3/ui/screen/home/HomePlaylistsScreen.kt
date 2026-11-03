@@ -33,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,10 +81,7 @@ fun HomePlaylistsScreen(
     val monthlyOnly by viewModel.monthlyOnly.collectAsStateWithLifecycle()
     val playRandom = rememberQueueActions(viewModel::randomSongs)
     val notifier = LocalNotifier.current
-    val nothingToPick = stringResource(
-        R.string.snackbar_nothing_to_pick,
-        pluralStringResource(R.plurals.unit_playlist, 2)
-    )
+    val nothingToPick = stringResource(R.string.snackbar_nothing_to_pick_playlists)
     val scope = rememberCoroutineScope()
     var creating by rememberSaveable { mutableStateOf(false) }
 

@@ -87,7 +87,7 @@ fun LocalPlaylistDetailScreen(
 
     val removedFrom = stringResource(
         R.string.snackbar_removed_from,
-        playlist?.name ?: stringResource(R.string.snackbar_the_playlist)
+        playlist?.name ?: stringResource(R.string.snackbar_this_playlist)
     )
 
     val songs = viewModel.songs.collectAsLazyPagingItems()

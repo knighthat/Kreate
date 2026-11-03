@@ -1,0 +1,141 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Errors shown to the user and snackbar messages. -->
+<resources>
+    <string name="error_playback_file_missing">file doesn\'t exist</string>
+    <string name="error_playback_permission_denied">permission denied</string>
+    <string name="error_playback_no_connection">no connection</string>
+    <string name="error_playback_server_refused">server denied access</string>
+    <string name="error_playback_file_damaged">file is damaged</string>
+    <string name="error_playback_format_unsupported">format not supported</string>
+    <string name="error_playback_decoding_failed">decoding failed</string>
+    <string name="error_playback_source_off">source unavailable</string>
+    <string name="error_playback_not_playable">nothing to play</string>
+    <string name="error_playback_too_slow">took too long to load</string>
+    <string name="error_playback_unknown">unknown error</string>
+    <string name="error_backup_not_a_backup">Not a %1$s backup</string>
+    <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
+    <string name="error_backup_damaged">Backup is damaged</string>
+    <string name="error_player_not_ready">Player not ready</string>
+    <string name="error_no_equalizer">No equalizer found</string>
+    <string name="error_no_browser">No app can open links</string>
+    <string name="error_album_reset_order">Couldn\'t reset order</string>
+    <string name="error_move_song">Couldn\'t move song</string>
+    <string name="error_playlist_remove_song">Couldn\'t remove song</string>
+    <string name="error_queue_every_song">Couldn\'t get all songs</string>
+    <string name="error_lyrics_load">Couldn\'t load lyrics</string>
+    <string name="error_unreachable">Can\'t reach %1$s</string>
+    <string name="error_song_details">Couldn\'t get details from %1$s</string>
+    <string name="error_artist_details">Couldn\'t get details from %1$s</string>
+    <string name="error_loudness_failed">Loudness measurement failed</string>
+    <string name="error_nothing_to_play">Nothing to play</string>
+    <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
+    <string name="error_open_file">Couldn\'t open this file</string>
+    <string name="error_open_link">Couldn\'t open this link</string>
+    <string name="error_songs_not_playable">These songs can\'t be played</string>
+    <string name="error_song_not_playable">This song can\'t be played</string>
+    <string name="error_share_unsupported_song">%1$s doesn\'t support sharing the song %2$s</string>
+    <string name="error_share_unsupported_song_unnamed">%1$s doesn\'t support sharing this song</string>
+    <string name="error_share_unsupported_album">%1$s doesn\'t support sharing the album %2$s</string>
+    <string name="error_share_unsupported_album_unnamed">%1$s doesn\'t support sharing this album</string>
+    <string name="error_share_unsupported_artist">%1$s doesn\'t support sharing the artist %2$s</string>
+    <string name="error_share_unsupported_artist_unnamed">%1$s doesn\'t support sharing this artist</string>
+    <string name="error_share_unsupported_playlist">%1$s doesn\'t support sharing the playlist %2$s</string>
+    <string name="error_share_unsupported_playlist_unnamed">%1$s doesn\'t support sharing this playlist</string>
+    <string name="error_cant_share_song">Can\'t share the song %1$s</string>
+    <string name="error_cant_share_song_unnamed">Can\'t share this song</string>
+    <string name="error_cant_share_album">Can\'t share the album %1$s</string>
+    <string name="error_cant_share_album_unnamed">Can\'t share this album</string>
+    <string name="error_cant_share_artist">Can\'t share the artist %1$s</string>
+    <string name="error_cant_share_artist_unnamed">Can\'t share this artist</string>
+    <string name="error_cant_share_playlist">Can\'t share the playlist %1$s</string>
+    <string name="error_cant_share_playlist_unnamed">Can\'t share this playlist</string>
+    <string name="error_share_unreachable">Can\'t reach %1$s to share</string>
+    <string name="error_cant_search">Couldn\'t search %1$s</string>
+    <string name="error_source_refused">%1$s refused: %2$s</string>
+    <string name="error_server_code">error %1$d</string>
+    <string name="error_server_unreachable">Can\'t reach %1$s: %2$s</string>
+    <string name="error_server_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <string name="error_server_certificate_changed">%1$s\'s certificate changed, check it in %2$s settings</string>
+    <string name="error_download_failed">Couldn\'t download</string>
+    <string name="error_download_not_saved">Couldn\'t download, the song couldn\'t be saved</string>
+    <string name="error_downloads_full">Downloads are full, delete some or raise their size in settings</string>
+    <string name="error_source_not_found_album">%1$s doesn\'t have the album %2$s</string>
+    <string name="error_source_not_found_album_unnamed">%1$s doesn\'t have this album</string>
+    <string name="error_source_not_found_artist">%1$s doesn\'t have the artist %2$s</string>
+    <string name="error_source_not_found_artist_unnamed">%1$s doesn\'t have this artist</string>
+    <string name="error_source_not_found_playlist">%1$s doesn\'t have the playlist %2$s</string>
+    <string name="error_source_not_found_playlist_unnamed">%1$s doesn\'t have this playlist</string>
+    <string name="error_bookmark_album">Couldn\'t bookmark %1$s</string>
+    <string name="error_remove_bookmark">Couldn\'t remove the bookmark of %1$s</string>
+    <string name="error_follow_artist">Couldn\'t follow %1$s</string>
+    <string name="error_unfollow_artist">Couldn\'t unfollow %1$s</string>
+    <string name="error_like_song">Couldn\'t like %1$s</string>
+    <string name="error_remove_like">Couldn\'t remove the like from %1$s</string>
+    <string name="error_dislike_song">Couldn\'t dislike %1$s</string>
+    <string name="error_remove_dislike">Couldn\'t remove the dislike from %1$s</string>
+    <string name="error_sync_failed">Couldn\'t sync %1$s: %2$s. Change reverted.</string>
+    <string name="error_reason_unreachable">can\'t reach %1$s</string>
+    <string name="error_reason_refused">%1$s refused</string>
+    <string name="error_reason_signed_out">you\'re signed out of %1$s</string>
+    <string name="error_reason_certificate_changed">%1$s\'s certificate changed</string>
+    <string name="error_reason_unknown">something went wrong</string>
+    <string name="error_server_not_configured">Sign in to %1$s in %2$s settings</string>
+    <string name="error_server_unexpected">%1$s sent something unexpected</string>
+    <string name="error_server_load">Couldn\'t load this from %1$s</string>
+    <string name="error_server_off">%1$s is turned off, turn it on in %2$s settings</string>
+    <string name="error_file_unavailable">storage is full or unavailable</string>
+    <string name="error_file_damaged">the file was damaged</string>
+    <string name="error_file_unknown">unknown error</string>
+
+    <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
+    <string name="snackbar_this_song">this song</string>
+    <string name="snackbar_this_album">this album</string>
+    <string name="snackbar_this_artist">this artist</string>
+    <string name="snackbar_couldnt_load_settings">Couldn\'t load settings: %1$s, using defaults</string>
+    <string name="snackbar_couldnt_save_settings">Couldn\'t save settings: %1$s, change undone</string>
+    <string name="snackbar_couldnt_load_credentials">Couldn\'t load credentials: %1$s, sign in again</string>
+    <string name="snackbar_couldnt_save_credentials">Couldn\'t save credentials: %1$s</string>
+    <string name="snackbar_couldnt_load_global_settings">Couldn\'t load profiles and app-wide settings: %1$s, using the default profile and defaults</string>
+    <string name="snackbar_couldnt_save_global_settings">Couldn\'t save profiles or app-wide settings: %1$s, change undone</string>
+    <string name="snackbar_nothing_to_pick_albums">No albums to pick from</string>
+    <string name="snackbar_nothing_to_pick_artists">No artists to pick from</string>
+    <string name="snackbar_nothing_to_pick_playlists">No playlists to pick from</string>
+    <string name="snackbar_album_order_reset">Back in the album\'s order</string>
+    <string name="snackbar_removed_from">Removed from %1$s</string>
+    <string name="snackbar_removed_from_dislike">Removed from dislike</string>
+    <string name="snackbar_disliked">Disliked %1$s</string>
+    <string name="snackbar_removed_from_queue">Removed from the queue</string>
+    <string name="snackbar_queue_cleared">Queue cleared</string>
+    <string name="snackbar_playback_stopped">Playback stopped</string>
+    <string name="snackbar_removed_from_history">Removed from history</string>
+    <string name="snackbar_history_cleared">History cleared</string>
+    <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
+    <string name="snackbar_removed_from_dislike_some_failed">%1$s removed from dislike, %2$d failed</string>
+    <string name="snackbar_this_playlist">this playlist</string>
+    <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
+    <string name="snackbar_will_play_next">Will play %1$s next</string>
+    <string name="snackbar_lyrics_copied">Lyrics copied</string>
+    <string name="snackbar_turn_shuffle_off">Turn shuffle off to move songs</string>
+    <string name="snackbar_added_to_playlist">Added to %1$s</string>
+    <string name="snackbar_already_in_playlist">Already in %1$s</string>
+    <string name="snackbar_couldnt_add_to_playlist">Couldn\'t add to %1$s</string>
+    <string name="snackbar_exit_swipe">Swipe again to exit</string>
+    <string name="snackbar_exit_press">Press again to exit</string>
+</resources>

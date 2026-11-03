@@ -77,6 +77,10 @@
         <item quantity="one">playlist</item>
         <item quantity="other">playlists</item>
     </plurals>
+    <plurals name="menu_go_to_artist">
+        <item quantity="one">go to artist</item>
+        <item quantity="other">go to artists</item>
+    </plurals>
     <plurals name="day">
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>

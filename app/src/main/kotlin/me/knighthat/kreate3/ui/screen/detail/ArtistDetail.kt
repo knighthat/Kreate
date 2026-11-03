@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
-import androidx.annotation.PluralsRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -359,7 +358,7 @@ private fun ArtistTopBar(
  * @param isFollowed whether the artist is followed, `null` turns Follow off, while it isn't known
  * @param share gives a link to the artist, `null` turns Share off, like for an artist of the
  * device
- * @param kind what is shared, the plural `artist`, for the failure message
+ * @param kind what is shared, for the failure message
  * @param onOpenDetails opens what MusicBrainz knows about them, `null` while their name isn't
  * known
  */
@@ -373,7 +372,7 @@ fun ArtistMenu(
     share: (suspend () -> Result<String>)?,
     onOpenDetails: (() -> Unit)?,
     onOpenStatistics: () -> Unit,
-    @PluralsRes kind: Int = R.plurals.unit_artist,
+    kind: ShareKind = ShareKind.ARTIST,
 ) {
     val linkShare = rememberLinkShare(name, kind) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))

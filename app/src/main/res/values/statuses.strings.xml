@@ -1,0 +1,34 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Single-word statuses that are not tied to one setting (off, on, ...). -->
+<resources>
+    <string name="status_off">Off</string>
+    <string name="status_system">System</string>
+    <string name="status_online">Online</string>
+    <string name="status_checking">Checking…</string>
+    <string name="status_signed_in">Signed in</string>
+    <string name="status_unlimited">Unlimited</string>
+    <string name="status_not_set">Not set</string>
+    <string name="optional">Optional</string>
+    <string name="status_ago">%1$s ago</string>
+    <string name="status_granted">Granted</string>
+    <string name="status_unknown_artist">Unknown artist</string>
+    <string name="status_no_playlists_yet">No playlists yet</string>
+    <string name="status_playlist_empty">This playlist has no songs</string>
+</resources>

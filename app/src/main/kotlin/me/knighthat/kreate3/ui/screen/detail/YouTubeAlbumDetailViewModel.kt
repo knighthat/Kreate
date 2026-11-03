@@ -89,7 +89,12 @@ class YouTubeAlbumDetailViewModel(
     /** What the screen shows of the album until YouTube answers. */
     val opened: OpenedItem = savedStateHandle.openedItem()
 
-    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_album)
+    override val notFound: String
+        get() = context.youTubeNotFound(
+            opened.name,
+            R.string.error_source_not_found_album,
+            R.string.error_source_not_found_album_unnamed
+        )
 
     /** The playlist of the album's songs, which is what YouTube saves to the library. */
     @Volatile
@@ -114,13 +119,14 @@ class YouTubeAlbumDetailViewModel(
                 provider.saveAlbum(checkNotNull(playlistId), on)
         },
         failure = { e, on ->
+            val album = context.resources.itemName(opened.name, R.string.snackbar_this_album)
             if (onDevice != null) {
-                context.getString(if (on) R.string.error_bookmark_album else R.string.error_remove_bookmark)
-            } else {
-                e.youTubeFailure(
-                    context.resources,
-                    if (on) R.string.snackbar_change_save_album else R.string.snackbar_change_remove_album
+                context.getString(
+                    if (on) R.string.error_bookmark_album else R.string.error_remove_bookmark,
+                    album
                 )
+            } else {
+                e.youTubeFailure(context.resources, album)
             }
         },
     )

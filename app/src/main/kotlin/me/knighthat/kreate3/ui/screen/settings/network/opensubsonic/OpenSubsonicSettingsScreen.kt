@@ -64,10 +64,10 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import me.knighthat.kreate3.ui.screen.settings.TextSetting
-import me.knighthat.kreate3.ui.screen.settings.syncModeDescription
+import me.knighthat.kreate3.ui.screen.settings.syncAlbumsDescription
+import me.knighthat.kreate3.ui.screen.settings.syncArtistsDescription
 import me.knighthat.kreate3.ui.screen.settings.syncPlaylistsDescription
 import me.knighthat.kreate3.ui.screen.settings.syncSongsDescription
-import me.knighthat.kreate3.ui.screen.settings.syncTitle
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -104,7 +104,7 @@ private fun CheckState.serverSummary(server: String): String? = when (this) {
 
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_server_status_not_opensubsonic,
-            stringResource(R.string.source_opensubsonicapi)
+            stringResource(R.string.source_opensubsonic)
         )
         // Not checked, the row is hidden for these
         ServerCheck.Disabled, ServerCheck.NotConfigured, is ServerCheck.Rejected -> null
@@ -151,7 +151,7 @@ private fun CheckState.credentialsSummary(server: String): String? = when (this)
 
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_server_status_not_opensubsonic,
-            stringResource(R.string.source_opensubsonicapi)
+            stringResource(R.string.source_opensubsonic)
         )
         ServerCheck.Disabled, ServerCheck.NotConfigured -> null
     }
@@ -413,9 +413,9 @@ private fun OpenSubsonicSettingsContent(
     var putOff by rememberSaveable { mutableStateOf<String?>(null) }
     var askForget by remember { mutableStateOf(false) }
 
-    SettingsPage(stringResource(R.string.source_opensubsonicapi), onBack, modifier) {
+    SettingsPage(stringResource(R.string.source_opensubsonic), onBack, modifier) {
         MainSwitch(
-            title = stringResource(R.string.source_opensubsonicapi),
+            title = stringResource(R.string.source_opensubsonic),
             summary = stringResource(R.string.setting_description_use_opensubsonic, server),
             checked = enabled,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_ENABLED.update(it) },
@@ -523,32 +523,32 @@ private fun OpenSubsonicSettingsContent(
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
         SwitchSetting(
-            title = syncTitle(R.plurals.unit_song),
+            title = stringResource(R.string.setting_title_sync_songs),
             summary = syncSongsDescription(syncSongs, server),
             checked = syncSongs,
             onCheckedChange = onSongSyncChange,
         )
         SwitchSetting(
-            title = syncTitle(R.plurals.unit_playlist),
+            title = stringResource(R.string.setting_title_sync_playlists),
             summary = syncPlaylistsDescription(syncPlaylists, server),
             checked = syncPlaylists,
             onCheckedChange = { Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.update(it) },
         )
         ChoiceSetting(
-            title = syncTitle(R.plurals.unit_album),
+            title = stringResource(R.string.setting_title_sync_albums),
             value = syncAlbums,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.update(it) },
-            summary = syncModeDescription(syncAlbums, R.plurals.unit_album),
+            summary = syncAlbumsDescription(syncAlbums),
         )
         ChoiceSetting(
-            title = syncTitle(R.plurals.unit_artist),
+            title = stringResource(R.string.setting_title_sync_artists),
             value = syncArtists,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.update(it) },
-            summary = syncModeDescription(syncArtists, R.plurals.unit_artist),
+            summary = syncArtistsDescription(syncArtists),
         )
 
         proxy()

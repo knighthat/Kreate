@@ -502,12 +502,25 @@ enum class Tab(
     val route: Route,
     @param:StringRes val title: Int,
     @param:PluralsRes val noun: Int,
+    @param:StringRes val noResults: Int,
     @param:DrawableRes val icon: Int,
 ) {
-    SONGS(Songs, R.string.tab_songs, R.plurals.unit_song, R.drawable.music_note),
-    ALBUMS(Albums, R.string.tab_albums, R.plurals.unit_album, R.drawable.album),
-    ARTISTS(Artists, R.string.tab_artists, R.plurals.unit_artist, R.drawable.artist),
-    PLAYLISTS(Playlists, R.string.tab_playlists, R.plurals.unit_playlist, R.drawable.queue_music);
+    SONGS(
+        Songs, R.string.tab_songs, R.plurals.unit_song,
+        R.string.screen_search_results_status_none_songs, R.drawable.music_note
+    ),
+    ALBUMS(
+        Albums, R.string.tab_albums, R.plurals.unit_album,
+        R.string.screen_search_results_status_none_albums, R.drawable.album
+    ),
+    ARTISTS(
+        Artists, R.string.tab_artists, R.plurals.unit_artist,
+        R.string.screen_search_results_status_none_artists, R.drawable.artist
+    ),
+    PLAYLISTS(
+        Playlists, R.string.tab_playlists, R.plurals.unit_playlist,
+        R.string.screen_search_results_status_none_playlists, R.drawable.queue_music
+    );
 
     companion object {
 

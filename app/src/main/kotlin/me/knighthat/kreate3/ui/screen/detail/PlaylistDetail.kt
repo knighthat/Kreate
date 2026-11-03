@@ -448,7 +448,7 @@ fun PlaylistMenu(
     canEdit: Boolean = true,
     onModeChange: (CoverEditMode) -> Unit = {},
 ) {
-    val linkShare = rememberLinkShare(name, R.plurals.unit_playlist) {
+    val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
     }
 

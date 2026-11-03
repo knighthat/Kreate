@@ -47,6 +47,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.ui.screen.detail.itemName
 import me.knighthat.kreate3.ui.screen.detail.serverFailure
 import me.knighthat.kreate3.ui.screen.detail.youTubeFailure
 import org.koin.compose.koinInject
@@ -110,11 +111,13 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
     }
 
     /**
-     * Saves what [change] makes of the song's `likedAt`, at its source too. [asked] says what it
-     * does, for a message when the source doesn't take it.
+     * Saves what [change] makes of the song's `likedAt`, at its source too. [asked] is the text
+     * for when the song can't be saved, "Couldn't like …"; a source that doesn't take it says why.
      *
      * @return whether it was saved
      */
+    fun itemName() = resources.itemName(item.songTitle(), R.string.snackbar_this_song)
+
     suspend fun save(@StringRes asked: Int, change: (Instant?) -> Instant?): Boolean = try {
         // Only a song in the database can be added to the library
         if (song == null) songs.store(songId, origin)
@@ -128,13 +131,14 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         throw e
     } catch (e: ServerException) {
         // The reaction is already taken back
-        notifier.post(Message(e.serverFailure(resources, asked), MessageDuration.LONG))
+        notifier.post(Message(e.serverFailure(resources, itemName()), MessageDuration.LONG))
         false
     } catch (e: YouTubeException) {
-        notifier.post(Message(e.youTubeFailure(resources, asked), MessageDuration.LONG))
+        notifier.post(Message(e.youTubeFailure(resources, itemName()), MessageDuration.LONG))
         false
     } catch (e: Exception) {
         Log.w(TAG, "Couldn't save the reaction to $songId", e)
+        notifier.post(Message(resources.getString(asked, itemName()), MessageDuration.LONG))
         false
     }
 
@@ -143,10 +147,10 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         val removing = reaction == to
         val before = song?.likedAt
         val asked = when {
-            removing && to == Reaction.LIKED -> R.string.snackbar_change_remove_like
-            removing -> R.string.snackbar_change_remove_dislike
-            to == Reaction.LIKED -> R.string.snackbar_change_like_song
-            else -> R.string.snackbar_change_dislike_song
+            removing && to == Reaction.LIKED -> R.string.error_remove_like
+            removing -> R.string.error_remove_dislike
+            to == Reaction.LIKED -> R.string.error_like_song
+            else -> R.string.error_dislike_song
         }
         if (!save(asked) { if (removing) null else likedAt() }) return@launch
         // The song leaves or rejoins the lists, a like only changes its button
@@ -165,9 +169,9 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
                 if (removing) playback.drop(songId)
                 save(
                     if (removing)
-                        R.string.snackbar_change_dislike_song
+                        R.string.error_dislike_song
                     else
-                        R.string.snackbar_change_remove_dislike
+                        R.string.error_remove_dislike
                 ) { before }
             }
         })

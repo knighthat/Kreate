@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -65,6 +66,7 @@ import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
+import me.knighthat.kreate3.ui.screen.detail.itemName
 
 /**
  * What MusicBrainz knows about an artist: who they are, where from, when they began and ended,
@@ -134,7 +136,17 @@ private fun ArtistDetailsContent(
 
         ArtistDetailsState.NotFound -> Notice(padding) {
             val musicBrainz = stringResource(R.string.source_musicbrainz)
-            Message(stringResource(R.string.screen_artist_details_status_not_found, musicBrainz))
+            val artist = LocalResources.current.itemName(
+                name.ifBlank { null },
+                R.string.snackbar_this_artist
+            )
+            Message(
+                stringResource(
+                    R.string.screen_artist_details_status_not_found,
+                    musicBrainz,
+                    artist
+                )
+            )
             SearchHint(stringResource(R.string.screen_artist_details_hint_search, SEARCH_MARK))
         }
 

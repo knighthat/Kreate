@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -77,10 +76,7 @@ fun HomeAlbumsScreen(
     val bookmarkedOnly by viewModel.bookmarkedOnly.collectAsStateWithLifecycle()
     val playRandom = rememberQueueActions(viewModel::randomSongs)
     val notifier = LocalNotifier.current
-    val nothingToPick = stringResource(
-        R.string.snackbar_nothing_to_pick,
-        pluralStringResource(R.plurals.unit_album, 2)
-    )
+    val nothingToPick = stringResource(R.string.snackbar_nothing_to_pick_albums)
     val scope = rememberCoroutineScope()
 
     // Each visit to the tab, the items of the external sources are fetched again

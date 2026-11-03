@@ -26,7 +26,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `LocalPlaylistInitial` (`Preferences.PLAYLIST_INITIAL`, provided in `KreateApp`) is on; drawn
   through `Thumbnail`'s `placeholder` slot.
 - `OpenSubsonicName.kt` — `openSubsonicName()`: what texts call the OpenSubsonic server (the
-  software's name from `OpenSubsonicServer`, else `source_opensubsonicapi`); `Resources` variant for
+  software's name from `OpenSubsonicServer`, else `source_opensubsonic`); `Resources` variant for
   messages, composable one (reads `Preferences`) for screens to pass to their content.
 - `ConfigSheet.kt` — `ConfigSheet` (a screen's options: a row of `LabeledIconButton` actions given
   `close`, then `entries` and options under a divider; opens on its content,

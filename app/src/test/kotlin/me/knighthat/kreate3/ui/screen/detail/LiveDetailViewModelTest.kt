@@ -87,31 +87,31 @@ class LiveDetailViewModelTest {
     @Test
     fun eachServerProblemIsExplained() {
         assertEquals(
-            LiveState.Failed("OpenSubsonic API refused: Not found"),
+            LiveState.Failed("OpenSubsonic refused: Not found"),
             failureOf(ServerException(ServerCheck.Rejected(70, "Not found")))
         )
         assertEquals(
-            LiveState.Failed("OpenSubsonic API refused: error 40"),
+            LiveState.Failed("OpenSubsonic refused: error 40"),
             failureOf(ServerException(ServerCheck.Rejected(40, "")))
         )
         assertEquals(
-            LiveState.Failed("Can't reach OpenSubsonic API: timeout"),
+            LiveState.Failed("Can't reach OpenSubsonic: timeout"),
             failureOf(ServerException(ServerCheck.Unreachable("timeout")))
         )
         assertEquals(
-            LiveState.Failed("OpenSubsonic API's certificate isn't trusted"),
+            LiveState.Failed("OpenSubsonic's certificate isn't trusted"),
             failureOf(ServerException(ServerCheck.UntrustedCertificate("no anchor")))
         )
         assertEquals(
-            LiveState.Failed("OpenSubsonic API's certificate changed, check it in Network settings"),
+            LiveState.Failed("OpenSubsonic's certificate changed, check it in Network settings"),
             failureOf(ServerException(ServerCheck.CertificateChanged("host", "NEW", "OLD")))
         )
         assertEquals(
-            LiveState.Failed("OpenSubsonic API sent something unexpected"),
+            LiveState.Failed("OpenSubsonic sent something unexpected"),
             failureOf(ServerException(ServerCheck.NotSubsonic))
         )
         assertEquals(
-            LiveState.Failed("Sign in to OpenSubsonic API in Network settings"),
+            LiveState.Failed("Sign in to OpenSubsonic in Network settings"),
             failureOf(ServerException(ServerCheck.NotConfigured))
         )
     }

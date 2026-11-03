@@ -41,7 +41,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -233,8 +232,7 @@ private fun SearchResultsContent(
 
                     else -> Notice(
                         stringResource(
-                            R.string.screen_search_results_status_none,
-                            pluralStringResource(selected.noun, 2),
+                            selected.noResults,
                             stringResource(R.string.quoted, query),
                         )
                     )

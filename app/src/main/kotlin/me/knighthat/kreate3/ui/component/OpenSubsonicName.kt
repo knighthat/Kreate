@@ -34,7 +34,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle as collectPr
  * source's name until the active profile's server said it.
  */
 internal fun Resources.openSubsonicName(): String =
-    OpenSubsonicServer.name ?: getString(R.string.source_opensubsonicapi)
+    OpenSubsonicServer.name ?: getString(R.string.source_opensubsonic)
 
 /** What texts call [origin]'s source: [openSubsonicName] for OpenSubsonic, else its name. */
 internal fun Resources.sourceName(origin: Origin): String =
@@ -49,5 +49,5 @@ internal fun openSubsonicName(): String {
     val answered by OpenSubsonicServer.answered.collectAsStateWithLifecycle()
     val url by Preferences.OPEN_SUBSONIC_URL.collectPreference()
     return answered?.let { OpenSubsonicServer.infoAt(url)?.name }
-        ?: stringResource(R.string.source_opensubsonicapi)
+        ?: stringResource(R.string.source_opensubsonic)
 }

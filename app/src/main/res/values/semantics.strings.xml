@@ -1,0 +1,97 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Icon descriptions for accessibility and the entries of overflow menus. -->
+<resources>
+    <string name="semantic_most_listened">Most listened to</string>
+    <string name="semantic_add_to_queue">Add to queue</string>
+    <string name="semantic_back">Back</string>
+    <string name="semantic_bookmark">Bookmark</string>
+    <string name="semantic_change_source">Change source</string>
+    <string name="semantic_clear_the_queue">Clear the queue</string>
+    <string name="semantic_config">Config</string>
+    <string name="semantic_copy_the_lyrics">Copy the lyrics</string>
+    <string name="semantic_create_playlist">Create playlist</string>
+    <string name="semantic_dislike">Dislike</string>
+    <string name="semantic_disliked">Disliked</string>
+    <string name="semantic_show_text">Show text</string>
+    <string name="semantic_hide_text">Hide text</string>
+    <string name="semantic_drag_to_move">Drag to move</string>
+    <string name="semantic_equalizer">Equalizer</string>
+    <string name="semantic_explicit">Explicit</string>
+    <string name="semantic_downloaded">Downloaded</string>
+    <string name="semantic_cached">Cached</string>
+    <string name="semantic_follow">Follow</string>
+    <string name="semantic_from_opensubsonic">From the %1$s server</string>
+    <string name="semantic_from_youtube">From %1$s</string>
+    <string name="semantic_go_to_the_song_playing">Go to the song playing</string>
+    <string name="semantic_larger">Larger</string>
+    <string name="semantic_select_source">Select source</string>
+    <string name="semantic_repeat_off">Repeat off</string>
+    <string name="semantic_repeat_one">Repeat one</string>
+    <string name="semantic_repeat_all">Repeat all</string>
+    <string name="semantic_remove_time">Remove time</string>
+    <string name="semantic_add_time">Add time</string>
+    <string name="semantic_stop_the_sleep_timer">Stop the sleep timer</string>
+    <string name="semantic_lock_the_order">Lock the order</string>
+    <string name="semantic_unlock_to_move_songs">Unlock to move songs</string>
+    <string name="semantic_reorder">Reorder</string>
+    <string name="semantic_like">Like</string>
+    <string name="semantic_more">More</string>
+    <string name="semantic_skip_next">Next</string>
+    <string name="semantic_on_this_device">On this device</string>
+    <string name="semantic_open_one_at_random">Open one at random</string>
+    <string name="semantic_pause">Pause</string>
+    <string name="semantic_pause_the_sleep_timer">Pause the sleep timer</string>
+    <string name="semantic_play">Play</string>
+    <string name="semantic_play_all">Play all</string>
+    <string name="semantic_play_next">Play next</string>
+    <string name="semantic_previous">Previous</string>
+    <string name="semantic_profile">Profile</string>
+    <string name="semantic_newest_first">Newest first</string>
+    <string name="semantic_oldest_first">Oldest first</string>
+    <string name="semantic_remove_bookmark">Remove bookmark</string>
+    <string name="semantic_remove_dislike">Remove dislike</string>
+    <string name="semantic_undislike_all">Undislike all</string>
+    <string name="semantic_delete_all_downloads">Delete all downloads</string>
+    <string name="semantic_cancel_download">Cancel the download</string>
+    <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>
+    <string name="semantic_remove_from_the_queue">Remove from the queue</string>
+    <string name="semantic_remove_like">Remove like</string>
+    <string name="semantic_remove_songs">Remove songs</string>
+    <string name="semantic_restart_the_app">Restart the app</string>
+    <string name="semantic_restart_the_player">Restart the player</string>
+    <string name="semantic_resume_the_sleep_timer">Resume the sleep timer</string>
+    <string name="semantic_search">Search</string>
+    <string name="semantic_search_the_lyrics_with_other_words">Search the lyrics with other words</string>
+    <string name="semantic_see_more">See more</string>
+    <string name="semantic_set">Set</string>
+    <string name="semantic_settings">Settings</string>
+    <string name="semantic_share">Share</string>
+    <string name="semantic_shown">Shown</string>
+    <string name="semantic_shuffle">Shuffle</string>
+    <string name="semantic_shuffle_off">Shuffle off</string>
+    <string name="semantic_shuffle_on">Shuffle on</string>
+    <string name="semantic_sleep_timer">Sleep timer</string>
+    <string name="semantic_smaller">Smaller</string>
+    <string name="semantic_stop_removing_songs">Stop removing songs</string>
+    <string name="semantic_switch_channel">Switch channel</string>
+    <string name="semantic_text_size">Text size</string>
+    <string name="semantic_timing_of_the_lyrics">Timing of the lyrics</string>
+    <string name="semantic_unfollow">Unfollow</string>
+</resources>

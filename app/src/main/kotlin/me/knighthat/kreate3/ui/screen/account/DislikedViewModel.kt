@@ -57,6 +57,7 @@ import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.ui.component.toMediaItem
+import me.knighthat.kreate3.ui.screen.detail.itemName
 import me.knighthat.kreate3.ui.screen.detail.serverFailure
 import me.knighthat.kreate3.ui.screen.detail.youTubeFailure
 import kotlin.time.Instant
@@ -144,7 +145,8 @@ class DislikedViewModel(
                 react(
                     song.songId,
                     song.origin,
-                    R.string.snackbar_change_remove_dislike
+                    song.name,
+                    R.string.error_remove_dislike
                 ) { likedAt ->
                     likedAt?.takeUnless { it.toEpochMilliseconds() < 0 }
                 }
@@ -163,7 +165,7 @@ class DislikedViewModel(
         scope.launch {
             val failures = songs.mapNotNull { song ->
                 playback.drop(song.songId)
-                react(song.songId, song.origin, R.string.snackbar_change_dislike_song) {
+                react(song.songId, song.origin, song.name, R.string.error_dislike_song) {
                     it ?: song.likedAt
                 }
             }
@@ -173,17 +175,19 @@ class DislikedViewModel(
 
     /**
      * Changes the reaction to [songId] to what [change] makes of it, at its source too, like the
-     * song menu does. A source that doesn't take it gets the reaction put back. [asked] says what
-     * it does, for the failure.
+     * song menu does. A source that doesn't take it gets the reaction put back. [asked] is the text
+     * for when the song can't be saved, "Couldn't remove the dislike from …".
      *
      * @return what to say when it failed, `null` once it's done
      */
     private suspend fun react(
         songId: String,
         origin: Origin,
+        name: String?,
         @StringRes asked: Int,
         change: (Instant?) -> Instant?,
     ): String? {
+        val song = context.resources.itemName(name, R.string.snackbar_this_song)
         return try {
             when (origin) {
                 Origin.OPEN_SUBSONIC -> openSubsonicLibrary.react(songId, change)
@@ -194,15 +198,12 @@ class DislikedViewModel(
         } catch (e: CancellationException) {
             throw e
         } catch (e: ServerException) {
-            e.serverFailure(context.resources, asked)
+            e.serverFailure(context.resources, song)
         } catch (e: YouTubeException) {
-            e.youTubeFailure(context.resources, asked)
+            e.youTubeFailure(context.resources, song)
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't change the reaction to $songId", e)
-            context.resources.getString(
-                R.string.error_change_failed,
-                context.resources.getString(asked),
-            )
+            context.resources.getString(asked, song)
         }
     }
 

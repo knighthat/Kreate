@@ -100,7 +100,7 @@ private fun CheckState.serverName(server: String): String = when (this) {
 
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_configure_opensubsonic_status_not_opensubsonic,
-            stringResource(R.string.source_opensubsonicapi)
+            stringResource(R.string.source_opensubsonic)
         )
         // Not what a ping returns
         ServerCheck.Disabled, ServerCheck.NotConfigured, is ServerCheck.Rejected ->
@@ -223,7 +223,7 @@ private fun NetworkSettingsContent(
         SettingsItem(
             title = stringResource(
                 R.string.setting_title_configure_source,
-                stringResource(R.string.source_opensubsonicapi)
+                stringResource(R.string.source_opensubsonic)
             ),
             summary = when {
                 !openSubsonicEnabled -> stringResource(R.string.status_off)

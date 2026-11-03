@@ -578,7 +578,7 @@ fun AlbumMenu(
     onReorder: () -> Unit = {},
     onResetOrder: () -> Unit = {},
 ) {
-    val linkShare = rememberLinkShare(name, R.plurals.unit_album) {
+    val linkShare = rememberLinkShare(name, ShareKind.ALBUM) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
     }
 
@@ -624,10 +624,8 @@ fun AlbumMenu(
             if (onOpenArtist != null)
                 ConfigEntry(
                     R.drawable.artist,
-                    stringResource(
-                        R.string.menu_go_to,
-                        pluralStringResource(R.plurals.unit_artist, 1),
-                    ),
+                    pluralStringResource(R.plurals.menu_go_to_artist, 1)
+                        .replaceFirstChar { it.uppercase() },
                 ) { close(onOpenArtist) }
             ConfigEntry(R.drawable.insert_chart, stringResource(R.string.menu_statistics)) {
                 close(onOpenStatistics)

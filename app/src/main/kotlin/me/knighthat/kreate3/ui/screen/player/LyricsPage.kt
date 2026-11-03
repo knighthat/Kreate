@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -83,10 +84,12 @@ import me.knighthat.kreate3.lyrics.parseLyrics
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.songTitle
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.sourceRes
+import me.knighthat.kreate3.ui.screen.detail.itemName
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
 import kotlin.time.Duration.Companion.milliseconds
@@ -357,6 +360,7 @@ internal fun LyricsPage(
     CompositionLocalProvider(LocalDensity provides scaled) {
         LyricsPageContent(
             state = state,
+            songTitle = item.songTitle(),
             sync = controls.sync,
             isPlaying = isPlaying,
             controller = controller,
@@ -377,6 +381,7 @@ internal fun LyricsPage(
 @Composable
 private fun LyricsPageContent(
     state: LyricsState,
+    songTitle: String?,
     sync: LyricsSync?,
     isPlaying: Boolean,
     controller: PlaybackController,
@@ -384,6 +389,7 @@ private fun LyricsPageContent(
     onFetchAgain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val song = LocalResources.current.itemName(songTitle, R.string.snackbar_this_song)
     when (val shown = state) {
         is LyricsState.Found -> {
             val footer = listOfNotNull(
@@ -435,12 +441,18 @@ private fun LyricsPageContent(
             ) {
                 when (shown) {
                     LyricsState.Loading -> CircularProgressIndicator()
-                    LyricsState.Missing -> Message(stringResource(R.string.screen_lyrics_status_missing))
+                    LyricsState.Missing -> Message(
+                        stringResource(
+                            R.string.screen_lyrics_status_missing,
+                            song
+                        )
+                    )
                     is LyricsState.Unavailable -> {
                         Message(
                             stringResource(
                                 R.string.screen_lyrics_status_unavailable,
-                                shown.source
+                                shown.source,
+                                song
                             )
                         )
                         val hint = stringResource(

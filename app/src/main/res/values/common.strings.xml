@@ -1,0 +1,50 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- App name, source names, units and other single words shared across the app. -->
+<resources>
+    <string name="app_name" translatable="false">Kreate</string>
+    <string name="lufs_symbol" translatable="false">LUFS</string>
+    <string name="percent_sign" translatable="false">%</string>
+    <string name="percent">%1$d%%</string>
+    <string name="name">Name</string>
+    <string name="quoted">\"%1$s\"</string>
+    <string name="sleep_timer_to_end_of_song">Until the song ends</string>
+    <string name="playlist_type_monthly">Monthly</string>
+
+    <string name="source_local">On device</string>
+    <string name="source_ytm" translatable="false">YouTube Music</string>
+    <string name="source_opensubsonic" translatable="false">OpenSubsonic</string>
+    <string name="source_better_lyrics" translatable="false">Better Lyrics</string>
+    <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
+    <string name="source_lrclib" translatable="false">LRCLIB</string>
+    <string name="source_musicbrainz" translatable="false">MusicBrainz</string>
+
+    <string name="bytes">%1$s B</string>
+    <string name="kib">%1$s KiB</string>
+    <string name="mib">%1$s MiB</string>
+    <string name="gib">%1$s GiB</string>
+    <string name="tib">%1$s TiB</string>
+    <string name="pib">%1$s PiB</string>
+    <string name="kb">%1$s kB</string>
+    <string name="mb">%1$s MB</string>
+    <string name="gb">%1$s GB</string>
+    <string name="tb">%1$s TB</string>
+    <string name="pb">%1$s PB</string>
+    <string name="lufs" translatable="false">%1$s LUFS</string>
+</resources>

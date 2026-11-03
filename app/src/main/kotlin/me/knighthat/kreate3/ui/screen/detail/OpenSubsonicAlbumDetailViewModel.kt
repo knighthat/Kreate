@@ -87,10 +87,10 @@ class OpenSubsonicAlbumDetailViewModel(
         send = { on ->
             if (!provider.setAlbumStarred(albumId, on)) throw ServerException(ServerCheck.Disabled)
         },
-        failure = { e, on ->
+        failure = { e, _ ->
             e.serverFailure(
                 context.resources,
-                if (on) R.string.snackbar_change_bookmark_album else R.string.snackbar_change_remove_bookmark
+                context.resources.itemName(opened.name, R.string.snackbar_this_album)
             )
         },
     )

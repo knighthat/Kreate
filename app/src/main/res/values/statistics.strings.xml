@@ -1,0 +1,70 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Labels of statistics: tile captions and the names of values. -->
+<resources>
+    <string name="statistics_summary_title_time_listened">Time listened</string>
+    <string name="statistics_summary_title_plays">Plays</string>
+    <string name="statistics_summary_title_songs">Songs</string>
+    <string name="statistics_summary_title_artists">Artists</string>
+    <string name="statistics_change_vs_last_month">%1$s vs last month</string>
+    <string name="statistics_storage_this_user">This user</string>
+    <string name="statistics_storage_all_users">All users</string>
+    <string name="statistics_storage_of_limit">%1$s of %2$s</string>
+    <string name="statistics_storage_device_used">%1$s of %2$s used</string>
+    <string name="statistics_storage_app_uses">%1$s uses %2$s</string>
+    <string name="statistics_storage_image_cache">Image cache</string>
+    <string name="statistics_storage_song_cache">Song cache</string>
+    <string name="statistics_storage_song_downloads">Song downloads</string>
+    <string name="statistics_storage_download_covers">Download covers</string>
+    <string name="statistics_storage_lyrics">Lyrics</string>
+    <string name="statistics_storage_other">Other apps and system</string>
+    <string name="statistics_song_listens">Times completed</string>
+    <string name="statistics_song_plays">Plays</string>
+    <string name="statistics_song_time_listened">Time listened</string>
+    <string name="statistics_song_first_discovered">First discovered</string>
+    <string name="statistics_song_last_played">Last played</string>
+    <string name="statistics_album_listens">Times completed</string>
+    <string name="statistics_album_plays">Plays</string>
+    <string name="statistics_album_time_listened">Time listened</string>
+    <string name="statistics_album_songs_played">Songs played</string>
+    <string name="statistics_album_first_discovered">First discovered</string>
+    <string name="statistics_album_last_played">Last played</string>
+    <string name="statistics_artist_listens">Times completed</string>
+    <string name="statistics_artist_plays">Plays</string>
+    <string name="statistics_artist_time_listened">Time listened</string>
+    <string name="statistics_artist_songs_played">Songs played</string>
+    <string name="statistics_artist_first_discovered">First discovered</string>
+    <string name="statistics_artist_last_played">Last played</string>
+
+    <string name="details_length">Length</string>
+    <string name="details_first_released">First released</string>
+    <string name="details_isrc">ISRC</string>
+    <string name="details_genres">Genres</string>
+    <string name="details_musicbrainz_id">%1$s ID</string>
+    <string name="details_type">Type</string>
+    <string name="details_area">Area</string>
+    <string name="details_born">Born</string>
+    <string name="details_died">Died</string>
+    <string name="details_formed">Formed</string>
+    <string name="details_dissolved">Dissolved</string>
+    <string name="details_began">Began</string>
+    <string name="details_ended">Ended</string>
+    <string name="details_aliases">Also known as</string>
+    <string name="details_isni">ISNI</string>
+</resources>

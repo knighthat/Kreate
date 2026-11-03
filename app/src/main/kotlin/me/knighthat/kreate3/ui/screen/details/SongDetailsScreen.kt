@@ -51,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -74,6 +75,7 @@ import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.formatDuration
 import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
+import me.knighthat.kreate3.ui.screen.detail.itemName
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -144,7 +146,15 @@ private fun SongDetailsContent(
 
         SongDetailsState.NotFound -> Notice(padding) {
             val musicBrainz = stringResource(R.string.source_musicbrainz)
-            Message(stringResource(R.string.screen_song_details_status_not_found, musicBrainz))
+            val song =
+                LocalResources.current.itemName(title.ifBlank { null }, R.string.snackbar_this_song)
+            Message(
+                stringResource(
+                    R.string.screen_song_details_status_not_found,
+                    musicBrainz,
+                    song
+                )
+            )
             SearchHint(stringResource(R.string.screen_song_details_hint_search, SEARCH_MARK))
         }
 

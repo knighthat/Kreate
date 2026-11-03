@@ -1,0 +1,79 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Dialog titles and bodies. -->
+<resources>
+    <string name="dialog_title_certificate_changed">Certificate changed</string>
+    <string name="dialog_body_certificate_changed">%1$s presents a different self-signed certificate than the one you trusted. If you didn\'t replace it, someone may be pretending to be your server.</string>
+    <string name="dialog_title_choose_a_channel">Choose a channel</string>
+    <string name="dialog_title_clear_the_queue">Clear the queue?</string>
+    <string name="dialog_body_clear_the_queue_1">Every song but the one playing is removed from the queue.</string>
+    <string name="dialog_body_clear_the_queue_2">Remove currently playing song</string>
+    <string name="dialog_body_clear_the_queue_3">This will stop the player and close the fullscreen player</string>
+    <string name="dialog_title_forget_certificate">Forget certificate?</string>
+    <string name="dialog_body_forget_certificate">The next certificate %1$s presents will be trusted without asking.</string>
+    <string name="dialog_title_new_playlist">New playlist</string>
+    <string name="dialog_title_reset_the_order">Reset the order?</string>
+    <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
+    <string name="dialog_title_restart_the_app">Restart the app?</string>
+    <string name="dialog_body_restart_the_app">Playback stops and the app opens again, settings that need a restart apply then.</string>
+    <string name="dialog_title_restart_the_player">Restart the player?</string>
+    <string name="dialog_body_restart_the_player_1">Playback stops for a moment, then goes on where it was with the new settings.</string>
+    <string name="dialog_body_restart_the_player_2">The sleep timer is on, it stops with the player.</string>
+    <string name="dialog_title_cached_song">Cached song</string>
+    <string name="dialog_body_cached_song_move">It will be moved to your downloads and kept on this device until you delete it.</string>
+    <string name="dialog_body_cached_song_worse_1">The cached copy is worse than the quality set now, so the song will be downloaded again.</string>
+    <string name="dialog_body_cached_song_worse_2">Cached: %1$s\nDownloads in: %2$s</string>
+    <string name="dialog_title_delete_download">Delete download?</string>
+    <string name="dialog_body_delete_download">%1$s will be removed from this device. It can still be streamed.</string>
+    <string name="dialog_title_stop_download">Stop download?</string>
+    <string name="dialog_body_stop_download">%1$s won\'t be downloaded.</string>
+    <string name="dialog_title_restore_a_backup">Restore a backup?</string>
+    <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
+    <string name="dialog_title_clear_history">Clear history?</string>
+    <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
+    <string name="dialog_body_clear_history_shown">Only the plays matching your filters are removed. The rest of the history stays.</string>
+    <string name="dialog_title_undislike_all">Undislike all?</string>
+    <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
+    <string name="dialog_body_undislike_all_shown">Only the songs matching your filters show up in your lists again. The rest stay hidden.</string>
+    <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
+    <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
+    <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
+    <string name="dialog_title_clear_image_cache">Clear the image cache?</string>
+    <string name="dialog_body_clear_image_cache_1">Every image kept on this device is removed, they load again when shown.</string>
+    <string name="dialog_body_clear_image_cache_2">Also clear images kept in memory</string>
+    <string name="dialog_title_clear_song_cache">Clear the song cache?</string>
+    <string name="dialog_body_clear_song_cache">Every streamed song kept on this device is removed, for every profile. Downloads stay.</string>
+    <string name="dialog_title_delete_every_download">Delete every profile\'s downloads?</string>
+    <string name="dialog_body_delete_every_download">Every downloaded song is removed from this device, for every profile. They can still be streamed.</string>
+    <string name="dialog_title_shrink_cache">Smaller than what\'s stored</string>
+    <string name="dialog_body_shrink_cache">%1$s is stored, more than %2$s. Once the app restarts, what doesn\'t fit is removed, what was used least recently first.</string>
+    <string name="dialog_title_turn_off">Turn it off?</string>
+    <string name="dialog_body_turn_off_cache">%1$s is stored. Once the app restarts, all of it is removed and nothing new is kept.</string>
+    <string name="dialog_body_turn_off_downloads">Downloads take %1$s. None are deleted, but no new song can be downloaded.</string>
+    <string name="dialog_body_shrink_downloads">Downloads take %1$s, more than %2$s. None are deleted, but new downloads are refused until there is room.</string>
+    <string name="dialog_title_search_lyrics">Search lyrics</string>
+    <string name="dialog_title_find_recording">Find the recording</string>
+    <string name="dialog_body_find_recording_no_matches">No recordings found</string>
+    <string name="dialog_title_find_artist">Find the artist</string>
+    <string name="dialog_body_find_artist_no_matches">No artists found</string>
+    <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
+    <string name="dialog_title_sign_out_of_opensubsonic">Sign out of %1$s?</string>
+    <string name="dialog_body_sign_out_of_opensubsonic">The saved username, password and API key are removed. You can sign in again any time.</string>
+    <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
+</resources>

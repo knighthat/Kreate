@@ -18,7 +18,7 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.Context
-import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -170,13 +170,15 @@ internal fun Context.serverOff(): String =
         getString(R.string.screen_title_network)
     )
 
-/** What a screen of YouTube says when it doesn't have the item, a [noun] like the plural album. */
-internal fun Context.youTubeNotFound(@PluralsRes noun: Int): String =
-    getString(
-        R.string.error_source_not_found,
-        getString(R.string.source_ytm),
-        resources.getQuantityString(noun, 1),
-    )
+/**
+ * What a screen of YouTube says when it doesn't have the item: [withName] says it with the item's
+ * [name], [without] while the name isn't known.
+ */
+internal fun Context.youTubeNotFound(
+    name: String?,
+    @StringRes withName: Int,
+    @StringRes without: Int,
+): String = resources.named(name, withName, without, getString(R.string.source_ytm))
 
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
 private fun ServerException.reason(context: Context): String {
