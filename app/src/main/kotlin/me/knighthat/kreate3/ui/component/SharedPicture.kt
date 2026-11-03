@@ -199,32 +199,18 @@ private fun rememberConfig(screen: AnimatedVisibilityScope, onlyAway: Boolean) =
     }
 
 /**
- * The rest of a screen of [pictureFirst], see [rememberContentsAfterPicture].
- *
- * @property modifier fades what it is on in once the picture landed; leaving the screen, that goes
- * with it
- * @property picture for a picture inside what [modifier] fades, like a cover in a list: it stays
- * drawn over the screen until the rest shows, instead of fading in again with it
+ * For the parts of a screen of [pictureFirst] other than its picture: they fade in once the
+ * picture landed. Leaving the screen, they go with it. Keep the picture out of what this fades,
+ * or it would fade in again with the rest.
  */
-internal class ContentsAfterPicture(val modifier: Modifier, val picture: Modifier)
-
-/** For the parts of a screen of [pictureFirst] other than its picture, see [ContentsAfterPicture]. */
 @Composable
-internal fun rememberContentsAfterPicture(): ContentsAfterPicture {
-    val shared = LocalSharedTransitionScope.current
-        ?: return remember { ContentsAfterPicture(Modifier, Modifier) }
+internal fun rememberContentsAfterPicture(): Modifier {
+    LocalSharedTransitionScope.current ?: return Modifier
     val alpha = LocalNavAnimatedContentScope.current.transition.animateFloat(
         transitionSpec = { tween(CONTENTS_FADE_MILLIS, delayMillis = PICTURE_MOVE_MILLIS) },
         label = "contents after picture",
     ) { if (it == EnterExitState.PreEnter) 0f else 1f }
-    return remember(alpha, shared) {
-        ContentsAfterPicture(
-            modifier = Modifier.graphicsLayer { this.alpha = alpha.value },
-            picture = with(shared) {
-                Modifier.renderInSharedTransitionScopeOverlay(renderInOverlay = { alpha.value < 1f })
-            },
-        )
-    }
+    return remember(alpha) { Modifier.graphicsLayer { this.alpha = alpha.value } }
 }
 
 /** Clips a moving picture to [shape], at the size it has at each moment. */

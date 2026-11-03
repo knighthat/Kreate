@@ -20,8 +20,8 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -53,30 +52,36 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
@@ -107,9 +112,22 @@ import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.artistRoute
 import me.knighthat.kreate3.ui.theme.rememberCoverSeed
+import kotlin.math.roundToInt
 
 /** Edge of the cover beside the name. */
 private val TINTED_COVER_SIZE = 136.dp
+
+/** Edge of the cover once the header shrank, beside the artists and the summary. */
+private val TINTED_SMALL_COVER_SIZE = 56.dp
+
+/** Room at the header's sides. */
+private val TINTED_PADDING = 16.dp
+
+/** Room between the cover and the texts beside it. */
+private val TINTED_GAP = 16.dp
+
+/** Height at the header's bottom where its shade fades out over the list. */
+private val TINTED_FADE = 28.dp
 
 /** How dark the header's color is, HCT tone: dark enough for white text on any cover. */
 private const val TINT_TONE = 30.0
@@ -120,12 +138,17 @@ private const val TINTED_SECONDARY_ALPHA = 0.75f
 private val TINTED_BADGE_SIZE = 16.dp
 
 /**
- * The frame of an album's page: no picture behind anything, the header
- * is filled with a dark shade of the cover's main color instead, fading into the page. The cover
- * sits at the start with the badges, the overline, name, [artists] (a tap opens them), year and
- * [summary] beside it, the [description] under them. Playing is in the ⋮ sheet. The bar takes the
- * same color, so it is one block with the header, and shows the name once the name has gone under
- * it.
+ * The frame of an album's page: no picture behind anything, the header is filled with a dark
+ * shade of the cover's main color instead, fading into the page at its bottom. The cover sits at
+ * the start with the badges, the overline, name, [artists] (a tap opens them), year and [summary]
+ * beside it, the [description] under them. Playing is in the ⋮ sheet.
+ *
+ * The header stays at the top and the list starts under it, its rows going on up behind the
+ * fade. Scrolling up first shrinks the header, the list going up with its bottom: the cover gets
+ * small, the badges, overline, name and description fade out, until only the cover, artists, year
+ * and [summary] are left under the bar, which shows the name with the badges under it. Only then
+ * does the list scroll, even a list too short to scroll at all; scrolling down, the header grows
+ * again once the list is back at its top.
  *
  * @param albumId whose page it is, the cover of its card grows into the header as it opens
  * @param standIn the cover the album was opened with, see [OpenedItem]: in memory already, it
@@ -172,13 +195,38 @@ fun AlbumDetailScaffold(
     )
     val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
             TopAppBarDefaults.TopAppBarExpandedHeight
-    val barHeightPx = with(LocalDensity.current) { barHeight.roundToPx() }
     val direction = LocalLayoutDirection.current
-    var nameBottom by remember { mutableIntStateOf(Int.MAX_VALUE) }
-    val collapsed by remember(listState) {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 ||
-                    listState.firstVisibleItemScrollOffset > nameBottom - barHeightPx
+    val density = LocalDensity.current
+    // The header's heights, measured by it: the list starts under the whole of it
+    var heights by remember { mutableStateOf(HeaderHeights(0, 0)) }
+    // Pixels the header shrank by, read only while laying out and drawing
+    var shrunk by rememberSaveable { mutableFloatStateOf(0f) }
+    val range = (heights.expanded - heights.collapsed).toFloat().coerceAtLeast(0f)
+    // A header that got shorter, like a description folded back, can't stay shrunk by more
+    LaunchedEffect(range) { if (shrunk > range) shrunk = range }
+    // How far the header shrank, 0 whole, 1 as small as it gets
+    val collapse = { if (range > 0f) shrunk / range else 0f }
+    val shrinking = remember(range) {
+        object : NestedScrollConnection {
+            // Up, the header shrinks before the list scrolls
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y >= 0f) return Offset.Zero
+                val taken = maxOf(available.y, shrunk - range)
+                shrunk -= taken
+                return Offset(0f, taken)
+            }
+
+            // Down, it grows with what the list, back at its top, left
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (available.y <= 0f) return Offset.Zero
+                val taken = minOf(available.y, shrunk)
+                shrunk -= taken
+                return Offset(0f, taken)
+            }
         }
     }
 
@@ -188,45 +236,70 @@ fun AlbumDetailScaffold(
             .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
         modifier = modifier,
     ) { insets ->
-        Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .nestedScroll(shrinking)
+        ) {
             LazyColumn(
                 state = listState,
                 contentPadding = contentPadding + PaddingValues(
                     start = insets.calculateStartPadding(direction),
+                    top = with(density) { heights.expanded.toDp() },
                     end = insets.calculateEndPadding(direction),
                     bottom = insets.calculateBottomPadding(),
                 ),
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(contents.modifier),
-            ) {
-                item(key = "header") {
-                    TintedHeader(
-                        name = name,
-                        models = covers,
-                        cover = contents.picture.then(picture.modifier),
-                        artists = artists,
-                        year = year,
-                        summary = summary,
-                        origin = origin,
-                        isExplicit = isExplicit,
-                        description = description,
-                        shade = shade,
-                        topPadding = barHeight,
-                        onOpenArtist = onOpenArtist,
-                        onNameBottom = { nameBottom = it },
-                    )
-                }
-                content()
-            }
+                    // Up with the header's bottom, taller by as much so it still reaches the end
+                    .layout { measurable, constraints ->
+                        val up = shrunk.roundToInt()
+                        val placeable = measurable.measure(
+                            constraints.copy(
+                                minHeight = constraints.maxHeight + up,
+                                maxHeight = constraints.maxHeight + up,
+                            )
+                        )
+                        layout(constraints.maxWidth, constraints.maxHeight) {
+                            placeable.place(0, -up)
+                        }
+                    }
+                    .then(contents),
+                content = content,
+            )
+
+            TintedHeader(
+                name = name,
+                models = covers,
+                cover = picture.modifier,
+                artists = artists,
+                year = year,
+                summary = summary,
+                origin = origin,
+                isExplicit = isExplicit,
+                description = description,
+                shade = shade,
+                topPadding = barHeight,
+                collapse = collapse,
+                onOpenArtist = onOpenArtist,
+                onHeights = { heights = it },
+                contents = contents,
+                // Dragged, it scrolls like the list, so it shrinks the header the same way
+                modifier = Modifier.scrollable(
+                    listState,
+                    Orientation.Vertical,
+                    reverseDirection = true,
+                ),
+            )
 
             TintedTopBar(
                 name = name,
-                shade = shade,
-                collapsed = collapsed,
+                origin = origin,
+                isExplicit = isExplicit,
+                collapse = collapse,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
-                modifier = contents.modifier,
+                modifier = contents,
             )
         }
     }
@@ -234,6 +307,17 @@ fun AlbumDetailScaffold(
     if (menuOpen && menu != null) menu { menuOpen = false }
 }
 
+/** Heights in pixels of the album header, whole and as small as it gets. */
+private data class HeaderHeights(val expanded: Int, val collapsed: Int)
+
+/**
+ * The album header of [AlbumDetailScaffold], [collapse] of the way to its smallest. Its texts keep
+ * the width they have beside the large cover, so it is as tall at each step however it shrank.
+ *
+ * @param cover the shared cover's modifier, the cover clips itself
+ * @param contents fades everything but the cover in after it, see [rememberContentsAfterPicture]
+ * @param onHeights gets the header's heights whenever they change
+ */
 @Composable
 private fun TintedHeader(
     name: String,
@@ -247,104 +331,186 @@ private fun TintedHeader(
     description: String?,
     shade: Color,
     topPadding: Dp,
+    collapse: () -> Float,
     onOpenArtist: (() -> Unit)?,
-    onNameBottom: (Int) -> Unit,
-) = Column(
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = Modifier
-        .fillMaxWidth()
-        .background(
-            Brush.verticalGradient(
-                0f to shade,
-                0.7f to shade,
-                1f to MaterialTheme.colorScheme.surfaceDim,
-            )
-        )
-        .padding(top = topPadding + 4.dp, bottom = 28.dp),
+    onHeights: (HeaderHeights) -> Unit,
+    contents: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     val dim = Color.White.copy(alpha = TINTED_SECONDARY_ALPHA)
+    val shape = MaterialTheme.shapes.medium
+    var reported by remember { mutableStateOf<HeaderHeights?>(null) }
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-        val shape = MaterialTheme.shapes.medium
-        Thumbnail(
-            models = models,
-            shape = shape,
-            modifier = Modifier
-                .size(TINTED_COVER_SIZE)
-                .then(cover)
-                .shadow(12.dp, shape),
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier
-                .weight(1f)
-                .onGloballyPositioned {
-                    // The column's top in the header plus the name inside it is close enough
-                    onNameBottom((it.positionInParent().y + it.size.height).toInt())
-                },
-        ) {
-            if (origin != null || isExplicit)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(bottom = 2.dp),
+    Layout(
+        contents = listOf(
+            // The shade, filled to the header's height at each step, fading out at its bottom
+            {
+                Box(
+                    contents.drawBehind {
+                        val fadeStart = ((size.height - TINTED_FADE.toPx()) / size.height)
+                            .coerceIn(0f, 1f)
+                        drawRect(
+                            Brush.verticalGradient(
+                                0f to shade,
+                                fadeStart to shade,
+                                1f to shade.copy(alpha = 0f),
+                            )
+                        )
+                    }
+                )
+            },
+            {
+                Thumbnail(
+                    models = models,
+                    shape = shape,
+                    modifier = cover.shadow(12.dp, shape),
+                )
+            },
+            // What fades out as the header shrinks
+            {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = contents,
                 ) {
-                    origin?.let { OriginBadge(it, TINTED_BADGE_SIZE, tint = dim) }
-                    if (isExplicit) ExplicitBadge(TINTED_BADGE_SIZE)
+                    if (origin != null || isExplicit)
+                        AlbumBadges(origin, isExplicit, dim, Modifier.padding(bottom = 2.dp))
+                    Text(
+                        pluralStringResource(R.plurals.unit_album, 1).uppercase(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = dim,
+                    )
+                    Text(
+                        name,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
-            Text(
-                pluralStringResource(R.plurals.unit_album, 1).uppercase(),
-                style = MaterialTheme.typography.labelMedium,
-                color = dim,
-            )
-            Text(
-                name,
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-            ArtistLine(artists, year, onOpenArtist, linkColor = Color.White, color = dim)
-            summary?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = dim)
+            },
+            // What stays beside the small cover
+            {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = contents,
+                ) {
+                    ArtistLine(artists, year, onOpenArtist, linkColor = Color.White, color = dim)
+                    summary?.let {
+                        Text(it, style = MaterialTheme.typography.bodySmall, color = dim)
+                    }
+                }
+            },
+            {
+                // Its own padding, its tap area reaches the edges
+                description?.let {
+                    DetailDescription(
+                        it,
+                        modifier = contents,
+                        color = dim,
+                        linkColor = Color.White,
+                    )
+                }
+            },
+        ),
+        modifier = modifier.fillMaxWidth(),
+    ) { (shadeBox, coverBox, fading, staying, describing), constraints ->
+        val fraction = collapse()
+        val width = constraints.maxWidth
+        val padding = TINTED_PADDING.roundToPx()
+        val gap = TINTED_GAP.roundToPx()
+        val lineGap = 2.dp.roundToPx()
+        val top = topPadding.roundToPx() + 4.dp.roundToPx()
+        val fade = TINTED_FADE.roundToPx()
+        val large = TINTED_COVER_SIZE.roundToPx()
+        val small = TINTED_SMALL_COVER_SIZE.roundToPx()
+        val textWidth = (width - 2 * padding - large - gap).coerceAtLeast(0)
+        val text = Constraints(maxWidth = textWidth)
+
+        val upper = fading.first().measure(text)
+        val lower = staying.first().measure(text)
+        val about = describing.firstOrNull()?.measure(Constraints(maxWidth = width))
+        val aboutHeight = about?.let { it.height + 8.dp.roundToPx() } ?: 0
+
+        val heights = HeaderHeights(
+            expanded = top + maxOf(
+                large,
+                upper.height + lineGap + lower.height
+            ) + aboutHeight + fade,
+            collapsed = top + maxOf(small, lower.height) + fade,
+        )
+        if (heights != reported) {
+            reported = heights
+            onHeights(heights)
+        }
+
+        val coverSize = lerp(large, small, fraction)
+        val upperHeight = (upper.height * (1 - fraction)).roundToInt()
+        val rowHeight = maxOf(coverSize, upperHeight + lineGap + lower.height)
+        val height = top + rowHeight + (aboutHeight * (1 - fraction)).roundToInt() + fade
+        // Gone by half way, before what it covers takes its place
+        val fadingAlpha = (1 - 2 * fraction).coerceIn(0f, 1f)
+        val coverPlaceable = coverBox.first().measure(Constraints.fixed(coverSize, coverSize))
+        val shadePlaceable = shadeBox.first().measure(Constraints.fixed(width, height))
+        val textStart = padding + coverSize + gap
+        val lowerTop = top + rowHeight - lower.height
+
+        layout(width, height) {
+            shadePlaceable.place(0, 0)
+            coverPlaceable.place(padding, top + rowHeight - coverSize)
+            upper.placeWithLayer(textStart, lowerTop - lineGap - upper.height) {
+                alpha = fadingAlpha
             }
+            lower.place(textStart, lowerTop)
+            about?.placeWithLayer(0, top + rowHeight + 8.dp.roundToPx()) { alpha = fadingAlpha }
         }
     }
-
-    // Its own padding, its tap area reaches the edges
-    description?.let { DetailDescription(it, color = dim, linkColor = Color.White) }
 }
 
-/** The bar of the tinted design: the header's color, the [name] showing once [collapsed]. */
+/** The origin and explicit badges of an album, in the header and under the bar's name. */
+@Composable
+private fun AlbumBadges(
+    origin: Origin?,
+    isExplicit: Boolean,
+    tint: Color,
+    modifier: Modifier = Modifier,
+) = Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
+    origin?.let { OriginBadge(it, TINTED_BADGE_SIZE, tint = tint) }
+    if (isExplicit) ExplicitBadge(TINTED_BADGE_SIZE)
+}
+
+/**
+ * The bar of the tinted design, over the header's shade: the [name], with the badges under it,
+ * fading in over the second half of [collapse].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TintedTopBar(
     name: String,
-    shade: Color,
-    collapsed: Boolean,
+    origin: Origin?,
+    isExplicit: Boolean,
+    collapse: () -> Float,
     onBack: () -> Unit,
     onMore: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
-    val title by animateFloatAsState(if (collapsed) 1f else 0f, label = "album bar title")
-
     TopAppBar(
         title = {
-            Text(
-                name,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.alpha(title),
-            )
+            Column(Modifier.graphicsLayer { alpha = (2 * collapse() - 1).coerceIn(0f, 1f) }) {
+                Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (origin != null || isExplicit)
+                    AlbumBadges(
+                        origin,
+                        isExplicit,
+                        Color.White.copy(alpha = TINTED_SECONDARY_ALPHA)
+                    )
+            }
         },
         navigationIcon = { BackButton(onBack) },
         actions = { onMore?.let { MoreSheetButton(it) } },
+        // The header's shade is behind it
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = shade,
-            scrolledContainerColor = shade,
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent,
             navigationIconContentColor = Color.White,
             titleContentColor = Color.White,
             actionIconContentColor = Color.White,

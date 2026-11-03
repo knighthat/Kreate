@@ -95,8 +95,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   in a `graphicsLayer` (none while moving), corners morphing in the overlay by how far it grew
   (`MorphingClip`), `overlay` for what lies over it (artist bar, bottom fade); `onlyAway` (the
   artist and album cards) turns the match off while its screen comes back, so nothing moves back;
-  `rememberContentsAfterPicture()` (`ContentsAfterPicture`): the alpha of the rest of such a
-  screen, and `picture` keeping a picture inside it in the overlay until it shows;
+  `rememberContentsAfterPicture()`: the alpha of the rest of such a screen (keep the picture out
+  of it);
   `artistPictureKey`, `albumPictureKey`.
 - `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
   and the search results tabs; drops labels under `LocalIconOnly`.

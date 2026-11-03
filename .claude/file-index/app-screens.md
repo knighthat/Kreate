@@ -99,10 +99,15 @@ ui/screen/
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `AlbumDetail.kt` (`AlbumDetailScaffold`: header in a tone-30 shade of the cover's color
   (`rememberCoverSeed`), cover at the start with badges, ALBUM, name, `ArtistLine` (tap opens the
-  artist), song count + length beside it, the description under them; bar in the same color, name in
-  it once scrolled under; the cover grows from the album card (`sharedPicture`, same shape) with
-  the card's cover standing in, the rest fades in after it (`rememberContentsAfterPicture`, the
-  cover kept in the overlay meanwhile). `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle / Play
+  artist), song count + length beside it, the description under them (name at most 2 lines). The
+  header (`TintedHeader`, a custom `Layout`) is pinned over the list, which starts under it and
+  scrolls behind its bottom fade; scrolling up first shrinks it (`NestedScrollConnection`, the list
+  moved up with it by a `layout` offset, so even short lists shrink it): cover 136 → 56dp, badges,
+  overline, name and description fade out, the bar (transparent over the shade) fades in the name
+  with the badges under it; it grows back once the list is at its top. The cover grows from the
+  album card (`sharedPicture`, same shape) with the card's cover standing in, the rest fades in
+  after it (`rememberContentsAfterPicture`). `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle /
+  Play
   next / Add to
   queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
   `albumArtistRoute`: the credited artist the album names, else the first song's first. Used by the

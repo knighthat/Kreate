@@ -208,7 +208,7 @@ fun ArtistDetailScaffold(
                     blur = PICTURE_BLUR,
                     modifier = Modifier
                         .matchParentSize()
-                        .then(contents.modifier)
+                        .then(contents)
                         // More of it the farther the list went up, all of it once at the bar
                         .graphicsLayer {
                             val scrolled =
@@ -226,7 +226,7 @@ fun ArtistDetailScaffold(
                     Modifier
                         .matchParentSize()
                         .then(picture.overlay)
-                        .then(contents.modifier)
+                        .then(contents)
                         .background(
                             Brush.verticalGradient(
                                 PICTURE_FADE_START to Color.Transparent,
@@ -246,7 +246,7 @@ fun ArtistDetailScaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = barHeight)
-                    .then(contents.modifier)
+                    .then(contents)
                     .fadeTop(LIST_FADE),
             ) {
                 item(key = "picture") {
@@ -265,7 +265,7 @@ fun ArtistDetailScaffold(
                 subtitle = subtitle,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
-                modifier = picture.overlay.then(contents.modifier),
+                modifier = picture.overlay.then(contents),
             )
         }
     }
