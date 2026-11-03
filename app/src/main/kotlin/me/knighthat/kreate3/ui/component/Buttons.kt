@@ -66,6 +66,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 
 /** Alpha of a [FilterIconButton] that isn't selected, the disabled one of Material. */
 private const val UNSELECTED_FILTER_ALPHA = .38f
@@ -416,6 +417,54 @@ fun AddToQueueButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
         modifier
     )
 
+/**
+ * Does [action] with every song of a list: the matching one of [PlayAllButton], [ShuffleButton],
+ * [PlayNextButton] and [AddToQueueButton], off while [enabled] is `false`.
+ */
+@Composable
+fun QueueActionButton(
+    action: QueueAction,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) = when (action) {
+    QueueAction.PLAY ->
+        IconAction(
+            R.drawable.play_arrow,
+            stringResource(R.string.semantic_play_all),
+            onClick,
+            modifier,
+            enabled
+        )
+
+    QueueAction.SHUFFLE ->
+        IconAction(
+            R.drawable.shuffle,
+            stringResource(R.string.semantic_shuffle),
+            onClick,
+            modifier,
+            enabled
+        )
+
+    QueueAction.PLAY_NEXT ->
+        IconAction(
+            R.drawable.queue_play_next,
+            stringResource(R.string.semantic_play_next),
+            onClick,
+            modifier,
+            enabled
+        )
+
+    QueueAction.ENQUEUE ->
+        IconAction(
+            R.drawable.playlist_add,
+            stringResource(R.string.semantic_add_to_queue),
+            onClick,
+            modifier,
+            enabled
+        )
+}
+
 /** Makes a new playlist. */
 @Composable
 fun CreatePlaylistButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
@@ -522,6 +571,10 @@ private fun IconButtonsPreview() = PreviewTheme {
                 MoreButton { close ->
                     DropdownMenuItem(text = { Text("Item") }, onClick = close)
                 }
+            }
+            Row {
+                QueueAction.entries.forEach { QueueActionButton(it, {}) }
+                QueueActionButton(QueueAction.PLAY, {}, enabled = false)
             }
         }
     }

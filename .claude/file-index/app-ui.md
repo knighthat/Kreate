@@ -10,7 +10,9 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
   PlayPause/SeeMore/Config/SortOrder (newest/oldest first)/UndislikeAll/DeleteAllDownloads
-  buttons, `FilterIconButton` (a filter as its icon alone, origin chips while Icon only),
+  buttons, `QueueActionButton` (the one of PlayAll/Shuffle/PlayNext/AddToQueue a `QueueAction`
+  names, album/artist page bars), `FilterIconButton` (a filter as its icon alone, origin chips while
+  Icon only),
   `BookmarkButton`/`FollowButton` (filled in the primary color while set), `MoreSheetButton` (⋮ that
   opens a `ConfigSheet`, the artist pages'), `TileButton` (
   big icon+title+subtitle tile with busy spinner; wizard restore, Backup
@@ -62,7 +64,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `MediaItem.localSongId`.
 - `MediaItemDsl.kt` — model → `MediaItem` conversions (`toMediaItem`, `toLiveMediaItem`), `EXTRA_*`
   keys, `isExplicit`/`isBookmarked`/`hasBadges`.
-- `QueueActions.kt` — `QueueAction` enum (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT), `QueueActionRow`
+- `QueueActions.kt` — (`QueueAction` enum is in `:preferences` `constant/`), `QueueActionRow`
   (detail screens: Play, then Shuffle / Play next / Add to queue icon buttons, optional `menu` for a
   more button), `QueuePlayButton` (labeled, filled icon when icon-only), `QueueMoreButton`,
   `PlaybackController.queue` (quick actions). The app's playlists pass the move/remove switches as

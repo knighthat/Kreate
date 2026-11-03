@@ -24,6 +24,7 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.ProxyType
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
@@ -85,6 +86,15 @@ object Preferences : KoinComponent {
      * brings the app back.
      */
     val NOTIFICATION_OPENS_PLAYER by lazy { boolean("notification_opens_player", true) }
+
+    /**
+     * What the button beside ⋮ in the bar of an album's page does with its songs, set in the
+     * General settings and read by the album screens.
+     */
+    val ALBUM_PAGE_ACTION by lazy { enum("album_page_action", QueueAction.PLAY) }
+
+    /** Like [ALBUM_PAGE_ACTION], for the songs of an artist's page. */
+    val ARTIST_PAGE_ACTION by lazy { enum("artist_page_action", QueueAction.PLAY) }
 
     /**
      * Sizes of files and storage show in units of 1024 (1024 MiB make 1 GiB); off, in units of

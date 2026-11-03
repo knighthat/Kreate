@@ -85,6 +85,7 @@ import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigEntry
@@ -98,7 +99,7 @@ import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MoreSheetButton
 import me.knighthat.kreate3.ui.component.OriginBadge
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
@@ -141,7 +142,7 @@ private val TINTED_BADGE_SIZE = 16.dp
  * The frame of an album's page: no picture behind anything, the header is filled with a dark
  * shade of the cover's main color instead, fading into the page at its bottom. The cover sits at
  * the start with the badges, the overline, name, [artists] (a tap opens them), year and [summary]
- * beside it, the [description] under them. Playing is in the ⋮ sheet.
+ * beside it, the [description] under them. The bar has the [action] button and the ⋮ sheet.
  *
  * The header stays at the top and the list starts under it, its rows going on up behind the
  * fade. Scrolling up first shrinks the header, the list going up with its bottom: the cover gets
@@ -157,6 +158,8 @@ private val TINTED_BADGE_SIZE = 16.dp
  * while there is none
  * @param description what the source says about the album, `null` when it says nothing
  * @param onOpenArtist opens the album's artist, `null` when there is none to open
+ * @param action what the button beside ⋮ does with the songs, `null` hides the button
+ * @param onAction runs [action], `null` turns the button off while there are no songs
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,6 +181,8 @@ fun AlbumDetailScaffold(
     tint: Color = rememberCoverSeed(models),
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
+    action: QueueAction? = null,
+    onAction: ((QueueAction) -> Unit)? = null,
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
@@ -298,6 +303,8 @@ fun AlbumDetailScaffold(
                 isExplicit = isExplicit,
                 collapse = collapse,
                 onBack = onBack,
+                action = action,
+                onAction = onAction,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
                 modifier = contents,
             )
@@ -490,6 +497,8 @@ private fun TintedTopBar(
     isExplicit: Boolean,
     collapse: () -> Float,
     onBack: () -> Unit,
+    action: QueueAction?,
+    onAction: ((QueueAction) -> Unit)?,
     onMore: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
@@ -506,7 +515,12 @@ private fun TintedTopBar(
             }
         },
         navigationIcon = { BackButton(onBack) },
-        actions = { onMore?.let { MoreSheetButton(it) } },
+        actions = {
+            action?.let {
+                QueueActionButton(it, { onAction?.invoke(it) }, enabled = onAction != null)
+            }
+            onMore?.let { MoreSheetButton(it) }
+        },
         // The header's shade is behind it
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
@@ -657,6 +671,8 @@ private fun AlbumDetailPreview() = PreviewTheme {
         onOpenArtist = {},
         // What the cover gives, a static preview runs no effect to work it out
         tint = Color(0xFF8E3B6B),
+        action = QueueAction.PLAY,
+        onAction = {},
         menu = {},
     ) {
         item(key = "disc1") { DiscHeader(1) }

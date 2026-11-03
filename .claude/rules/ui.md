@@ -52,8 +52,9 @@ charts: `.claude/docs/charts.md`.
   at once and leave it open.
 - Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
 - Artist, album and playlist pages open theirs (`ArtistMenu`, `AlbumMenu`, `PlaylistMenu`) from a ⋮
-  `MoreSheetButton`, the only action of their bar; its less used actions are `ConfigEntry` rows
-  (maintainer, 2026-11-01).
+  `MoreSheetButton`; its less used actions are `ConfigEntry` rows (maintainer, 2026-11-01). Album
+  and artist bars also have one `QueueActionButton` before it, its action picked in the General
+  settings (maintainer, 2026-11-02); nothing else goes in those bars.
 - Filters live in the screen's view model: kept while the screen is in the back stack (A > B > C,
   back to B keeps them), off when it is opened again. Never reset them from a `LaunchedEffect`, it
   also runs on coming back from a page and on rotation.

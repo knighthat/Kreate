@@ -47,14 +47,16 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.source.local.albumArtUri
 import me.knighthat.kreate3.ui.component.DragHandle
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -81,6 +83,7 @@ fun LocalAlbumDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalAlbumDetailViewModel = koinViewModel(),
 ) {
+    val action by Preferences.ALBUM_PAGE_ACTION.collectAsStateWithLifecycle()
     val album by viewModel.album.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
     val isBookmarked by viewModel.isBookmarked.collectAsStateWithLifecycle()
@@ -119,6 +122,7 @@ fun LocalAlbumDetailScreen(
             isReordering = isReordering,
             arranged = arranged,
             onBack = onBack,
+            action = action,
             onAction = rememberQueueActions(viewModel::allSongs),
             onSongClick = rememberSongTap(null, viewModel::allSongs),
             onReorder = viewModel::reorder,
@@ -174,6 +178,7 @@ private fun LocalAlbumDetailContent(
     onBack: () -> Unit,
     onOpenArtist: (() -> Unit)?,
     onOpenStatistics: () -> Unit,
+    action: QueueAction,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     onReorder: (Boolean) -> Unit,
@@ -222,6 +227,8 @@ private fun LocalAlbumDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,
+        action = action,
+        onAction = onAction.takeIf { songs.itemCount > 0 },
         menu = { onDismiss ->
             AlbumMenu(
                 name = name,
@@ -324,6 +331,7 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
         onBack = {},
         onOpenArtist = {},
         onOpenStatistics = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         onReorder = {},

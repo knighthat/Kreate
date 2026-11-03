@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.Blur
@@ -86,7 +87,7 @@ import me.knighthat.kreate3.ui.component.LabeledIconToggle
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MoreSheetButton
 import me.knighthat.kreate3.ui.component.OriginBadge
-import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionButton
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.artistPictureKey
@@ -120,8 +121,8 @@ internal const val SONG_PLACEHOLDERS = 5
 
 /**
  * The frame of an artist's page: their picture across the top, [PICTURE_HEIGHT] of the screen,
- * under a see-through top bar shaded at its top, with the [name], their badges under it, and a ⋮
- * button opening [menu]. The list ([content]) starts under the picture and scrolls over it, see
+ * under a see-through top bar shaded at its top, with the [name], their badges under it, the
+ * [action] button and a ⋮ button opening [menu]. The list ([content]) starts under the picture and scrolls over it, see
  * through, fading out just under the bar; the picture blurs more the farther it went up, fully blurred once
  * the list's top reaches the bar.
  *
@@ -130,6 +131,8 @@ internal const val SONG_PLACEHOLDERS = 5
  * it shows while [thumbnail] loads, which then fades in over it, and stands in for it when it fails
  * @param origin where the artist comes from, a badge under the name, none when `null`
  * @param subtitle shown under the name in place of the badges, like YouTube's monthly audience
+ * @param action what the button beside ⋮ does with the songs, `null` hides the button
+ * @param onAction runs [action], `null` turns the button off while there are no songs
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
  * @param contentPadding room the list adds around its items, e.g. so the last one can scroll
  * clear of what floats over the screen
@@ -147,6 +150,8 @@ fun ArtistDetailScaffold(
     standIn: Uri? = null,
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
+    action: QueueAction? = null,
+    onAction: ((QueueAction) -> Unit)? = null,
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
@@ -264,6 +269,8 @@ fun ArtistDetailScaffold(
                 origin = origin,
                 subtitle = subtitle,
                 onBack = onBack,
+                action = action,
+                onAction = onAction,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
                 modifier = picture.overlay.then(contents),
             )
@@ -296,6 +303,8 @@ private fun ArtistTopBar(
     origin: Origin?,
     subtitle: String?,
     onBack: () -> Unit,
+    action: QueueAction?,
+    onAction: ((QueueAction) -> Unit)?,
     onMore: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
@@ -318,7 +327,12 @@ private fun ArtistTopBar(
             }
         },
         navigationIcon = { BackButton(onBack) },
-        actions = { onMore?.let { MoreSheetButton(it) } },
+        actions = {
+            action?.let {
+                QueueActionButton(it, { onAction?.invoke(it) }, enabled = onAction != null)
+            }
+            onMore?.let { MoreSheetButton(it) }
+        },
         // Light on the shade in either theme
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,

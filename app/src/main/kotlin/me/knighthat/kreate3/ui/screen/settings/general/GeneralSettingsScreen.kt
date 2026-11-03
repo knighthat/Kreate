@@ -24,10 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.labelRes
+import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -35,8 +39,9 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 
 /**
- * How the app behaves: scanning the device, leaving the app and opening it from the media
- * notification. What is kept on the device is on the Data page.
+ * How the app behaves: scanning the device, leaving the app, opening it from the media
+ * notification and the button of album and artist pages. What is kept on the device is on the
+ * Data page.
  */
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -44,12 +49,16 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
     val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
+    val albumPageAction by Preferences.ALBUM_PAGE_ACTION.collectAsStateWithLifecycle()
+    val artistPageAction by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
 
     GeneralSettingsContent(
         scanInterval = scanInterval,
         exitOnBack = exitOnBack,
         exitTimeout = exitTimeout,
         notificationOpensPlayer = notificationOpensPlayer,
+        albumPageAction = albumPageAction,
+        artistPageAction = artistPageAction,
         onBack = onBack,
         modifier = modifier,
     )
@@ -61,6 +70,8 @@ private fun GeneralSettingsContent(
     exitOnBack: Boolean,
     exitTimeout: Int,
     notificationOpensPlayer: Boolean,
+    albumPageAction: QueueAction,
+    artistPageAction: QueueAction,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -117,6 +128,23 @@ private fun GeneralSettingsContent(
             onCheckedChange = { Preferences.NOTIFICATION_OPENS_PLAYER.update(it) },
             summary = stringResource(R.string.setting_description_notification_opens_player),
         )
+
+        SettingsSection(stringResource(R.string.setting_header_album_and_artist_pages))
+        val actionLabels = labelsOf(QueueAction.entries) { it.labelRes }
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_album_page_button),
+            value = albumPageAction,
+            options = QueueAction.entries,
+            label = actionLabels,
+            onSelect = { Preferences.ALBUM_PAGE_ACTION.update(it) },
+        )
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_artist_page_button),
+            value = artistPageAction,
+            options = QueueAction.entries,
+            label = actionLabels,
+            onSelect = { Preferences.ARTIST_PAGE_ACTION.update(it) },
+        )
     }
 }
 
@@ -128,6 +156,8 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         exitOnBack = true,
         exitTimeout = 2,
         notificationOpensPlayer = true,
+        albumPageAction = QueueAction.PLAY,
+        artistPageAction = QueueAction.SHUFFLE,
         onBack = {},
     )
 }

@@ -53,6 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.undoMessage
@@ -60,23 +61,6 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import org.koin.compose.koinInject
-
-/**
- * What a quick action does with the songs of a list.
- */
-enum class QueueAction {
-    /** Replaces the queue with the songs, in the list's order, and plays them. */
-    PLAY,
-
-    /** Like [PLAY], in a random order. */
-    SHUFFLE,
-
-    /** Adds the songs to the end of the queue. */
-    ENQUEUE,
-
-    /** Adds the songs right after the song playing, in the list's order. */
-    PLAY_NEXT,
-}
 
 /**
  * Does [action] with the songs of [songs] that can be played.

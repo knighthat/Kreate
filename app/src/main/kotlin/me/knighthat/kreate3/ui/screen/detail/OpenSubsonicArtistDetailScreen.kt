@@ -34,12 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.CardRowPlaceholder
 import me.knighthat.kreate3.ui.component.ItemRowPlaceholder
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -68,6 +70,7 @@ fun OpenSubsonicArtistDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
 ) {
+    val action by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val topSongs by viewModel.topSongs.collectAsStateWithLifecycle()
     val description by viewModel.description.collectAsStateWithLifecycle()
@@ -89,6 +92,7 @@ fun OpenSubsonicArtistDetailScreen(
             onBack = onBack,
             onOpenAlbum = onOpenAlbum,
             onOpenSongs = onOpenSongs,
+            action = action,
             onAction = rememberQuickQueueActions(shown = shownSongs, songs = viewModel::allSongs),
             onSongClick = rememberSongTap(null, shownSongs),
             share = if (canShare) viewModel::shareLink else null,
@@ -120,6 +124,7 @@ private fun OpenSubsonicArtistDetailContent(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     onOpenSongs: (name: String?) -> Unit,
+    action: QueueAction,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
@@ -143,6 +148,8 @@ private fun OpenSubsonicArtistDetailContent(
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
+        action = action,
+        onAction = onAction.takeIf { songs?.songs?.isNotEmpty() == true },
         menu = { onDismiss ->
             ArtistMenu(
                 name = name,
@@ -234,6 +241,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onBack = {},
         onOpenAlbum = {},
         onOpenSongs = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
@@ -264,6 +272,7 @@ private fun OpenSubsonicArtistDetailLoadingPreview() = PreviewTheme {
         onBack = {},
         onOpenAlbum = {},
         onOpenSongs = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         share = null,

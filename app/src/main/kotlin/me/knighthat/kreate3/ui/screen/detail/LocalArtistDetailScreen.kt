@@ -38,10 +38,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -66,6 +68,7 @@ fun LocalArtistDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
 ) {
+    val action by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
     val artist by viewModel.artist.collectAsStateWithLifecycle()
     val albums by viewModel.albums.collectAsStateWithLifecycle()
     val isFollowed by viewModel.isFollowed.collectAsStateWithLifecycle()
@@ -84,6 +87,7 @@ fun LocalArtistDetailScreen(
             songs = viewModel.songs.collectAsLazyPagingItems(),
             onBack = onBack,
             onOpenAlbum = onOpenAlbum,
+            action = action,
             onAction = rememberQueueActions(viewModel::allSongs),
             onSongClick = rememberSongTap(null, viewModel::allSongs),
             isFollowed = isFollowed,
@@ -111,6 +115,7 @@ private fun LocalArtistDetailContent(
     songs: LazyPagingItems<MediaItem>,
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
+    action: QueueAction,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     isFollowed: Boolean?,
@@ -129,6 +134,8 @@ private fun LocalArtistDetailContent(
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
+        action = action,
+        onAction = onAction,
         menu = { onDismiss ->
             ArtistMenu(
                 name = name,
@@ -191,6 +198,7 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         onBack = {},
         onOpenAlbum = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         isFollowed = false,

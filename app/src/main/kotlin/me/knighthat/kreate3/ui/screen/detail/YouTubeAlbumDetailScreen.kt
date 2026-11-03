@@ -28,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -60,6 +62,7 @@ fun YouTubeAlbumDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
 ) {
+    val action by Preferences.ALBUM_PAGE_ACTION.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isBookmarked by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
 
@@ -75,6 +78,7 @@ fun YouTubeAlbumDetailScreen(
             onBack = onBack,
             onOpen = onOpen,
             onSeeMore = onSeeMore,
+            action = action,
             onAction = rememberQueueActions {
                 (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
             },
@@ -105,6 +109,7 @@ private fun YouTubeAlbumDetailContent(
     onBack: () -> Unit,
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
+    action: QueueAction,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
@@ -138,6 +143,8 @@ private fun YouTubeAlbumDetailContent(
         onOpenArtist = artist?.let { { onOpenArtist(it) } },
         modifier = modifier,
         contentPadding = contentPadding,
+        action = action,
+        onAction = onAction.takeIf { album?.songs?.isNotEmpty() == true },
         menu = { onDismiss ->
             AlbumMenu(
                 name = album?.name,
@@ -192,6 +199,7 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         onBack = {},
         onOpen = { _, _ -> },
         onSeeMore = { _, _ -> },
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },

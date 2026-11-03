@@ -26,6 +26,7 @@ import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
@@ -120,6 +121,15 @@ val AutoTapAction.labelRes: Int
         AutoTapAction.OPEN -> R.string.constant_auto_tap_action_open
         AutoTapAction.PLAY_FROM_START -> R.string.constant_auto_tap_action_play_from_start
         AutoTapAction.PLAY_RANDOMLY -> R.string.constant_auto_tap_action_play_randomly
+    }
+
+@get:StringRes
+val QueueAction.labelRes: Int
+    get() = when (this) {
+        QueueAction.PLAY -> R.string.constant_queue_action_play
+        QueueAction.SHUFFLE -> R.string.constant_queue_action_shuffle
+        QueueAction.ENQUEUE -> R.string.constant_queue_action_enqueue
+        QueueAction.PLAY_NEXT -> R.string.constant_queue_action_play_next
     }
 
 @get:StringRes

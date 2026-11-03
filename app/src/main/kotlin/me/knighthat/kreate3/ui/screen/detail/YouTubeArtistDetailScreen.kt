@@ -32,12 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.CardRowPlaceholder
 import me.knighthat.kreate3.ui.component.ItemRowPlaceholder
 import me.knighthat.kreate3.ui.component.PreviewTheme
-import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -71,6 +73,7 @@ fun YouTubeArtistDetailScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeArtistDetailViewModel = koinViewModel(),
 ) {
+    val action by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
@@ -88,6 +91,7 @@ fun YouTubeArtistDetailScreen(
             onOpen = onOpen,
             onSeeMore = onSeeMore,
             onOpenPlaylist = onOpenPlaylist,
+            action = action,
             onAction = rememberQueueActions {
                 (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
             },
@@ -123,6 +127,7 @@ private fun YouTubeArtistDetailContent(
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     onOpenPlaylist: (String) -> Unit,
+    action: QueueAction,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
@@ -146,6 +151,8 @@ private fun YouTubeArtistDetailContent(
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
+        action = action,
+        onAction = onAction.takeIf { artist?.topSongs?.isNotEmpty() == true },
         menu = { onDismiss ->
             ArtistMenu(
                 name = name,
@@ -226,6 +233,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         onOpen = { _, _ -> },
         onSeeMore = { _, _ -> },
         onOpenPlaylist = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
@@ -250,6 +258,7 @@ private fun YouTubeArtistDetailLoadingPreview() = PreviewTheme {
         onOpen = { _, _ -> },
         onSeeMore = { _, _ -> },
         onOpenPlaylist = {},
+        action = QueueAction.PLAY,
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },

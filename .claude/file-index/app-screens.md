@@ -106,7 +106,9 @@ ui/screen/
   overline, name and description fade out, the bar (transparent over the shade) fades in the name
   with the badges under it; it grows back once the list is at its top. The cover grows from the
   album card (`sharedPicture`, same shape) with the card's cover standing in, the rest fades in
-  after it (`rememberContentsAfterPicture`). `AlbumMenu`: Play / Bookmark / Share buttons, Shuffle /
+  after it (`rememberContentsAfterPicture`). The bar has a `QueueActionButton` before ⋮, its action
+  `Preferences.ALBUM_PAGE_ACTION` (read by the album screens, off without songs). `AlbumMenu`:
+  Play / Bookmark / Share buttons, Shuffle /
   Play
   next / Add to
   queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
@@ -126,7 +128,9 @@ ui/screen/
   `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and
   scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
   picture fades into its `BlurredCover` as the list goes up, fully blurred once the list's top
-  reaches the bar. `ArtistMenu`: `ConfigSheet` with Play / Follow / Share buttons, Shuffle / Play
+  reaches the bar. A `QueueActionButton` before ⋮ does `Preferences.ARTIST_PAGE_ACTION` (read by
+  the artist screens, off without songs). `ArtistMenu`: `ConfigSheet` with Play / Follow / Share
+  buttons, Shuffle / Play
   next / Add to queue / Details / Statistics rows; used by all three artist screens; the header
   grows from the card (`sharedPicture`) with the card's picture standing in while the large one
   loads),
@@ -200,7 +204,8 @@ ui/screen/
   Clear (saves an empty proxy) / Save in the top bar; answers a `ProxyConfig` through
   `rememberRouteResult`),
   `CredentialField.kt` (one-line credential field with show/hide eye, optional placeholder).
-  `general/GeneralSettingsScreen.kt` (library scan, navigation), `data/DataSettingsScreen.kt`
+  `general/GeneralSettingsScreen.kt` (library scan, navigation, album and
+  artist page buttons), `data/DataSettingsScreen.kt`
   + `DataSettingsViewModel.kt` (Storage: `DeviceStorageUsage.kt` bar of the device with the app's
     parts (`StoragePart`: image cache, song cache, downloads, download covers, lyrics) and other
     apps, then image disk cache, song cache, song downloads as `StorageUsage` bars, polled every 2
