@@ -1,0 +1,92 @@
+# Keeps the repository and Crowdin in sync, both directions run from here (Crowdin's own GitHub
+# integration is off).
+#
+# upload:   a push that changes the English texts (app/src/main/res/values/) sends the sources
+#           listed in crowdin.yml to Crowdin.
+# download: pulls the translations of the branch the run starts from (BRANCH) into BRANCH_l10n,
+#           without a pull request: one commit on top of that branch as it is on GitHub (made from
+#           BRANCH the first time). The runner's copy of the repository is only where that commit
+#           is made, it's gone after the run.
+#
+# Both name the Crowdin branch after the git branch. A scheduled run always starts from the default
+# branch; pick another one in Run workflow, together with what to run.
+#
+# Needs the repository variable CROWDIN_PROJECT_ID and the secret CROWDIN_PERSONAL_TOKEN
+# (crowdin.yml reads them from the environment). Scheduled runs and the Run workflow button only
+# exist once this file is on the default branch.
+
+name: Crowdin
+
+on:
+  push:
+    paths:
+      - 'app/src/main/res/values/**'
+  schedule:
+    # At 03:00 UTC on Saturday
+    - cron: '0 3 * * 6'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to run
+        type: choice
+        options:
+          - upload
+          - download
+        default: download
+
+env:
+  # The branch the run started from
+  BRANCH: ${{ github.ref_name }}
+
+# A run while Crowdin still builds the export of another one would fail with 409. Runs of a branch
+# queue one after the other
+concurrency:
+  group: crowdin-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    if: github.event_name == 'push' || inputs.action == 'upload'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # Holds crowdin.yml and the sources
+      - uses: actions/checkout@v7
+
+      - name: Upload sources
+        uses: crowdin/github-action@v3
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: false
+          crowdin_branch_name: ${{ env.BRANCH }}
+        env:
+          CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+  download:
+    if: github.event_name == 'schedule' || inputs.action == 'download'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Holds crowdin.yml, and is the start of BRANCH_l10n the first time
+      - uses: actions/checkout@v7
+
+      - name: Download translations
+        uses: crowdin/github-action@v3
+        with:
+          upload_sources: false
+          upload_translations: false
+          download_translations: true
+          crowdin_branch_name: ${{ env.BRANCH }}
+
+          localization_branch_name: ${{ env.BRANCH }}_l10n
+          push_translations: true
+          commit_message: 'update translations from crowdin'
+          create_pull_request: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
