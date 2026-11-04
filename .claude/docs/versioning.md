@@ -53,8 +53,9 @@ same code works). `bump.sh beta` raises N.
 
 ## Platforms
 
-GitHub and Patreon ship the universal APK and the four ABI APKs; F-Droid and other stores ship the
-universal one only.
+GitHub and Patreon ship the universal APK and the four ABI APKs; the `foss` flavor (F-Droid and
+other
+stores) ships the universal one only.
 
 ## Steps
 

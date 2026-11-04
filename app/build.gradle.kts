@@ -99,7 +99,8 @@ android {
             dimension = "platform"
             isDefault = true
         }
-        create("fdroid") {
+        // F-Droid standards: no telemetry, no proprietary libraries (see verifyFossDependencies)
+        create("foss") {
             dimension = "platform"
         }
         create("patreon") {
@@ -134,6 +135,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    // F-Droid rejects the signed dependency blob AGP adds to APKs by default
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -161,6 +167,25 @@ android {
     }
 }
 
+// Groups that are closed source or phone home, none may reach the foss flavor
+val proprietaryGroups = listOf(
+    "com.google.android.gms",
+    "com.google.android.play",
+    "com.google.firebase",
+    "com.google.mlkit",
+    "com.google.android.datatransport",
+    "com.android.billingclient",
+    "com.google.android.ump",
+    "com.crashlytics",
+    "io.sentry",
+    "com.facebook",
+    "com.appsflyer",
+    "com.amplitude",
+    "com.mixpanel",
+    "com.bugsnag",
+    "com.microsoft.appcenter",
+)
+
 androidComponents {
     // Flavors only change packaging, so tests run on one of them
     beforeVariants { variant ->
@@ -171,6 +196,23 @@ androidComponents {
     }
 
     onVariants { variant ->
+        if (variant.productFlavors.toMap()["platform"] == "foss") {
+            val runtime = variant.runtimeConfiguration
+            val verify =
+                tasks.register("verify${variant.name.replaceFirstChar { it.uppercase() }}Dependencies") {
+                    group = "verification"
+                    description = "Fails when ${variant.name} pulls in a proprietary library"
+                    doLast {
+                        val found = runtime.incoming.resolutionResult.allComponents
+                            .mapNotNull { it.moduleVersion }
+                            .filter { m -> proprietaryGroups.any { m.group.startsWith(it) } }
+                            .map { "${it.group}:${it.name}:${it.version}" }
+                        check(found.isEmpty()) { "foss must not depend on: $found" }
+                    }
+                }
+            tasks.matching { it.name == "pre${variant.name.replaceFirstChar { c -> c.uppercase() }}Build" }
+                .configureEach { dependsOn(verify) }
+        }
         val abi = variant.productFlavors.toMap().getValue("abi")
         // The public API has no way to rename an APK yet
         variant.outputs.forEach { (it as VariantOutputImpl).outputFileName.set("kreate-$abi.apk") }

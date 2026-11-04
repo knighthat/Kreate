@@ -25,9 +25,14 @@ them).
 
 ## `:app` flavors
 
-`platform` (`github` default, `fdroid`, `patreon`) × `abi` (`armv7`, `arm64`, `x86`, `x86_64`,
+`platform` (`github` default, `foss`, `patreon`) × `abi` (`armv7`, `arm64`, `x86`, `x86_64`,
 `universal` default). Unflavored `:app` task names don't exist: use `installGithubUniversalDebug`,
 `testGithubUniversalDebugUnitTest`, etc. Tests run only on `githubUniversal` (see `testing.md`).
 versionCode = catalog
-`versionCode` × 10 + ABI digit (universal 0, armv7 1, arm64 2, x86 3, x86_64 4). APKs are
+`versionCode` × 10 + ABI digit (universal 0, armv7 1, arm64 2, x86 3, x86_64 4). `foss` must meet
+F-Droid standards: no telemetry, no proprietary libraries (`verifyFoss…Dependencies` fails
+`preBuild` on a banned group, extend `proprietaryGroups` in
+`app/build.gradle.kts`), no dependency blob in the APK. Don't add a library there without checking
+its
+license and what it phones home. APKs are
 `app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`.
