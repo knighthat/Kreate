@@ -86,6 +86,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
@@ -100,6 +101,7 @@ import me.knighthat.kreate3.ui.navigation.SongDetails
 import me.knighthat.kreate3.ui.navigation.albumRoute
 import me.knighthat.kreate3.ui.navigation.artistRoute
 import me.knighthat.kreate3.ui.screen.detail.rememberSongShare
+import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
 import me.knighthat.kreate3.ui.screen.player.Reaction
 import me.knighthat.kreate3.ui.screen.player.rememberSongReaction
 import org.koin.compose.koinInject
@@ -238,14 +240,22 @@ private class SheetPlacement(private val sheetState: SheetState) {
  */
 @Composable
 fun SongMenuOverlay(host: SongMenuHost) {
+    // Outlives the menu and has the frame clock that animations need, unlike the global scope
+    val uiScope = rememberCoroutineScope()
     val request = host.request ?: return
 
     key(request) {
-        SongMenu(
-            request = request,
-            onClosed = { if (host.request === request) host.request = null },
-        )
+        CompositionLocalProvider(LocalOverlayScope provides uiScope) {
+            SongMenu(
+                request = request,
+                onClosed = { if (host.request === request) host.request = null },
+            )
+        }
     }
+}
+
+private val LocalOverlayScope = staticCompositionLocalOf<CoroutineScope> {
+    error("No overlay scope, see SongMenuOverlay")
 }
 
 /**
@@ -480,6 +490,7 @@ private fun SongMenuActions(
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
     val navigator = LocalNavigator.current
+    val openRoute = rememberRouteOpener()
     val playable = item.mediaMetadata.isPlayable == true
     val album = remember(item, navigator?.current) {
         item.mediaMetadata.extras?.getString(EXTRA_ALBUM_ID)
@@ -526,7 +537,7 @@ private fun SongMenuActions(
         MenuRow(
             R.drawable.album,
             stringResource(R.string.menu_go_to_album)
-        ) { close { navigator.open(album) } }
+        ) { close { openRoute(album) } }
     if (navigator != null && artists.isNotEmpty())
         MenuRow(
             icon = R.drawable.artist,
@@ -535,7 +546,7 @@ private fun SongMenuActions(
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
         ) {
             if (artists.size == 1)
-                close { navigator.open(artists.single().route) }
+                close { openRoute(artists.single().route) }
             else
                 onPickArtist()
         }
@@ -544,7 +555,7 @@ private fun SongMenuActions(
     }
     if (navigator != null)
         MenuRow(R.drawable.info, stringResource(R.string.menu_details)) {
-            close { navigator.open(item.detailsRoute()) }
+            close { openRoute(item.detailsRoute()) }
         }
 }
 
@@ -565,6 +576,21 @@ private fun MediaItem.detailsRoute(): SongDetails {
     )
 }
 
+/**
+ * Opens a route on the app's navigator, closing the full player first when it's open: the page
+ * would stay hidden behind it otherwise. Collapses on the overlay's scope, the menu is gone by then.
+ */
+@Composable
+private fun rememberRouteOpener(): (Route) -> Unit {
+    val navigator = LocalNavigator.current
+    val playerSheet = LocalPlayerSheet.current
+    val scope = LocalOverlayScope.current
+    return { route ->
+        navigator?.open(route)
+        if (playerSheet?.isExpanded == true) scope.launch { playerSheet.collapse() }
+    }
+}
+
 @Composable
 private fun ArtistPicker(
     artists: List<SongArtist>,
@@ -572,6 +598,7 @@ private fun ArtistPicker(
     close: (then: () -> Unit) -> Unit,
 ) {
     val navigator = LocalNavigator.current ?: return
+    val openRoute = rememberRouteOpener()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -585,7 +612,7 @@ private fun ArtistPicker(
     }
     artists.forEach { artist ->
         MenuRow(R.drawable.artist, artist.name ?: stringResource(R.string.status_unknown_artist)) {
-            close { navigator.open(artist.route) }
+            close { openRoute(artist.route) }
         }
     }
 }
