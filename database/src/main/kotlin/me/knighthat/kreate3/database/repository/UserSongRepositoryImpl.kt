@@ -69,8 +69,16 @@ internal class UserSongRepositoryImpl(
     ) = listed(order.toOrderBy(), filter = originFilter(origins), includeDisliked = withDisliked)
 
     // A like is a time, a dislike is negative
-    override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
-        paged(order.toOrderBy(), filter = "AND liked_at >= 0")
+    override fun liked(
+        order: SortOrder<UserSongSort>,
+        origins: Set<Origin>,
+    ): Flow<PagingData<UserSongView>> =
+        paged(order.toOrderBy(), filter = "AND liked_at >= 0 ${originFilter(origins)}")
+
+    override fun likedOrigins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId ->
+            userSongDao.likedOrigins(userId).map { it.toSet() }
+        }.distinctUntilChanged()
 
     override fun search(query: String, order: SortOrder<UserSongSort>) =
         paged(order.toOrderBy(), filter = SEARCH) { it.bindText(2, containsPattern(query)) }
@@ -134,6 +142,9 @@ internal class UserSongRepositoryImpl(
         scope.observe(emptySet()) { userId ->
             userSongDao.dislikedOrigins(userId).map { it.toSet() }
         }.distinctUntilChanged()
+
+    override suspend fun listLiked(origins: Set<Origin>): List<UserSongView> =
+        listed(orderBy = "", filter = "AND liked_at >= 0 ${originFilter(origins)}")
 
     override suspend fun listDisliked(origins: Set<Origin>): List<UserSongView> =
         listed(

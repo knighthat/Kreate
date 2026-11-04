@@ -91,6 +91,7 @@ import me.knighthat.kreate3.ui.navigation.Downloaded
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.History
+import me.knighthat.kreate3.ui.navigation.Liked
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
@@ -137,6 +138,7 @@ import me.knighthat.kreate3.ui.screen.account.DownloadQueueScreen
 import me.knighthat.kreate3.ui.screen.account.DownloadedScreen
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.HistoryScreen
+import me.knighthat.kreate3.ui.screen.account.LikedScreen
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.StatisticsScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
@@ -476,6 +478,13 @@ fun KreateApp(
                                             modifier = paddingModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<Liked> {
+                                        LikedScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = paddingModifier,
+                                            contentPadding = contentPadding,
                                         )
                                     }
                                     entry<Disliked> {

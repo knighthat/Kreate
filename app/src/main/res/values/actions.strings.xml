@@ -48,6 +48,7 @@
     <string name="action_reset">Reset</string>
     <string name="action_clear">Clear</string>
     <string name="action_undislike">Undislike</string>
+    <string name="action_unlike">Unlike</string>
     <string name="action_grant">Grant</string>
     <string name="action_go_back">Go back</string>
     <string name="action_next">Next</string>
@@ -98,6 +99,7 @@
     <string name="menu_monthly_only">Monthly only</string>
     <string name="menu_delete_all">Delete all</string>
     <string name="menu_undislike_all">Undislike all</string>
+    <string name="menu_unlike_all">Unlike all</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
 </resources>

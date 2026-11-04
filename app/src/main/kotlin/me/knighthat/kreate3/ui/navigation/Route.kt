@@ -193,6 +193,10 @@ data class ArtistStatistics(val artistId: String) : Route {
     }
 }
 
+/** The songs the profile liked, opened from [Account]. */
+@Serializable
+data object Liked : Route
+
 /** The songs the profile disliked, opened from [Account]. */
 @Serializable
 data object Disliked : Route

@@ -217,6 +217,9 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
 
         assertEquals(listOf("liked"), songs.liked().asList().map { it.songId })
         assertEquals(listOf("liked", "neutral"), songs.all().asList().map { it.songId })
+        assertEquals(listOf("liked"), songs.listLiked(emptySet()).map { it.songId })
+        assertEquals(emptyList<String>(), songs.listLiked(setOf(Origin.YOUTUBE)).map { it.songId })
+        assertEquals(setOf(Origin.LOCAL), songs.likedOrigins().first())
     }
 
     @Test

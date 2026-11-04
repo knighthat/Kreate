@@ -17,8 +17,9 @@ Tests mirror the main paths under `src/test/`.
   `MediaStoreScannerTest`, `CoverFilesTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`,
-  ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`, `UndislikedMessageTest` (Undislike all's
-  message).
+  ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`, `UndislikedMessageTest`,
+  `UnlikedMessageTest`
+  (Undislike all's and Unlike all's message).
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
   repository/ `HistoryRepositoryTest`, `StatisticsRepositoryTest`, `LocalCatalogRepositoryTest`,
   `MappersTest`,

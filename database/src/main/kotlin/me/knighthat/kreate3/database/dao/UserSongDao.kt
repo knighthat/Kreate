@@ -51,6 +51,10 @@ internal interface UserSongDao {
     @Query("SELECT DISTINCT origin FROM user_song_view WHERE user_id = :userId AND liked_at < 0")
     fun dislikedOrigins(userId: String): Flow<List<Origin>>
 
+    /** The origins of the songs the user liked, a `liked_at` of 0 or more. */
+    @Query("SELECT DISTINCT origin FROM user_song_view WHERE user_id = :userId AND liked_at >= 0")
+    fun likedOrigins(userId: String): Flow<List<Origin>>
+
     /**
      * Every song in [query] at once, which must select from `user_song_view`.
      */

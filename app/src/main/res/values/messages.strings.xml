@@ -175,6 +175,7 @@
     <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
     <string name="snackbar_removed_from">Removed from %1$s</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
+    <string name="snackbar_removed_from_like">Removed from likes</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
     <string name="snackbar_disliked">Disliked %1$s</string>
     <string name="snackbar_removed_from_queue">Removed from the queue</string>
@@ -186,6 +187,10 @@
     <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
     <string name="snackbar_removed_from_dislike_some_failed">%1$s removed from dislike, %2$d failed</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-up reaction was taken back from those songs -->
+    <string name="snackbar_removed_from_like_count">%1$s removed from likes</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-up reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <string name="snackbar_removed_from_like_some_failed">%1$s removed from likes, %2$d failed</string>
     <string name="snackbar_this_playlist">this playlist</string>
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "The queue" is the list of songs to be played next -->
     <string name="snackbar_added_to_queue">Added %1$s to the queue</string>

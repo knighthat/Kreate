@@ -68,10 +68,19 @@ interface UserSongRepository {
 
     /**
      * Songs the user liked, a page at a time. Newest like first unless [order] says otherwise.
+     *
+     * @param origins only the songs from these, every liked song when empty
      */
     fun liked(
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.LIKED_AT, SortDirection.DESCENDING),
+        origins: Set<Origin> = emptySet(),
     ): Flow<PagingData<UserSongView>>
+
+    /** The origins the liked songs are from. It follows changes in the database. */
+    fun likedOrigins(): Flow<Set<Origin>>
+
+    /** Every liked song of [origins] right now, all at once, every origin when empty. */
+    suspend fun listLiked(origins: Set<Origin>): List<UserSongView>
 
     /**
      * Songs of the library that are on the album, a page at a time, in album order unless

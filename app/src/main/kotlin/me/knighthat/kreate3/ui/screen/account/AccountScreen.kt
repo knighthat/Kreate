@@ -45,6 +45,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.navigation.Disliked
 import me.knighthat.kreate3.ui.navigation.Downloaded
 import me.knighthat.kreate3.ui.navigation.History
+import me.knighthat.kreate3.ui.navigation.Liked
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Statistics
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
@@ -106,6 +107,7 @@ private fun AccountContent(
             AccountEntry(R.drawable.insert_chart, R.string.screen_title_statistics) {
                 onOpen(Statistics)
             }
+            AccountEntry(R.drawable.thumb_up, R.string.screen_title_liked) { onOpen(Liked) }
             AccountEntry(R.drawable.thumb_down, R.string.screen_title_disliked) { onOpen(Disliked) }
             AccountEntry(R.drawable.downloaded, R.string.screen_title_downloaded) {
                 onOpen(Downloaded)

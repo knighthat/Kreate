@@ -28,7 +28,8 @@ ui/screen/
   by type, aliases, genres, ISNI, id), links (url relations, own site first); search button = "Find
   the artist" dialog, a pick shows that artist for the page's life). Shares `Notice`, `Message`,
   `SearchHint`, `Fact` with `SongDetailsScreen.kt`.
-- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Disliked,
+- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Liked,
+  Disliked,
   Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
   `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`
   kept to `DownloadsOverview.files`, row `trailing` = size · quality; storage header =
@@ -47,6 +48,12 @@ ui/screen/
   color), tap pauses/resumes/retries, only Cancel at the end, no badges here; waiting-for line;
   `UnfinishedItem`, `WaitingLine`, `unfinishedActions` are shared with Downloaded, whose view model
   extends this one; flows stop 5 s after the screen, `WHILE_SHOWN`).
+  `LikedScreen.kt` + `LikedViewModel.kt` (paged `UserSongRepository.liked` by `liked_at`, trailing
+  time and origin chips like Disliked's, newest/oldest button, tap plays the song alone; the bar's
+  `ConfigButton` opens a sheet with Unlike all: confirm dialog with a line per YouTube/OpenSubsonic
+  among the songs affected, one song at a time via `reactToSong`, one `unlikedMessage` with Undo).
+  `SongReactions.kt` (`reactToSong`, shared with Disliked). `relativeTime` and
+  `removedReactionMessage` live in `DislikedViewModel.kt`.
   `DislikedScreen.kt` + `DislikedViewModel.kt` (paged
   `UserSongRepository.disliked`, each row's `trailing` says how long ago it was disliked; origin
   chips under the bar (only sources with dislikes); the bar's `ConfigButton` opens a `ConfigSheet`

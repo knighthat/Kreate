@@ -23,6 +23,7 @@ import me.knighthat.kreate3.ui.screen.account.DownloadQueueViewModel
 import me.knighthat.kreate3.ui.screen.account.DownloadedViewModel
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.HistoryViewModel
+import me.knighthat.kreate3.ui.screen.account.LikedViewModel
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.StatisticsViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailViewModel
@@ -57,6 +58,7 @@ val viewModelModule = module {
     viewModelOf(::HomeSongsViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::DislikedViewModel)
+    viewModelOf(::LikedViewModel)
     viewModelOf(::DownloadedViewModel)
     viewModelOf(::DownloadQueueViewModel)
     viewModelOf(::StatisticsViewModel)

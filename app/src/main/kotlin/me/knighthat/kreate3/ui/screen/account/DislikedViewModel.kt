@@ -21,7 +21,6 @@ package me.knighthat.kreate3.ui.screen.account
 import android.content.Context
 import android.content.res.Resources
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
@@ -30,7 +29,6 @@ import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.flatMap
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -53,16 +51,9 @@ import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
-import me.knighthat.kreate3.provider.opensubsonic.ServerException
-import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.ui.component.toMediaItem
-import me.knighthat.kreate3.ui.screen.detail.itemName
-import me.knighthat.kreate3.ui.screen.detail.serverFailure
-import me.knighthat.kreate3.ui.screen.detail.youTubeFailure
 import kotlin.time.Instant
-
-private const val TAG = "DislikedViewModel"
 
 /**
  * A disliked song: its [item], and [time] saying how long ago it was disliked.
@@ -173,53 +164,34 @@ class DislikedViewModel(
         }
     }
 
-    /**
-     * Changes the reaction to [songId] to what [change] makes of it, at its source too, like the
-     * song menu does. A source that doesn't take it gets the reaction put back. [asked] is the text
-     * for when the song can't be saved, "Couldn't remove the dislike from …".
-     *
-     * @return what to say when it failed, `null` once it's done
-     */
     private suspend fun react(
         songId: String,
         origin: Origin,
         name: String?,
         @StringRes asked: Int,
         change: (Instant?) -> Instant?,
-    ): String? {
-        val song = context.resources.itemName(name, R.string.snackbar_this_song)
-        return try {
-            when (origin) {
-                Origin.OPEN_SUBSONIC -> openSubsonicLibrary.react(songId, change)
-                Origin.YOUTUBE -> youTubeLibrary.react(songId, change)
-                else -> songRepository.update(songId) { it.copy(likedAt = change(it.likedAt)) }
-            }
-            null
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: ServerException) {
-            e.serverFailure(context.resources, song)
-        } catch (e: YouTubeException) {
-            e.youTubeFailure(context.resources, song)
-        } catch (e: Exception) {
-            Log.w(TAG, "Couldn't change the reaction to $songId", e)
-            context.resources.getString(asked, song)
-        }
-    }
+    ): String? = reactToSong(
+        context, songRepository, openSubsonicLibrary, youTubeLibrary,
+        songId, origin, name, asked, change,
+    )
 
     /** How long ago the song was disliked, as of [now], a date once it's over a week ago. */
     private fun DislikedSong.toRow(query: Int, now: Long): DislikedRow? =
         DislikedRow(
             item = song.toMediaItem() ?: return null,
-            time = DateUtils.getRelativeTimeSpanString(
-                dislikedAt.toEpochMilliseconds(),
-                now,
-                DateUtils.MINUTE_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_ALL,
-            ).toString(),
+            time = relativeTime(dislikedAt.toEpochMilliseconds(), now),
             query = query,
         )
 }
+
+/** How long ago [millis] was, as of [now], a date once it's over a week ago. */
+internal fun relativeTime(millis: Long, now: Long): String =
+    DateUtils.getRelativeTimeSpanString(
+        millis,
+        now,
+        DateUtils.MINUTE_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_ALL,
+    ).toString()
 
 /**
  * What to say once the dislikes of some songs were taken back, [failures] holding each song's
@@ -231,22 +203,42 @@ internal fun undislikedMessage(
     resources: Resources,
     failures: List<String?>,
     undo: (() -> Unit)? = null,
+): Message? = removedReactionMessage(
+    resources,
+    failures,
+    undo,
+    R.string.snackbar_removed_from_dislike,
+    R.string.snackbar_removed_from_dislike_count,
+    R.string.snackbar_removed_from_dislike_some_failed,
+)
+
+/**
+ * [undislikedMessage] for any reaction: [done] is the text for one song done, [counted] takes
+ * "3 songs" for several, [someFailed] also takes how many failed.
+ */
+internal fun removedReactionMessage(
+    resources: Resources,
+    failures: List<String?>,
+    undo: (() -> Unit)?,
+    @StringRes done: Int,
+    @StringRes counted: Int,
+    @StringRes someFailed: Int,
 ): Message? {
     val failed = failures.count { it != null }
-    val done = failures.size - failed
+    val succeeded = failures.size - failed
     val text = when {
         failures.isEmpty() -> return null
         failures.size == 1 -> failures.single()
             ?.let { return Message(it, MessageDuration.LONG) }
-            ?: resources.getString(R.string.snackbar_removed_from_dislike)
+            ?: resources.getString(done)
 
         failed == 0 -> resources.getString(
-            R.string.snackbar_removed_from_dislike_count,
-            resources.getQuantityString(R.plurals.song, done, done)
+            counted,
+            resources.getQuantityString(R.plurals.song, succeeded, succeeded)
         )
         else -> resources.getString(
-            R.string.snackbar_removed_from_dislike_some_failed,
-            resources.getQuantityString(R.plurals.song, done, done),
+            someFailed,
+            resources.getQuantityString(R.plurals.song, succeeded, succeeded),
             failed
         )
     }

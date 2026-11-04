@@ -56,6 +56,13 @@
     <string name="dialog_title_undislike_all">Undislike all?</string>
     <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
     <string name="dialog_body_undislike_all_shown">Only the songs matching your filters show up in your lists again. The rest stay hidden.</string>
+    <string name="dialog_title_unlike_all">Unlike all?</string>
+    <string name="dialog_body_unlike_all">Every song this profile liked is no longer liked.</string>
+    <string name="dialog_body_unlike_all_shown">Only the songs matching your filters are no longer liked. The rest stay liked.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
+    <string name="dialog_body_unlike_all_ytm">Liked songs from %1$s are also unliked on your account there while you\'re signed in and liked songs sync is on.</string>
+    <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
+    <string name="dialog_body_unlike_all_opensubsonic">Liked songs from %1$s are also removed from its favorites while liked songs sync is on.</string>
     <string name="dialog_title_delete_all_downloads">Delete all downloads?</string>
     <string name="dialog_body_delete_all_downloads">Every song this profile downloaded is removed from this device. They can still be streamed.</string>
     <string name="dialog_body_delete_all_downloads_shown">The downloaded songs shown are removed from this device, the others stay. They can still be streamed.</string>
