@@ -611,7 +611,15 @@ fun TextSetting(
                     singleLine = true,
                     isError = error != null,
                     supportingText = error?.let { { Text(it) } },
-                    placeholder = placeholder?.let { { Text(it) } },
+                    placeholder = placeholder?.let {
+                        {
+                            Text(
+                                it,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                     visualTransformation =
                         if (hidden) PasswordVisualTransformation() else VisualTransformation.None,
