@@ -20,8 +20,13 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.res.Resources
 import android.net.Uri
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,15 +36,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -121,29 +131,100 @@ fun DetailDescription(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var overflows by remember { mutableStateOf(false) }
+    // Heights in px of the text laid out whole and cut to COLLAPSED_LINES. Collapsing keeps the
+    // whole text and animates a height limit down to the cut one, so the text and the list below
+    // move together; cutting the lines at once would hide them before the box could shrink.
+    var fullHeight by remember { mutableIntStateOf(0) }
+    var collapsedHeight by remember { mutableIntStateOf(0) }
+    var collapsing by remember { mutableStateOf(false) }
+    var limit by remember { mutableFloatStateOf(0f) }
+
+    // Collapsing starts in the tap itself (collapsing, limit), not in an effect: one frame with
+    // the text already cut would show before the effect ran.
+    LaunchedEffect(collapsing) {
+        if (collapsing) {
+            animate(
+                initialValue = fullHeight.toFloat(),
+                targetValue = collapsedHeight.toFloat(),
+                animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+            ) { value, _ -> limit = value }
+            collapsing = false
+        }
+    }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(enabled = overflows || expanded) { expanded = !expanded }
-            .animateContentSize()
+            .then(
+                if (collapsing) Modifier
+                else Modifier.animateContentSize(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+            )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                enabled = overflows || expanded,
+            ) {
+                if (collapsing) {
+                    collapsing = false
+                    expanded = true
+                } else if (expanded && collapsedHeight in 1 until fullHeight) {
+                    limit = fullHeight.toFloat()
+                    collapsing = true
+                    expanded = false
+                } else {
+                    expanded = !expanded
+                }
+            }
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = color,
-            maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_LINES,
+            maxLines = if (expanded || collapsing) Int.MAX_VALUE else COLLAPSED_LINES,
             overflow = TextOverflow.Ellipsis,
-            onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow },
+            modifier = if (collapsing) {
+                // clipToBounds first: it clips to the size the layout below it reports
+                Modifier
+                    .clipToBounds()
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val height = minOf(placeable.height, limit.toInt())
+                        layout(placeable.width, height) { placeable.place(0, 0) }
+                    }
+            } else {
+                Modifier
+            },
+            onTextLayout = {
+                if (expanded || collapsing) {
+                    fullHeight = it.size.height
+                    collapsedHeight =
+                        it.getLineBottom(minOf(COLLAPSED_LINES, it.lineCount) - 1).toInt()
+                } else {
+                    overflows = it.hasVisualOverflow
+                }
+            },
         )
         if (overflows || expanded)
-            Text(
-                text = if (expanded) stringResource(R.string.action_less) else stringResource(R.string.action_more),
-                style = MaterialTheme.typography.labelLarge,
-                color = linkColor,
-                modifier = Modifier.padding(top = 4.dp),
-            )
+            Crossfade(
+                targetState = expanded,
+                animationSpec = tween(200),
+                label = "descriptionToggle"
+            ) { isExpanded ->
+                Text(
+                    text = if (isExpanded) stringResource(R.string.action_less) else stringResource(
+                        R.string.action_more
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = linkColor,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
     }
 }
 

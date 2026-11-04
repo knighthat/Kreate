@@ -178,3 +178,22 @@ seen only while the thing moved (the album header shrinking on a fractional pixe
 (three) are fine. A fade that follows a curve is drawn as many pieces of two-stop gradients, each on
 whole pixels (`drawEasedFade`, `EasedFade.kt`). Check any new gradient with more than a handful of
 stops by scrolling a bit on the emulator and looking for a row at its end.
+
+## Compose animations that shrink a box
+
+Found animating the description under the artist, album and playlist headers (`DetailDescription`,
+`DetailHeader.kt`, 2026-11-04):
+
+- `Modifier.animateContentSize` animates only what the content's size does. Cutting `maxLines` at
+  once makes the text smaller in the same frame, so a collapse shows nothing to shrink and the
+  list below jumps. Keep the content whole and animate a height limit down instead: a `layout`
+  modifier that reports `minOf(placeable.height, limit)`.
+- Order matters: `Modifier.clipToBounds().layout { … }`. A clip placed after the `layout` clips to
+  the child's full size, so the text stays visible and the list draws over it.
+- Turn `animateContentSize` off while the limit runs, or it chases the changing size and lags
+  behind the text.
+- State that starts an animation goes in the tap handler, not in a `LaunchedEffect`: the effect
+  runs after the first composition, which draws one frame in the end state (the text cut to its
+  collapsed lines with nothing below). The effect only drives the animation.
+- Judge it by screen recording and tiling the frames (`emulator.md`), not by reading the code:
+  two fixes that looked right were wrong.
