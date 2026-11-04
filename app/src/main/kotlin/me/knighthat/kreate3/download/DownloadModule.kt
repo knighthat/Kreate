@@ -70,6 +70,7 @@ val downloadModule = module {
             userSongs = get(),
             lyrics = get(),
             covers = get(),
+            providers = get(),
         )
     }
     single {

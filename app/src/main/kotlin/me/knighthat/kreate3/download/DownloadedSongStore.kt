@@ -35,11 +35,13 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.playback.SongFormatRecorder
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.source.CoverKind
 import me.knighthat.kreate3.source.LARGE_COVER
 import me.knighthat.kreate3.source.SMALL_COVER
 import me.knighthat.kreate3.source.SongStore
+import me.knighthat.kreate3.ui.component.EXTRA_ALBUM_ID
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.screen.player.LyricsSettings
 import me.knighthat.kreate3.ui.screen.player.loadLyrics
@@ -69,6 +71,7 @@ class DownloadedSongStore(
     private val userSongs: UserSongRepository,
     private val lyrics: LyricsFinder,
     private val covers: CoverFiles,
+    private val providers: Providers,
 ) {
 
     /**
@@ -118,7 +121,7 @@ class DownloadedSongStore(
         val source = item.mediaMetadata.artworkUri?.coverSource() ?: return
         for ((file, size) in listOf(small to SMALL_COVER, large to LARGE_COVER)) {
             if (withContext(Dispatchers.IO) { file.exists() }) continue
-            val bitmap = context.cover(source, size) ?: return
+            val bitmap = loadCover(item, source, size) ?: return
             withContext(Dispatchers.IO) { write(bitmap, file) }
         }
 
@@ -137,6 +140,26 @@ class DownloadedSongStore(
                 CoverKind.OTHER -> song
             }
         }
+    }
+
+    /**
+     * The cover of [item] at [size], from the addresses the player would try for it
+     * ([songThumbnailModels]) and [source], the picture its list gave, last. That one can be a
+     * list's small copy (a source that sizes in the address, like YouTube's, ignores the size
+     * asked), so it stands in only when no other loads.
+     */
+    private suspend fun loadCover(item: MediaItem, source: Uri, size: Int): Bitmap? {
+        val metadata = item.mediaMetadata
+        val origin = item.origin
+        val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
+        val sized = if (origin == null)
+            emptyList()
+        else
+            providers[origin].songArtworkUris(item.mediaId, albumId, size, source)
+        for (address in (sized + source).distinct()) {
+            context.cover(address, size)?.let { return it }
+        }
+        return null
     }
 
     /** Writes [bitmap] to [file], whole or not at all: a cut file would show as a broken cover. */
