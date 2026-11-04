@@ -87,4 +87,21 @@ interface RemoteCatalogRepository {
      * @throws IllegalArgumentException when the song or what it points at is from the device
      */
     suspend fun savePlayedSong(song: RemoteSong)
+
+    /**
+     * Keeps [song], which the user queued, in the shared catalog only, with its album and
+     * artists like [syncLikedSongs] does, so the saved queue can point at it. The user's library
+     * isn't touched: the song joins it when it is played or kept ([addToLibrary]).
+     *
+     * @throws IllegalArgumentException when the song or what it points at is from the device
+     */
+    suspend fun saveQueuedSong(song: RemoteSong)
+
+    /**
+     * Adds the song [songId], when the catalog has it, to the user's library without a like. A
+     * song already there keeps its row.
+     *
+     * @return whether the catalog has the song
+     */
+    suspend fun addToLibrary(songId: String): Boolean
 }

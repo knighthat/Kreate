@@ -88,6 +88,34 @@ internal class RemoteCatalogRepositoryImpl(
         }
     }
 
+    override suspend fun saveQueuedSong(song: RemoteSong) {
+        val origin = song.song.origin
+        require(origin != Origin.LOCAL) { "${song.song.id} is a song of the device" }
+        requireOrigin(origin, listOf(song).origins())
+
+        database.inTransaction { storeCatalog(origin, clock.now(), listOf(song)) }
+    }
+
+    override suspend fun addToLibrary(songId: String): Boolean {
+        val userId = awaitUser()
+        return database.inTransaction {
+            if (songDao.get(songId) == null) return@inTransaction false
+
+            val now = clock.now()
+            userSongDao.insertAll(
+                listOf(
+                    UserSongEntity(
+                        userId,
+                        songId,
+                        createdAt = now,
+                        updatedAt = now
+                    )
+                )
+            )
+            true
+        }
+    }
+
     /**
      * Upserts [incoming] with what they point at and likes each in the user's library, see
      * [syncLikedSongs].

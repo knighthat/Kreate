@@ -57,7 +57,7 @@ internal sealed interface QueueWrite {
  * ([store]), the saved queue can only point at stored songs. A song that can't be stored is left
  * out of the saved queue, its place stays empty.
  *
- * @param store makes sure a remote song is in the database, throws [IllegalStateException] when
+ * @param store makes sure a remote song is in the shared catalog (not the library), throws [IllegalStateException] when
  * its source doesn't know it
  * @param onChangeFailed runs when a change to part of the queue couldn't be written: the saved
  * queue no longer matches the player's, so the whole queue has to be sent again

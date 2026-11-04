@@ -29,10 +29,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.QueueRepository
-import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
@@ -49,20 +47,21 @@ import kotlin.time.Duration.Companion.seconds
  * The whole queue is saved when this starts or the setting is turned on. Moving to another
  * song, pausing and seeking save where the song is, and so does every
  * [Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL] while it plays. The saved queue only points at
- * stored songs: a remote one not in the database is stored before it is saved, like when it
- * starts playing, which asks its source once for it. A song that can't be stored isn't saved.
+ * stored songs: a remote one not in the shared catalog is stored there before it is saved, which
+ * asks its source once for it. It stays out of the user's library until it is played or kept, and
+ * is read back with the user's own values where they have any. A song that can't be stored isn't
+ * saved.
  *
  * Use it on the main thread, [scope] has to run there. The writes run in [writeScope], which has
  * to outlive the player: [release] sends the last one, call it before releasing the player.
  *
- * @param store makes sure a remote song is in the database, see [QueueWriter]
+ * @param store makes sure a remote song is in the catalog, see [QueueWriter]
  * @param queued a saved song as the player queues it, like the session does with the songs added
  * to it; `null` leaves it out
  */
 class PersistentQueue(
     private val player: Player,
     private val queue: QueueRepository,
-    private val songs: UserSongRepository,
     private val scope: CoroutineScope,
     writeScope: CoroutineScope,
     store: suspend (songId: String, origin: Origin) -> Unit = { _, _ -> },
@@ -189,7 +188,7 @@ class PersistentQueue(
     suspend fun saved(currentOnly: Boolean = false): Saved? {
         if (!enabled) return null
         val saved = try {
-            queue.list()
+            queue.details()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -202,7 +201,7 @@ class PersistentQueue(
         var position = 0L
         for (song in saved) {
             if (currentOnly && song.position == null) continue
-            val item = songs.find(song.songId).first()?.toMediaItem()?.let(queued) ?: continue
+            val item = song.song.toMediaItem()?.let(queued) ?: continue
             song.position?.let {
                 start = items.size
                 position = it

@@ -32,8 +32,9 @@ open items are at the end.
   `MediaPeriodHolder.targetPreloadBufferDurationUs` is final and the pool reuses it).
 - A remote song not yet in the DB is stored when it starts playing (`PlayedSongRecorder`), then
   `SongFormatRecorder.flush` stores the format found while it loaded and `PersistentQueue.refresh`
-  re-saves the queue. Queued remote songs are already stored by `QueueWriter` before they are saved,
-  so this only matters for songs it couldn't store.
+  re-saves the queue. Queued remote songs are already in `song` (`QueueWriter`, no `user_song`), so
+  a first play only adds them to the library (`addToLibrary`, no request); `refresh` matters only
+  for songs the writer couldn't store.
 
 ## Data source chain (`SongDataSource.kt`)
 

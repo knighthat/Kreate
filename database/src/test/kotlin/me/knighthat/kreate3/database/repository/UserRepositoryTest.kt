@@ -265,4 +265,24 @@ internal class UserRepositoryTest : DatabaseTest() {
         activeUser.id.value = "other"
         assertEquals(listOf("a", "b"), queue.list().map { it.songId })
     }
+
+    @Test
+    fun aQueuedSongTheUserNeverKeptShowsItsSharedValues() = runBlocking {
+        addUser()
+        addSong("kept", name = "Shared")
+        addSong("queued", name = "Only queued")
+        database.userSongDao().upsert(
+            UserSongEntity(
+                USER, "kept", name = "Mine", likedAt = EPOCH, createdAt = EPOCH, updatedAt = EPOCH
+            )
+        )
+        queue.replace(listOf("queued", "kept"), current = 1, position = 40)
+
+        val details = queue.details()
+
+        assertEquals(listOf("queued", "kept"), details.map { it.song.songId })
+        assertEquals(listOf("Only queued", "Mine"), details.map { it.song.name })
+        assertEquals(listOf(null, EPOCH), details.map { it.song.likedAt })
+        assertEquals(listOf(null, 40L), details.map { it.position })
+    }
 }

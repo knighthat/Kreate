@@ -24,6 +24,7 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.dao.PersistentQueueDao
 import me.knighthat.kreate3.database.entity.PersistentQueueEntity
 import me.knighthat.kreate3.database.model.QueuedSong
+import me.knighthat.kreate3.database.model.QueuedSongDetails
 
 /**
  * Room backed implementation of [QueueRepository].
@@ -42,6 +43,9 @@ internal class QueueRepositoryImpl(
 
     override suspend fun list(): List<QueuedSong> =
         queueDao.list(scope.awaitId()).map(PersistentQueueEntity::toModel)
+
+    override suspend fun details(): List<QueuedSongDetails> =
+        queueDao.details(scope.awaitId()).map { QueuedSongDetails(it.song.toModel(), it.position) }
 
     override suspend fun replace(songIds: List<String>, current: Int, position: Long) {
         val userId = scope.requireId()

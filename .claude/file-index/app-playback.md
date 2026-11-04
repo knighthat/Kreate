@@ -117,7 +117,8 @@ playback/
   `song` skipped on insert. Ordinal = player index, gaps where a song couldn't be stored; the DAO
   shifts neighbours through negative ordinals to avoid key clashes.
 - `QueueWriter.kt` — `PersistentQueue`'s ordered write channel (`QueueWrite` kinds, `QueueEntry`);
-  stores unstored remote songs (`SongStore`, one request each, stops at the first network failure)
+  stores unstored remote songs in `song` only (`SongStore.storeInCatalog`, one request each, stops
+  at the first network failure)
   before writes that need them; asks for a full re-save when a change write fails.
 - `QueueDiff.kt` — `diffQueue(old, new)`: removes, one rotation (a moved block) and inserts, or
   `Replace` for anything else; pure, tested by `QueueDiffTest`.

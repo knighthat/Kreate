@@ -169,10 +169,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         persistentQueue = PersistentQueue(
             player = player,
             queue = get(),
-            songs = get(),
             scope = scope,
             writeScope = writeScope,
-            store = get<SongStore>()::store,
+            store = get<SongStore>()::storeInCatalog,
             queued = { it.queued() },
         )
         PlayedSongRecorder(

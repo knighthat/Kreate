@@ -20,6 +20,7 @@ package me.knighthat.kreate3.database.repository
 
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.QueuedSong
+import me.knighthat.kreate3.database.model.QueuedSongDetails
 
 /**
  * The queue the active user left behind, restored on the next start.
@@ -32,6 +33,12 @@ interface QueueRepository {
      * The queue right now, waiting for a user to be active.
      */
     suspend fun list(): List<QueuedSong>
+
+    /**
+     * The queue right now with what each song looks like to the active user, waiting for a user
+     * to be active. A queued song the user never kept shows its shared values.
+     */
+    suspend fun details(): List<QueuedSongDetails>
 
     /**
      * Swaps the queue for [songIds], in order, a song may appear more than once. The song at

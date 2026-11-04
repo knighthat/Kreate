@@ -18,11 +18,20 @@
 
 package me.knighthat.kreate3.database.dao
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.PersistentQueueEntity
+import me.knighthat.kreate3.database.view.UserSongViewEntity
+
+/** A queued song with the place it was playing at, see [PersistentQueueDao.details]. */
+internal data class QueuedSongRow(
+    @Embedded val song: UserSongViewEntity,
+    @ColumnInfo(name = "queue_position") val position: Long?,
+)
 
 @Dao
 internal abstract class PersistentQueueDao {
@@ -32,6 +41,47 @@ internal abstract class PersistentQueueDao {
 
     @Query("SELECT * FROM persistent_queue WHERE user_id = :userId ORDER BY ordinal")
     abstract suspend fun list(userId: String): List<PersistentQueueEntity>
+
+    /**
+     * The queue with each song as `user_song_view` shows it, but for every queued song: a song
+     * the user never kept has no `user_song` row, its shared values fill in. Keep the columns in
+     * step with the view. Songs a scan missed are included, the caller decides.
+     */
+    @Query(
+        """
+        SELECT 
+            pq.user_id AS user_id, 
+            s.id AS song_id, 
+            s.origin AS origin, 
+            COALESCE(us.name, s.name) AS name, 
+            COALESCE(
+                us.artists, 
+                (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL) 
+                    FROM song_artist_map m 
+                    JOIN artist ar ON ar.id = m.artist_id 
+                    LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = pq.user_id 
+                    WHERE m.song_id = s.id)
+            ) AS artists, 
+            (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids, 
+            COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail, 
+            s.duration AS duration, 
+            s.is_explicit AS is_explicit, 
+            s.album_id AS album_id, 
+            COALESCE(ual.name, al.name) AS album_name, 
+            COALESCE(us.album_position, s.album_position) AS album_position, 
+            s.unavailable_since AS unavailable_since, 
+            us.liked_at AS liked_at, 
+            pq.position AS queue_position 
+        FROM persistent_queue pq 
+        JOIN song s ON s.id = pq.song_id 
+        LEFT JOIN user_song us ON us.song_id = s.id AND us.user_id = pq.user_id 
+        LEFT JOIN album al ON al.id = s.album_id 
+        LEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = pq.user_id 
+        WHERE pq.user_id = :userId 
+        ORDER BY pq.ordinal
+    """
+    )
+    abstract suspend fun details(userId: String): List<QueuedSongRow>
 
     /** Inserts the item if its song is saved, an item of a missing song would break the key. */
     @Query(

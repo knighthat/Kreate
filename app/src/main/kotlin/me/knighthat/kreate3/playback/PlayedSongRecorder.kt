@@ -103,6 +103,9 @@ class PlayedSongRecorder(
                 // Its format was stored when it loaded
                 return
             }
+            // Queued before, so the catalog has it already
+            if (catalog.addToLibrary(songId)) return
+
             val song = details(origin, songId)
             if (song == null) {
                 Log.w(TAG, "$origin doesn't know $songId, it isn't stored")

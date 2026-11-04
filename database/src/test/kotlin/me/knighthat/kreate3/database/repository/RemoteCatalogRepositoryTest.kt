@@ -306,4 +306,34 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         }
         assertNull(database.songDao().get("s1"))
     }
+
+    @Test
+    fun aQueuedSongIsOnlyInTheCatalogUntilItJoinsTheLibrary() = runBlocking {
+        repository.saveQueuedSong(song("s1", album("a1"), listOf(artist("r1"))))
+
+        assertEquals("a1", database.songDao().get("s1")?.albumId)
+        assertNull(database.userSongDao().get(USER, "s1"))
+
+        assertEquals(true, repository.addToLibrary("s1"))
+        assertNotNull(database.userSongDao().get(USER, "s1"))
+        assertNull(database.userSongDao().get(USER, "s1")?.likedAt)
+    }
+
+    @Test
+    fun addingToTheLibraryKeepsARowAndNeedsTheCatalog() = runBlocking {
+        repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
+
+        assertEquals(true, repository.addToLibrary("s1"))
+        assertEquals(star, likedAt("s1"))
+        assertEquals(false, repository.addToLibrary("missing"))
+        assertNull(database.userSongDao().get(USER, "missing"))
+    }
+
+    @Test
+    fun aQueuedSongOfTheDeviceIsRefused() = runBlocking {
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { repository.saveQueuedSong(song("s1", origin = Origin.LOCAL)) }
+        }
+        assertNull(database.songDao().get("s1"))
+    }
 }
