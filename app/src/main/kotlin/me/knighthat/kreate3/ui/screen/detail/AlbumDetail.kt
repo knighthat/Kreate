@@ -617,6 +617,7 @@ fun AlbumMenu(
                 icon = R.drawable.share,
                 label = stringResource(R.string.menu_share),
                 enabled = share != null && linkShare.enabled,
+                loading = linkShare.sharing,
                 // A link of the server can take a moment, the sheet stays until it is there
             ) { linkShare.share { close {} } }
         },

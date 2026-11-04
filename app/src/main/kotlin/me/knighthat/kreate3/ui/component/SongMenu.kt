@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -37,6 +38,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -467,6 +469,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             icon = R.drawable.share,
             label = stringResource(R.string.menu_share),
             enabled = share.enabled,
+            loading = share.sharing,
             // A link of the server can take a moment, the sheet stays until it is there
             onClick = { share.share { close {} } },
         )
@@ -703,7 +706,7 @@ internal fun LabeledIconToggle(
 
 /**
  * A button of the row at the top of a menu sheet: [icon] over [label], dimmed and off unless
- * [enabled]. Without [showLabel] (off while [LocalIconOnly]) the label only describes the icon, to
+ * [enabled]; while [loading] a spinner takes the icon's place. Without [showLabel] (off while [LocalIconOnly]) the label only describes the icon, to
  * screen readers and in its [Tooltip].
  */
 @Composable
@@ -712,11 +715,15 @@ internal fun LabeledIconButton(
     label: String,
     enabled: Boolean = true,
     showLabel: Boolean = !LocalIconOnly.current,
+    loading: Boolean = false,
     onClick: () -> Unit,
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
     val button = @Composable {
         IconButton(onClick = onClick, enabled = enabled) {
-            Icon(painterResource(icon), contentDescription = label)
+            if (loading)
+                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+            else
+                Icon(painterResource(icon), contentDescription = label)
         }
     }
     // The label under it says what it does already

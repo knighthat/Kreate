@@ -142,7 +142,7 @@ internal fun Throwable.shareFailure(resources: Resources, title: String?, kind: 
 @Composable
 fun ShareAction(title: String?, kind: ShareKind, link: suspend () -> Result<String>) {
     val share = rememberLinkShare(title, kind, link)
-    ShareButton(enabled = share.enabled, onClick = { share.share() })
+    ShareButton(enabled = share.enabled, loading = share.sharing, onClick = { share.share() })
 }
 
 /** Sharing a link, see [rememberLinkShare]. */
@@ -150,6 +150,8 @@ fun ShareAction(title: String?, kind: ShareKind, link: suspend () -> Result<Stri
 class LinkShare(
     /** Off while the link is on its way. */
     val enabled: Boolean,
+    /** `true` while the link is on its way, for a spinner in place of the share icon. */
+    val sharing: Boolean,
     private val start: (then: () -> Unit) -> Unit,
 ) {
 
@@ -177,7 +179,7 @@ fun rememberLinkShare(
     val currentTitle by rememberUpdatedState(title)
     var sharing by remember { mutableStateOf(false) }
 
-    return LinkShare(enabled = !sharing) { then ->
+    return LinkShare(enabled = !sharing, sharing = sharing) { then ->
         sharing = true
         scope.launch {
             currentLink()
@@ -201,6 +203,8 @@ fun rememberLinkShare(
 class SongShare(
     /** `false` for an account of the server that may not share, and while a link is on its way. */
     val enabled: Boolean,
+    /** `true` while a link is on its way, for a spinner in place of the share icon. */
+    val sharing: Boolean,
     private val start: (then: () -> Unit) -> Unit,
 ) {
 
@@ -233,7 +237,7 @@ fun rememberSongShare(
         null -> false
         else -> true
     }
-    return SongShare(enabled) { then ->
+    return SongShare(enabled, sharing) { then ->
         when (origin) {
             Origin.LOCAL -> {
                 item.localSongId?.let { context.shareSongFile(title, it) }

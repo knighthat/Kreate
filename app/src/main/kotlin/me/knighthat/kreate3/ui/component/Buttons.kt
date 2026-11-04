@@ -220,14 +220,19 @@ fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.person, stringResource(R.string.semantic_profile), onClick, modifier)
 
 @Composable
-fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) =
-    IconAction(
-        R.drawable.share,
-        stringResource(R.string.semantic_share),
-        onClick,
-        modifier,
-        enabled
-    )
+fun ShareButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    loading: Boolean = false,
+) = Tooltip(stringResource(R.string.semantic_share)) {
+    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
+        if (loading)
+            CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+        else
+            Icon(painterResource(R.drawable.share), stringResource(R.string.semantic_share))
+    }
+}
 
 /** Restarts the app, off while [enabled] is `false`. */
 @Composable
@@ -557,6 +562,7 @@ private fun IconButtonsPreview() = PreviewTheme {
                 ConfigButton({})
                 ShareButton({})
                 ShareButton({}, enabled = false)
+                ShareButton({}, enabled = false, loading = true)
                 FilterIconButton(R.drawable.date_range, "Filter", selected = true, onToggle = {})
                 FilterIconButton(R.drawable.date_range, "Filter", selected = false, onToggle = {})
             }
