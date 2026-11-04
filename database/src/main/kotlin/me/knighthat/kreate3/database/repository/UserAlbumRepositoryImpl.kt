@@ -62,8 +62,10 @@ internal class UserAlbumRepositoryImpl(
         val userId = scope.awaitId()
         return userAlbumDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_album_view WHERE user_id = ? ${originFilter(origins)} " +
-                        order.toOrderBy("album_id"),
+                sql = """
+                    SELECT * FROM user_album_view WHERE user_id = ? ${originFilter(origins)}
+                    ${order.toOrderBy("album_id")}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         ).map(UserAlbumViewEntity::toModel)
@@ -76,8 +78,10 @@ internal class UserAlbumRepositoryImpl(
         val userId = scope.awaitId()
         return userAlbumDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_album_view WHERE user_id = ? " +
-                        filter(origins, bookmarkedOnly),
+                sql = """
+                    SELECT COUNT(*) FROM user_album_view WHERE user_id = ?
+                    ${filter(origins, bookmarkedOnly)}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
@@ -87,9 +91,11 @@ internal class UserAlbumRepositoryImpl(
         val userId = scope.awaitId()
         return userAlbumDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_album_view WHERE user_id = ? " +
-                        "${filter(origins, bookmarkedOnly)} " +
-                        "ORDER BY RANDOM() LIMIT 1",
+                sql = """
+                    SELECT * FROM user_album_view WHERE user_id = ?
+                    ${filter(origins, bookmarkedOnly)}
+                    ORDER BY RANDOM() LIMIT 1
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )?.toModel()
@@ -109,8 +115,10 @@ internal class UserAlbumRepositoryImpl(
         val userId = scope.awaitId()
         return userAlbumDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_album_view WHERE user_id = ? $SEARCH " +
-                        order.toOrderBy("album_id"),
+                sql = """
+                    SELECT * FROM user_album_view WHERE user_id = ? $SEARCH
+                    ${order.toOrderBy("album_id")}
+                """.trimIndent(),
                 onBindStatement = {
                     it.bindText(1, userId)
                     it.bindText(2, containsPattern(query))

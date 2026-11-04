@@ -86,9 +86,11 @@ internal interface UserArtistDao {
      * @return the number of rows deleted
      */
     @Query(
-        "DELETE FROM user_artist WHERE user_id = :userId AND artist_id = :artistId " +
-                "AND follow_since IS NULL AND name IS NULL AND thumbnail IS NULL " +
-                "AND artist_id IN (SELECT id FROM artist WHERE origin != :device)"
+        """
+        DELETE FROM user_artist WHERE user_id = :userId AND artist_id = :artistId
+        AND follow_since IS NULL AND name IS NULL AND thumbnail IS NULL
+        AND artist_id IN (SELECT id FROM artist WHERE origin != :device)
+        """
     )
     suspend fun deleteIfEmpty(userId: String, artistId: String, device: Origin): Int
 }

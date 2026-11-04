@@ -67,9 +67,11 @@ internal class PlaylistRepositoryImpl(
             ) {
                 playlistDao.pagedWithCovers(
                     RoomRawQuery(
-                        sql = "SELECT *, $COVERS FROM user_playlist " +
-                                "WHERE user_id = ? ${filter(origins, monthlyOnly)} " +
-                                order.toOrderBy("playlist_id"),
+                        sql = """
+                            SELECT *, $COVERS FROM user_playlist
+                            WHERE user_id = ? ${filter(origins, monthlyOnly)}
+                            ${order.toOrderBy("playlist_id")}
+                        """.trimIndent(),
                         onBindStatement = { it.bindText(1, userId) },
                     )
                 )
@@ -83,8 +85,10 @@ internal class PlaylistRepositoryImpl(
         val userId = scope.awaitId()
         return playlistDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
-                        order.toOrderBy("playlist_id"),
+                sql = """
+                    SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)}
+                    ${order.toOrderBy("playlist_id")}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         ).map(UserPlaylistEntity::toModel)
@@ -97,8 +101,10 @@ internal class PlaylistRepositoryImpl(
         val userId = scope.awaitId()
         return playlistDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_playlist WHERE user_id = ? " +
-                        filter(origins, monthlyOnly),
+                sql = """
+                    SELECT COUNT(*) FROM user_playlist WHERE user_id = ?
+                    ${filter(origins, monthlyOnly)}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
@@ -108,9 +114,11 @@ internal class PlaylistRepositoryImpl(
         val userId = scope.awaitId()
         return playlistDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_playlist WHERE user_id = ? " +
-                        "${filter(origins, monthlyOnly)} " +
-                        "ORDER BY RANDOM() LIMIT 1",
+                sql = """
+                    SELECT * FROM user_playlist WHERE user_id = ?
+                    ${filter(origins, monthlyOnly)}
+                    ORDER BY RANDOM() LIMIT 1
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )?.toModel()
@@ -124,8 +132,10 @@ internal class PlaylistRepositoryImpl(
             database.pagedFlow(UserPlaylistEntity::toModel, "user_playlist") {
                 playlistDao.paged(
                     RoomRawQuery(
-                        sql = "SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\\' " +
-                                order.toOrderBy("playlist_id"),
+                        sql = """
+                            SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\'
+                            ${order.toOrderBy("playlist_id")}
+                        """.trimIndent(),
                         onBindStatement = {
                             it.bindText(1, userId)
                             it.bindText(2, containsPattern(query))
@@ -142,8 +152,10 @@ internal class PlaylistRepositoryImpl(
         val userId = scope.awaitId()
         return playlistDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\\' " +
-                        order.toOrderBy("playlist_id"),
+                sql = """
+                    SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\'
+                    ${order.toOrderBy("playlist_id")}
+                """.trimIndent(),
                 onBindStatement = {
                     it.bindText(1, userId)
                     it.bindText(2, containsPattern(query))
@@ -159,9 +171,11 @@ internal class PlaylistRepositoryImpl(
         database.pagedFlow(SongEntity::toModel, "song", "song_playlist_map") {
             playlistDao.pagedSongs(
                 RoomRawQuery(
-                    sql = "SELECT song.* FROM song " +
-                            "JOIN song_playlist_map ON song_playlist_map.song_id = song.id " +
-                            "WHERE song_playlist_map.playlist_id = ? ${order.toOrderBy("song.id")}",
+                    sql = """
+                        SELECT song.* FROM song
+                        JOIN song_playlist_map ON song_playlist_map.song_id = song.id
+                        WHERE song_playlist_map.playlist_id = ? ${order.toOrderBy("song.id")}
+                    """.trimIndent(),
                     onBindStatement = { it.bindLong(1, playlistId) },
                 )
             )

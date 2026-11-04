@@ -58,7 +58,7 @@ internal const val DATABASE_FILE_NAME = "kreate.db"
 /**
  * Schema version of [AppDatabase].
  */
-internal const val DATABASE_VERSION = 1
+internal const val DATABASE_VERSION = 2
 
 /**
  * Pass it to `startKoin` to make the repositories and [DatabaseBackup] available, `androidContext`

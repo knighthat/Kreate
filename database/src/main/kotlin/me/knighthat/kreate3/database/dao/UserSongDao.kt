@@ -72,8 +72,10 @@ internal interface UserSongDao {
 
     /** @return the rows changed, none when the song isn't in the user's library */
     @Query(
-        "UPDATE user_song SET music_brainz_id = :musicBrainzId, updated_at = :now " +
-                "WHERE user_id = :userId AND song_id = :songId"
+        """
+        UPDATE user_song SET music_brainz_id = :musicBrainzId, updated_at = :now
+        WHERE user_id = :userId AND song_id = :songId
+        """
     )
     suspend fun setMusicBrainzId(
         userId: String,
@@ -110,8 +112,10 @@ internal interface UserSongDao {
      * The user's rows about songs from [origin].
      */
     @Query(
-        "SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id " +
-                "WHERE us.user_id = :userId AND s.origin = :origin"
+        """
+        SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id
+        WHERE us.user_id = :userId AND s.origin = :origin
+        """
     )
     suspend fun withOrigin(userId: String, origin: Origin): List<UserSongEntity>
 
@@ -122,8 +126,10 @@ internal interface UserSongDao {
      * The user's rows about songs on the album [albumId].
      */
     @Query(
-        "SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id " +
-                "WHERE us.user_id = :userId AND s.album_id = :albumId"
+        """
+        SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id
+        WHERE us.user_id = :userId AND s.album_id = :albumId
+        """
     )
     suspend fun onAlbum(userId: String, albumId: String): List<UserSongEntity>
 
@@ -131,9 +137,11 @@ internal interface UserSongDao {
      * Takes the user's own album positions off the songs of the album [albumId].
      */
     @Query(
-        "UPDATE user_song SET album_position = NULL, updated_at = :now " +
-                "WHERE user_id = :userId AND album_position IS NOT NULL " +
-                "AND song_id IN (SELECT id FROM song WHERE album_id = :albumId)"
+        """
+        UPDATE user_song SET album_position = NULL, updated_at = :now
+        WHERE user_id = :userId AND album_position IS NOT NULL
+        AND song_id IN (SELECT id FROM song WHERE album_id = :albumId)
+        """
     )
     suspend fun clearAlbumPositions(userId: String, albumId: String, now: Instant)
 
@@ -146,10 +154,12 @@ internal interface UserSongDao {
      * or MusicBrainz id.
      */
     @Query(
-        "DELETE FROM user_song WHERE thumbnail = :thumbnail " +
-                "AND (:songId IS NULL OR song_id = :songId) " +
-                "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
-                "AND album_position IS NULL AND downloaded_at IS NULL AND music_brainz_id IS NULL"
+        """
+        DELETE FROM user_song WHERE thumbnail = :thumbnail
+        AND (:songId IS NULL OR song_id = :songId)
+        AND name IS NULL AND artists IS NULL AND liked_at IS NULL
+        AND album_position IS NULL AND downloaded_at IS NULL AND music_brainz_id IS NULL
+        """
     )
     suspend fun deleteKeepingOnly(thumbnail: Uri, songId: String?)
 
@@ -159,11 +169,13 @@ internal interface UserSongDao {
      * and no cover but [thumbnail].
      */
     @Query(
-        "DELETE FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL " +
-                "AND (:userId IS NULL OR user_id = :userId) " +
-                "AND name IS NULL AND artists IS NULL AND liked_at IS NULL " +
-                "AND album_position IS NULL AND music_brainz_id IS NULL " +
-                "AND (thumbnail IS NULL OR thumbnail = :thumbnail)"
+        """
+        DELETE FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL
+        AND (:userId IS NULL OR user_id = :userId)
+        AND name IS NULL AND artists IS NULL AND liked_at IS NULL
+        AND album_position IS NULL AND music_brainz_id IS NULL
+        AND (thumbnail IS NULL OR thumbnail = :thumbnail)
+        """
     )
     suspend fun deleteKeepingOnlyDownload(songId: String, userId: String?, thumbnail: Uri?)
 
@@ -172,10 +184,12 @@ internal interface UserSongDao {
      * cover [thumbnail] goes with it.
      */
     @Query(
-        "UPDATE user_song SET downloaded_at = NULL, updated_at = :now, " +
-                "thumbnail = CASE WHEN thumbnail = :thumbnail THEN NULL ELSE thumbnail END " +
-                "WHERE song_id = :songId AND downloaded_at IS NOT NULL " +
-                "AND (:userId IS NULL OR user_id = :userId)"
+        """
+        UPDATE user_song SET downloaded_at = NULL, updated_at = :now,
+        thumbnail = CASE WHEN thumbnail = :thumbnail THEN NULL ELSE thumbnail END
+        WHERE song_id = :songId AND downloaded_at IS NOT NULL
+        AND (:userId IS NULL OR user_id = :userId)
+        """
     )
     suspend fun clearDownload(songId: String, userId: String?, thumbnail: Uri?, now: Instant)
 
@@ -199,8 +213,10 @@ internal interface UserSongDao {
 
     /** Every user's [thumbnail] of the song [songId], or of any when `null`, goes back to the shared one. */
     @Query(
-        "UPDATE user_song SET thumbnail = NULL, updated_at = :now WHERE thumbnail = :thumbnail " +
-                "AND (:songId IS NULL OR song_id = :songId)"
+        """
+        UPDATE user_song SET thumbnail = NULL, updated_at = :now WHERE thumbnail = :thumbnail
+        AND (:songId IS NULL OR song_id = :songId)
+        """
     )
     suspend fun clearThumbnail(thumbnail: Uri, songId: String?, now: Instant)
 

@@ -62,8 +62,10 @@ internal class UserArtistRepositoryImpl(
         val userId = scope.awaitId()
         return userArtistDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_artist_view WHERE user_id = ? ${originFilter(origins)} " +
-                        order.toOrderBy("artist_id"),
+                sql = """
+                    SELECT * FROM user_artist_view WHERE user_id = ? ${originFilter(origins)}
+                    ${order.toOrderBy("artist_id")}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         ).map(UserArtistViewEntity::toModel)
@@ -76,8 +78,10 @@ internal class UserArtistRepositoryImpl(
         val userId = scope.awaitId()
         return userArtistDao.count(
             RoomRawQuery(
-                sql = "SELECT COUNT(*) FROM user_artist_view WHERE user_id = ? " +
-                        filter(origins, followedOnly),
+                sql = """
+                    SELECT COUNT(*) FROM user_artist_view WHERE user_id = ?
+                    ${filter(origins, followedOnly)}
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )
@@ -87,9 +91,11 @@ internal class UserArtistRepositoryImpl(
         val userId = scope.awaitId()
         return userArtistDao.first(
             RoomRawQuery(
-                sql = "SELECT * FROM user_artist_view WHERE user_id = ? " +
-                        "${filter(origins, followedOnly)} " +
-                        "ORDER BY RANDOM() LIMIT 1",
+                sql = """
+                    SELECT * FROM user_artist_view WHERE user_id = ?
+                    ${filter(origins, followedOnly)}
+                    ORDER BY RANDOM() LIMIT 1
+                """.trimIndent(),
                 onBindStatement = { it.bindText(1, userId) },
             )
         )?.toModel()
@@ -108,8 +114,10 @@ internal class UserArtistRepositoryImpl(
         val userId = scope.awaitId()
         return userArtistDao.list(
             RoomRawQuery(
-                sql = "SELECT * FROM user_artist_view WHERE user_id = ? $SEARCH " +
-                        order.toOrderBy("artist_id"),
+                sql = """
+                    SELECT * FROM user_artist_view WHERE user_id = ? $SEARCH
+                    ${order.toOrderBy("artist_id")}
+                """.trimIndent(),
                 onBindStatement = {
                     it.bindText(1, userId)
                     it.bindText(2, containsPattern(query))

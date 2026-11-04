@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -77,6 +78,10 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
         UserSongViewEntity::class,
     ],
     version = DATABASE_VERSION,
+    autoMigrations = [
+        // Only the SQL text of the three views was reformatted
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 @TypeConverters(Converters::class)
 internal abstract class AppDatabase : RoomDatabase() {

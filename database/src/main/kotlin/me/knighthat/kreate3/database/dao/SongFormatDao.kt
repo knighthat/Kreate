@@ -39,8 +39,10 @@ internal interface SongFormatDao {
      * Ids of the available songs from [origin] without a format [tag] that has a gain.
      */
     @Query(
-        "SELECT id FROM song WHERE origin = :origin AND unavailable_since IS NULL AND id NOT IN " +
-                "(SELECT song_id FROM song_format WHERE tag = :tag AND gain IS NOT NULL)"
+        """
+        SELECT id FROM song WHERE origin = :origin AND unavailable_since IS NULL AND id NOT IN
+        (SELECT song_id FROM song_format WHERE tag = :tag AND gain IS NOT NULL)
+        """
     )
     suspend fun idsWithoutGain(origin: Origin, tag: String): List<String>
 

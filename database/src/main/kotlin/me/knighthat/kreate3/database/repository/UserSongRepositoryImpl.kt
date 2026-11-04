@@ -130,8 +130,10 @@ internal class UserSongRepositoryImpl(
             database.pagedFlow(DislikedSongRow::toModel, "user_song_view") {
                 userSongDao.pagedDisliked(
                     RoomRawQuery(
-                        sql = "$DISLIKED ${originFilter(origins)} " +
-                                "ORDER BY disliked_at ${if (newestFirst) "DESC" else "ASC"}, song_id",
+                        sql = """
+                            $DISLIKED ${originFilter(origins)}
+                            ORDER BY disliked_at ${if (newestFirst) "DESC" else "ASC"}, song_id
+                        """.trimIndent(),
                         onBindStatement = { it.bindText(1, userId) },
                     )
                 )
@@ -193,8 +195,10 @@ internal class UserSongRepositoryImpl(
         bind: (SQLiteStatement) -> Unit,
         includeDisliked: Boolean = false,
     ) = RoomRawQuery(
-        sql = "SELECT * FROM user_song_view WHERE user_id = ? " +
-                "${if (includeDisliked) "" else NOT_DISLIKED} $filter $orderBy",
+        sql = """
+            SELECT * FROM user_song_view WHERE user_id = ?
+            ${if (includeDisliked) "" else NOT_DISLIKED} $filter $orderBy
+        """.trimIndent(),
         onBindStatement = {
             it.bindText(1, userId)
             bind(it)
@@ -265,8 +269,10 @@ internal class UserSongRepositoryImpl(
         scope.observe(emptyList()) { userId ->
             userSongDao.observeDownloaded(
                 RoomRawQuery(
-                    sql = "$DOWNLOADED ORDER BY downloaded_at " +
-                            "${if (newestFirst) "DESC" else "ASC"}, v.song_id",
+                    sql = """
+                        $DOWNLOADED ORDER BY downloaded_at
+                        ${if (newestFirst) "DESC" else "ASC"}, v.song_id
+                    """.trimIndent(),
                     onBindStatement = { it.bindText(1, userId) },
                 )
             ).map { rows -> rows.map(DownloadedSongRow::toModel) }
@@ -400,8 +406,10 @@ internal class UserSongRepositoryImpl(
         """
 
         // ?2 is the pattern of what is searched
-        const val SEARCH = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\' " +
-                "OR album_name LIKE ?2 ESCAPE '\\')"
+        const val SEARCH = """
+            AND (name LIKE ?2 ESCAPE '\' OR artists LIKE ?2 ESCAPE '\'
+            OR album_name LIKE ?2 ESCAPE '\')
+        """
 
         const val OF_ALBUM = "AND album_id = ?"
         const val OF_ARTIST =
@@ -411,8 +419,10 @@ internal class UserSongRepositoryImpl(
 
         // ?2 is the playlist of OF_PLAYLIST
         const val PLAYLIST_ORDER =
-            "ORDER BY (SELECT position FROM song_playlist_map m " +
-                    "WHERE m.playlist_id = ?2 AND m.song_id = user_song_view.song_id), song_id"
+            """
+                ORDER BY (SELECT position FROM song_playlist_map m
+                WHERE m.playlist_id = ?2 AND m.song_id = user_song_view.song_id), song_id
+            """
 
         fun SortOrder<UserSongSort>.toOrderBy() = toOrderBy("song_id")
     }

@@ -51,11 +51,13 @@ internal class StatisticsRepositoryImpl(
             playbackHistoryDao.observeListeningSummary(
                 query(
                     userId,
-                    "SELECT COUNT(*) AS plays, COUNT(DISTINCT h.song_id) AS songs, " +
-                            "COALESCE(SUM(h.time_spent), 0) AS time_spent, " +
-                            "(SELECT COUNT(DISTINCT m.artist_id) FROM song_artist_map m " +
-                            "WHERE m.song_id IN (SELECT h.song_id $plays)) AS artists " +
-                            plays
+                    """
+                        SELECT COUNT(*) AS plays, COUNT(DISTINCT h.song_id) AS songs,
+                        COALESCE(SUM(h.time_spent), 0) AS time_spent,
+                        (SELECT COUNT(DISTINCT m.artist_id) FROM song_artist_map m
+                        WHERE m.song_id IN (SELECT h.song_id $plays)) AS artists
+                        $plays
+                    """.trimIndent()
                 )
             ).map { ListeningSummary(it.plays, it.songs, it.artists, it.timeSpent.seconds) }
         }
@@ -75,15 +77,17 @@ internal class StatisticsRepositoryImpl(
         return playbackHistoryDao.listTopSongs(
             query(
                 scope.awaitId(),
-                "${
+                """
+                    ${
                     perSong(
                         null,
                         Of.All
                     )
-                } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent " +
-                        "FROM per_song ps " +
-                        "JOIN user_song_view v ON v.user_id = ?1 AND v.song_id = ps.song_id " +
-                        "${liked}ORDER BY ps.time_spent DESC, ps.song_id LIMIT 1",
+                } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent
+                    FROM per_song ps
+                    JOIN user_song_view v ON v.user_id = ?1 AND v.song_id = ps.song_id
+                    ${liked}ORDER BY ps.time_spent DESC, ps.song_id LIMIT 1
+                """.trimIndent(),
             )
         ).firstOrNull()?.song?.toModel()
     }
@@ -93,8 +97,10 @@ internal class StatisticsRepositoryImpl(
             playbackHistoryDao.observeOriginTimes(
                 query(
                     userId,
-                    "SELECT v.origin AS origin, SUM(h.time_spent) AS time_spent " +
-                            "${playsIn(period)} GROUP BY v.origin ORDER BY time_spent DESC"
+                    """
+                        SELECT v.origin AS origin, SUM(h.time_spent) AS time_spent
+                        ${playsIn(period)} GROUP BY v.origin ORDER BY time_spent DESC
+                    """.trimIndent()
                 )
             ).map { rows -> rows.map { OriginTime(it.origin, it.timeSpent.seconds) } }
         }
@@ -128,15 +134,17 @@ internal class StatisticsRepositoryImpl(
             playbackHistoryDao.observeTopSongs(
                 query(
                     userId,
-                    "${
+                    """
+                        ${
                         perSong(
                             period,
                             of
                         )
-                    } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent " +
-                            "FROM per_song ps " +
-                            "JOIN user_song_view v ON v.user_id = ?1 AND v.song_id = ps.song_id " +
-                            "ORDER BY ps.listens DESC, ps.time_spent DESC, ps.song_id LIMIT $limit",
+                    } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent
+                        FROM per_song ps
+                        JOIN user_song_view v ON v.user_id = ?1 AND v.song_id = ps.song_id
+                        ORDER BY ps.listens DESC, ps.time_spent DESC, ps.song_id LIMIT $limit
+                    """.trimIndent(),
                     of.id,
                 )
             ).map { rows ->
@@ -151,17 +159,19 @@ internal class StatisticsRepositoryImpl(
             playbackHistoryDao.observeTopAlbums(
                 query(
                     userId,
-                    "${perSong(period, of)} SELECT ?1 AS user_id, a.id AS album_id, " +
-                            "a.origin AS origin, COALESCE(ual.name, a.name) AS name, " +
-                            "COALESCE(ual.artists, a.artists) AS artists, " +
-                            "COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail, a.year AS year, " +
-                            "a.url AS url, a.is_explicit AS is_explicit, " +
-                            "(SELECT COUNT(*) FROM song s WHERE s.album_id = a.id) AS song_count, " +
-                            "ual.bookmarked_at AS bookmarked_at, " +
-                            "SUM(ps.listens) AS listens, SUM(ps.time_spent) AS time_spent " +
-                            "FROM per_song ps JOIN album a ON a.id = ps.album_id " +
-                            "LEFT JOIN user_album ual ON ual.album_id = a.id AND ual.user_id = ?1 " +
-                            "GROUP BY a.id ORDER BY listens DESC, time_spent DESC, a.id LIMIT $limit",
+                    """
+                        ${perSong(period, of)} SELECT ?1 AS user_id, a.id AS album_id,
+                        a.origin AS origin, COALESCE(ual.name, a.name) AS name,
+                        COALESCE(ual.artists, a.artists) AS artists,
+                        COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail, a.year AS year,
+                        a.url AS url, a.is_explicit AS is_explicit,
+                        (SELECT COUNT(*) FROM song s WHERE s.album_id = a.id) AS song_count,
+                        ual.bookmarked_at AS bookmarked_at,
+                        SUM(ps.listens) AS listens, SUM(ps.time_spent) AS time_spent
+                        FROM per_song ps JOIN album a ON a.id = ps.album_id
+                        LEFT JOIN user_album ual ON ual.album_id = a.id AND ual.user_id = ?1
+                        GROUP BY a.id ORDER BY listens DESC, time_spent DESC, a.id LIMIT $limit
+                    """.trimIndent(),
                     of.id,
                 )
             ).map { rows ->
@@ -180,17 +190,19 @@ internal class StatisticsRepositoryImpl(
             playbackHistoryDao.observeTopArtists(
                 query(
                     userId,
-                    "${perSong(period, of)} SELECT ?1 AS user_id, ar.id AS artist_id, " +
-                            "ar.origin AS origin, COALESCE(ua.name, ar.name) AS name, " +
-                            "COALESCE(ua.thumbnail, ar.thumbnail) AS thumbnail, " +
-                            "(SELECT COUNT(*) FROM song_artist_map c WHERE c.artist_id = ar.id) AS song_count, " +
-                            "ua.follow_since AS follow_since, " +
-                            "SUM(ps.listens) AS listens, SUM(ps.time_spent) AS time_spent " +
-                            "FROM per_song ps " +
-                            "JOIN song_artist_map m ON m.song_id = ps.song_id " +
-                            "JOIN artist ar ON ar.id = m.artist_id $only " +
-                            "LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = ?1 " +
-                            "GROUP BY ar.id ORDER BY listens DESC, time_spent DESC, ar.id LIMIT $limit",
+                    """
+                        ${perSong(period, of)} SELECT ?1 AS user_id, ar.id AS artist_id,
+                        ar.origin AS origin, COALESCE(ua.name, ar.name) AS name,
+                        COALESCE(ua.thumbnail, ar.thumbnail) AS thumbnail,
+                        (SELECT COUNT(*) FROM song_artist_map c WHERE c.artist_id = ar.id) AS song_count,
+                        ua.follow_since AS follow_since,
+                        SUM(ps.listens) AS listens, SUM(ps.time_spent) AS time_spent
+                        FROM per_song ps
+                        JOIN song_artist_map m ON m.song_id = ps.song_id
+                        JOIN artist ar ON ar.id = m.artist_id $only
+                        LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = ?1
+                        GROUP BY ar.id ORDER BY listens DESC, time_spent DESC, ar.id LIMIT $limit
+                    """.trimIndent(),
                     of.id,
                 )
             ).map { rows ->
@@ -250,12 +262,16 @@ internal class StatisticsRepositoryImpl(
          */
         fun playsIn(period: PlayPeriod?, of: Of = Of.All): String {
             val span = period?.let {
-                "AND h.created_at >= ${it.start.toEpochMilliseconds()} " +
-                        "AND h.created_at < ${it.end.toEpochMilliseconds()}"
+                """
+                    AND h.created_at >= ${it.start.toEpochMilliseconds()}
+                    AND h.created_at < ${it.end.toEpochMilliseconds()}
+                """.trimIndent()
             }.orEmpty()
-            return "FROM playback_history h " +
-                    "JOIN user_song_view v ON v.user_id = h.user_id AND v.song_id = h.song_id " +
-                    "WHERE h.user_id = ?1 AND (v.liked_at IS NULL OR v.liked_at >= 0) $span ${of.filter}"
+            return """
+                FROM playback_history h
+                JOIN user_song_view v ON v.user_id = h.user_id AND v.song_id = h.song_id
+                WHERE h.user_id = ?1 AND (v.liked_at IS NULL OR v.liked_at >= 0) $span ${of.filter}
+            """.trimIndent()
         }
 
         /**
@@ -264,10 +280,12 @@ internal class StatisticsRepositoryImpl(
          * length is unknown).
          */
         fun perSong(period: PlayPeriod?, of: Of): String =
-            "WITH per_song AS (SELECT h.song_id AS song_id, MAX(v.album_id) AS album_id, " +
-                    "SUM(h.time_spent) AS time_spent, " +
-                    "CASE WHEN MAX(v.duration) > 0 THEN SUM(h.time_spent) * 1.0 / MAX(v.duration) " +
-                    "ELSE COUNT(*) * 1.0 END AS listens " +
-                    "${playsIn(period, of)} GROUP BY h.song_id)"
+            """
+                WITH per_song AS (SELECT h.song_id AS song_id, MAX(v.album_id) AS album_id,
+                SUM(h.time_spent) AS time_spent,
+                CASE WHEN MAX(v.duration) > 0 THEN SUM(h.time_spent) * 1.0 / MAX(v.duration)
+                ELSE COUNT(*) * 1.0 END AS listens
+                ${playsIn(period, of)} GROUP BY h.song_id)
+            """.trimIndent()
     }
 }

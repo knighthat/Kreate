@@ -37,8 +37,10 @@ internal interface SearchHistoryDao {
     fun paged(query: RoomRawQuery): PagingSource<Int, SearchHistoryEntity>
 
     @Query(
-        "SELECT * FROM search_history WHERE user_id = :userId AND query LIKE :pattern ESCAPE '\\' " +
-                "ORDER BY last_used DESC NULLS LAST, query LIMIT :limit"
+        """
+        SELECT * FROM search_history WHERE user_id = :userId AND query LIKE :pattern ESCAPE '\'
+        ORDER BY last_used DESC NULLS LAST, query LIMIT :limit
+        """
     )
     fun startingWith(userId: String, pattern: String, limit: Int): Flow<List<SearchHistoryEntity>>
 

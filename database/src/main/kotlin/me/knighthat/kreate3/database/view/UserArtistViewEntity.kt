@@ -30,17 +30,18 @@ import kotlin.time.Instant
  */
 @DatabaseView(
     viewName = "user_artist_view",
-    value =
-        "SELECT\n" +
-                "    uar.user_id AS user_id,\n" +
-                "    ar.id AS artist_id,\n" +
-                "    ar.origin AS origin,\n" +
-                "    COALESCE(uar.name, ar.name) AS name,\n" +
-                "    COALESCE(uar.thumbnail, ar.thumbnail) AS thumbnail,\n" +
-                "    (SELECT COUNT(*) FROM song_artist_map m WHERE m.artist_id = ar.id) AS song_count,\n" +
-                "    uar.follow_since AS follow_since\n" +
-                "FROM user_artist uar\n" +
-                "JOIN artist ar ON ar.id = uar.artist_id\n",
+    value = """
+        SELECT
+            uar.user_id AS user_id,
+            ar.id AS artist_id,
+            ar.origin AS origin,
+            COALESCE(uar.name, ar.name) AS name,
+            COALESCE(uar.thumbnail, ar.thumbnail) AS thumbnail,
+            (SELECT COUNT(*) FROM song_artist_map m WHERE m.artist_id = ar.id) AS song_count,
+            uar.follow_since AS follow_since
+        FROM user_artist uar
+        JOIN artist ar ON ar.id = uar.artist_id
+    """,
 )
 internal data class UserArtistViewEntity(
     @ColumnInfo(name = "user_id")

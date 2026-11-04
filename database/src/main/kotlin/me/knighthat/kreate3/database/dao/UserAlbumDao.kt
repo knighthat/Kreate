@@ -68,10 +68,12 @@ internal interface UserAlbumDao {
      * Albums of the library that have a song the artist is credited on, newest first.
      */
     @Query(
-        "SELECT * FROM user_album_view WHERE user_id = :userId AND album_id IN (" +
-                "SELECT s.album_id FROM song s JOIN song_artist_map m ON m.song_id = s.id " +
-                "WHERE m.artist_id = :artistId AND s.album_id IS NOT NULL) " +
-                "ORDER BY year DESC, name COLLATE NOCASE LIMIT :limit"
+        """
+        SELECT * FROM user_album_view WHERE user_id = :userId AND album_id IN (
+        SELECT s.album_id FROM song s JOIN song_artist_map m ON m.song_id = s.id
+        WHERE m.artist_id = :artistId AND s.album_id IS NOT NULL)
+        ORDER BY year DESC, name COLLATE NOCASE LIMIT :limit
+        """
     )
     fun ofArtist(userId: String, artistId: String, limit: Int): Flow<List<UserAlbumViewEntity>>
 
@@ -97,9 +99,11 @@ internal interface UserAlbumDao {
      * @return the number of rows deleted
      */
     @Query(
-        "DELETE FROM user_album WHERE user_id = :userId AND album_id = :albumId " +
-                "AND bookmarked_at IS NULL AND name IS NULL AND thumbnail IS NULL " +
-                "AND artists IS NULL AND album_id IN (SELECT id FROM album WHERE origin != :device)"
+        """
+        DELETE FROM user_album WHERE user_id = :userId AND album_id = :albumId
+        AND bookmarked_at IS NULL AND name IS NULL AND thumbnail IS NULL
+        AND artists IS NULL AND album_id IN (SELECT id FROM album WHERE origin != :device)
+        """
     )
     suspend fun deleteIfEmpty(userId: String, albumId: String, device: Origin): Int
 }

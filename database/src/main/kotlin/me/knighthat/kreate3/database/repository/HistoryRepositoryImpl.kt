@@ -150,10 +150,12 @@ internal class HistoryRepositoryImpl(
             scope.observe(emptyList()) { userId ->
                 playbackHistoryDao.observeSummaries(
                     RoomRawQuery(
-                        sql = "SELECT p.period AS period, COUNT(*) AS plays, " +
-                                "COUNT(DISTINCT h.song_id) AS songs, " +
-                                "SUM(h.time_spent) AS time_spent " +
-                                "${playsIn(periods, origins)} GROUP BY p.period",
+                        sql = """
+                            SELECT p.period AS period, COUNT(*) AS plays,
+                            COUNT(DISTINCT h.song_id) AS songs,
+                            SUM(h.time_spent) AS time_spent
+                            ${playsIn(periods, origins)} GROUP BY p.period
+                        """.trimIndent(),
                         onBindStatement = { it.bindText(1, userId) },
                     )
                 ).map { rows -> rows.map(PeriodSummaryRow::toModel) }
@@ -240,10 +242,12 @@ internal class HistoryRepositoryImpl(
     ): RoomRawQuery {
         val direction = if (newestFirst) "DESC" else "ASC"
         return RoomRawQuery(
-            sql = "SELECT v.*, p.period AS period, h.id AS play_id, h.created_at AS played_at " +
-                    "${playsIn(periods, origins)} " +
-                    "ORDER BY p.period ${if (newestFirst) "ASC" else "DESC"}, " +
-                    "h.created_at $direction, h.id $direction",
+            sql = """
+                SELECT v.*, p.period AS period, h.id AS play_id, h.created_at AS played_at
+                ${playsIn(periods, origins)}
+                ORDER BY p.period ${if (newestFirst) "ASC" else "DESC"},
+                h.created_at $direction, h.id $direction
+            """.trimIndent(),
             onBindStatement = { it.bindText(1, userId) },
         )
     }
@@ -263,14 +267,18 @@ internal class HistoryRepositoryImpl(
          */
         fun playsIn(periods: List<PlayPeriod>, origins: Set<Origin>): String {
             val spans = periods.withIndex().joinToString(" UNION ALL ") { (index, period) ->
-                "SELECT $index AS period, ${period.start.toEpochMilliseconds()} AS start, " +
-                        "${period.end.toEpochMilliseconds()} AS stop"
+                """
+                    SELECT $index AS period, ${period.start.toEpochMilliseconds()} AS start,
+                    ${period.end.toEpochMilliseconds()} AS stop
+                """.trimIndent()
             }
             val origin = originFilter(origins).replace("AND origin", "AND v.origin")
-            return "FROM playback_history h " +
-                    "JOIN ($spans) p ON h.created_at >= p.start AND h.created_at < p.stop " +
-                    "JOIN user_song_view v ON v.user_id = h.user_id AND v.song_id = h.song_id " +
-                    "WHERE h.user_id = ?1 $NOT_DISLIKED $origin"
+            return """
+                FROM playback_history h
+                JOIN ($spans) p ON h.created_at >= p.start AND h.created_at < p.stop
+                JOIN user_song_view v ON v.user_id = h.user_id AND v.song_id = h.song_id
+                WHERE h.user_id = ?1 $NOT_DISLIKED $origin
+            """.trimIndent()
         }
     }
 }

@@ -30,21 +30,22 @@ import kotlin.time.Instant
  */
 @DatabaseView(
     viewName = "user_album_view",
-    value =
-        "SELECT\n" +
-                "    ual.user_id AS user_id,\n" +
-                "    a.id AS album_id,\n" +
-                "    a.origin AS origin,\n" +
-                "    COALESCE(ual.name, a.name) AS name,\n" +
-                "    COALESCE(ual.artists, a.artists) AS artists,\n" +
-                "    COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail,\n" +
-                "    a.year AS year,\n" +
-                "    a.url AS url,\n" +
-                "    a.is_explicit AS is_explicit,\n" +
-                "    (SELECT COUNT(*) FROM song s WHERE s.album_id = a.id) AS song_count,\n" +
-                "    ual.bookmarked_at AS bookmarked_at\n" +
-                "FROM user_album ual\n" +
-                "JOIN album a ON a.id = ual.album_id\n",
+    value = """
+        SELECT
+            ual.user_id AS user_id,
+            a.id AS album_id,
+            a.origin AS origin,
+            COALESCE(ual.name, a.name) AS name,
+            COALESCE(ual.artists, a.artists) AS artists,
+            COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail,
+            a.year AS year,
+            a.url AS url,
+            a.is_explicit AS is_explicit,
+            (SELECT COUNT(*) FROM song s WHERE s.album_id = a.id) AS song_count,
+            ual.bookmarked_at AS bookmarked_at
+        FROM user_album ual
+        JOIN album a ON a.id = ual.album_id
+    """,
 )
 internal data class UserAlbumViewEntity(
     @ColumnInfo(name = "user_id")
