@@ -83,4 +83,102 @@ internal abstract class PersistentQueueDao {
         for (item in items)
             insertIfSaved(userId, item.ordinal, item.songId, item.position)
     }
+
+    /**
+     * Moves every item of [userId] at [from] or after by [delta] places. Two statements, since
+     * the key would clash while the items are renumbered one by one: they go through negative
+     * ordinals first.
+     */
+    @Transaction
+    protected open suspend fun shift(userId: String, from: Int, delta: Int) {
+        park(userId, from, delta)
+        unpark(userId)
+    }
+
+    @Query(
+        """
+        UPDATE persistent_queue 
+        SET ordinal = -(ordinal + :delta) - 1 
+        WHERE user_id = :userId 
+        AND ordinal >= :from
+    """
+    )
+    protected abstract suspend fun park(userId: String, from: Int, delta: Int)
+
+    @Query(
+        """
+        UPDATE persistent_queue 
+        SET ordinal = -ordinal - 1 
+        WHERE user_id = :userId 
+        AND ordinal < 0
+    """
+    )
+    protected abstract suspend fun unpark(userId: String)
+
+    @Query(
+        """
+        DELETE FROM persistent_queue 
+        WHERE user_id = :userId 
+        AND ordinal >= :from 
+        AND ordinal < :to
+    """
+    )
+    protected abstract suspend fun deleteRange(userId: String, from: Int, to: Int)
+
+    /**
+     * Makes room at [index] and puts [items] there, in one transaction. Items whose song isn't
+     * saved are left out, the places they would have held stay empty.
+     */
+    @Transaction
+    open suspend fun insert(userId: String, index: Int, items: List<PersistentQueueEntity>) {
+        shift(userId, index, items.size)
+        for ((offset, item) in items.withIndex())
+            insertIfSaved(userId, index + offset, item.songId, item.position)
+    }
+
+    /** Takes the items from [index] on, [count] of them, and closes the gap, in one transaction. */
+    @Transaction
+    open suspend fun remove(userId: String, index: Int, count: Int) {
+        deleteRange(userId, index, index + count)
+        shift(userId, index + count, -count)
+    }
+
+    /**
+     * Moves the [count] items from [from] on so that they start at [to] of the queue left after
+     * they are taken out, like `Player.moveMediaItems`, in one transaction. The items in between
+     * make way for them.
+     */
+    @Transaction
+    open suspend fun move(userId: String, from: Int, count: Int, to: Int) {
+        if (from == to || count <= 0) return
+
+        val low = minOf(from, to)
+        val high = if (to > from) to + count else from + count
+        parkMoved(userId, from, count, to, low, high)
+        unpark(userId)
+    }
+
+    @Query(
+        """
+        UPDATE persistent_queue 
+        SET ordinal = -(
+            CASE 
+                WHEN ordinal >= :from AND ordinal < :from + :count THEN ordinal + (:to - :from) 
+                WHEN :to > :from THEN ordinal - :count 
+                ELSE ordinal + :count 
+            END
+        ) - 1 
+        WHERE user_id = :userId 
+        AND ordinal >= :low 
+        AND ordinal < :high
+    """
+    )
+    protected abstract suspend fun parkMoved(
+        userId: String,
+        from: Int,
+        count: Int,
+        to: Int,
+        low: Int,
+        high: Int,
+    )
 }

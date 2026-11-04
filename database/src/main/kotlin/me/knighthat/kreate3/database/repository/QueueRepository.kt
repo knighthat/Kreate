@@ -45,5 +45,20 @@ interface QueueRepository {
      */
     suspend fun setPosition(index: Int, position: Long)
 
+    /**
+     * Puts [songIds] in the queue last saved, starting at [index], and pushes the songs after
+     * them back. Only those songs are written. Songs that aren't saved are left out.
+     */
+    suspend fun insert(index: Int, songIds: List<String>)
+
+    /** Takes [count] songs from [index] on out of the queue last saved, the songs after them close up. */
+    suspend fun remove(index: Int, count: Int)
+
+    /**
+     * Moves [count] songs from [index] on so that they start at [to] of the queue left without
+     * them, like `Player.moveMediaItems`. Only the places in between change.
+     */
+    suspend fun move(index: Int, count: Int, to: Int)
+
     suspend fun clear()
 }

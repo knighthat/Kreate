@@ -26,7 +26,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -34,7 +33,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.QueueRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.toMediaItem
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,14 +43,19 @@ import kotlin.time.Duration.Companion.seconds
  * Keeps the queue of [player] in the database while [Preferences.PERSISTENT_QUEUE_ENABLED] is on,
  * and puts it back when the player is made with an empty queue.
  *
- * A change to the queue saves it whole at once, with where the song playing is. Moving to another
+ * A change to the queue is written as it happens, only the songs it touches (and the places they
+ * push, see [diffQueue]), whether or not the setting is on, so turning it on finds the changes
+ * until then known.
+ * The whole queue is saved when this starts or the setting is turned on. Moving to another
  * song, pausing and seeking save where the song is, and so does every
- * [Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL] while it plays. Songs missing from the database
- * aren't saved.
+ * [Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL] while it plays. The saved queue only points at
+ * stored songs: a remote one not in the database is stored before it is saved, like when it
+ * starts playing, which asks its source once for it. A song that can't be stored isn't saved.
  *
  * Use it on the main thread, [scope] has to run there. The writes run in [writeScope], which has
  * to outlive the player: [release] sends the last one, call it before releasing the player.
  *
+ * @param store makes sure a remote song is in the database, see [QueueWriter]
  * @param queued a saved song as the player queues it, like the session does with the songs added
  * to it; `null` leaves it out
  */
@@ -57,12 +63,20 @@ class PersistentQueue(
     private val player: Player,
     private val queue: QueueRepository,
     private val songs: UserSongRepository,
-    scope: CoroutineScope,
+    private val scope: CoroutineScope,
     writeScope: CoroutineScope,
+    store: suspend (songId: String, origin: Origin) -> Unit = { _, _ -> },
     private val queued: (MediaItem) -> MediaItem? = { it.withSongUri() },
 ) : Player.Listener {
 
-    private val writes = Channel<Write>(Channel.UNLIMITED)
+    private val writer = QueueWriter(queue, store, writeScope) {
+        // The saved queue doesn't match the player's anymore, send it whole again
+        scope.launch { if (enabled && player.mediaItemCount > 0) saveQueue() }
+    }
+    private val window = Timeline.Window()
+
+    /** The queue as the last change left it, the uid of each window. */
+    private var known: List<Any> = emptyList()
     private val following: Job
 
     /** Completes once the saved queue was put back, or wasn't to be. */
@@ -72,13 +86,13 @@ class PersistentQueue(
         get() = Preferences.PERSISTENT_QUEUE_ENABLED.value
 
     init {
-        writeScope.launch { write() }
         following = scope.launch {
             try {
                 if (enabled && player.mediaItemCount == 0) restore()
             } finally {
                 restored.complete(Unit)
             }
+            known = uids(player.currentTimeline)
             player.addListener(this@PersistentQueue)
 
             combine(
@@ -100,11 +114,39 @@ class PersistentQueue(
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-        if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED && enabled) saveQueue()
+        if (reason != Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) return
+
+        val old = known
+        known = uids(timeline)
+        if (!enabled) return
+
+        val changes = diffQueue(old, known)
+        if (changes.isEmpty()) return
+
+        for (change in changes)
+            when (change) {
+                is QueueChange.Remove ->
+                    writer.send(QueueWrite.Remove(change.index, change.count))
+
+                is QueueChange.Move ->
+                    writer.send(QueueWrite.Move(change.index, change.count, change.to))
+
+                is QueueChange.Insert -> writer.send(
+                    QueueWrite.Insert(change.index, entries(timeline, change.index, change.count))
+                )
+
+                QueueChange.Replace -> {
+                    saveQueue()
+                    return
+                }
+            }
+
+        // The song playing may be another one now, or have moved: the changes carry no place
+        savePosition()
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        // A change to the queue has saved it already
+        // A change to the queue wrote where the song is already
         if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && enabled)
             savePosition()
     }
@@ -133,7 +175,7 @@ class PersistentQueue(
         following.cancel()
         player.removeListener(this)
         if (enabled) savePosition()
-        writes.close()
+        writer.close()
     }
 
     /**
@@ -190,35 +232,25 @@ class PersistentQueue(
     class Saved(val items: List<MediaItem>, val start: Int, val position: Long)
 
     private fun saveQueue() {
-        val songIds = List(player.mediaItemCount) { player.getMediaItemAt(it).mediaId }
-        writes.trySend(Write.Queue(songIds, player.currentMediaItemIndex, player.currentPosition))
+        val songs = List(player.mediaItemCount) {
+            val item = player.getMediaItemAt(it)
+            QueueEntry(item.mediaId, item.origin)
+        }
+        writer.send(QueueWrite.Queue(songs, player.currentMediaItemIndex, player.currentPosition))
     }
+
+    private fun uids(timeline: Timeline): List<Any> =
+        List(timeline.windowCount) { timeline.getWindow(it, window).uid }
+
+    private fun entries(timeline: Timeline, from: Int, count: Int): List<QueueEntry> =
+        List(count) {
+            val item = timeline.getWindow(from + it, window).mediaItem
+            QueueEntry(item.mediaId, item.origin)
+        }
 
     private fun savePosition() {
         if (player.mediaItemCount == 0) return
-        writes.trySend(Write.Position(player.currentMediaItemIndex, player.currentPosition))
-    }
-
-    /** Writes in the order they were sent, a position belongs to the queue saved before it. */
-    private suspend fun write() {
-        for (write in writes)
-            try {
-                when (write) {
-                    is Write.Queue -> queue.replace(write.songIds, write.current, write.position)
-                    is Write.Position -> queue.setPosition(write.index, write.position)
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Log.w(TAG, "Couldn't save the queue", e)
-            }
-    }
-
-    private sealed interface Write {
-
-        class Queue(val songIds: List<String>, val current: Int, val position: Long) : Write
-
-        class Position(val index: Int, val position: Long) : Write
+        writer.send(QueueWrite.Position(player.currentMediaItemIndex, player.currentPosition))
     }
 
     private companion object {

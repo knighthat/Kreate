@@ -103,15 +103,24 @@ playback/
   no like), asking its source again; then `SongFormatRecorder.flush` and `onStored` (queue re-save).
 - `Radio.kt` — songs like a song, per origin: local ones scored from the user's library (
   `UserSongRepository.similar`), others asked from their source; nothing stored. `RADIO_SIZE` (30).
-- `PersistentQueue.kt` — saves the player queue to `persistent_queue` (whole queue on playlist
-  change; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s while
+- `PersistentQueue.kt` — saves the player queue to `persistent_queue` (changes as they happen:
+  `onTimelineChanged` diffs window uids with `diffQueue` into insert/remove/move writes that touch
+  only those songs, whole queue on start, on enabling, after a failed change write and after an
+  arbitrary reorder; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s
+  while
   playing) when `PERSISTENT_QUEUE_ENABLED`; restores it unprepared in `PlaybackService.onCreate` if
   the player is empty; `saved()` (also for playback resumption) gives the queue as items;
   `release()` before the player's. `awaitRestored()`: done once the saved queue was put back (or
   wasn't), a downloaded song's notification button waits for it on a cold start. Table: PK (user_id,
   ordinal), `position` =
   ms of the one playing row (single-statement CASE update keeps it unique), songs missing from
-  `song` skipped on insert.
+  `song` skipped on insert. Ordinal = player index, gaps where a song couldn't be stored; the DAO
+  shifts neighbours through negative ordinals to avoid key clashes.
+- `QueueWriter.kt` — `PersistentQueue`'s ordered write channel (`QueueWrite` kinds, `QueueEntry`);
+  stores unstored remote songs (`SongStore`, one request each, stops at the first network failure)
+  before writes that need them; asks for a full re-save when a change write fails.
+- `QueueDiff.kt` — `diffQueue(old, new)`: removes, one rotation (a moved block) and inserts, or
+  `Replace` for anything else; pure, tested by `QueueDiffTest`.
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,
   `PlaybackService.stop()` (session released, its write job joined, 5 s cap then cancelled), runs
   the block, reconnects; service makes no session while `isStopped`. `restartPlayer()` (global

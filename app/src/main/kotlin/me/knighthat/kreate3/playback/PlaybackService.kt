@@ -73,6 +73,7 @@ import me.knighthat.kreate3.notification.DownloadedSongAction
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.ui.component.origin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -171,6 +172,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             songs = get(),
             scope = scope,
             writeScope = writeScope,
+            store = get<SongStore>()::store,
             queued = { it.queued() },
         )
         PlayedSongRecorder(

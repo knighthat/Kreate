@@ -43,6 +43,8 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
   shown from the provider and never written. A remote song is stored when it **starts playing**
   (`PlayedSongRecorder`: added to the library, no like), when it's added to a playlist or gets a
   like/dislike (the same store, `SongStore`: playlist links and reactions need its `song` row),
+  when it is queued while the persistent queue is on (`QueueWriter`: the saved queue points at
+  `song` rows, one source request per song, the maintainer's call 2026-11-04),
   when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it) or
   when synced as liked. A planned Import button will store a remote item only on an explicit user
   action.

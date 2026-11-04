@@ -189,4 +189,80 @@ internal class UserRepositoryTest : DatabaseTest() {
         activeUser.id.value = USER
         assertEquals(listOf("a"), queue.queue().first().map { it.songId })
     }
+
+    private suspend fun savedQueue(): List<Pair<Int, String>> =
+        database.persistentQueueDao().list(USER).map { it.ordinal to it.songId }
+
+    @Test
+    fun insertingWritesTheNewSongsAndPushesTheRestBack() = runBlocking {
+        addUser()
+        listOf("a", "b", "c", "x", "y").forEach { addSong(it) }
+        queue.replace(listOf("a", "b", "c"), current = 2, position = 9)
+
+        queue.insert(1, listOf("x", "missing", "y"))
+
+        // The missing song leaves its place empty, the others keep the player's places
+        assertEquals(
+            listOf(0 to "a", 1 to "x", 3 to "y", 4 to "b", 5 to "c"),
+            savedQueue()
+        )
+        assertEquals(9L, queue.list().last().position)
+    }
+
+    @Test
+    fun removingClosesTheGap() = runBlocking {
+        addUser()
+        listOf("a", "b", "c", "d", "e").forEach { addSong(it) }
+        queue.replace(listOf("a", "b", "c", "d", "e"), current = 4, position = 9)
+
+        queue.remove(1, 2)
+
+        assertEquals(listOf(0 to "a", 1 to "d", 2 to "e"), savedQueue())
+        assertEquals(9L, queue.list().last().position)
+    }
+
+    @Test
+    fun movingASongDownAndUp() = runBlocking {
+        addUser()
+        listOf("a", "b", "c", "d").forEach { addSong(it) }
+        queue.replace(listOf("a", "b", "c", "d"), current = 0, position = 5)
+
+        queue.move(0, 1, 2)
+        assertEquals(listOf("b", "c", "a", "d"), queue.list().map { it.songId })
+        assertEquals(5L, queue.list().first { it.songId == "a" }.position)
+
+        queue.move(3, 1, 0)
+        assertEquals(listOf("d", "b", "c", "a"), queue.list().map { it.songId })
+        assertEquals(listOf(0, 1, 2, 3), savedQueue().map { it.first })
+    }
+
+    @Test
+    fun movingABlock() = runBlocking {
+        addUser()
+        listOf("a", "b", "c", "d", "e").forEach { addSong(it) }
+        queue.replace(listOf("a", "b", "c", "d", "e"), current = 0, position = 0)
+
+        queue.move(1, 2, 3)
+
+        assertEquals(listOf("a", "d", "e", "b", "c"), queue.list().map { it.songId })
+        assertEquals(listOf(0, 1, 2, 3, 4), savedQueue().map { it.first })
+    }
+
+    @Test
+    fun changesLeaveOtherUsersAlone() = runBlocking {
+        addUser()
+        addUser("other")
+        listOf("a", "b").forEach { addSong(it) }
+        activeUser.id.value = "other"
+        queue.replace(listOf("a", "b"), 0, 0)
+        activeUser.id.value = USER
+        queue.replace(listOf("a"), 0, 0)
+
+        queue.insert(0, listOf("b"))
+        queue.remove(0, 1)
+        queue.move(0, 1, 0)
+
+        activeUser.id.value = "other"
+        assertEquals(listOf("a", "b"), queue.list().map { it.songId })
+    }
 }
