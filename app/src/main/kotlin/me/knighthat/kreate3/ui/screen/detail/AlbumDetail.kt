@@ -61,10 +61,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -129,6 +132,12 @@ private val TINTED_GAP = 16.dp
 
 /** Height at the header's bottom where its shade fades out over the list. */
 private val TINTED_FADE = 28.dp
+
+/** How far above the header's bottom the list's rows start to show, fully there [LIST_FADE_BELOW] under it. */
+private val LIST_FADE_ABOVE = 24.dp
+
+/** How far under the header's bottom the list's rows are whole, see [LIST_FADE_ABOVE]. */
+private val LIST_FADE_BELOW = 8.dp
 
 /** How dark the header's color is, HCT tone: dark enough for white text on any cover. */
 private const val TINT_TONE = 30.0
@@ -269,7 +278,24 @@ fun AlbumDetailScaffold(
                             placeable.place(0, -up)
                         }
                     }
-                    .then(contents),
+                    .then(contents)
+                    // Rows dissolve around the header's bottom instead of showing through its
+                    // fade higher up. In the list's own coordinates, which the layout above moved
+                    // up by what the header shrank by, that bottom stays where the padding put it
+                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                    .drawWithContent {
+                        drawContent()
+                        val bottom = heights.expanded.toFloat()
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                0f to Color.Transparent,
+                                1f to Color.Black,
+                                startY = bottom - LIST_FADE_ABOVE.toPx(),
+                                endY = bottom + LIST_FADE_BELOW.toPx(),
+                            ),
+                            blendMode = BlendMode.DstIn,
+                        )
+                    },
                 content = content,
             )
 
@@ -350,21 +376,10 @@ private fun TintedHeader(
 
     Layout(
         contents = listOf(
-            // The shade, filled to the header's height at each step, fading out at its bottom
+            // The shade, filled to the header's height at each step, fading into the page, see
+            // drawEasedFade
             {
-                Box(
-                    contents.drawBehind {
-                        val fadeStart = ((size.height - TINTED_FADE.toPx()) / size.height)
-                            .coerceIn(0f, 1f)
-                        drawRect(
-                            Brush.verticalGradient(
-                                0f to shade,
-                                fadeStart to shade,
-                                1f to shade.copy(alpha = 0f),
-                            )
-                        )
-                    }
-                )
+                Box(contents.drawBehind { drawEasedFade(shade, reversed = true, soft = true) })
             },
             {
                 Thumbnail(
@@ -649,7 +664,11 @@ fun AlbumMenu(
 @Composable
 private fun AlbumDetailPreview() = PreviewTheme {
     val models = remember { listOf<Any>(previewCover()) }
-    val songs = previewSongs()
+    // Seven discs of three songs, long enough to scroll under the header
+    val discs = previewSongs().let { all ->
+        List(7) { if (it % 2 == 0) all.take(3) else all.drop(3) }
+    }
+    val songs = discs.flatten()
     val resources = LocalResources.current
 
     AlbumDetailScaffold(
@@ -673,13 +692,11 @@ private fun AlbumDetailPreview() = PreviewTheme {
         onAction = {},
         menu = {},
     ) {
-        item(key = "disc1") { DiscHeader(1) }
-        itemsIndexed(songs.take(3), key = { _, it -> it.mediaId }) { index, song ->
-            AlbumTrack(song, index + 1, onClick = {})
-        }
-        item(key = "disc2") { DiscHeader(2) }
-        itemsIndexed(songs.drop(3), key = { _, it -> it.mediaId }) { index, song ->
-            AlbumTrack(song, index + 1, onClick = {})
+        discs.forEachIndexed { disc, discSongs ->
+            item(key = "disc$disc") { DiscHeader(disc + 1) }
+            itemsIndexed(discSongs, key = { _, it -> "$disc:${it.mediaId}" }) { index, song ->
+                AlbumTrack(song, index + 1, onClick = {})
+            }
         }
     }
 }

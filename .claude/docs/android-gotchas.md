@@ -169,3 +169,12 @@ the top of the screen goes out of sight. `SearchScreen` switches the window to
 `setSoftInputMode(0)` is ignored, and the window keeps the last adjust while the mode is
 unspecified, so an unspecified mode is set back as `SOFT_INPUT_ADJUST_PAN` by name. The app-wide
 mode stays pan because the other screens with text fields have no `imePadding()`.
+
+## Gradients with many color stops
+
+A `Brush.verticalGradient` with many stops (33 were tried) is drawn from a texture, and its last
+pixel row can come out as the first color: a one pixel line of the top color at the bottom edge,
+seen only while the thing moved (the album header shrinking on a fractional pixel). Few stops
+(three) are fine. A fade that follows a curve is drawn as many pieces of two-stop gradients, each on
+whole pixels (`drawEasedFade`, `EasedFade.kt`). Check any new gradient with more than a handful of
+stops by scrolling a bit on the emulator and looking for a row at its end.

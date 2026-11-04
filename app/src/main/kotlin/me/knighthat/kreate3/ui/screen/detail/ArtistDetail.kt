@@ -59,6 +59,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -96,9 +97,6 @@ import me.knighthat.kreate3.ui.component.thumbnailModel
 
 /** Share of the screen's height the artist's picture takes at the top, before it scrolls. */
 private const val PICTURE_HEIGHT = 0.4f
-
-/** Share of the picture's height, from the top, before it starts to fade into the page. */
-private const val PICTURE_FADE_START = 0.6f
 
 /** The picture once the list reached the bar: a few pixels stretched, smoothed where Android can. */
 private val PICTURE_BLUR = Blur(sampleSize = 32, radius = 24.dp)
@@ -225,18 +223,13 @@ fun ArtistDetailScaffold(
                             alpha = scrolled.coerceIn(0f, 1f)
                         },
                 )
-                // Its bottom fades into the page the list starts on
+                // It fades into the page the list starts on, see drawEasedFade
                 Box(
                     Modifier
                         .matchParentSize()
                         .then(picture.overlay)
                         .then(contents)
-                        .background(
-                            Brush.verticalGradient(
-                                PICTURE_FADE_START to Color.Transparent,
-                                1f to background,
-                            )
-                        )
+                        .drawBehind { drawEasedFade(background) }
                 )
             }
 
