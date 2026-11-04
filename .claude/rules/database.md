@@ -7,16 +7,16 @@ paths:
 
 ## Schema
 
-- Schema changes: ask once whether to change entities in place at the current version (every
-  install then needs its data cleared or a reinstall) or to raise `@Database(version)` with a
-  migration. **Never raise the version or add `AutoMigration`/`Migration` without that answer.**
-  In place: delete any stray `2.json`, and after the change say the installed app needs its data
-  cleared or a reinstall.
-- A version bump also breaks restoring older backups, see `backup.md`.
-- Room's identity hash ignores column order and doesn't rewrite `1.json` while the hash matches:
-  after reordering entity fields, delete `1.json` and run
-  `./gradlew :database:kspDebugKotlin --rerun-tasks :database:copyRoomSchemas` (no data clear
-  needed).
+- The app is in production: every schema change raises `DATABASE_VERSION` and ships a `Migration`
+  (or `AutoMigration` when Room can derive it), and exports the new `N.json` under `schemas/`.
+  Never edit entities in place or tell the maintainer to clear data. Ask the maintainer once
+  whether to write migrations by hand or let `AutoMigration` do it, and whether each version bump
+  needs their approval.
+- A version bump also decides whether older backups restore, see `backup.md`.
+- Room's identity hash ignores column order and doesn't rewrite the current `N.json` while the
+  hash matches: after reordering entity fields, delete that `N.json` and run
+  `./gradlew :database:kspDebugKotlin --rerun-tasks :database:copyRoomSchemas` (no version bump
+  or data clear needed).
 - Keep `BundledSQLiteDriver` (~1.2 MB per ABI): queries use `NULLS LAST`, aggregate
   `FILTER (WHERE …)` and `json_group_array`, which the framework SQLite only has from API 31
   (minSdk is 24). Unit tests run `AndroidSQLiteDriver` on the host's newer SQLite, so they won't
