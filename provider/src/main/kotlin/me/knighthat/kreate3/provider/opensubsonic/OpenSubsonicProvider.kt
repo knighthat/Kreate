@@ -882,8 +882,12 @@ class OpenSubsonicProvider internal constructor(
     fun trust(change: ServerCheck.CertificateChanged) =
         settings.pin(CertificatePin(change.host, change.fingerprint))
 
+    /** Trusts the self-signed [certificate] the server presented, from now on. */
+    fun trust(certificate: SelfSignedCertificate) =
+        settings.pin(CertificatePin(certificate.host, certificate.fingerprint))
+
     /**
-     * Forgets the trusted self-signed certificate, the next one the server presents is trusted.
+     * Forgets the trusted self-signed certificate, the next one the server presents asks again.
      */
     fun forgetCertificate() = settings.pin(null)
 
@@ -1115,6 +1119,9 @@ class OpenSubsonicProvider internal constructor(
 
         failures.firstNotNullOfOrNull { it as? CertificateChangedException }?.let {
             return ServerCheck.CertificateChanged(it.host, it.fingerprint, it.pinnedFingerprint)
+        }
+        failures.firstNotNullOfOrNull { it as? UntrustedSelfSignedException }?.let {
+            return ServerCheck.UntrustedCertificate(it.message.orEmpty(), it.certificate)
         }
         failures.firstOrNull { it is SSLHandshakeException || it is CertificateException }?.let {
             return ServerCheck.UntrustedCertificate(it.message ?: it::class.simpleName.orEmpty())

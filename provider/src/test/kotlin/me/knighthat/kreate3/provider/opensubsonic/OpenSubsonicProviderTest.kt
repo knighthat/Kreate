@@ -180,6 +180,28 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun aSelfSignedCertificateIsReportedWithItsDetails() = runBlocking {
+        val certificate = SelfSignedCertificate("music.test", "CN=music.test", 1L, 2L, "FP")
+        val untrusted = UntrustedSelfSignedException(certificate)
+        val result =
+            provider { throw SSLHandshakeException("refused").apply { initCause(untrusted) } }.ping()
+
+        assertEquals(
+            ServerCheck.UntrustedCertificate(untrusted.message.orEmpty(), certificate),
+            result
+        )
+    }
+
+    @Test
+    fun acceptingACertificateRemembersIt() {
+        val settings = FakeSettings()
+
+        provider(settings).trust(SelfSignedCertificate("music.test", "CN=music.test", 1L, 2L, "FP"))
+
+        assertEquals(CertificatePin("music.test", "FP"), settings.pinnedCertificate)
+    }
+
+    @Test
     fun trustingAChangeRemembersTheNewCertificate() {
         val settings = FakeSettings(pinnedCertificate = CertificatePin("music.test", "OLD"))
 

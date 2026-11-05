@@ -196,7 +196,8 @@ fun SwitchSetting(
 
 /**
  * A setting that is on or off with a page of its own: the switch at the end, past a divider, flips
- * it, and a tap on the texts calls [onClick] to open the page, only while it is [checked].
+ * it, and a tap on the texts calls [onClick] to open the page, only while it is [checked] unless
+ * [textEnabled] says otherwise.
  */
 @Composable
 fun SwitchPageSetting(
@@ -206,6 +207,7 @@ fun SwitchPageSetting(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     summary: String? = null,
+    textEnabled: Boolean = checked,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
@@ -215,7 +217,7 @@ fun SwitchPageSetting(
     SettingsItem(
         title = title,
         summary = summary,
-        onClick = if (checked) onClick else null,
+        onClick = if (textEnabled) onClick else null,
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight(),

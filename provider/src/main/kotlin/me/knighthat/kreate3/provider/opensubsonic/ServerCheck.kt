@@ -37,10 +37,15 @@ sealed interface ServerCheck {
     data class Unreachable(val reason: String) : ServerCheck
 
     /**
-     * The server's certificate is not trusted. Turning on self-signed certificates helps when
-     * the server uses its own.
+     * The server's certificate is not trusted.
+     *
+     * @property selfSigned the certificate when the server signed it itself, for the user to
+     * trust with [OpenSubsonicProvider.trust]; `null` for any other reason
      */
-    data class UntrustedCertificate(val reason: String) : ServerCheck
+    data class UntrustedCertificate(
+        val reason: String,
+        val selfSigned: SelfSignedCertificate? = null,
+    ) : ServerCheck
 
     /**
      * The server presented a self-signed certificate other than the one trusted for it, and was

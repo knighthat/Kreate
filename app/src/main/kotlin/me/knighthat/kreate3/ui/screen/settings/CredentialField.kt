@@ -44,6 +44,8 @@ import me.knighthat.kreate3.ui.component.Tooltip
  * end shows or hides the text. While not [enabled] it is dimmed and can't be typed in.
  *
  * @param placeholder shown while the field is empty and focused, none when `null`
+ * @param keyboardType the keyboard to show, a password one while [hidden] by default
+ * @param error why the text is not acceptable, shown under the field; `null` when it is
  */
 @Composable
 internal fun CredentialField(
@@ -55,6 +57,8 @@ internal fun CredentialField(
     modifier: Modifier = Modifier.fillMaxWidth(),
     placeholder: String? = null,
     enabled: Boolean = true,
+    keyboardType: KeyboardType = if (hidden) KeyboardType.Password else KeyboardType.Text,
+    error: String? = null,
 ) {
     var revealed by rememberSaveable { mutableStateOf(false) }
 
@@ -65,6 +69,8 @@ internal fun CredentialField(
         placeholder = placeholder?.let { { Text(it) } },
         enabled = enabled,
         singleLine = true,
+        isError = error != null,
+        supportingText = error?.let { { Text(it) } },
         trailingIcon = if (hidden) {
             {
                 val description = stringResource(
@@ -85,7 +91,7 @@ internal fun CredentialField(
             null
         },
         keyboardOptions = KeyboardOptions(
-            keyboardType = if (hidden) KeyboardType.Password else KeyboardType.Text,
+            keyboardType = keyboardType,
             autoCorrectEnabled = false,
             imeAction = imeAction,
         ),

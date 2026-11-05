@@ -261,8 +261,11 @@
     <string name="setting_description_server_url_scheme">Start with https:// or http://</string>
     <string name="setting_description_server_url_host">Add the host of the server</string>
     <string name="setting_title_allow_self_signed_certificate">Allow self-signed certificate</string>
-    <string name="setting_description_allow_self_signed_certificate">Trusts the server\'s own certificate the first time, and asks if it changes</string>
-    <string name="setting_title_trusted_certificate">Trusted certificate</string>
+    <string name="setting_title_issued_to">Issued to</string>
+    <string name="setting_title_valid_from">Valid from</string>
+    <string name="setting_title_valid_until">Valid until</string>
+    <!-- SHA-256 is the name of a hashing algorithm, not translated; a fingerprint is a short code that identifies a security certificate -->
+    <string name="setting_title_sha256_fingerprint">SHA-256 fingerprint</string>
     <string name="setting_title_api_key">API key</string>
     <string name="setting_title_direct_play">Direct play</string>
     <string name="setting_title_replay_gain_reference">ReplayGain reference</string>
@@ -280,6 +283,18 @@
     <string name="setting_description_backup_status_default_profile_only">Only %1$s can back up or restore</string>
 
     <!-- statuses of one setting -->
+    <!-- Self-signed certificate = a security certificate the server made itself -->
+    <string name="setting_description_allow_self_signed_certificate_status_not_allowed">Self-signed certificate is not allowed</string>
+    <!-- "Tap" = touch the row; "allow" = decide whether to trust it. Self-signed certificate = a security certificate the server made itself -->
+    <string name="setting_description_allow_self_signed_certificate_status_detected">Server uses self-signed certificate. Tap to allow</string>
+    <!-- Self-signed certificate = a security certificate the server made itself; "you" is the user, gender unknown. The user is asked to trust it when the server presents one -->
+    <string name="setting_description_allow_self_signed_certificate_status_allowed">Allowed, you\'ll be asked to trust the server\'s certificate</string>
+    <!-- %1$s is the host name of the user\'s own server, %2$s the start of the certificate\'s fingerprint (letters and numbers, not translated). "Tap" = touch the row; "forget" = stop trusting it -->
+    <string name="setting_description_allow_self_signed_certificate_status_trusted">Trusted %1$s - %2$s. Tap to forget</string>
+    <!-- "Tap" = touch the row; "approve" = decide to trust the new certificate -->
+    <string name="setting_description_allow_self_signed_certificate_status_changed">Certificate changed. Tap to approve</string>
+    <!-- "Sign in" is the name of a settings row; the address is entered there -->
+    <string name="setting_description_server_status_no_server">No server address, add it in Sign in</string>
     <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
     <!-- %1$s is the user's account name on YouTube Music (a person's name or handle, gender unknown, not translated) -->
     <string name="setting_description_configure_youtube_status_signed_in_as">Signed in as %1$s</string>

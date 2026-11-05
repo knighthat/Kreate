@@ -49,6 +49,31 @@ class CertificateChangedException(
 ) : CertificateException("The certificate of $host changed")
 
 /**
+ * A self-signed certificate a server presented that nobody trusted yet, for the user to look at.
+ *
+ * @property subject who the certificate names, like `CN=music.example.com`
+ * @property notBefore start of its validity, epoch milliseconds
+ * @property notAfter end of its validity, epoch milliseconds
+ * @property fingerprint SHA-256 of the certificate, see [sha256]
+ */
+data class SelfSignedCertificate(
+    val host: String,
+    val subject: String,
+    val notBefore: Long,
+    val notAfter: Long,
+    val fingerprint: String,
+)
+
+/**
+ * The server presented a self-signed certificate that isn't trusted, because none was trusted for
+ * it yet or self-signed certificates aren't allowed. The connection is refused until the user
+ * trusts [certificate].
+ */
+class UntrustedSelfSignedException(
+    val certificate: SelfSignedCertificate,
+) : CertificateException("The certificate of ${certificate.host} is self-signed")
+
+/**
  * SHA-256 of the certificate, as uppercase hex pairs split by `:`.
  */
 fun X509Certificate.sha256(): String =
@@ -61,9 +86,11 @@ internal fun X509Certificate.isSelfSigned(): Boolean =
     subjectX500Principal == issuerX500Principal && runCatching { verify(publicKey) }.isSuccess
 
 /**
- * Trusts what [system] trusts and, beside it, a chain that ends in a self-signed certificate
- * remembered for the host. The first self-signed certificate a host presents is remembered
- * through [onFirstUse]; a different one later throws [CertificateChangedException].
+ * Trusts what [system] trusts and, while [allowed], a chain that ends in the self-signed
+ * certificate the user trusted for the host ([pinned]). Any other chain ending in a self-signed
+ * certificate is refused with [UntrustedSelfSignedException] carrying its details, so the user can
+ * decide; when another certificate was trusted for the host it is [CertificateChangedException].
+ * Nothing is remembered here, only the user's answer is.
  *
  * The chain is still checked against the remembered certificate (signatures and dates), and
  * the host name is checked afterwards by the HTTP client as usual. A chain that does not end in
@@ -72,8 +99,8 @@ internal fun X509Certificate.isSelfSigned(): Boolean =
  */
 internal class SelfSignedTrustManager(
     private val system: X509TrustManager,
+    private val allowed: () -> Boolean,
     private val pinned: () -> CertificatePin?,
-    private val onFirstUse: (CertificatePin) -> Unit,
 ) : X509ExtendedTrustManager() {
 
     override fun checkServerTrusted(
@@ -138,7 +165,7 @@ internal class SelfSignedTrustManager(
 
     /**
      * Trusts [chain] when [systemCheck] does, otherwise when it ends in the self-signed
-     * certificate remembered for [host], remembering it if [host] has none yet.
+     * certificate the user trusted for [host].
      */
     fun check(
         chain: Array<X509Certificate>,
@@ -153,7 +180,7 @@ internal class SelfSignedTrustManager(
             if (host.isNullOrEmpty() || chain.isEmpty()) throw refused
             val anchor = chain.lastOrNull { it.isSelfSigned() } ?: throw refused
 
-            // The chain must lead to the self-signed certificate before it is remembered
+            // The chain must lead to the self-signed certificate before it is offered
             try {
                 validate(chain, anchor)
             } catch (e: Exception) {
@@ -166,9 +193,19 @@ internal class SelfSignedTrustManager(
             val fingerprint = anchor.sha256()
             val pin = pinned()?.takeIf { it.host.equals(host, ignoreCase = true) }
             when {
-                pin == null -> onFirstUse(CertificatePin(host, fingerprint))
-                pin.fingerprint != fingerprint ->
+                allowed() && pin?.fingerprint == fingerprint -> return
+                allowed() && pin != null ->
                     throw CertificateChangedException(host, fingerprint, pin.fingerprint)
+
+                else -> throw UntrustedSelfSignedException(
+                    SelfSignedCertificate(
+                        host = host,
+                        subject = anchor.subjectX500Principal.name,
+                        notBefore = anchor.notBefore.time,
+                        notAfter = anchor.notAfter.time,
+                        fingerprint = fingerprint,
+                    )
+                )
             }
         }
     }

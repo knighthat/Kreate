@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
@@ -46,6 +45,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.CheckState
+import me.knighthat.kreate3.provider.opensubsonic.SelfSignedCertificate
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerInfo
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -63,13 +63,15 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
+import me.knighthat.kreate3.ui.screen.settings.SwitchPageSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
-import me.knighthat.kreate3.ui.screen.settings.TextSetting
 import me.knighthat.kreate3.ui.screen.settings.syncAlbumsDescription
 import me.knighthat.kreate3.ui.screen.settings.syncArtistsDescription
 import me.knighthat.kreate3.ui.screen.settings.syncPlaylistsDescription
 import me.knighthat.kreate3.ui.screen.settings.syncSongsDescription
 import org.koin.androidx.compose.koinViewModel
+import java.text.DateFormat
+import java.util.Date
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /**
@@ -190,7 +192,7 @@ private fun CheckState.signInSummary(
 }
 
 /** The first pairs of a fingerprint, enough to tell two apart at a glance. */
-private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
+private fun String.shortFingerprint(): String = split(':').take(6).joinToString(":") + "…"
 
 /**
  * Asks whether to trust the certificate the server presents now in place of the trusted one.
@@ -227,6 +229,50 @@ private fun CertificateChangedDialog(
     )
 }
 
+/**
+ * Shows the self-signed certificate the server presents and asks whether to trust it.
+ */
+@Composable
+private fun SelfSignedCertificateDialog(
+    certificate: SelfSignedCertificate,
+    onAccept: () -> Unit,
+    onDeny: () -> Unit,
+) {
+    val date = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
+    AlertDialog(
+        onDismissRequest = onDeny,
+        title = { Text(stringResource(R.string.dialog_title_trust_certificate)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.dialog_body_trust_certificate, certificate.host))
+                Detail(stringResource(R.string.setting_title_issued_to), certificate.subject)
+                Detail(
+                    stringResource(R.string.setting_title_valid_from),
+                    date.format(Date(certificate.notBefore))
+                )
+                Detail(
+                    stringResource(R.string.setting_title_valid_until),
+                    date.format(Date(certificate.notAfter))
+                )
+                Fingerprint(
+                    stringResource(R.string.setting_title_sha256_fingerprint),
+                    certificate.fingerprint
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.action_accept)) } },
+        dismissButton = { TextButton(onClick = onDeny) { Text(stringResource(R.string.action_deny)) } },
+    )
+}
+
+/** A [value] under its [label]. */
+@Composable
+private fun Detail(label: String, value: String) =
+    Column {
+        Text(label, style = MaterialTheme.typography.labelLarge)
+        Text(value, style = MaterialTheme.typography.bodySmall)
+    }
+
 /** A SHA-256 fingerprint under its [label], in a font that keeps the pairs aligned. */
 @Composable
 private fun Fingerprint(label: String, fingerprint: String) =
@@ -255,40 +301,27 @@ private fun ForgetCertificateDialog(server: String, onForget: () -> Unit, onDism
     )
 
 /**
- * The outcome of a check in a row, with a spinner while it runs. A tap runs the checks again.
+ * The outcome of a check in a row, with a spinner while it runs. A tap runs the checks again, or
+ * does what [onRetry] says while [clickable].
  */
 @Composable
-private fun CheckRow(title: String, state: CheckState, summary: String?, onRetry: () -> Unit) {
+private fun CheckRow(
+    title: String,
+    state: CheckState,
+    summary: String?,
+    onRetry: () -> Unit,
+    clickable: Boolean = state is CheckState.Done,
+) {
     summary ?: return
     SettingsItem(
         title = title,
         summary = summary,
-        onClick = onRetry.takeIf { state is CheckState.Done },
+        onClick = onRetry.takeIf { clickable },
         trailing = {
             if (state is CheckState.Checking)
                 CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
         },
     )
-}
-
-/**
- * Only an address starting with `http://` or `https://` and naming a host is accepted.
- * An empty one is, it clears the server.
- *
- * @return a check that gives the reason the address is not acceptable, `null` when it is
- */
-@Composable
-private fun serverUrlValidator(): (String) -> String? {
-    val scheme = stringResource(R.string.setting_description_server_url_scheme)
-    val host = stringResource(R.string.setting_description_server_url_host)
-    return { url ->
-        when {
-            url.isEmpty() -> null
-            !url.startsWith("https://") && !url.startsWith("http://") -> scheme
-            url.substringAfter("://").isBlank() -> host
-            else -> null
-        }
-    }
 }
 
 /**
@@ -344,6 +377,8 @@ fun OpenSubsonicSettingsScreen(
         syncArtists = syncArtists,
         onRetry = viewModel::retry,
         onTrust = viewModel::trust,
+        onAccept = viewModel::trust,
+        onAllowSelfSignedChange = viewModel::setAllowSelfSigned,
         onForgetCertificate = viewModel::forgetCertificate,
         onSongSyncChange = viewModel::setSongSync,
         onSignIn = onSignIn,
@@ -375,6 +410,8 @@ fun OpenSubsonicSettingsScreen(
  * @param certificate SHA-256 fingerprint of the trusted certificate, empty while there is none
  * @param certificateHost the host [certificate] was trusted for
  * @param onRetry runs the checks again
+ * @param onAccept trusts the self-signed certificate the server presents
+ * @param onAllowSelfSignedChange turning it off also forgets the trusted certificate
  * @param onSignIn opens [OpenSubsonicSignInScreen]
  * @param quality how good the streamed songs are, see [StreamQualitySettings]
  * @param proxy the server's proxy, see [ProxySettings]
@@ -402,6 +439,8 @@ private fun OpenSubsonicSettingsContent(
     syncArtists: SyncMode,
     onRetry: () -> Unit,
     onTrust: (ServerCheck.CertificateChanged) -> Unit,
+    onAccept: (SelfSignedCertificate) -> Unit,
+    onAllowSelfSignedChange: (Boolean) -> Unit,
     onForgetCertificate: () -> Unit,
     onSongSyncChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
@@ -413,6 +452,7 @@ private fun OpenSubsonicSettingsContent(
     // Fingerprint of the change the user put off, it isn't asked again until they tap the row
     var putOff by rememberSaveable { mutableStateOf<String?>(null) }
     var askForget by remember { mutableStateOf(false) }
+    var askTrust by remember { mutableStateOf(false) }
 
     SettingsPage(stringResource(R.string.source_opensubsonic), onBack, modifier) {
         MainSwitch(
@@ -426,22 +466,29 @@ private fun OpenSubsonicSettingsContent(
         if (!enabled) return@SettingsPage
 
         SettingsSection(stringResource(R.string.setting_title_server))
-        TextSetting(
-            title = stringResource(R.string.setting_title_server_address),
-            value = url,
-            placeholder = "https://music.example.com",
-            keyboardType = KeyboardType.Uri,
-            validate = serverUrlValidator(),
-            onSave = { Preferences.OPEN_SUBSONIC_URL.update(it.trim().trimEnd('/')) },
-        )
-        val change = (serverCheck as? CheckState.Done)?.result as? ServerCheck.CertificateChanged
+        val result = (serverCheck as? CheckState.Done)?.result
+        val change = result as? ServerCheck.CertificateChanged
+        // Nothing of the certificate shows while self-signed certificates are not allowed
+        val offered = (result as? ServerCheck.UntrustedCertificate)?.selfSigned
+            ?.takeIf { allowSelfSigned }
+        // Without an address there is nothing to check, the address is set in Sign in
         CheckRow(
-            stringResource(R.string.setting_title_server),
-            serverCheck,
-            serverCheck.serverSummary(server)
-        ) {
-            if (change != null) putOff = null else onRetry()
-        }
+            title = stringResource(R.string.setting_title_server),
+            state = serverCheck,
+            summary = if (url.isEmpty())
+                stringResource(R.string.setting_description_server_status_no_server)
+            else
+                serverCheck.serverSummary(server),
+            onRetry = {
+                when {
+                    url.isEmpty() -> onSignIn()
+                    change != null -> putOff = null
+                    offered != null -> askTrust = true
+                    else -> onRetry()
+                }
+            },
+            clickable = url.isEmpty() || serverCheck is CheckState.Done,
+        )
         if (change != null && putOff != change.fingerprint)
             CertificateChangedDialog(
                 change = change,
@@ -449,17 +496,51 @@ private fun OpenSubsonicSettingsContent(
                 onDismiss = { putOff = change.fingerprint },
             )
 
-        SwitchSetting(
+        val trusted = allowSelfSigned && certificate.isNotEmpty()
+        SwitchPageSetting(
             title = stringResource(R.string.setting_title_allow_self_signed_certificate),
-            summary = stringResource(R.string.setting_description_allow_self_signed_certificate),
+            summary = when {
+                !allowSelfSigned -> stringResource(
+                    R.string.setting_description_allow_self_signed_certificate_status_not_allowed
+                )
+
+                change != null -> stringResource(
+                    R.string.setting_description_allow_self_signed_certificate_status_changed
+                )
+
+                offered != null -> stringResource(
+                    R.string.setting_description_allow_self_signed_certificate_status_detected
+                )
+
+                trusted -> stringResource(
+                    R.string.setting_description_allow_self_signed_certificate_status_trusted,
+                    certificateHost,
+                    certificate.shortFingerprint()
+                )
+
+                else -> stringResource(
+                    R.string.setting_description_allow_self_signed_certificate_status_allowed
+                )
+            },
             checked = allowSelfSigned,
-            onCheckedChange = { Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.update(it) },
+            onCheckedChange = onAllowSelfSignedChange,
+            textEnabled = change != null || offered != null || trusted,
+            onClick = {
+                when {
+                    change != null -> putOff = null
+                    offered != null -> askTrust = true
+                    else -> askForget = true
+                }
+            },
         )
-        if (allowSelfSigned && certificate.isNotEmpty())
-            SettingsItem(
-                title = stringResource(R.string.setting_title_trusted_certificate),
-                summary = "$certificateHost · ${certificate.shortFingerprint()}",
-                onClick = { askForget = true },
+        if (askTrust && offered != null)
+            SelfSignedCertificateDialog(
+                certificate = offered,
+                onAccept = {
+                    askTrust = false
+                    onAccept(offered)
+                },
+                onDeny = { askTrust = false },
             )
         if (askForget)
             ForgetCertificateDialog(
@@ -567,8 +648,32 @@ private fun OpenSubsonicSettingsCacheOffPreview() = PreviewTheme {
     OpenSubsonicSettingsSample(songCacheOff = true)
 }
 
+/** Self-signed certificates are allowed and the server uses one nobody trusted yet. */
+@ScreenPreviews
 @Composable
-private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
+private fun OpenSubsonicSettingsSelfSignedPreview() = PreviewTheme {
+    val certificate = SelfSignedCertificate(
+        host = "music.example.com",
+        subject = "CN=music.example.com",
+        notBefore = 1_735_689_600_000,
+        notAfter = 1_893_456_000_000,
+        fingerprint = "3A:1F:9C:44:B2:07:D8:5E:61:A0:CC:19:72:E4:0B:F3",
+    )
+    OpenSubsonicSettingsSample(
+        songCacheOff = false,
+        allowSelfSigned = true,
+        serverCheck = CheckState.Done(
+            ServerCheck.UntrustedCertificate("Trust anchor not found", certificate)
+        ),
+    )
+}
+
+@Composable
+private fun OpenSubsonicSettingsSample(
+    songCacheOff: Boolean,
+    serverCheck: CheckState? = null,
+    allowSelfSigned: Boolean = false,
+) {
     val online = CheckState.Done(
         ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
     )
@@ -576,8 +681,8 @@ private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
         enabled = true,
         url = "https://music.example.com",
         server = "Navidrome",
-        serverCheck = online,
-        allowSelfSigned = false,
+        serverCheck = serverCheck ?: online,
+        allowSelfSigned = allowSelfSigned,
         certificateHost = "",
         certificate = "",
         auth = OpenSubsonicAuth.PASSWORD,
@@ -594,6 +699,8 @@ private fun OpenSubsonicSettingsSample(songCacheOff: Boolean) {
         syncArtists = SyncMode.ALL,
         onRetry = {},
         onTrust = {},
+        onAccept = {},
+        onAllowSelfSignedChange = {},
         onForgetCertificate = {},
         onSongSyncChange = {},
         onSignIn = {},

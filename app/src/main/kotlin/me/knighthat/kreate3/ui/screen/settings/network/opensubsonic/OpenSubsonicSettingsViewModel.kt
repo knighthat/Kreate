@@ -25,6 +25,7 @@ import me.knighthat.kreate3.provider.opensubsonic.CheckState
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
+import me.knighthat.kreate3.provider.opensubsonic.SelfSignedCertificate
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 
 /**
@@ -53,6 +54,18 @@ class OpenSubsonicSettingsViewModel(
         retry()
     }
 
+    /** Trusts the self-signed [certificate] the user accepted and checks again. */
+    fun trust(certificate: SelfSignedCertificate) {
+        provider.trust(certificate)
+        retry()
+    }
+
+    /** Allows self-signed certificates, or stops allowing them and forgets the trusted one. */
+    fun setAllowSelfSigned(on: Boolean) {
+        if (!on) provider.forgetCertificate()
+        Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.update(on)
+    }
+
     /**
      * Syncs the starred songs from now on, right away, or stops when [on] is `false`. Turning
      * them off only stops the syncing.
@@ -62,7 +75,7 @@ class OpenSubsonicSettingsViewModel(
         if (on) library.refreshNow()
     }
 
-    /** Forgets the trusted certificate, the next one the server presents is trusted. */
+    /** Forgets the trusted certificate, the next one the server presents asks again. */
     fun forgetCertificate() {
         provider.forgetCertificate()
         retry()

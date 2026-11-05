@@ -78,12 +78,11 @@ internal class OpenSubsonicClients(
             .connectionPool(ConnectionPool())
             .proxy(SOURCE, setup.proxy)
             .apply {
-                if (!setup.allowSelfSigned) return@apply
-
+                // Also while not allowed: it reports the certificate the user may allow
                 val trustManager = SelfSignedTrustManager(
                     system = systemTrustManager(),
+                    allowed = { setup.allowSelfSigned },
                     pinned = { settings.pinnedCertificate },
-                    onFirstUse = settings::pin,
                 )
                 val context = SSLContext.getInstance("TLS")
                 context.init(null, arrayOf(trustManager), null)

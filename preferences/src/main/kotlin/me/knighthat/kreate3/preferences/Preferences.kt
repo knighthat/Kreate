@@ -233,8 +233,8 @@ object Preferences : KoinComponent {
 
     /**
      * Whether a server whose certificate chain ends in a self-signed certificate is trusted.
-     * Off by default. The first such certificate seen is remembered in
-     * [OPEN_SUBSONIC_CERTIFICATE_SHA256], and a different one is refused until the user trusts it.
+     * Off by default. The certificate the user accepted is kept in
+     * [OPEN_SUBSONIC_CERTIFICATE_SHA256], any other one is refused until they accept it.
      */
     val OPEN_SUBSONIC_ALLOW_SELF_SIGNED by lazy {
         boolean(

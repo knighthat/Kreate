@@ -46,7 +46,8 @@ class SelfSignedTrustManagerTest {
     private val selfSignedLeaf = certificate("self_signed_leaf")
 
     private var pin: CertificatePin? = null
-    private val manager = SelfSignedTrustManager(NoSystemTrust(), { pin }, { pin = it })
+    private var allowed = true
+    private val manager = SelfSignedTrustManager(NoSystemTrust(), { allowed }, { pin })
 
     private fun certificate(name: String): X509Certificate =
         javaClass.getResourceAsStream("/certs/$name.pem")!!.use {
@@ -66,10 +67,22 @@ class SelfSignedTrustManagerTest {
     }
 
     @Test
-    fun theFirstSelfSignedRootIsRemembered() {
-        check(leafA, rootA)
+    fun aSelfSignedRootNobodyTrustedIsOfferedWithItsDetails() {
+        val error = assertThrows(UntrustedSelfSignedException::class.java) { check(leafA, rootA) }
 
-        assertEquals(CertificatePin(HOST, rootA.sha256()), pin)
+        assertEquals(HOST, error.certificate.host)
+        assertEquals(rootA.sha256(), error.certificate.fingerprint)
+        assertEquals(rootA.subjectX500Principal.name, error.certificate.subject)
+        assertEquals(rootA.notAfter.time, error.certificate.notAfter)
+        assertNull(pin)
+    }
+
+    @Test
+    fun aTrustedRootIsRefusedWhileNotAllowed() {
+        pin = CertificatePin(HOST, rootA.sha256())
+        allowed = false
+
+        assertThrows(UntrustedSelfSignedException::class.java) { check(leafA, rootA) }
     }
 
     @Test
@@ -94,10 +107,10 @@ class SelfSignedTrustManagerTest {
     }
 
     @Test
-    fun aSelfSignedLeafIsRememberedItself() {
-        check(selfSignedLeaf)
+    fun aSelfSignedLeafIsOfferedItself() {
+        val error = assertThrows(UntrustedSelfSignedException::class.java) { check(selfSignedLeaf) }
 
-        assertEquals(CertificatePin(HOST, selfSignedLeaf.sha256()), pin)
+        assertEquals(selfSignedLeaf.sha256(), error.certificate.fingerprint)
     }
 
     @Test
@@ -124,9 +137,7 @@ class SelfSignedTrustManagerTest {
     fun aPinOfAnotherHostDoesNotCount() {
         pin = CertificatePin("other.test", rootB.sha256())
 
-        check(leafA, rootA)
-
-        assertEquals(CertificatePin(HOST, rootA.sha256()), pin)
+        assertThrows(UntrustedSelfSignedException::class.java) { check(leafA, rootA) }
     }
 
     @Test

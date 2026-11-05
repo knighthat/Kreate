@@ -33,6 +33,8 @@
     <string name="action_pick_backup">Pick backup</string>
     <string name="action_trust_new_certificate">Trust new certificate</string>
     <string name="action_not_now">Not now</string>
+    <string name="action_accept">Accept</string>
+    <string name="action_deny">Deny</string>
     <string name="action_search">Search</string>
     <string name="action_create">Create</string>
     <string name="action_try_again">Try again</string>
