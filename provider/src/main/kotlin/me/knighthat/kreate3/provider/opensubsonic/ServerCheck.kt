@@ -72,7 +72,8 @@ sealed interface ServerCheck {
  *
  * @property apiVersion version of the Subsonic API it speaks
  * @property type name of the server software, like `navidrome`, `null` when it doesn't say
- * @property serverVersion version of the server software, `null` when it doesn't say
+ * @property serverVersion version of the server software as it said it, build tag included, see
+ * [version]; `null` when it doesn't say
  * @property isOpenSubsonic whether it supports the OpenSubsonic extensions
  */
 data class ServerInfo(
@@ -82,7 +83,19 @@ data class ServerInfo(
     val isOpenSubsonic: Boolean,
 ) {
 
+    /**
+     * [serverVersion] to show, without the build tag some servers append: Navidrome says
+     * `0.64.2 (10114574)`, the tag being the commit it was built from. `null` when the server
+     * doesn't say.
+     */
+    val version: String?
+        get() = serverVersion?.replace(BUILD_TAG, "")?.trim()?.takeIf { it.isNotEmpty() }
+
     /** [type] to show, like `Navidrome`, `null` when the server doesn't say. */
     val name: String?
         get() = type?.trim()?.takeIf { it.isNotEmpty() }?.replaceFirstChar { it.uppercase() }
+
+    private companion object {
+        val BUILD_TAG = Regex("""\s*\([^)]*\)\s*$""")
+    }
 }

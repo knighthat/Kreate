@@ -23,6 +23,8 @@ import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.provider.local.LocalProvider
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountStore
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import okhttp3.OkHttpClient
@@ -46,6 +48,11 @@ val providerModule = module {
     // The scope is the app's long lived one
     single { OpenSubsonicLibrary(get(), get(), get(), get()) }
     single { YouTubeLibrary(get(), get(), get(), get()) }
+    // Who is signed in to each source, asked at the app's start and when the settings change
+    single(createdAtStart = true) { YouTubeAccountStore(get(), get()) }
+    single(createdAtStart = true) {
+        OpenSubsonicServer.also { it.follow(get(), get<OpenSubsonicProvider>()) }
+    }
     single {
         Providers(
             listOf(

@@ -731,18 +731,48 @@ class OpenSubsonicProvider internal constructor(
         knownShareRole?.takeIf { it.first == key }?.let { return it.second }
 
         return try {
-            val username = when (settings.auth) {
-                OpenSubsonicAuth.PASSWORD -> settings.username()
-                OpenSubsonicAuth.API_KEY -> call("tokenInfo")["tokenInfo"]?.jsonObject
-                    ?.get("username")?.jsonPrimitive?.contentOrNull
-            }
-            username?.let {
+            signedInName()?.let {
                 call("getUser", "username" to it)["user"]?.jsonObject
                     ?.get("shareRole")?.jsonPrimitive?.booleanOrNull
             }?.also { knownShareRole = key to it }
         } catch (_: ServerException) {
             null
         }
+    }
+
+    /**
+     * The username the sign in belongs to: the saved one, or with an API key the one `tokenInfo`
+     * says. `null` when there is none.
+     *
+     * @throws ServerException when the server can't be used
+     */
+    private suspend fun signedInName(): String? = when (settings.auth) {
+        OpenSubsonicAuth.PASSWORD -> settings.username().takeIf { it.isNotEmpty() }
+        OpenSubsonicAuth.API_KEY -> call("tokenInfo")["tokenInfo"]?.jsonObject
+            ?.get("username")?.jsonPrimitive?.contentOrNull
+    }
+
+    /**
+     * The account signed in with, `getUser`'s answer. [OpenSubsonicServer.user] keeps it, ask
+     * this to read it again.
+     *
+     * @return `null` while the server is off or not set up, or from a server that doesn't tell
+     * @throws ServerException when the server can't be used
+     */
+    suspend fun user(): OpenSubsonicUser? {
+        val base = serverUrl ?: return null
+        val name = signedInName() ?: return null
+        val user = call("getUser", "username" to name)["user"]?.jsonObject ?: return null
+
+        return OpenSubsonicUser(
+            name = user["username"]?.jsonPrimitive?.contentOrNull ?: name,
+            email = user["email"]?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() },
+            avatar = "$base/rest/getAvatar".toUri().buildUpon()
+                .appendQueryParameter("username", name).build(),
+            roles = user.filter { (key, value) ->
+                key.endsWith("Role") && (value as? JsonPrimitive)?.booleanOrNull == true
+            }.keys.mapTo(sortedSetOf<String>()) { it.removeSuffix("Role") },
+        )
     }
 
     /**

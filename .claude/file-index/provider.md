@@ -20,8 +20,11 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   `toTranscodedFormat`), `ServerStream.kt` (`ServerStream`, `RAW_FORMAT`, Content-Type → format
   tag), `SelfSignedTrustManager.kt` (cert pinning, `CertificatePin`), `ServerCheck.kt`
   (`ServerInfo.name`),
-  `OpenSubsonicServer.kt` (object: what the server last answered with and its address, in memory;
-  `name`/`version` of the active profile's server, every answer of `request` records it),
+  `OpenSubsonicServer.kt` (object: what the app knows about the server and the signed in account,
+  in memory: `name`/`version` of the active profile's server (every answer of `request` records
+  it), and once `follow`ed at the app's start `server`/`credentials` (`CheckState`), `user` and
+  `login` (`isLoggedIn`/`isLoggedOut`), redone when the settings change or on `refresh()`),
+  `CheckState.kt`, `OpenSubsonicUser.kt` (`getUser`: name, email, avatar address, roles),
   `ServerException.kt`, `OpenSubsonicSearch.kt` (`searchLibrary` result: RemoteSong/RemoteItem
   lists), `Shareable.kt`, `ArtistWithSongs.kt`.
 - youtube/ — `YouTubeProvider.kt` (public API: search, suggestions, album/artist/playlist pages,
@@ -32,6 +35,9 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   hidden WebView, page in `provider/src/main/assets/po_token.html`), `YouTubeParser.kt` (InnerTube
   JSON → models), `YouTubeJson.kt` (JSON path helpers), `YouTubeModels.kt` (`YouTubeItem`,
   page/section/account/channel models, `YouTubeSearchFilter`, `YouTubeStream`),
+  `YouTubeAccountStore.kt` (`YouTubeAccountState` + who is signed in, asked at the app's start and
+  when the session, channel or account switch change: `state`, `account`, `isSignedIn`,
+  `isLoggedOut`, `refresh()`),
   `YouTubeRegion.kt` (`YOUTUBE_REGIONS` from YouTube's location picker, `youTubeRegion()`: the
   `gl` sent, chosen or the device's), `YouTubeLibrary.kt` (liked-song sync both ways: pulls "Liked
   Music", `react` sends like,

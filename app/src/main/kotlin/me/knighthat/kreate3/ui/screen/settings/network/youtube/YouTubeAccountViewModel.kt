@@ -17,7 +17,6 @@
  */
 package me.knighthat.kreate3.ui.screen.settings.network.youtube
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -29,34 +28,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
-import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.LibrarySection
-import me.knighthat.kreate3.provider.youtube.YouTubeAccount
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountState
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountStore
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.isYouTubeSession
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
-
-/**
- * Where the YouTube account of the active profile stands.
- */
-sealed interface YouTubeAccountState {
-
-    data object SignedOut : YouTubeAccountState
-
-    data object Checking : YouTubeAccountState
-
-    data class SignedIn(val account: YouTubeAccount) : YouTubeAccountState
-
-    /** The saved session no longer works, like after signing out of Google elsewhere. */
-    data object Ended : YouTubeAccountState
-
-    data class Failed(val reason: String) : YouTubeAccountState
-}
 
 /**
  * Signs the active profile in to YouTube and out of it, and picks which channel of the account it
@@ -66,7 +48,7 @@ sealed interface YouTubeAccountState {
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class YouTubeAccountViewModel(
-    private val context: Context,
+    private val store: YouTubeAccountStore,
     private val provider: YouTubeProvider,
     private val library: YouTubeLibrary,
 ) : ViewModel() {
@@ -74,48 +56,10 @@ class YouTubeAccountViewModel(
     private val attempt = MutableStateFlow(0)
 
     /**
-     * Whether a session is saved and in use, and the channel acted as, each change asks YouTube
-     * again.
+     * Who is signed in, as the channel acted as, kept by [YouTubeAccountStore] which asks YouTube
+     * when the app starts and whenever it changes.
      */
-    private val session = combine(
-        Secrets.YOUTUBE_COOKIES.state,
-        Preferences.YOUTUBE_ACCOUNT_ENABLED.state,
-        Secrets.YOUTUBE_PAGE_ID.state,
-        attempt,
-    ) { cookies, enabled, pageId, _ -> (enabled && isYouTubeSession(cookies)) to pageId }
-
-    /** Who is signed in, as the channel acted as, asked from YouTube whenever it changes. */
-    val account: StateFlow<YouTubeAccountState> =
-        session
-            .transformLatest { (signedIn) ->
-                if (!signedIn) {
-                    emit(YouTubeAccountState.SignedOut)
-                    return@transformLatest
-                }
-                emit(YouTubeAccountState.Checking)
-                emit(
-                    try {
-                        provider.account()?.let { YouTubeAccountState.SignedIn(it) }
-                            ?: YouTubeAccountState.SignedOut
-                    } catch (e: YouTubeException) {
-                        if (e.signedOut) {
-                            YouTubeAccountState.Ended
-                        } else {
-                            YouTubeAccountState.Failed(
-                                e.message ?: context.getString(
-                                    R.string.setting_description_account_status_unreachable,
-                                    context.getString(R.string.source_ytm),
-                                )
-                            )
-                        }
-                    }
-                )
-            }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5_000),
-                YouTubeAccountState.Checking
-            )
+    val account: StateFlow<YouTubeAccountState> = store.state
 
     /**
      * The channels of the signed in account, empty while nobody is signed in or they can't be
@@ -137,7 +81,10 @@ class YouTubeAccountViewModel(
     val pageId: StateFlow<String> = Secrets.YOUTUBE_PAGE_ID.state
 
     /** Asks YouTube again who is signed in. */
-    fun retry() = attempt.update { it + 1 }
+    fun retry() {
+        attempt.update { it + 1 }
+        store.refresh()
+    }
 
     /**
      * Keeps the session of [cookies], the ones of youtube.com once the sign in page is done, as

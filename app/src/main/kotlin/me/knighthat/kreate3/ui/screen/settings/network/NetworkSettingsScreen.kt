@@ -27,9 +27,13 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.opensubsonic.CheckState
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerInfo
 import me.knighthat.kreate3.provider.youtube.YouTubeAccount
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountState
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountStore
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.openSubsonicName
@@ -43,11 +47,7 @@ import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
-import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.CheckState
-import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsViewModel
-import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeAccountState
-import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeAccountViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /** Who is signed in, for the row that opens the YouTube page. */
@@ -65,7 +65,10 @@ private fun YouTubeAccountState.summary(): String = when (this) {
         R.string.setting_description_configure_youtube_status_signed_out,
         stringResource(R.string.source_ytm)
     )
-    is YouTubeAccountState.Failed -> reason
+    is YouTubeAccountState.Failed -> reason ?: stringResource(
+        R.string.setting_description_account_status_unreachable,
+        stringResource(R.string.source_ytm)
+    )
 }
 
 /**
@@ -79,8 +82,9 @@ private fun CheckState.serverName(server: String): String = when (this) {
         stringResource(R.string.setting_description_server_status_checking, server)
 
     is CheckState.Done -> when (val result = result) {
-        is ServerCheck.Success -> listOfNotNull(result.server.name, result.server.serverVersion)
-            .joinToString(" ")
+        // Without the build tag, the server's page has the version as it said it
+        is ServerCheck.Success -> listOfNotNull(result.server.name, result.server.version)
+            .joinToString(" · ")
             .ifEmpty { stringResource(R.string.status_online) }
 
         is ServerCheck.Unreachable -> stringResource(
@@ -118,11 +122,11 @@ fun NetworkSettingsScreen(
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
-    youtube: YouTubeAccountViewModel = koinViewModel(),
-    openSubsonic: OpenSubsonicSettingsViewModel = koinViewModel(),
+    youtube: YouTubeAccountStore = koinInject(),
 ) {
-    val server by openSubsonic.server.collectFlowAsState()
-    val youtubeAccount by youtube.account.collectFlowAsState()
+    // What the app found out when it started and after each change, nothing is asked here
+    val server by OpenSubsonicServer.server.collectFlowAsState()
+    val youtubeAccount by youtube.state.collectFlowAsState()
     val youtubeEnabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
     val openSubsonicEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
     val url by Preferences.OPEN_SUBSONIC_URL.collectAsStateWithLifecycle()

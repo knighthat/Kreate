@@ -22,6 +22,14 @@ Per source: `youtube.md`, `opensubsonic.md`; sync: `sync.md`.
 - `YOUTUBE_ACCOUNT_ENABLED` off: YouTube requests carry no cookies (signed out; search still
   works, no library or like sync). The saved session is kept.
 
+## Who is signed in
+
+`YouTubeAccountStore` and `OpenSubsonicServer` (`:provider`) hold the account and server state of
+each source, asked when the app starts and again when its settings change. Read them (`isLoggedOut`,
+`user`, `state`, `server`) instead of asking the server again; a new check that
+only tells who is signed in belongs in them. YouTube's `Checking` and OpenSubsonic's `UNKNOWN`
+mean not known yet, which is neither signed in nor out.
+
 ## Proxies
 
 The app proxy (`NETWORK_PROXY_*`, Network page) covers every request; a source whose own proxy is
@@ -32,6 +40,7 @@ shared Ktor client gets `networkProxy()` for free. Library pitfalls: `.claude/do
 ## Settings pages
 
 Each source has its own settings page behind a "Configure X" row on the Network page (summary: a
-short status such as "Off", the account, or the server's name and version). A `MainSwitch` sits at
+short status such as "Off", the account, or the server's name and version without its build tag). A
+`MainSwitch` sits at
 the top; when off, nothing else shows and saved values are kept. New options go on the source's
 page under a section heading, never back on the Network page.

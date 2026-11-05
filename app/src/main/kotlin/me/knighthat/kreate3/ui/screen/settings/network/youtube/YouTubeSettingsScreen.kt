@@ -42,6 +42,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.youtube.YOUTUBE_REGIONS
 import me.knighthat.kreate3.provider.youtube.YouTubeAccount
+import me.knighthat.kreate3.provider.youtube.YouTubeAccountState
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -221,7 +222,10 @@ private fun YouTubeSettingsContent(
                     title = stringResource(R.string.setting_title_account),
                     summary = stringResource(
                         R.string.setting_description_account_status_failed,
-                        state.reason
+                        state.reason ?: stringResource(
+                            R.string.setting_description_account_status_unreachable,
+                            stringResource(R.string.source_ytm),
+                        )
                     ),
                     onClick = onRetry,
                 )

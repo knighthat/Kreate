@@ -252,7 +252,9 @@ ui/screen/
     English is picked); Layout: icon only, playlist
     initial, binary units; app icon),
     `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
-  Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
+    Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
+    `OpenSubsonicServer`, nothing asked there), `network/youtube/` (`YouTubeSettingsScreen.kt`
+    account
     page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
     `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, "Sign
