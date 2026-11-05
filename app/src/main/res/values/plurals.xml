@@ -73,6 +73,10 @@
         <item quantity="one">artist</item>
         <item quantity="other">artists</item>
     </plurals>
+    <plurals name="unit_file">
+        <item quantity="one">file</item>
+        <item quantity="other">files</item>
+    </plurals>
     <plurals name="unit_playlist">
         <item quantity="one">playlist</item>
         <item quantity="other">playlists</item>

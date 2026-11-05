@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.LocalCatalogRepository
 import me.knighthat.kreate3.logging.logged
 import me.knighthat.kreate3.notification.LocalScanNotifications
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -54,6 +55,11 @@ class LocalMusicWorker(
             return Result.success()
         }
 
+        if (!Preferences.LOCAL_SCAN.value) {
+            Logger.i(tag = TAG) { "Skipped, the scan is turned off" }
+            return Result.success()
+        }
+
         notifications.scanning()
         return try {
             val songs = withContext(Dispatchers.IO) {
@@ -62,7 +68,9 @@ class LocalMusicWorker(
             Logger.i(tag = TAG) { "Found ${songs.size} songs on the device" }
             catalog.sync(songs)
             notifications.scanned(songs.size)
-            LocalMusicScheduler.measureLoudness(applicationContext)
+            if (Preferences.LOCAL_LOUDNESS.value) {
+                LocalMusicScheduler.measureLoudness(applicationContext)
+            }
             Result.success()
         } catch (e: CancellationException) {
             notifications.cancelScan()

@@ -191,10 +191,23 @@ class KreateActivity : ComponentActivity() {
             // Without the permission there is nothing to scan, so nothing is asked or scheduled
             if (!hasAudioPermission()) return@launch
             // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
-            if (savedInstanceState == null) LocalMusicScheduler.scanNow(this@KreateActivity)
-            // Keep the scan schedule in step with the interval
-            Preferences.LOCAL_SCAN_INTERVAL.state.collect {
-                LocalMusicScheduler.schedule(this@KreateActivity, it)
+            var scanFirst = savedInstanceState == null
+            // Keep the scan schedule in step with the switch and the interval, `null` while off
+            combine(
+                Preferences.LOCAL_SCAN.state,
+                Preferences.LOCAL_SCAN_INTERVAL.state
+            ) { on, interval ->
+                interval.takeIf { on }
+            }.distinctUntilChanged().collect { interval ->
+                if (interval == null) {
+                    // Turned on later, it scans at once like at start-up
+                    scanFirst = true
+                    LocalMusicScheduler.cancelScans(this@KreateActivity)
+                } else {
+                    if (scanFirst) LocalMusicScheduler.scanNow(this@KreateActivity)
+                    scanFirst = false
+                    LocalMusicScheduler.schedule(this@KreateActivity, interval)
+                }
             }
             //</editor-fold>
         }

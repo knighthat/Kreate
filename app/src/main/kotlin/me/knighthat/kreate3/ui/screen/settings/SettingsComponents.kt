@@ -71,6 +71,7 @@ import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.CountSlider
 import me.knighthat.kreate3.ui.component.LufsSlider
+import me.knighthat.kreate3.ui.component.MinuteSlider
 import me.knighthat.kreate3.ui.component.PercentSlider
 import me.knighthat.kreate3.ui.component.RestartAppButton
 import me.knighthat.kreate3.ui.component.SecondSlider
@@ -174,7 +175,8 @@ fun SettingsItem(
 
 /**
  * A setting that is on or off, a tap anywhere on the row flips it. While not [enabled] the row is
- * dimmed and taps do nothing, the setting keeps its value.
+ * dimmed and taps do nothing, the setting keeps its value, unless [onDisabledClick] says what a
+ * tap does then (e.g. asking for what the setting needs).
  */
 @Composable
 fun SwitchSetting(
@@ -184,12 +186,13 @@ fun SwitchSetting(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    onDisabledClick: (() -> Unit)? = null,
 ) {
     SettingsItem(
         title = title,
         modifier = if (enabled) modifier else modifier.alpha(DISABLED_ALPHA),
         summary = summary,
-        onClick = if (enabled) ({ onCheckedChange(!checked) }) else null,
+        onClick = if (enabled) ({ onCheckedChange(!checked) }) else onDisabledClick,
         trailing = { Switch(checked = checked, onCheckedChange = null) },
     )
 }
@@ -374,7 +377,8 @@ fun <T> ChoiceSetting(
  * A setting with a few values in order, picked by sliding a [StopSlider] to one, with
  * [leadingIcon] and [trailingIcon] at its ends. The row shows the [title] and the [label] of the
  * value under it, which follows the slider while it is dragged (its ball shows nothing); the
- * setting changes when it is let go.
+ * setting changes when it is let go. While not [enabled] the row is dimmed and the slider doesn't
+ * move.
  *
  * @param value shown as the first of [options] when it isn't one of them
  */
@@ -386,6 +390,7 @@ fun <T> SliderSetting(
     label: (T) -> String,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
@@ -393,11 +398,12 @@ fun <T> SliderSetting(
     // Where the slider is while it is dragged
     var position by remember(index, options.size) { mutableIntStateOf(index) }
 
-    SliderRow(title, label(options[position.coerceIn(options.indices)]), true, modifier) {
+    SliderRow(title, label(options[position.coerceIn(options.indices)]), enabled, modifier) {
         StopSlider(
             value = position,
             onValueChange = { position = it },
             stops = options.size,
+            enabled = enabled,
             onValueChangeFinished = {
                 // A tap moves and lets go in one frame, read the position it left
                 val picked = options[position.coerceIn(options.indices)]
@@ -445,9 +451,44 @@ fun SecondSetting(
 }
 
 /**
- * A setting of a count in [range], picked on a [CountSlider] whose ball shows the count and whose
- * track has [unit] of it under. The setting changes only when the slider is let go. While not
+ * A setting of minutes in [range] in steps of [step] from its start, picked on a [MinuteSlider]
+ * whose ball shows the minutes. The setting changes only when the slider is let go. While not
  * [enabled] the row is dimmed and the slider doesn't move.
+ *
+ * @param summary under the title, given the minutes the slider is on (it follows a drag)
+ */
+@Composable
+fun MinuteSetting(
+    title: String,
+    value: Int,
+    range: IntRange,
+    step: Int,
+    onSelect: (Int) -> Unit,
+    summary: (Int) -> String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
+
+    SliderRow(title, summary(position), enabled, modifier) {
+        MinuteSlider(
+            value = position,
+            onValueChange = { position = it },
+            range = range,
+            step = step,
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
+        )
+    }
+}
+
+/**
+ * A setting of a count in [range], picked on a [CountSlider] whose ball shows the count and whose
+ * track has [unit] of it under, with [leadingIcon] and [trailingIcon] at its ends. The setting
+ * changes only when the slider is let go. While not [enabled] the row is dimmed and the slider
+ * doesn't move.
  *
  * @param summary under the title, like why it's off; none when `null`
  */
@@ -461,6 +502,8 @@ fun CountSetting(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     // Where the slider is while it is dragged
     var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
@@ -474,6 +517,8 @@ fun CountSetting(
             enabled = enabled,
             // A tap moves and lets go in one frame, read the position it left
             onValueChangeFinished = { if (position != value) onSelect(position) },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
         )
     }
 }

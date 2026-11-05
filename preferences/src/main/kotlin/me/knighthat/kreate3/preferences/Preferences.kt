@@ -121,6 +121,19 @@ object Preferences : KoinComponent {
     val LANGUAGE by lazy { string("language", "") }
 
     /**
+     * Whether the device's music is scanned, at start-up and every [LOCAL_SCAN_INTERVAL]. Off
+     * stops the scans; read by the app's scan scheduling and `LocalMusicWorker`, set in the
+     * General settings. Needs the permission to read audio, see `hasAudioPermission`.
+     */
+    val LOCAL_SCAN by lazy { boolean("local_scan", true) }
+
+    /**
+     * Whether the loudness of the device's songs is measured after a scan. Read by `LocalMusicWorker`
+     * and `LoudnessWorker`; set in the General settings, where it needs [LOCAL_SCAN] on.
+     */
+    val LOCAL_LOUDNESS by lazy { boolean("local_loudness", true) }
+
+    /**
      * Minutes between two scans of the device's music. The system runs periodic work
      * at most every 15 minutes, so smaller values behave like 15.
      */

@@ -224,7 +224,8 @@ ui/screen/
   list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
   dialog)/Section, MainSwitch (page-top switch), SettingsSummary (row text: title 1 line, summary
   2), Switch/Choice/Radio/Number/Text settings, Slider setting (`StopSlider`, optional end icons),
-  SecondSetting/PercentSetting/CountSetting/LufsSetting (slider rows saved on release, optional
+  SecondSetting/MinuteSetting/PercentSetting/CountSetting/LufsSetting (slider rows saved on release,
+  optional
   summary, dimmed
   while disabled), `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a

@@ -125,7 +125,9 @@ ui/component/ (shared composables; each file that draws something ends with its 
   mark at -14, "LUFS", fixed-width pill, volume down/up icons) and
   `SecondSlider` (whole seconds of an `IntRange`, filled from the start, "seconds", `number` for
   what the ball shows, hourglass -/+ icons) and `PercentSlider` (whole percents, "%", no default
-  icons) and `CountSlider` (whole numbers, caller's `unit`, no default icons) and `StopSlider`
+  icons) and `MinuteSlider` (minutes of an `IntRange` in `step`s, "minutes", hourglass -/+ icons)
+  and
+  `CountSlider` (whole numbers, caller's `unit`, no default icons) and `StopSlider`
   (index of n stops, empty ball, nothing under it), all on a private
   `WholeSlider`; `SliderIcon` (icon with an optional small badge). Used by `SecondSetting`/
   `PercentSetting`/`CountSetting`/`LufsSetting`/`SliderSetting` and the Data size dialog. The thumb

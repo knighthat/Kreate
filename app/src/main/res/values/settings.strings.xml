@@ -92,6 +92,14 @@
     <string name="setting_description_binary_sizes">%1$s is shown as %2$s</string>
 
     <!-- general -->
+    <string name="setting_title_local_scan">Scan local media</string>
+    <!-- Under the switch that scans the device's music files -->
+    <string name="setting_description_local_scan">Look for music files on this device</string>
+    <!-- Under the switch while the permission to read music and audio is denied -->
+    <string name="setting_description_local_scan_no_permission">Tap to allow %1$s to read local audio files</string>
+    <string name="setting_title_local_loudness">Loudness analyzer</string>
+    <!-- Under the switch that measures how loud the device's songs are -->
+    <string name="setting_description_local_loudness">Measure how loud local songs are to even out the volume</string>
     <string name="setting_title_scan_interval">Scan interval</string>
     <!-- %1$s is a duration with its unit, e.g. "30 minutes" (a counted plural). How often the app looks for new music files on the device -->
     <string name="setting_description_scan_interval">Search for new local media every %1$s</string>

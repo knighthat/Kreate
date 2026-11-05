@@ -18,17 +18,26 @@
 
 package me.knighthat.kreate3.ui.screen.settings.general
 
+import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +46,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.LogLevel
@@ -52,11 +64,13 @@ import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SliderIcon
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.screen.player.PICTURE_IN_PICTURE_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.CountSetting
+import me.knighthat.kreate3.ui.screen.settings.MinuteSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.PercentSetting
 import me.knighthat.kreate3.ui.screen.settings.SecondSetting
@@ -64,9 +78,19 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
+import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import me.knighthat.kreate3.utils.AUDIO_PERMISSION
+import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlow
+
+/** A permission answer sooner than this after asking came without a prompt: nobody answers that fast. */
+private const val NO_PROMPT_MILLIS = 300L
+
+/** The minutes the scan interval slider goes between, from 10 to 2 hours, in steps of [SCAN_STEP]. */
+private val SCAN_INTERVALS = 10..120
+private const val SCAN_STEP = 10
 
 /**
  * How the app behaves: scanning the device, leaving the app, opening it from the media
@@ -83,6 +107,8 @@ fun GeneralSettingsScreen(
     userRepository: UserRepository = koinInject(),
     notifier: Notifier = koinInject(),
 ) {
+    val localScan by Preferences.LOCAL_SCAN.collectAsStateWithLifecycle()
+    val localLoudness by Preferences.LOCAL_LOUDNESS.collectAsStateWithLifecycle()
     val scanInterval by Preferences.LOCAL_SCAN_INTERVAL.collectAsStateWithLifecycle()
     val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
@@ -110,7 +136,38 @@ fun GeneralSettingsScreen(
         uri?.let { scope.launch { LogActions.export(context, it, notifier) } }
     }
 
+    // Checked when the screen is rendered and again on return from the system settings
+    var audioGranted by remember { mutableStateOf(context.hasAudioPermission()) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) audioGranted = context.hasAudioPermission()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // The system shows its prompt until it's denied for good, after that it answers at once without
+    // one and only the app's settings can allow it. A denial from the prompt itself opens nothing.
+    var askedAt by remember { mutableLongStateOf(0L) }
+    val askAudio = rememberLauncherForActivityResult(RequestPermission()) {
+        audioGranted = it
+        val withoutPrompt = SystemClock.elapsedRealtime() - askedAt < NO_PROMPT_MILLIS
+        if (!it && withoutPrompt) {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", context.packageName, null))
+                .also(context::startActivity)
+        }
+    }
+
     GeneralSettingsContent(
+        audioGranted = audioGranted,
+        onAskAudio = {
+            askedAt = SystemClock.elapsedRealtime()
+            askAudio.launch(AUDIO_PERMISSION)
+        },
+        localScan = localScan,
+        localLoudness = localLoudness,
         scanInterval = scanInterval,
         exitOnBack = exitOnBack,
         exitTimeout = exitTimeout,
@@ -146,6 +203,10 @@ fun GeneralSettingsScreen(
  */
 @Composable
 private fun GeneralSettingsContent(
+    audioGranted: Boolean,
+    onAskAudio: () -> Unit,
+    localScan: Boolean,
+    localLoudness: Boolean,
     scanInterval: Int,
     exitOnBack: Boolean,
     exitTimeout: Int,
@@ -171,18 +232,46 @@ private fun GeneralSettingsContent(
 
     SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_library))
-        NumberSetting(
-            title = stringResource(R.string.setting_title_scan_interval),
-            value = scanInterval.toLong(),
-            min = 15,
-            max = 24 * 60,
-            onSave = { Preferences.LOCAL_SCAN_INTERVAL.update(it.toInt()) },
-            note = {
+        // Without the permission there is nothing to scan: off and out of reach
+        val scanOn = localScan && audioGranted
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_local_scan),
+            checked = scanOn,
+            onCheckedChange = { Preferences.LOCAL_SCAN.update(it) },
+            summary = if (audioGranted) {
+                stringResource(R.string.setting_description_local_scan)
+            } else {
                 stringResource(
-                    R.string.setting_description_scan_interval,
-                    pluralStringResource(R.plurals.minute, it.toInt(), it)
+                    R.string.setting_description_local_scan_no_permission,
+                    stringResource(R.string.app_name)
                 )
             },
+            enabled = audioGranted,
+            onDisabledClick = onAskAudio,
+        )
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_local_loudness),
+            checked = localLoudness,
+            onCheckedChange = { Preferences.LOCAL_LOUDNESS.update(it) },
+            summary = stringResource(R.string.setting_description_local_loudness),
+            enabled = scanOn,
+        )
+        MinuteSetting(
+            title = stringResource(R.string.setting_title_scan_interval),
+            // A value saved before the slider that falls between two stops shows the nearer one
+            value = ((scanInterval - SCAN_INTERVALS.first + SCAN_STEP / 2) / SCAN_STEP)
+                .coerceIn(0, (SCAN_INTERVALS.last - SCAN_INTERVALS.first) / SCAN_STEP)
+                .let { SCAN_INTERVALS.first + it * SCAN_STEP },
+            range = SCAN_INTERVALS,
+            step = SCAN_STEP,
+            onSelect = { Preferences.LOCAL_SCAN_INTERVAL.update(it) },
+            summary = {
+                resources.getString(
+                    R.string.setting_description_scan_interval,
+                    resources.getQuantityString(R.plurals.minute, it, it)
+                )
+            },
+            enabled = scanOn,
         )
 
         SettingsSection(stringResource(R.string.setting_header_navigation))
@@ -295,13 +384,15 @@ private fun GeneralSettingsContent(
                     stringResource(R.string.quoted, defaultProfileName)
                 )
             )
-        ChoiceSetting(
+        SliderSetting(
             title = stringResource(R.string.setting_title_log_level),
             value = logLevel,
             options = LogLevel.entries,
             label = labelsOf(LogLevel.entries) { it.labelRes },
             onSelect = { GlobalPreferences.LOG_LEVEL.update(it) },
             enabled = appWide,
+            leadingIcon = { SliderIcon(R.drawable.info) },
+            trailingIcon = { SliderIcon(R.drawable.warning) },
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_log_rollover_size),
@@ -317,10 +408,12 @@ private fun GeneralSettingsContent(
             title = stringResource(R.string.setting_title_log_keep),
             value = logKeep,
             range = 1..20,
-            unit = { pluralStringResource(R.plurals.file, it, it) },
+            unit = { pluralStringResource(R.plurals.unit_file, it) },
             onSelect = { GlobalPreferences.LOG_KEEP.update(it) },
             summary = stringResource(R.string.setting_description_log_keep),
             enabled = appWide,
+            leadingIcon = { SliderIcon(R.drawable.insert_drive_file) },
+            trailingIcon = { SliderIcon(R.drawable.insert_drive_file_stack) },
         )
         NumberSetting(
             title = stringResource(R.string.setting_title_crash_log_retention),
@@ -365,6 +458,10 @@ private val ROLLOVER_SIZES = listOf(256 * KIB, 512 * KIB, MIB, 2 * MIB, 5 * MIB,
 @Composable
 private fun GeneralSettingsPreview() = PreviewTheme {
     GeneralSettingsContent(
+        audioGranted = true,
+        onAskAudio = {},
+        localScan = true,
+        localLoudness = true,
         scanInterval = 30,
         exitOnBack = true,
         exitTimeout = 2,

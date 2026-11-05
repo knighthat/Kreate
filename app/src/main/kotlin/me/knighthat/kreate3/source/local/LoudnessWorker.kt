@@ -42,6 +42,7 @@ import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.logging.logged
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.LocalScanNotifications
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -71,6 +72,11 @@ class LoudnessWorker(
     private suspend fun work(): Result {
         if (!applicationContext.hasAudioPermission()) {
             Logger.i(tag = TAG) { "Skipped, the audio permission isn't granted" }
+            return Result.success()
+        }
+
+        if (!Preferences.LOCAL_SCAN.value || !Preferences.LOCAL_LOUDNESS.value) {
+            Logger.i(tag = TAG) { "Skipped, the analyzer is turned off" }
             return Result.success()
         }
 

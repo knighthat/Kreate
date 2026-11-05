@@ -92,10 +92,10 @@ class ProfileSwitcher(
 
     /**
      * Scans now and schedules the scans again, like at start-up, see KreateActivity. Without the
-     * permission there is nothing to scan.
+     * permission, or with the scan off, there is nothing to scan.
      */
     private fun resumeScans() {
-        if (!context.hasAudioPermission()) return
+        if (!context.hasAudioPermission() || !Preferences.LOCAL_SCAN.value) return
         LocalMusicScheduler.scanNow(context)
         LocalMusicScheduler.schedule(context, Preferences.LOCAL_SCAN_INTERVAL.value)
     }

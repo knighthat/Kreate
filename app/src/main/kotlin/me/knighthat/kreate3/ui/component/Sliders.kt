@@ -224,6 +224,41 @@ private fun SecondSlider(
 )
 
 /**
+ * A slider for minutes from the start of [range] to its end, stopping at every [step] minutes
+ * from the start, laid out like [SecondSlider]: the minutes in the ball, "minutes" under the middle
+ * of the track, an hourglass with "-" and one with "+" at the ends by default.
+ */
+@Composable
+fun MinuteSlider(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    range: IntRange,
+    step: Int,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onValueChangeFinished: (() -> Unit)? = null,
+    leadingIcon: (@Composable () -> Unit)? = {
+        SliderIcon(R.drawable.hourglass_empty, R.drawable.remove)
+    },
+    trailingIcon: (@Composable () -> Unit)? = {
+        SliderIcon(R.drawable.hourglass_empty, R.drawable.add)
+    },
+) = WholeSlider(
+    // The slider counts the stops, the minutes are the stop times the step
+    value = (value - range.first) / step,
+    onValueChange = { onValueChange(range.first + it * step) },
+    range = 0..(range.last - range.first) / step,
+    number = { (range.first + it * step).toString() },
+    unit = { pluralStringResource(R.plurals.unit_minute, range.first + it * step) },
+    held = null,
+    modifier = modifier,
+    enabled = enabled,
+    onValueChangeFinished = onValueChangeFinished,
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon,
+)
+
+/**
  * A slider for a percentage from the start of [range] to its end, stopping at every whole
  * percent, laid out like [SecondSlider]: the percentage in the ball, "%" under the middle of the
  * track, [leadingIcon] and [trailingIcon] at the ends (none by default).
@@ -570,6 +605,20 @@ private fun LufsSliderPreview() = PreviewTheme {
             // Held, the ball grown
             LufsSlider(value = -11.5f, onValueChange = {}, held = true)
             LufsSlider(value = -12f, onValueChange = {}, enabled = false)
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun MinuteSliderPreview() = PreviewTheme {
+    Surface {
+        var value by remember { mutableIntStateOf(30) }
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            MinuteSlider(value = value, onValueChange = { value = it }, range = 10..120, step = 10)
+            MinuteSlider(
+                value = 10, onValueChange = {}, range = 10..120, step = 10, enabled = false
+            )
         }
     }
 }
