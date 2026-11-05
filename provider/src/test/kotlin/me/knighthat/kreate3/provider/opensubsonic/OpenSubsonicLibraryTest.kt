@@ -91,6 +91,10 @@ class OpenSubsonicLibraryTest {
         }
 
         override suspend fun savePlayedSong(song: RemoteSong) = error("Not played here")
+
+        override suspend fun saveQueuedSong(song: RemoteSong) = error("Not queued here")
+
+        override suspend fun addToLibrary(songId: String): Boolean = error("Not added here")
     }
 
     /** Keeps the reaction of each song, the rest of the library isn't used here. */

@@ -48,8 +48,14 @@ sealed interface YouTubeItem {
     /**
      * @property isVideo whether it is a music video or any other video instead of a song
      * published as audio
+     * @property setVideoId what names this place in a playlist, see [YouTubePlaylistEntry]; only
+     * on the rows of a playlist's page
      */
-    data class SongItem(val song: RemoteSong, val isVideo: Boolean = false) : YouTubeItem
+    data class SongItem(
+        val song: RemoteSong,
+        val isVideo: Boolean = false,
+        val setVideoId: String? = null,
+    ) : YouTubeItem
 
     data class AlbumItem(val album: Album) : YouTubeItem
 
@@ -145,18 +151,33 @@ data class YouTubeArtistPage(
  * @property author who made the playlist, like "YouTube Music"
  * @property summary how many songs and how long, as YouTube words it in the page's language, like
  * "150 songs • 47+ hours", `null` when the page doesn't say
- * @property songs the first songs, in the playlist's order
+ * @property entries the first places of the playlist, in its order
  * @property continuation gives the next songs to [YouTubeProvider.playlistSongs], `null` when
- * [songs] are all of them
+ * [entries] are all of them
+ * @property editable whether the signed in user may change or delete the playlist: YouTube gives
+ * the page its editing header only to the owner
  */
 data class YouTubePlaylistPage(
     val playlist: UserPlaylist,
     val author: String?,
     val description: String?,
-    val songs: List<RemoteSong>,
+    val entries: List<YouTubePlaylistEntry>,
     val continuation: String?,
     val summary: String? = null,
-)
+    val editable: Boolean = false,
+) {
+
+    /** The songs of [entries]. */
+    val songs: List<RemoteSong> get() = entries.map { it.song }
+}
+
+/**
+ * A place in a playlist.
+ *
+ * @property setVideoId what names the place: a song a playlist holds twice has one each, and
+ * changes to the playlist are sent by it. `null` when YouTube didn't give it.
+ */
+data class YouTubePlaylistEntry(val song: RemoteSong, val setVideoId: String?)
 
 /**
  * @property text the lyrics, without timing

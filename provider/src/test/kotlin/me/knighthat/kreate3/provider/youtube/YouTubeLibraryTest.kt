@@ -67,6 +67,10 @@ class YouTubeLibraryTest {
         }
 
         override suspend fun savePlayedSong(song: RemoteSong) = error("Not played here")
+
+        override suspend fun saveQueuedSong(song: RemoteSong) = error("Not queued here")
+
+        override suspend fun addToLibrary(songId: String): Boolean = error("Not added here")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochSeconds(1_000)) : Clock {

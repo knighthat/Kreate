@@ -138,18 +138,7 @@ abstract class LiveDetailViewModel<T : Any>(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: YouTubeException) {
-                val youTube = context.getString(R.string.source_ytm)
-                LiveState.Failed(
-                    if (e.status == null) {
-                        context.getString(R.string.error_unreachable, youTube)
-                    } else {
-                        context.getString(
-                            R.string.error_source_refused,
-                            youTube,
-                            e.message.orEmpty()
-                        )
-                    }
-                )
+                LiveState.Failed(e.reason(context))
             } catch (e: ServerException) {
                 LiveState.Failed(e.reason(context))
             }
@@ -185,6 +174,16 @@ internal fun Context.youTubeNotFound(
     @StringRes withName: Int,
     @StringRes without: Int,
 ): String = resources.named(name, withName, without, getString(R.string.source_ytm))
+
+/** What to tell the user when YouTube couldn't be reached or refused. */
+internal fun YouTubeException.reason(context: Context): String {
+    val youTube = context.getString(R.string.source_ytm)
+    return if (status == null && !signedOut) {
+        context.getString(R.string.error_unreachable, youTube)
+    } else {
+        context.getString(R.string.error_source_refused, youTube, message.orEmpty())
+    }
+}
 
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
 internal fun ServerException.reason(context: Context): String {

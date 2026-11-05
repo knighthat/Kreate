@@ -137,6 +137,12 @@ ui/screen/
   model) and send the edits once, on turning the mode off or from the leave dialog
   (`rearrangePlaylist`); moves and removals (with Undo) are made on the
   page and sent together; Delete playlist (`deletePlaylist`) asks first and waits for the server,
+  `PlaylistEdit.kt` (state of editing a server playlist's songs: `arranging`, mode, `save` with a
+  `PlaylistChanges`, `delete`; used by the OpenSubsonic and YouTube playlist view models),
+  `PlaylistEditing.kt` (its page side: `PlaylistEditState`/`Actions`, `rememberPlaylistEditing` with
+  the reorderable rows and the Undo, leave and delete dialogs). YouTube playlists of the user
+  (`editable` from the page's editing header) fetch every part first, then send removals in one
+  request and moves one by one (`moves`, fewest moves),
   `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a
   `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and

@@ -253,6 +253,33 @@ class YouTubeParserTest {
     }
 
     @Test
+    fun aPlaylistOfTheUserIsEditableAndNamesEachPlace() {
+        fun row(videoId: String, setVideoId: String) =
+            """{"musicResponsiveListItemRenderer":{"playlistItemData":{"videoId":"$videoId","playlistSetVideoId":"$setVideoId"},
+                "flexColumns":[{"musicResponsiveListItemFlexColumnRenderer":{"text":{"runs":[{"text":"Song $videoId"}]}}}]}}"""
+
+        fun page(header: String) = Json.parseToJsonElement(
+            """{"contents":{"twoColumnBrowseResultsRenderer":{
+                "tabs":[{"tabRenderer":{"content":{"sectionListRenderer":{"contents":[{"$header":{
+                    "header":{"musicResponsiveHeaderRenderer":{"title":{"runs":[{"text":"Mine"}]}}},
+                    "musicResponsiveHeaderRenderer":{"title":{"runs":[{"text":"Mine"}]}}}}]}}}}],
+                "secondaryContents":{"sectionListRenderer":{"contents":[{"musicPlaylistShelfRenderer":{
+                    "contents":[${row("v1", "S1")},${row("v2", "S2")},${row("v1", "S3")}]}}]}}}}}"""
+        )
+
+        val mine = parser.playlistPage("PL1", page("musicEditablePlaylistDetailHeaderRenderer"))!!
+        val others = parser.playlistPage("PL1", page("musicResponsiveHeaderRenderer"))!!
+
+        assertTrue(mine.editable)
+        assertFalse(others.editable)
+        // A song held twice has a place each
+        assertEquals(
+            listOf("v1" to "S1", "v2" to "S2", "v1" to "S3"),
+            mine.entries.map { it.song.song.id to it.setVideoId },
+        )
+    }
+
+    @Test
     fun playlistContinuationGivesTheRest() {
         val page = parser.playlistSongs(fixture("pl_cont"))
 

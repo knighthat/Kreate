@@ -25,6 +25,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
@@ -364,6 +366,57 @@ class YouTubeProvider internal constructor(
      */
     suspend fun playlistSongs(continuation: String): YouTubePage<RemoteSong> =
         parser.playlistSongs(innerTube.continuation(Endpoint.BROWSE, continuation))
+
+    /**
+     * The next places of a playlist, with what names each for [removeFromPlaylist] and
+     * [moveInPlaylist].
+     *
+     * @param continuation of [YouTubePlaylistPage] or of the previous call
+     */
+    suspend fun playlistEntries(continuation: String): YouTubePage<YouTubePlaylistEntry> =
+        parser.playlistEntries(innerTube.continuation(Endpoint.BROWSE, continuation))
+
+    /**
+     * Takes places out of the playlist [playlistId] of the signed in user, all in one request.
+     *
+     * @param places for each the `setVideoId` naming the place and the video id of its song
+     * @throws YouTubeException when YouTube can't be reached or refuses, like for a playlist that
+     * isn't the user's, with [YouTubeException.signedOut] when nobody is signed in or the session
+     * ended
+     */
+    suspend fun removeFromPlaylist(playlistId: String, places: List<Pair<String, String>>) {
+        if (places.isEmpty()) return
+        innerTube.editPlaylist(playlistId, places.map { (setVideoId, videoId) ->
+            buildJsonObject {
+                put("action", "ACTION_REMOVE_VIDEO")
+                put("setVideoId", setVideoId)
+                put("removedVideoId", videoId)
+            }
+        })
+    }
+
+    /**
+     * Moves the place [setVideoId] of the playlist [playlistId] of the signed in user to right
+     * before the place [before], to the end when it is `null`.
+     *
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun moveInPlaylist(playlistId: String, setVideoId: String, before: String?) {
+        innerTube.editPlaylist(playlistId, listOf(buildJsonObject {
+            put("action", "ACTION_MOVE_VIDEO_BEFORE")
+            put("setVideoId", setVideoId)
+            put("movedSetVideoIdSuccessor", before)
+        }))
+    }
+
+    /**
+     * Deletes the playlist [playlistId] of the signed in user.
+     *
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun deletePlaylist(playlistId: String) {
+        innerTube.deletePlaylist(playlistId)
+    }
 
     /**
      * Every song of a playlist, in its order, fetched part after part up to [PLAYLIST_PAGES]

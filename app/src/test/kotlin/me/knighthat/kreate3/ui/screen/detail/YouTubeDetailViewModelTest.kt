@@ -180,6 +180,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,
+            backgroundScope,
         )
 
         assertEquals(listOf("v1"), viewModel.songs.first { it.isNotEmpty() }.map { it.mediaId })
@@ -276,6 +277,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,
+            backgroundScope,
         )
 
         val playlist = (viewModel.state.first { it !is LiveState.Loading } as LiveState.Ready).value

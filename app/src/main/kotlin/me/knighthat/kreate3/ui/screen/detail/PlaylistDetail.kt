@@ -513,9 +513,10 @@ internal fun List<MediaItem>.songCovers(): List<Any> =
  * @param canRemove whether songs can be taken out, `false` for a monthly playlist: no such row
  * @param onDelete asks to delete the playlist, `null` for a playlist that can't be: no row
  * @param canDelete whether the user may delete it, the row is grayed out otherwise
- * @param saving for a playlist of a server, whose edits are sent when the user turns the mode
- * off: whether they are on their way. The row of the mode is a spinner then, the other rows are
- * off, and the sheet closes once the mode is off; `null` for a playlist that applies them at once
+ * @param busy for a playlist of a server, whose edits are sent when the user turns the mode off:
+ * whether the page waits for the server. The row that was tapped is a spinner then and the other
+ * rows are off. The sheet stays until the mode changed, tapping a row can take a while there;
+ * `null` for a playlist that applies the modes at once
  */
 @Composable
 fun PlaylistMenu(
@@ -530,7 +531,7 @@ fun PlaylistMenu(
     onDelete: (() -> Unit)? = null,
     canDelete: Boolean = true,
     onModeChange: (CoverEditMode) -> Unit = {},
-    saving: Boolean? = null,
+    busy: Boolean? = null,
 ) {
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
@@ -561,13 +562,15 @@ fun PlaylistMenu(
         entries = if (mode == null) null else { close ->
             val unlocked = mode == CoverEditMode.REORDER
             val removing = mode == CoverEditMode.REMOVE
-            val busy = saving == true
-            if (saving != null) {
-                // The edits are done, sent or thrown away, whenever the mode goes off
-                var wasOn by remember { mutableStateOf(mode != CoverEditMode.NONE) }
+            val waiting = busy == true
+            // The row tapped last, it shows the spinner while the page waits
+            var tapped by remember { mutableStateOf<CoverEditMode?>(null) }
+            if (busy != null) {
+                // A mode on or off is the end of what the tap asked for
+                var shown by remember { mutableStateOf(mode) }
                 LaunchedEffect(mode) {
-                    if (wasOn && mode == CoverEditMode.NONE) close {}
-                    wasOn = mode != CoverEditMode.NONE
+                    if (shown != mode) close {}
+                    shown = mode
                 }
             }
             ConfigEntry(
@@ -576,14 +579,13 @@ fun PlaylistMenu(
                     stringResource(R.string.semantic_lock_the_order)
                 else
                     stringResource(R.string.semantic_unlock_to_move_songs),
-                enabled = canEdit && !busy,
-                loading = busy && unlocked,
+                enabled = canEdit && !waiting,
+                loading = waiting && tapped == CoverEditMode.REORDER,
             ) {
-                // Turning a mode off sends the edits of a server's playlist, the sheet waits
-                if (unlocked && saving != null)
-                    onModeChange(CoverEditMode.NONE)
-                else
-                    close { onModeChange(if (unlocked) CoverEditMode.NONE else CoverEditMode.REORDER) }
+                val target = if (unlocked) CoverEditMode.NONE else CoverEditMode.REORDER
+                tapped = CoverEditMode.REORDER
+                // The edits of a server's playlist are sent or fetched first, the sheet waits
+                if (busy != null) onModeChange(target) else close { onModeChange(target) }
             }
             if (canRemove)
                 ConfigEntry(
@@ -592,19 +594,18 @@ fun PlaylistMenu(
                         stringResource(R.string.semantic_stop_removing_songs)
                     else
                         stringResource(R.string.semantic_remove_songs),
-                    enabled = canEdit && !busy,
-                    loading = busy && removing,
+                    enabled = canEdit && !waiting,
+                    loading = waiting && tapped == CoverEditMode.REMOVE,
                 ) {
-                    if (removing && saving != null)
-                        onModeChange(CoverEditMode.NONE)
-                    else
-                        close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }
+                    val target = if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE
+                    tapped = CoverEditMode.REMOVE
+                    if (busy != null) onModeChange(target) else close { onModeChange(target) }
                 }
             if (onDelete != null)
                 ConfigEntry(
                     icon = R.drawable.delete,
                     label = stringResource(R.string.semantic_delete_playlist),
-                    enabled = canDelete && !busy,
+                    enabled = canDelete && !waiting,
                 ) { close { onDelete() } }
         },
     )

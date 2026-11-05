@@ -237,6 +237,31 @@ internal class InnerTube(
         }
 
     /**
+     * Changes the playlist [playlistId] of the signed in user with [actions], which YouTube applies
+     * in order.
+     *
+     * @throws YouTubeException when YouTube refuses, which it tells in `status`
+     */
+    suspend fun editPlaylist(playlistId: String, actions: List<JsonObject>): JsonObject =
+        post("browse/edit_playlist", signedIn = true) {
+            put("playlistId", playlistId)
+            putJsonArray("actions") { actions.forEach { add(it) } }
+        }.also { it.requireSucceeded() }
+
+    /** Deletes the playlist [playlistId] of the signed in user. */
+    suspend fun deletePlaylist(playlistId: String): JsonObject =
+        post("playlist/delete", signedIn = true) {
+            put("playlistId", playlistId)
+        }.also { it.requireSucceeded() }
+
+    /** An answer to a change names how it went in `status`, one without it is taken as done. */
+    private fun JsonObject.requireSucceeded() {
+        val status = this["status"].asString ?: return
+        if (status != "STATUS_SUCCEEDED")
+            throw YouTubeException("YouTube refused the change: $status", status = 200)
+    }
+
+    /**
      * Subscribes the user to the channel [channelId], or unsubscribes them.
      *
      * @param params what the page's button sends with it, `null` for none

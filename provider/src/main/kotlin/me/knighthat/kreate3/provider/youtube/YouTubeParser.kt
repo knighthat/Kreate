@@ -83,7 +83,11 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 position = renderer["index"].text()?.trim()?.toIntOrNull(),
                 videoType = videoType,
             )
-            return SongItem(song, isVideo(videoType))
+            return SongItem(
+                song,
+                isVideo(videoType),
+                renderer.path("playlistItemData", "playlistSetVideoId").asString,
+            )
         }
 
         val navigation = renderer["navigationEndpoint"]
@@ -542,9 +546,13 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
             description = header.path("description", "musicDescriptionShelfRenderer", "description")
                 .text()
                 ?: header.path("description").text(),
-            songs = contents.items().filterIsInstance<SongItem>().map { it.song },
+            entries = contents.items().filterIsInstance<SongItem>()
+                .map { YouTubePlaylistEntry(it.song, it.setVideoId) },
             continuation = continuationOf(shelf, contents),
             summary = summaryOf(header.path("secondSubtitle")),
+            editable = shelves(response).any {
+                it.path("musicEditablePlaylistDetailHeaderRenderer") != null
+            },
         )
     }
 
@@ -562,10 +570,20 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
     }
 
     /** The next songs of a playlist. */
-    fun playlistSongs(response: JsonElement?): YouTubePage<RemoteSong> {
+    fun playlistSongs(response: JsonElement?): YouTubePage<RemoteSong> =
+        playlistEntries(response).let { page ->
+            YouTubePage(
+                page.items.map { it.song },
+                page.continuation
+            )
+        }
+
+    /** The next places of a playlist. */
+    fun playlistEntries(response: JsonElement?): YouTubePage<YouTubePlaylistEntry> {
         val (items, token) = continued(response)
         return YouTubePage(
-            items.mapNotNull(::item).filterIsInstance<SongItem>().map { it.song },
+            items.mapNotNull(::item).filterIsInstance<SongItem>()
+                .map { YouTubePlaylistEntry(it.song, it.setVideoId) },
             token
         )
     }
