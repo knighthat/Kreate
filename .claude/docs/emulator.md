@@ -60,6 +60,9 @@ save which account or channel a device is signed in as.
   "Password") makes `ui.sh tap` hit whichever comes first, and text typed after it lands in the
   wrong field. Dump first and tap the bounds of the node you mean; dump again before saving.
 - Long-press: `adb shell input swipe x y x y 800`.
+- Settings sliders (stream quality): `input swipe` from the handle to the end you want; read the
+  label with `ui.sh dump`. `Logger.d` lines (e.g. `Stream for …: itag …` from `YouTubeStreams`)
+  only reach logcat with Settings → General → Log level on Debug; put it back to Warning after.
 - The 5-minute library throttle is in memory: force-stop + relaunch makes a tab sync again at once.
 - Killing the app for cold paths: `am kill` does nothing while `PlaybackService` is foreground. Use
   `adb shell run-as me.knighthat.kreate3 kill -9 $(adb shell pidof me.knighthat.kreate3)`; the

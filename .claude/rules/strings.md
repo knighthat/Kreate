@@ -53,6 +53,9 @@ never move keys between files.
   "…"; a note after `\n` gets two lines of its own. English budgets, measured with Inter on a 360dp
   phone: `setting_title_*` ≤ 35 characters, `setting_description_*` ≤ 75, ≤ 65 under a
   `MainSwitch`. Placeholders count at their usual value (`YouTube Music`, a server name).
+- A choice setting's dialog lists short values (`constant_*`: "Never", "On-failure"); the row's
+  description spells out what the selected one does (`setting_description_{setting}_*`, passed as
+  `ChoiceSetting`'s `summary`), e.g. "Retry with login if failed" (maintainer, 2026-11-05).
 
 ## Key names
 

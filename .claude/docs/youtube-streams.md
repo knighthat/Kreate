@@ -26,6 +26,9 @@
   `ON_FAILURE`, `YouTubeStreams.stream` asks again in the session when the library says
   `AGE_RESTRICTED`; `ALWAYS` asks in it first; `NEVER` keeps it signed out. Without a signed in
   account the setting does nothing.
+- Verified 2026-11-05 with a Premium account, Wi-Fi quality ORIGINAL on the emulator:
+  `WEB_REMIX__nopo`,
+  itag 774, Opus, 281808 bps (about 256 kbps), `session: true`.
 - Premium isn't detected: a non-Premium account on ORIGINAL gets 251 (High), possibly after a 403 →
   refused retry.
 - Even a non-null signed-out stream can be refused (a `WEB_EMBEDDED_PLAYER__nopo` URL that 403s on
