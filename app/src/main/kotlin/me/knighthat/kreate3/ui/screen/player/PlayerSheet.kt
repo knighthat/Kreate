@@ -63,6 +63,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -110,6 +111,7 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.lyrics.SyncedLyrics
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.RepeatMode
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
@@ -429,6 +431,22 @@ private fun FullPlayer(
         snapshotFlow { pagerState.currentPage }.collect { page ->
             if (page != PlayerTab.QUEUE.ordinal) queueMode = CoverEditMode.NONE
             if (page != PlayerTab.LYRICS.ordinal) latestLyricsControls.reset()
+        }
+    }
+    // What the picture-in-picture window shows follows the page, see PictureInPicture
+    val pip = koinInject<PictureInPicture>()
+    val onLyricsPage by remember(pagerState) {
+        derivedStateOf { pagerState.currentPage == PlayerTab.LYRICS.ordinal }
+    }
+    val syncedLyrics = lyricsControls.shown?.content as? SyncedLyrics
+    LaunchedEffect(pip, onLyricsPage, syncedLyrics) {
+        pip.onLyricsPage = onLyricsPage
+        pip.lyrics = syncedLyrics.takeIf { onLyricsPage }
+    }
+    DisposableEffect(pip) {
+        onDispose {
+            pip.onLyricsPage = false
+            pip.lyrics = null
         }
     }
     // Songs can't be moved while shuffled, like when shuffle is turned on from the notification

@@ -19,17 +19,24 @@
 package me.knighthat.kreate3.ui.screen.settings.general
 
 import android.content.res.Resources
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.LogLevel
@@ -47,9 +54,11 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.screen.player.PICTURE_IN_PICTURE_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.PercentSetting
 import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -82,6 +91,9 @@ fun GeneralSettingsScreen(
     val artistPageAction by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
     val playlistFirstButton by Preferences.PLAYLIST_FIRST_BUTTON.collectAsStateWithLifecycle()
     val playlistSecondButton by Preferences.PLAYLIST_SECOND_BUTTON.collectAsStateWithLifecycle()
+    val pictureInPicture by Preferences.PICTURE_IN_PICTURE.collectAsStateWithLifecycle()
+    val pictureInPictureTextSize by
+    Preferences.PICTURE_IN_PICTURE_LYRICS_TEXT_SIZE.collectAsStateWithLifecycle()
 
     val logLevel by GlobalPreferences.LOG_LEVEL.collectAsStateWithLifecycle()
     val logRolloverSize by GlobalPreferences.LOG_ROLLOVER_SIZE.collectAsStateWithLifecycle()
@@ -107,6 +119,8 @@ fun GeneralSettingsScreen(
         artistPageAction = artistPageAction,
         playlistFirstButton = playlistFirstButton,
         playlistSecondButton = playlistSecondButton,
+        pictureInPicture = pictureInPicture,
+        pictureInPictureTextSize = pictureInPictureTextSize,
         logLevel = logLevel,
         logRolloverSize = logRolloverSize,
         logKeep = logKeep,
@@ -140,6 +154,8 @@ private fun GeneralSettingsContent(
     artistPageAction: QueueAction,
     playlistFirstButton: PlaylistButton,
     playlistSecondButton: PlaylistButton,
+    pictureInPicture: Boolean,
+    pictureInPictureTextSize: Int,
     logLevel: LogLevel,
     logRolloverSize: Long,
     logKeep: Int,
@@ -244,6 +260,33 @@ private fun GeneralSettingsContent(
             onSelect = { Preferences.PLAYLIST_SECOND_BUTTON.update(it) },
         )
 
+        // The window needs Android 11, older versions don't get the setting
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            SettingsSection(stringResource(R.string.setting_header_picture_in_picture))
+            SwitchSetting(
+                title = stringResource(R.string.setting_header_picture_in_picture),
+                checked = pictureInPicture,
+                onCheckedChange = { Preferences.PICTURE_IN_PICTURE.update(it) },
+                summary = stringResource(R.string.setting_description_picture_in_picture),
+            )
+            PercentSetting(
+                title = stringResource(R.string.setting_title_text_size),
+                value = pictureInPictureTextSize,
+                range = PICTURE_IN_PICTURE_TEXT_SIZES,
+                onSelect = { Preferences.PICTURE_IN_PICTURE_LYRICS_TEXT_SIZE.update(it) },
+                summary = stringResource(R.string.setting_description_picture_in_picture_text_size),
+                enabled = pictureInPicture,
+                leadingIcon = {
+                    Box(Modifier.size(28.dp), contentAlignment = Alignment.Center) {
+                        Icon(painterResource(R.drawable.format_size), null, Modifier.size(18.dp))
+                    }
+                },
+                trailingIcon = {
+                    Icon(painterResource(R.drawable.format_size), null, Modifier.size(28.dp))
+                },
+            )
+        }
+
         SettingsSection(stringResource(R.string.setting_header_logging))
         if (!appWide && defaultProfileName != null)
             SettingsSummary(
@@ -330,6 +373,8 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         artistPageAction = QueueAction.SHUFFLE,
         playlistFirstButton = PlaylistButton.PLAY,
         playlistSecondButton = PlaylistButton.SHUFFLE,
+        pictureInPicture = false,
+        pictureInPictureTextSize = 50,
         logLevel = LogLevel.WARNING,
         logRolloverSize = MIB,
         logKeep = 5,

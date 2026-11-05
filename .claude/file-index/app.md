@@ -15,6 +15,11 @@ Root
   restart inside `PlaybackLifecycle.restartAround`, so the player's writes finish first); member
   `internal fun restart(configure)` (clear task, relaunch via the enabled launcher alias,
   `exit(0)`; used by wizard done/skip and backup restore).
+- `PictureInPictureWindow.kt` — picture-in-picture window (Android 11+,
+  `Preferences.PICTURE_IN_PICTURE`):
+  `Context.pictureInPictureParams` (1:1 cover / 16:9 lyrics, previous/play-pause/next
+  `RemoteAction`s, auto-enter on 12+), `PictureInPictureReceiver` (buttons → `PlaybackController`).
+  `KreateActivity` keeps the params current while shown and enters from `onUserLeaveHint` on 11.
 - `KreateActivity.kt` — main activity: splash (waits on prefs), setup-wizard gate,
   `SETUP_WIZARD_SKIP_ACTION` handling, `OPEN_PLAYER_ACTION` (media notification tap, from onCreate
   or onNewIntent) → `KreateApp` expands the player sheet (unless `NOTIFICATION_OPENS_PLAYER` is

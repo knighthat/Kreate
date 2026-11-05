@@ -163,6 +163,7 @@ import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
+import me.knighthat.kreate3.ui.screen.player.PictureInPictureView
 import me.knighthat.kreate3.ui.screen.player.PlayerSheet
 import me.knighthat.kreate3.ui.screen.player.PlayerSheetValue
 import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
@@ -745,6 +746,14 @@ fun KreateApp(
                 // Last, so it covers everything and handles going back first
                 PlayerSheet(playerSheet, controller = playback)
                 SongMenuOverlay(songMenu)
+                // Over everything while the picture-in-picture window is open, the app stays
+                // composed under it so the window opens back on the same screen
+                PictureInPictureView(
+                    pip = koinInject(),
+                    item = playing.current,
+                    isPlaying = playing.isPlaying,
+                    controller = playback,
+                )
             }
         }
     }

@@ -18,25 +18,35 @@
 
 package me.knighthat.kreate3
 
+import android.app.PictureInPictureParams
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
@@ -52,6 +62,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeLink
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.local.LocalMusicScheduler
+import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
@@ -59,6 +70,7 @@ import me.knighthat.kreate3.ui.navigation.YouTubeArtist
 import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
 import me.knighthat.kreate3.ui.screen.KreateApp
 import me.knighthat.kreate3.ui.screen.SetupWizardScreen
+import me.knighthat.kreate3.ui.screen.player.PictureInPicture
 import me.knighthat.kreate3.ui.screen.setupCompletedFile
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.android.ext.android.get
@@ -94,6 +106,10 @@ class KreateActivity : ComponentActivity() {
 
     private var isSetup = false
     private var isReady = false
+
+    // The window opens when the app is left: set by watchPictureInPicture, Android 11 and up
+    private var pictureInPictureParams: PictureInPictureParams? = null
+    private var pictureInPictureReceiver: PictureInPictureReceiver? = null
 
     private val scope: CoroutineScope by inject()
 
@@ -143,6 +159,8 @@ class KreateActivity : ComponentActivity() {
         // to set up. A screen asking meanwhile waits for these instead of making its own.
         lifecycleScope.launch(Dispatchers.Default) { get<Providers>() }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) watchPictureInPicture()
+
         lifecycleScope.launch {
             Preferences.awaitLoaded()
             //<editor-fold defaultstate="collapsed" desc="Load values from wizard if available">
@@ -184,6 +202,19 @@ class KreateActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        if (isSetup && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // The window may have been closed while the app was stopped
+            get<PictureInPicture>().isActive = isInPictureInPictureMode
+            val receiver = PictureInPictureReceiver(get())
+            ContextCompat.registerReceiver(
+                this,
+                receiver,
+                pictureInPictureFilter(),
+                ContextCompat.RECEIVER_NOT_EXPORTED,
+            )
+            pictureInPictureReceiver = receiver
+        }
 
         setContent {
             if (isSetup) {
@@ -285,8 +316,47 @@ class KreateActivity : ComponentActivity() {
         notifier.post(getString(text))
     }
 
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        // Android 12 and up opens it by itself, see pictureInPictureParams
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R)
+            pictureInPictureParams?.let { enterPictureInPictureMode(it) }
+    }
+
+    /**
+     * Keeps the picture-in-picture window ready while the app is shown: it opens on leaving only
+     * with the setting on and a song playing, shaped for what the player shows.
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun watchPictureInPicture() {
+        val pip = get<PictureInPicture>()
+        val controller = get<PlaybackController>()
+        addOnPictureInPictureModeChangedListener { pip.isActive = it.isInPictureInPictureMode }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val playing = controller.state
+                    .map { it.isPlaying to it.hasMiniPlayer }
+                    .distinctUntilChanged()
+                val lyricsPage = snapshotFlow { pip.onLyricsPage }
+                combine(
+                    Preferences.PICTURE_IN_PICTURE.state,
+                    playing,
+                    lyricsPage
+                ) { on, state, lyrics ->
+                    val (isPlaying, hasMiniPlayer) = state
+                    val ready = on && isPlaying && hasMiniPlayer
+                    pictureInPictureParams(isPlaying, lyrics, autoEnter = ready)
+                        .also { pictureInPictureParams = it.takeIf { ready } }
+                }.collect { setPictureInPictureParams(it) }
+            }
+        }
+    }
+
     override fun onStop() {
         super.onStop()
+        pictureInPictureReceiver?.let(::unregisterReceiver)
+        pictureInPictureReceiver = null
         // The process may be killed after this point, and the activity scope is already
         // cancelled by onDestroy, so save on the global scope.
         scope.launch { Preferences.flush() }

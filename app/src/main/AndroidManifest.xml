@@ -45,7 +45,9 @@
         android:theme="@style/Theme.Kreate">
         <activity
             android:name=".KreateActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout"
             android:exported="true"
+            android:supportsPictureInPicture="true"
             android:theme="@style/Theme.Kreate.Splash">
             <!-- The Assistant's "play … on Kreate", handed to the playback service -->
             <intent-filter>

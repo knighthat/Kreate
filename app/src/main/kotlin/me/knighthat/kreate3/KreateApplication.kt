@@ -70,6 +70,7 @@ import me.knighthat.kreate3.source.local.LocalCoverKeyer
 import me.knighthat.kreate3.source.opensubsonic.OpenSubsonicCoverFetcher
 import me.knighthat.kreate3.source.youtube.YouTubeLyricsSource
 import me.knighthat.kreate3.ui.navigation.RouteResults
+import me.knighthat.kreate3.ui.screen.player.PictureInPicture
 import me.knighthat.kreate3.ui.screen.setupCompletedFile
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
@@ -191,6 +192,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single { Notifier(get()) }
                     // Answers of pages opened for one, see rememberRouteResult
                     single { RouteResults() }
+                    // What the picture-in-picture window shows
+                    single { PictureInPicture() }
                     single { LocalScanNotifications(androidContext()) }
 
                     // Covers kept as files: downloaded ones and the user's own

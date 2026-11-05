@@ -191,7 +191,10 @@ ui/screen/
   the artist screen's 10 top songs: `getTopSongs` filled from `search3`; Play/Shuffle there start
   a random top song at once and the rest follow, `rememberQuickQueueActions` +
   `PlaybackController.follow`).
-- player/ — `PlayerSheet.kt` (full player sheet: anchoredDraggable over the window, nested scroll
+- player/ — `PictureInPicture.kt` (Koin singleton `PictureInPicture`: window open, lyrics page open,
+  timed lyrics, published by `FullPlayer`; `PictureInPictureView`, drawn over the app by `KreateApp`
+  while open: `SyncedLyricsList` or the cover), `PlayerSheet.kt` (full player sheet:
+  anchoredDraggable over the window, nested scroll
   lets lists drag it down; pager of Player/Lyrics/Queue tabs at the bottom over the blurred cover,
   indicator on top with a full-width track; no collapse button; its own `MessageHost` above the
   tabs, the app's is under the sheet), `LyricsPage.kt` (`loadLyrics`,

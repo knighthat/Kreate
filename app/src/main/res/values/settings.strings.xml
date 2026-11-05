@@ -44,6 +44,9 @@
     <string name="setting_header_sleep_timer">Sleep timer</string>
     <string name="setting_header_history">History</string>
     <string name="setting_header_lyrics">Lyrics</string>
+    <string name="setting_header_picture_in_picture">Picture in picture</string>
+    <string name="setting_description_picture_in_picture">Leaving the app shows the cover, or the lyrics, in a small window</string>
+    <string name="setting_description_picture_in_picture_text_size">Text size relative to fullscreen lyrics</string>
     <string name="setting_header_android_auto" translatable="false">Android Auto</string>
     <string name="setting_header_proxy">Proxy</string>
     <string name="setting_title_account">Account</string>

@@ -581,6 +581,24 @@ object Preferences : KoinComponent {
 
     /** Size of the lyrics' text in percent of its normal size, `100` by default. */
     val LYRICS_TEXT_SIZE by lazy { int("lyrics_text_size", 100) }
+
+    /**
+     * Leaving the app while a song plays opens a small picture-in-picture window: the cover, or the
+     * lyrics when the lyrics page is open and they are timed. Off by default; read by
+     * `KreateActivity`, Android 11 (API 30) and up only.
+     */
+    val PICTURE_IN_PICTURE by lazy { boolean("picture_in_picture", false) }
+
+    /**
+     * Size of the lyrics' text in the picture-in-picture window in percent of its normal size,
+     * `50` by default. Read by `PictureInPictureView`.
+     */
+    val PICTURE_IN_PICTURE_LYRICS_TEXT_SIZE by lazy {
+        int(
+            "picture_in_picture_lyrics_text_size",
+            50
+        )
+    }
     //</editor-fold>
 
     /**
