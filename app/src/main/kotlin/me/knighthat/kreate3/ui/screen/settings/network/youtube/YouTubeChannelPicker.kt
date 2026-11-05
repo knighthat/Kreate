@@ -47,6 +47,8 @@ import me.knighthat.kreate3.ui.component.Thumbnail
  *
  * @param pageId page id of the channel acted as now, empty for the account's own
  * @param onDismiss closes the picker without a choice
+ * @param dismissLabel the text of the button at the bottom, which runs [onDismissClick]
+ * @param onDismissClick what the button at the bottom does, [onDismiss] by default
  */
 @Composable
 fun YouTubeChannelPicker(
@@ -55,6 +57,7 @@ fun YouTubeChannelPicker(
     onPick: (YouTubeChannel) -> Unit,
     onDismiss: () -> Unit,
     dismissLabel: String = stringResource(R.string.action_cancel),
+    onDismissClick: () -> Unit = onDismiss,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -71,7 +74,7 @@ fun YouTubeChannelPicker(
             }
         },
         confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(dismissLabel) } },
+        dismissButton = { TextButton(onClick = onDismissClick) { Text(dismissLabel) } },
     )
 }
 

@@ -170,6 +170,9 @@ private fun YouTubeSettingsContent(
                     title = stringResource(R.string.setting_title_sign_in),
                     summary = stringResource(R.string.setting_description_sign_in_youtube),
                     onClick = onSignIn,
+                    trailing = {
+                        Icon(painterResource(R.drawable.chevron_right), contentDescription = null)
+                    },
                 )
 
                 YouTubeAccountState.Checking ->
@@ -180,19 +183,13 @@ private fun YouTubeSettingsContent(
 
                 is YouTubeAccountState.SignedIn -> SettingsItem(
                     title = state.account.name,
-                    summary = state.account.handle
-                        ?: stringResource(R.string.status_signed_in),
-                    onClick = if (canSwitch) ({ pickChannel = true }) else null,
-                    trailing = if (canSwitch) {
-                        ({
-                            Icon(
-                                painterResource(R.drawable.chevron_right),
-                                contentDescription = stringResource(R.string.semantic_switch_channel)
-                            )
-                        })
-                    } else {
-                        null
-                    },
+                    summary = stringResource(
+                        if (canSwitch)
+                            R.string.setting_description_tap_to_change_channel
+                        else
+                            R.string.setting_description_tap_to_sign_out
+                    ),
+                    onClick = { if (canSwitch) pickChannel = true else askSignOut = true },
                 )
 
                 YouTubeAccountState.Ended -> SettingsItem(
@@ -202,6 +199,9 @@ private fun YouTubeSettingsContent(
                     ),
                     summary = stringResource(R.string.setting_description_account_status_session_ended),
                     onClick = onSignIn,
+                    trailing = {
+                        Icon(painterResource(R.drawable.chevron_right), contentDescription = null)
+                    },
                 )
 
                 is YouTubeAccountState.Failed -> SettingsItem(
@@ -214,12 +214,6 @@ private fun YouTubeSettingsContent(
                 )
             }
             if (account != YouTubeAccountState.SignedOut) {
-                SettingsItem(
-                    title = stringResource(R.string.setting_title_sign_out),
-                    summary = stringResource(R.string.setting_description_sign_out),
-                    onClick = { askSignOut = true },
-                )
-
                 SettingsSection(stringResource(R.string.setting_header_library))
                 library()
             }
@@ -232,6 +226,11 @@ private fun YouTubeSettingsContent(
                         onSwitchChannel(it)
                     },
                     onDismiss = { pickChannel = false },
+                    dismissLabel = stringResource(R.string.action_sign_out),
+                    onDismissClick = {
+                        pickChannel = false
+                        askSignOut = true
+                    },
                 )
             if (askSignOut)
                 AlertDialog(

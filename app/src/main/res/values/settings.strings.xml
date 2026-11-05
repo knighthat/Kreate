@@ -246,8 +246,8 @@
     <string name="setting_description_use_youtube_account_off">%1$s is used without signing in, your library isn\'t synced</string>
     <string name="setting_title_sign_in">Sign in</string>
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
-    <string name="setting_title_sign_out">Sign out</string>
-    <string name="setting_description_sign_out">Your liked songs stay in this profile</string>
+    <string name="setting_description_tap_to_change_channel">Tap to change channel</string>
+    <string name="setting_description_tap_to_sign_out">Tap to sign out</string>
     <string name="setting_description_sign_in_proxy_incomplete">Set the host and port of the proxy first</string>
     <string name="setting_description_sign_in_proxy_unsupported">This device\'s WebView can\'t use a proxy, the sign in page would skip it</string>
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
