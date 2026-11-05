@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +81,14 @@ fun YouTubeSettingsScreen(
     val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
     val region by Preferences.YOUTUBE_REGION.collectAsStateWithLifecycle()
     val playbackLogin by Preferences.YOUTUBE_PLAYBACK_LOGIN.collectAsStateWithLifecycle()
+    val wifiQuality by Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM.collectAsStateWithLifecycle()
+    val mobileQuality by Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM.collectAsStateWithLifecycle()
+    // Original is asked for in the session, so the setting is kept on Always while it is picked
+    val original = enabled && account is YouTubeAccountState.SignedIn &&
+            (wifiQuality == StreamQuality.ORIGINAL || mobileQuality == StreamQuality.ORIGINAL)
+    LaunchedEffect(original) {
+        if (original) Preferences.YOUTUBE_PLAYBACK_LOGIN.update(PlaybackLogin.ALWAYS)
+    }
 
     YouTubeSettingsContent(
         enabled = enabled,
@@ -88,6 +97,7 @@ fun YouTubeSettingsScreen(
         pageId = pageId,
         region = region,
         playbackLogin = playbackLogin,
+        playbackLoginLocked = original,
         onEnabledChange = viewModel::setEnabled,
         onSignIn = onSignIn,
         onRetry = viewModel::retry,
@@ -116,6 +126,8 @@ fun YouTubeSettingsScreen(
  * @param pageId page id of the channel acted as now, empty for the account's own
  * @param region country code of the catalog, empty for the device's region
  * @param playbackLogin whether the songs to play are found in the session
+ * @param playbackLoginLocked while Original is picked, [playbackLogin] is set to Always and can't
+ * be changed
  * @param library what of the account's library is synced, see [LibrarySyncSettings]
  * @param quality the stream quality, with Original while someone is signed in
  * @param proxy YouTube's proxy, see [ProxySettings]
@@ -128,6 +140,7 @@ private fun YouTubeSettingsContent(
     pageId: String,
     region: String,
     playbackLogin: PlaybackLogin,
+    playbackLoginLocked: Boolean,
     onEnabledChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onRetry: () -> Unit,
@@ -279,6 +292,7 @@ private fun YouTubeSettingsContent(
             label = labelsOf(PlaybackLogin.entries) { it.labelRes },
             summary = stringResource(playbackLogin.descriptionRes),
             onSelect = { Preferences.YOUTUBE_PLAYBACK_LOGIN.update(it) },
+            enabled = !playbackLoginLocked,
         )
 
         proxy()
@@ -347,7 +361,8 @@ private fun YouTubeSettingsPreview() = PreviewTheme {
         channels = emptyList(),
         pageId = "",
         region = "VN",
-        playbackLogin = PlaybackLogin.ON_FAILURE,
+        playbackLogin = PlaybackLogin.ALWAYS,
+        playbackLoginLocked = true,
         onEnabledChange = {},
         onSignIn = {},
         onRetry = {},
