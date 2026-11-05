@@ -64,6 +64,7 @@ import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.songsLabel
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
@@ -89,11 +90,6 @@ fun LocalPlaylistDetailScreen(
     val moveFailed = stringResource(R.string.error_move_song)
     val removeFailed = stringResource(R.string.error_playlist_remove_song)
     val deleteFailed = stringResource(R.string.error_playlist_delete)
-
-    val removedFrom = stringResource(
-        R.string.snackbar_removed_from,
-        playlist?.name ?: stringResource(R.string.snackbar_this_playlist)
-    )
 
     val songs = viewModel.songs.collectAsLazyPagingItems()
     // Counted again whenever the songs change, its pages may not hold them all
@@ -148,6 +144,11 @@ fun LocalPlaylistDetailScreen(
             },
             onRemoveSong = { song ->
                 viewModel.removeSong(song.mediaId) { removed, undo ->
+                    // The song is gone from the page, its name says what was removed
+                    val removedFrom = resources.getString(
+                        R.string.snackbar_removed_from_playlist,
+                        songsLabel(resources, listOf(song))
+                    )
                     notifier.post(
                         when {
                             !removed -> Message(removeFailed)

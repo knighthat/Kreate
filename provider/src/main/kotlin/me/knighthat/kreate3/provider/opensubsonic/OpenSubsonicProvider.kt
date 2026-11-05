@@ -407,20 +407,103 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
-     * A playlist of the server with its songs, in its order.
+     * A playlist of the server with its songs, in its order, and whether the user may change it.
      *
      * @param playlistId id of the playlist on the server
      * @return `null` while the server is off or not set up
      * @throws ServerException when the server can't be used or refuses
      */
-    suspend fun playlistWithSongs(playlistId: String): Pair<UserPlaylist, List<RemoteSong>>? {
+    suspend fun playlistWithSongs(playlistId: String): ServerPlaylist? {
         serverUrl ?: return null
 
         val playlist = call("getPlaylist", "id" to playlistId)["playlist"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return (playlist.toPlaylist(::coverUri)
-            ?: throw ServerException(ServerCheck.NotSubsonic)) to playlist.array("entry").orEmpty()
-            .mapNotNull { it.jsonObject.toSong(::coverUri) }
+        // The server says it with `readonly`; one that doesn't says who owns it, and a playlist
+        // that names neither is tried, the server refuses the change if it must
+        val readonly = (playlist["readonly"] as? JsonPrimitive)?.booleanOrNull
+        val owner = (playlist["owner"] as? JsonPrimitive)?.contentOrNull
+        return ServerPlaylist(
+            playlist = playlist.toPlaylist(::coverUri)
+                ?: throw ServerException(ServerCheck.NotSubsonic),
+            songs = playlist.array("entry").orEmpty()
+                .mapNotNull { it.jsonObject.toSong(::coverUri) },
+            editable = readonly?.not()
+                ?: (owner == null || owner.equals(settings.username(), ignoreCase = true)),
+        )
+    }
+
+    /**
+     * Changes the songs of the playlist [playlistId] to what [arrange] gives. The API can't move
+     * a song: when songs are only taken out, one request removes them by position; otherwise one
+     * request takes every song out and adds them again in the new order.
+     *
+     * @param arrange gets the ids of the songs the server has in the playlist right now, in its
+     * order, duplicates included, and gives the ids the playlist should have; `null` when the
+     * playlist is not what the caller worked from, nothing is sent then
+     * @return `false` when [arrange] gave `null`, `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for a playlist of
+     * another user
+     */
+    suspend fun rearrangePlaylist(
+        playlistId: String,
+        arrange: (current: List<String>) -> List<String>?,
+    ): Boolean? {
+        serverUrl ?: return null
+
+        val entries = entryIds(playlistId)
+        // Removal is by position, an entry without an id would make the positions unsafe
+        if (entries.any { it == null }) return false
+        val current = entries.filterNotNull()
+
+        val arranged = arrange(current) ?: return false
+        if (arranged == current) return true
+
+        val taken = takenOut(current, arranged)
+        call(
+            "updatePlaylist",
+            *(listOf("playlistId" to playlistId) +
+                    (taken ?: current.indices).map { "songIndexToRemove" to it.toString() } +
+                    // Songs only taken out are not added again
+                    if (taken == null) arranged.map { "songIdToAdd" to it } else emptyList()
+                    ).toTypedArray()
+        )
+        return true
+    }
+
+    /**
+     * Deletes the playlist [playlistId] from the server.
+     *
+     * @return `false` while the server is off or not set up, nothing is sent then
+     * @throws ServerException when the server can't be used or refuses, like for a playlist of
+     * another user
+     */
+    suspend fun deletePlaylist(playlistId: String): Boolean {
+        serverUrl ?: return false
+
+        call("deletePlaylist", "id" to playlistId)
+        return true
+    }
+
+    /**
+     * The positions of [current] that [arranged] leaves out, `null` when [arranged] is not
+     * [current] with some songs taken out, in the same order.
+     */
+    private fun takenOut(current: List<String>, arranged: List<String>): List<Int>? {
+        val taken = ArrayList<Int>()
+        var next = 0
+        current.forEachIndexed { index, id ->
+            if (next < arranged.size && arranged[next] == id) next++ else taken += index
+        }
+        return taken.takeIf { next == arranged.size }
+    }
+
+    /** The ids of the entries of the playlist, in its order, `null` for one without an id. */
+    private suspend fun entryIds(playlistId: String): List<String?> {
+        val playlist = call("getPlaylist", "id" to playlistId)["playlist"]?.jsonObject
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+        return playlist.array("entry").orEmpty().map {
+            (it as? JsonObject)?.get("id")?.jsonPrimitive?.contentOrNull
+        }
     }
 
     /**

@@ -229,7 +229,7 @@ internal class AutoLibrary(
                     ?.let { songs.listOfPlaylist(it) }
                     ?.mapNotNull { it.toMediaItem() }.orEmpty()
 
-                Origin.OPEN_SUBSONIC -> openSubsonic.playlistWithSongs(key)?.second
+                Origin.OPEN_SUBSONIC -> openSubsonic.playlistWithSongs(key)?.songs
                     ?.map { it.toLiveMediaItem() }.orEmpty()
 
                 Origin.YOUTUBE -> youTubePlaylistSongs(key).map { it.toYouTubeItem() }

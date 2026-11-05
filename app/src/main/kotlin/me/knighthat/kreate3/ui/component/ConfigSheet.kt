@@ -28,11 +28,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -116,6 +118,7 @@ private fun ConfigSheetContent(
  * An action of a [ConfigSheet] as a row, for the ones used less than its buttons. Unless
  * [enabled], the row is grayed out and can't be tapped.
  *
+ * @param loading a spinner in place of the icon, while the action is under way
  * @param onLongClick what a long press does, nothing when `null`
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -124,11 +127,17 @@ fun ConfigEntry(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean = true,
+    loading: Boolean = false,
     onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit,
 ) = ListItem(
     headlineContent = { Text(label) },
-    leadingContent = { Icon(painterResource(icon), contentDescription = null) },
+    leadingContent = {
+        if (loading)
+            CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
+        else
+            Icon(painterResource(icon), contentDescription = null)
+    },
     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     modifier = Modifier
         .combinedClickable(enabled = enabled, onLongClick = onLongClick, onClick = onClick)

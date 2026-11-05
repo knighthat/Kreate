@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
@@ -120,6 +121,11 @@ abstract class LiveDetailViewModel<T : Any>(
     /** The item without the songs whose id is in [disliked], the rest as it is. */
     protected abstract fun T.withoutSongs(disliked: Set<String>): T
 
+    /** Changes what [fetch] gave in place, nothing happens before it arrived. */
+    protected fun amend(change: T.() -> T) {
+        _state.update { if (it is LiveState.Ready) LiveState.Ready(it.value.change()) else it }
+    }
+
     /** Starts over, also after a failure. */
     fun load() {
         job?.cancel()
@@ -181,7 +187,7 @@ internal fun Context.youTubeNotFound(
 ): String = resources.named(name, withName, without, getString(R.string.source_ytm))
 
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
-private fun ServerException.reason(context: Context): String {
+internal fun ServerException.reason(context: Context): String {
     val server = context.resources.openSubsonicName()
     return when (val check = check) {
         is ServerCheck.Rejected -> context.getString(

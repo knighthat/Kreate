@@ -132,7 +132,11 @@ ui/screen/
   every song again when its paging refreshes (`totals`). `PlaylistMenu`: Play next / Add to queue /
   Share buttons, move / remove switches (remove not for monthly playlists) and Delete playlist (asks
   first, monthly ones too) as rows for the app's playlists. `EmptyPlaylist`. Used by
-  the three playlist screens),
+  the three playlist screens). OpenSubsonic playlists reorder and remove songs on the page
+  (`arranging` in the view
+  model) and send the edits once, on turning the mode off or from the leave dialog
+  (`rearrangePlaylist`); moves and removals (with Undo) are made on the
+  page and sent together; Delete playlist (`deletePlaylist`) asks first and waits for the server,
   `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a
   `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and

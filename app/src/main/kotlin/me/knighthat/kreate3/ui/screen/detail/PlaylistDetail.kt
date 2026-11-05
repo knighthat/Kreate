@@ -62,6 +62,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -511,6 +512,10 @@ internal fun List<MediaItem>.songCovers(): List<Any> =
  * @param canEdit whether the switches can be used
  * @param canRemove whether songs can be taken out, `false` for a monthly playlist: no such row
  * @param onDelete asks to delete the playlist, `null` for a playlist that can't be: no row
+ * @param canDelete whether the user may delete it, the row is grayed out otherwise
+ * @param saving for a playlist of a server, whose edits are sent when the user turns the mode
+ * off: whether they are on their way. The row of the mode is a spinner then, the other rows are
+ * off, and the sheet closes once the mode is off; `null` for a playlist that applies them at once
  */
 @Composable
 fun PlaylistMenu(
@@ -523,7 +528,9 @@ fun PlaylistMenu(
     canEdit: Boolean = true,
     canRemove: Boolean = true,
     onDelete: (() -> Unit)? = null,
+    canDelete: Boolean = true,
     onModeChange: (CoverEditMode) -> Unit = {},
+    saving: Boolean? = null,
 ) {
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
@@ -552,17 +559,31 @@ fun PlaylistMenu(
                 ) { linkShare.share { close {} } }
         },
         entries = if (mode == null) null else { close ->
-            val reordering = mode == CoverEditMode.REORDER
+            val unlocked = mode == CoverEditMode.REORDER
             val removing = mode == CoverEditMode.REMOVE
+            val busy = saving == true
+            if (saving != null) {
+                // The edits are done, sent or thrown away, whenever the mode goes off
+                var wasOn by remember { mutableStateOf(mode != CoverEditMode.NONE) }
+                LaunchedEffect(mode) {
+                    if (wasOn && mode == CoverEditMode.NONE) close {}
+                    wasOn = mode != CoverEditMode.NONE
+                }
+            }
             ConfigEntry(
-                icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
-                label = if (reordering)
+                icon = if (unlocked) R.drawable.lock_open else R.drawable.lock,
+                label = if (unlocked)
                     stringResource(R.string.semantic_lock_the_order)
                 else
                     stringResource(R.string.semantic_unlock_to_move_songs),
-                enabled = canEdit,
+                enabled = canEdit && !busy,
+                loading = busy && unlocked,
             ) {
-                close { onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER) }
+                // Turning a mode off sends the edits of a server's playlist, the sheet waits
+                if (unlocked && saving != null)
+                    onModeChange(CoverEditMode.NONE)
+                else
+                    close { onModeChange(if (unlocked) CoverEditMode.NONE else CoverEditMode.REORDER) }
             }
             if (canRemove)
                 ConfigEntry(
@@ -571,14 +592,19 @@ fun PlaylistMenu(
                         stringResource(R.string.semantic_stop_removing_songs)
                     else
                         stringResource(R.string.semantic_remove_songs),
-                    enabled = canEdit,
+                    enabled = canEdit && !busy,
+                    loading = busy && removing,
                 ) {
-                    close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }
+                    if (removing && saving != null)
+                        onModeChange(CoverEditMode.NONE)
+                    else
+                        close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }
                 }
             if (onDelete != null)
                 ConfigEntry(
                     icon = R.drawable.delete,
                     label = stringResource(R.string.semantic_delete_playlist),
+                    enabled = canDelete && !busy,
                 ) { close { onDelete() } }
         },
     )

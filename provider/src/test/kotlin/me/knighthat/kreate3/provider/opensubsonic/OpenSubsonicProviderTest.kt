@@ -425,7 +425,7 @@ class OpenSubsonicProviderTest {
 
     @Test
     fun aPlaylistComesWithItsEntries() = runBlocking {
-        val (playlist, songs) = provider {
+        val (playlist, songs, editable) = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
                 {"id":"s9","title":"Nine"},{"id":"s3","title":"Three","albumId":"al3","album":"Three"}]}}}"""
         }.playlistWithSongs("p1")!!
@@ -433,9 +433,85 @@ class OpenSubsonicProviderTest {
         assertEquals("p1", requests.single().form()["id"])
         assertEquals("Mix", playlist.name)
         assertEquals("p1", playlist.remoteId)
+        // Naming neither a `readonly` nor an owner, it is tried
+        assertTrue(editable)
         assertEquals(listOf("s9", "s3"), songs.map { it.song.id })
         assertNull(songs[0].album)
         assertEquals("al3", songs[1].album?.id)
+    }
+
+    @Test
+    fun aPlaylistIsRearrangedByTakingEverySongOutAndAddingThemAgain() = runBlocking {
+        val server = provider { request ->
+            if (request.url.encodedPath.endsWith("getPlaylist"))
+                """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
+                    {"id":"a"},{"id":"b"},{"id":"c"}]}}}"""
+            else
+                OK
+        }
+
+        val done = server.rearrangePlaylist("p1") { current -> current.reversed() }
+
+        assertEquals(true, done)
+        val update = requests.last()
+        assertTrue(update.url.encodedPath.endsWith("updatePlaylist"))
+        assertEquals(listOf("p1"), update.form().getAll("playlistId"))
+        assertEquals(listOf("0", "1", "2"), update.form().getAll("songIndexToRemove"))
+        assertEquals(listOf("c", "b", "a"), update.form().getAll("songIdToAdd"))
+    }
+
+    @Test
+    fun songsOnlyTakenOutAreRemovedByPositionAndNotAddedAgain() = runBlocking {
+        val server = provider { request ->
+            if (request.url.encodedPath.endsWith("getPlaylist"))
+                """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
+                    {"id":"a"},{"id":"b"},{"id":"a"}]}}}"""
+            else
+                OK
+        }
+
+        val done = server.rearrangePlaylist("p1") { current -> current.filter { it != "a" } }
+
+        assertEquals(true, done)
+        val update = requests.last()
+        assertEquals(listOf("0", "2"), update.form().getAll("songIndexToRemove"))
+        assertTrue(update.form().getAll("songIdToAdd").isNullOrEmpty())
+    }
+
+    @Test
+    fun aPlaylistIsDeletedById() = runBlocking {
+        assertTrue(provider().deletePlaylist("p1"))
+
+        val request = requests.single()
+        assertTrue(request.url.encodedPath.endsWith("deletePlaylist"))
+        assertEquals("p1", request.form()["id"])
+    }
+
+    @Test
+    fun aPlaylistThatChangedIsLeftAlone() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[{"id":"a"}]}}}"""
+        }
+
+        assertEquals(false, server.rearrangePlaylist("p1") { null })
+        // Only the fetch, nothing was written
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun aPlaylistTheServerCallsReadonlyCannotBeEdited() = runBlocking {
+        fun editable(fields: String) = runBlocking {
+            requests.clear()
+            provider {
+                """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix",$fields"entry":[]}}}"""
+            }.playlistWithSongs("p1")!!.editable
+        }
+
+        assertFalse(editable(""""readonly":true,"""))
+        assertTrue(editable(""""readonly":false,"owner":"someone","""))
+        // Without `readonly`, the owner decides
+        assertFalse(editable(""""owner":"someone","""))
+        assertTrue(editable(""""owner":"me","""))
     }
 
     @Test

@@ -21,6 +21,8 @@
     <string name="action_close">Close</string>
     <string name="action_open_website">Open website</string>
     <string name="action_save">Save</string>
+    <string name="action_save_changes">Save changes</string>
+    <string name="action_discard_changes">Discard changes</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
     <string name="action_skip">Skip</string>
