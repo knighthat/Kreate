@@ -248,6 +248,64 @@ internal class InnerTube(
             putJsonArray("actions") { actions.forEach { add(it) } }
         }.also { it.requireSucceeded() }
 
+    /**
+     * Makes a playlist for the signed in user and gives its id.
+     *
+     * @param privacy `PUBLIC`, `UNLISTED` or `PRIVATE`
+     * @throws YouTubeException when YouTube refuses or doesn't give the id
+     */
+    suspend fun createPlaylist(
+        title: String,
+        description: String,
+        privacy: String,
+        videoIds: List<String>,
+    ): String {
+        val answer = post("playlist/create", signedIn = true) {
+            put("title", title)
+            put("description", description)
+            put("privacyStatus", privacy)
+            if (videoIds.isNotEmpty())
+                putJsonArray("videoIds") { videoIds.forEach { add(it) } }
+        }
+        answer.requireSucceeded()
+        return answer["playlistId"].asString
+            ?: throw YouTubeException("YouTube didn't give the id of the new playlist")
+    }
+
+    /**
+     * Adds the song [videoId] to the end of the playlist [playlistId] of the signed in user.
+     *
+     * @return `false` when the playlist has the song already: asked to check, YouTube refuses then
+     * @throws YouTubeException when YouTube refuses for another reason
+     */
+    suspend fun addToPlaylist(playlistId: String, videoId: String): Boolean {
+        val answer = post("browse/edit_playlist", signedIn = true) {
+            put("playlistId", playlistId)
+            putJsonArray("actions") {
+                add(buildJsonObject {
+                    put("action", "ACTION_ADD_VIDEO")
+                    put("addedVideoId", videoId)
+                    put("dedupeOption", "DEDUPE_OPTION_CHECK")
+                })
+            }
+        }
+        return when (val status = answer["status"].asString) {
+            null, "STATUS_SUCCEEDED" -> true
+            "STATUS_FAILED" -> false
+            else -> throw YouTubeException("YouTube refused the change: $status", status = 200)
+        }
+    }
+
+    /**
+     * The playlists of the signed in user that the song [videoId] can be added to, each with
+     * whether it holds the song already: what YouTube Music's own "Save to playlist" lists.
+     */
+    suspend fun addToPlaylistOptions(videoId: String): JsonObject =
+        post("playlist/get_add_to_playlist", signedIn = true) {
+            putJsonArray("videoIds") { add(videoId) }
+            put("excludeWatchLater", false)
+        }
+
     /** Deletes the playlist [playlistId] of the signed in user. */
     suspend fun deletePlaylist(playlistId: String): JsonObject =
         post("playlist/delete", signedIn = true) {

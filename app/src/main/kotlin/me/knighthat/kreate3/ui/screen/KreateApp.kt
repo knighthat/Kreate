@@ -85,6 +85,7 @@ import me.knighthat.kreate3.ui.navigation.ArtistDetails
 import me.knighthat.kreate3.ui.navigation.ArtistStatistics
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
+import me.knighthat.kreate3.ui.navigation.CreatePlaylist
 import me.knighthat.kreate3.ui.navigation.DataSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
 import me.knighthat.kreate3.ui.navigation.DownloadQueue
@@ -156,6 +157,7 @@ import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailScreen
 import me.knighthat.kreate3.ui.screen.details.ArtistDetailsScreen
 import me.knighthat.kreate3.ui.screen.details.SongDetailsScreen
+import me.knighthat.kreate3.ui.screen.home.CreatePlaylistScreen
 import me.knighthat.kreate3.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
@@ -189,7 +191,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 /**
  * Whether the screen gets the [MiniPlayer] at the bottom of the window while something plays.
  * Settings pages don't, they aren't about the music. Search places it above its search bar, and
- * search results above their tabs.
+ * search results and the new playlist screen above their own bars.
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
@@ -197,16 +199,16 @@ private val Route.hasMiniPlayer: Boolean
         OpenSubsonicSettings, OpenSubsonicSignIn, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
-        is SearchResults, is ProxyEditor -> false
+        is SearchResults, is ProxyEditor, is CreatePlaylist -> false
         else -> true
     }
 
 /**
- * Whether the app's scaffold shows the [Notifier]'s messages over the screen. Search and its
- * results show them above their own bottom bar, see [MessageHost].
+ * Whether the app's scaffold shows the [Notifier]'s messages over the screen. Search, its
+ * results and the new playlist screen show them above their own bottom bar, see [MessageHost].
  */
 private val Route.showsMessages: Boolean
-    get() = this != Search && this !is SearchResults
+    get() = this != Search && this !is SearchResults && this !is CreatePlaylist
 
 /**
  * @param openPlayer whether the full player was asked to open, like by a tap on the media
@@ -383,11 +385,20 @@ fun KreateApp(
                                     entry<Playlists> {
                                         HomePlaylistsScreen(
                                             { topLevel.push(playlistRoute(it)) },
+                                            { topLevel.push(CreatePlaylist()) },
                                             { topLevel.push(Search) },
                                             { topLevel.push(Account) },
                                             { topLevel.push(Settings) },
                                             paddingModifier,
                                             contentPadding,
+                                        )
+                                    }
+
+                                    entry<CreatePlaylist> {
+                                        CreatePlaylistScreen(
+                                            origin = it.songOrigin,
+                                            songId = it.songId,
+                                            onBack = topLevel::pop,
                                         )
                                     }
 

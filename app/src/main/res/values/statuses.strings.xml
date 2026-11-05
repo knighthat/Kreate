@@ -31,5 +31,7 @@
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>
     <string name="status_no_playlists_yet">No playlists yet</string>
+    <string name="status_no_playlists_to_add_to">No playlists you can add to</string>
+    <string name="status_couldnt_load_playlists">Couldn\'t load the playlists</string>
     <string name="status_playlist_empty">This playlist has no songs</string>
 </resources>

@@ -144,7 +144,7 @@ internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: In
     )
 
 internal fun UserPlaylistEntity.toModel() =
-    UserPlaylist(playlistId, origin, name, thumbnail, isMonthly, remoteId)
+    UserPlaylist(playlistId, origin, name, thumbnail, isMonthly, remoteId, isPinned)
 
 internal fun UserPlaylistRow.toModel() = playlist.toModel().copy(covers = parseCovers(covers))
 
@@ -171,7 +171,8 @@ internal fun UserPlaylist.toEntity(userId: String, createdAt: Instant, updatedAt
         isMonthly,
         createdAt,
         updatedAt,
-        remoteId
+        remoteId,
+        isPinned,
     )
 
 internal fun SongFormatEntity.toModel() = SongFormat(songId, tag, mimetype, bitrate, length, gain)

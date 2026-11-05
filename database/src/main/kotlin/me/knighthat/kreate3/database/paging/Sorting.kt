@@ -105,10 +105,12 @@ enum class SearchSort(override val column: String, override val isText: Boolean 
 
 /**
  * The `ORDER BY` clause of [this]. [tieBreaker] is a unique column, without it rows with the
- * same value could swap places between pages and show up twice or not at all.
+ * same value could swap places between pages and show up twice or not at all. [first] is an
+ * expression that sorts before the field, like pinned rows first.
  */
-internal fun SortOrder<*>.toOrderBy(tieBreaker: String): String {
+internal fun SortOrder<*>.toOrderBy(tieBreaker: String, first: String? = null): String {
     val collation = if (by.isText) " COLLATE NOCASE" else ""
     val way = if (direction == SortDirection.ASCENDING) "ASC" else "DESC"
-    return "ORDER BY ${by.column}$collation $way NULLS LAST, $tieBreaker"
+    val leading = first?.let { "$it, " }.orEmpty()
+    return "ORDER BY $leading${by.column}$collation $way NULLS LAST, $tieBreaker"
 }

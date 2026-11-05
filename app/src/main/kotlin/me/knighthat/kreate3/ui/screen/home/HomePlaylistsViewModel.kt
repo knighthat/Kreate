@@ -35,9 +35,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import me.knighthat.kreate3.auto.AutoLibrary
-import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
@@ -110,13 +108,6 @@ class HomePlaylistsViewModel internal constructor(
 
     /** Turns [monthlyOnly] around. */
     fun toggleMonthlyOnly() = _monthlyOnly.update { !it }
-
-    /** Makes an empty playlist called [name] in the app. */
-    fun create(name: String) {
-        viewModelScope.launch {
-            playlistRepository.save(UserPlaylist(origin = Origin.LOCAL, name = name.trim()))
-        }
-    }
 
     /** One playlist of the list at random, `null` when the list is empty. */
     suspend fun random(): MediaItem? {

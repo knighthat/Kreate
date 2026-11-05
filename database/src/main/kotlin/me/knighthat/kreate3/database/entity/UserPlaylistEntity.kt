@@ -39,6 +39,7 @@ import kotlin.time.Instant
  * @property createdAt when the playlist was first stored
  * @property updatedAt when the playlist was last changed
  * @property remoteId id of the playlist at its [origin], `null` for one made in the app
+ * @property isPinned whether the playlist stays at the top of the lists
  */
 @Entity(
     tableName = "user_playlist",
@@ -69,4 +70,6 @@ internal data class UserPlaylistEntity(
     val updatedAt: Instant,
     @ColumnInfo(name = "remote_id")
     val remoteId: String? = null,
+    @ColumnInfo(name = "is_pinned", defaultValue = "0")
+    val isPinned: Boolean = false,
 )

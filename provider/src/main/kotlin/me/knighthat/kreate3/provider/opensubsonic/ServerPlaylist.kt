@@ -32,3 +32,12 @@ data class ServerPlaylist(
     val songs: List<RemoteSong>,
     val editable: Boolean,
 )
+
+/**
+ * A playlist just made on the server.
+ *
+ * @property id id on the server, `null` when the server didn't tell it
+ * @property optionsSaved whether the comment and public flag were sent too, they need a second
+ * request after the playlist exists
+ */
+data class CreatedPlaylist(val id: String?, val optionsSaved: Boolean)

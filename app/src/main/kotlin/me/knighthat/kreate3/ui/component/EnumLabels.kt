@@ -34,6 +34,7 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.provider.youtube.PlaylistPrivacy
 import me.knighthat.kreate3.ui.screen.account.HistoryRangePreset
 import me.knighthat.kreate3.ui.screen.account.StatisticsPeriod
 
@@ -142,6 +143,14 @@ val PlaylistButton.labelRes: Int
         PlaylistButton.PLAY_NEXT -> R.string.constant_playlist_button_play_next
         PlaylistButton.ENQUEUE -> R.string.constant_playlist_button_enqueue
         PlaylistButton.SHARE -> R.string.constant_playlist_button_share
+    }
+
+@get:StringRes
+val PlaylistPrivacy.labelRes: Int
+    get() = when (this) {
+        PlaylistPrivacy.PUBLIC -> R.string.constant_playlist_privacy_public
+        PlaylistPrivacy.UNLISTED -> R.string.constant_playlist_privacy_unlisted
+        PlaylistPrivacy.PRIVATE -> R.string.constant_playlist_privacy_private
     }
 
 @get:StringRes

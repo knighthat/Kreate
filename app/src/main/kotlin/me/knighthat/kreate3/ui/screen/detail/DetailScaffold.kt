@@ -55,7 +55,7 @@ internal fun SavedStateHandle.openedItem(): OpenedItem =
 
 /**
  * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
- * its [actions] at the end.
+ * its [actions] at the end, and the [bottomBar] and [snackbarHost] if there are any.
  *
  * @param contentPadding room [content] adds around its items on top of the bar's, e.g. so the last
  * one can scroll clear of what floats over the screen
@@ -68,6 +68,8 @@ fun DetailScaffold(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     actions: @Composable RowScope.() -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -86,6 +88,8 @@ fun DetailScaffold(
                 )
             }
         },
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
     ) { content(it + contentPadding) }

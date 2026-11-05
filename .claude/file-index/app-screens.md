@@ -102,6 +102,11 @@ ui/screen/
   `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist + monthly only
   (grayed out unless local playlists exist and show); filters live in the view model, kept while the
   tab is in the back stack),
+  `CreatePlaylistScreen/ViewModel.kt` (route `CreatePlaylist`, from the Playlists tab and the song
+  menu's picker: a bottom bar item per place a playlist can be made, a sliding page each, no
+  swiping, Local default; YouTube Music takes a
+  description and who can see it, OpenSubsonic a description and public, Local pin; places that
+  are off or signed out have no item; with a song only Local and the song's own source),
   `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `AlbumDetail.kt` (`AlbumDetailScaffold`: header in a tone-30 shade of the cover's color

@@ -28,10 +28,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,7 +45,6 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
-import me.knighthat.kreate3.ui.component.CreatePlaylistDialog
 import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlaylistItem
@@ -67,6 +63,7 @@ private const val PLAYLIST_ITEM_SIZE = 220
 @Composable
 fun HomePlaylistsScreen(
     onOpen: (MediaItem) -> Unit,
+    onCreate: () -> Unit,
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
@@ -83,7 +80,6 @@ fun HomePlaylistsScreen(
     val notifier = LocalNotifier.current
     val nothingToPick = stringResource(R.string.snackbar_nothing_to_pick_playlists)
     val scope = rememberCoroutineScope()
-    var creating by rememberSaveable { mutableStateOf(false) }
 
     // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -108,22 +104,13 @@ fun HomePlaylistsScreen(
             }
         },
         onPlayRandom = { playRandom(QueueAction.PLAY) },
-        onCreate = { creating = true },
+        onCreate = onCreate,
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
         modifier = modifier,
         contentPadding = contentPadding,
     )
-
-    if (creating)
-        CreatePlaylistDialog(
-            onCreate = {
-                viewModel.create(it)
-                creating = false
-            },
-            onDismiss = { creating = false },
-        )
 }
 
 /**

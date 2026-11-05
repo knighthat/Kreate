@@ -95,8 +95,10 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.download.SongStorage
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.ui.navigation.CreatePlaylist
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.SongDetails
@@ -621,8 +623,8 @@ private fun ArtistPicker(
 }
 
 /**
- * The playlists made in the app, the newest first, to put the song of [item] in. A new one can be
- * made on the spot, the song goes in it.
+ * The playlists made in the app, the newest first, to put the song of [item] in. The plus button
+ * opens the screen that makes a new one, the song goes in it.
  */
 @Composable
 private fun PlaylistPicker(
@@ -631,7 +633,15 @@ private fun PlaylistPicker(
     close: (then: () -> Unit) -> Unit,
 ) {
     val picker = rememberAddToPlaylist(item)
-    var creating by remember { mutableStateOf(false) }
+    val openRoute = rememberRouteOpener()
+    val origin = item.origin
+    val sourceName = when (origin) {
+        Origin.OPEN_SUBSONIC -> openSubsonicName()
+        null -> ""
+        else -> stringResource(origin.sourceRes)
+    }
+    // Two groups need their names, one is just the list
+    val sections = picker.remote != RemotePlaylists.None
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -643,28 +653,64 @@ private fun PlaylistPicker(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f),
         )
-        CreatePlaylistButton({ creating = true })
+        CreatePlaylistButton({ close { openRoute(CreatePlaylist(item.mediaId, item.origin)) } })
     }
+
+    if (sections) PickerHeader(stringResource(R.string.source_local))
     if (picker.playlists?.isEmpty() == true)
-        Text(
-            text = stringResource(R.string.status_no_playlists_yet),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        )
+        PickerStatus(stringResource(R.string.status_no_playlists_yet))
     picker.playlists?.forEach { playlist ->
         MenuRow(R.drawable.queue_music, playlist.name) { close { picker.add(playlist) } }
     }
 
-    if (creating)
-        CreatePlaylistDialog(
-            onCreate = { name ->
-                creating = false
-                close { picker.create(name) }
-            },
-            onDismiss = { creating = false },
-        )
+    when (val remote = picker.remote) {
+        RemotePlaylists.None -> Unit
+
+        else -> {
+            PickerHeader(sourceName)
+            when (remote) {
+                RemotePlaylists.Loading -> Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                ) { CircularProgressIndicator(Modifier.size(28.dp)) }
+
+                RemotePlaylists.Failed ->
+                    PickerStatus(stringResource(R.string.status_couldnt_load_playlists))
+
+                is RemotePlaylists.Loaded -> {
+                    if (remote.playlists.isEmpty())
+                        PickerStatus(stringResource(R.string.status_no_playlists_to_add_to))
+                    remote.playlists.forEach { playlist ->
+                        MenuRow(R.drawable.queue_music, playlist.name) {
+                            close { picker.addRemote(playlist) }
+                        }
+                    }
+                }
+
+                RemotePlaylists.None -> Unit
+            }
+        }
+    }
 }
+
+/** The name of a group of playlists in the picker. */
+@Composable
+private fun PickerHeader(text: String) = Text(
+    text = text,
+    style = MaterialTheme.typography.labelLarge,
+    color = MaterialTheme.colorScheme.primary,
+    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
+)
+
+@Composable
+private fun PickerStatus(text: String) = Text(
+    text = text,
+    style = MaterialTheme.typography.bodyMedium,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+)
 
 @Composable
 private fun MenuRow(

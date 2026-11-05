@@ -337,4 +337,9 @@
     <string name="setting_description_log_copy">Copy the latest part of the log</string>
     <string name="setting_title_crash_log_retention">Delete crash logs after</string>
     <string name="setting_description_crash_log_retention">Deleted when the app starts once they are %1$s old</string>
+    <string name="setting_title_pin_playlist">Pin to the top</string>
+    <string name="setting_description_pin_playlist">Pinned playlists come first in the list</string>
+    <string name="setting_title_public_playlist">Public</string>
+    <string name="setting_description_public_playlist">Other users of the server can see it</string>
+    <string name="setting_title_playlist_privacy">Who can see it</string>
 </resources>

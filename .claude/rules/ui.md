@@ -31,6 +31,11 @@ charts: `.claude/docs/charts.md`.
   empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
   their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
   measures into the `MiniPlayerSpace` it's given.
+- A screen with a bottom bar of its own (search results' tabs, the new playlist screen's sources)
+  draws the mini player **on top of that bar**, like the home screens: its scaffold's `bottomBar` is
+  `Column { PlaybackMiniPlayer(rememberMiniPlayerSpace()); bar }`, its route is `false` in
+  `Route.hasMiniPlayer` and `showsMessages` (`KreateApp.kt`) and it has its own `MessageHost` as
+  `snackbarHost`. Never lift the bar above the mini player.
 - Flows are collected with `collectAsStateWithLifecycle()`, never `collectAsState()`, except the
   lifecycle's own `currentStateFlow` (`KreateApp.kt`, `Messages.kt`), which must keep collecting.
 - A composable reads strings from `LocalResources.current` (`resources.getString`, or a helper

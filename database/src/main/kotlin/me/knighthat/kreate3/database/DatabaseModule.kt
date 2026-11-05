@@ -61,7 +61,7 @@ internal const val DATABASE_FILE_NAME = "kreate.db"
 /**
  * Schema version of [AppDatabase].
  */
-internal const val DATABASE_VERSION = 2
+internal const val DATABASE_VERSION = 3
 
 private const val LOG_TAG = "Database"
 

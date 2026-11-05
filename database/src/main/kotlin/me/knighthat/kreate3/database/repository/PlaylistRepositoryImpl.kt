@@ -70,7 +70,7 @@ internal class PlaylistRepositoryImpl(
                         sql = """
                             SELECT *, $COVERS FROM user_playlist
                             WHERE user_id = ? ${filter(origins, monthlyOnly)}
-                            ${order.toOrderBy("playlist_id")}
+                            ${order.toOrderBy("playlist_id", first = "is_pinned DESC")}
                         """.trimIndent(),
                         onBindStatement = { it.bindText(1, userId) },
                     )
@@ -134,7 +134,7 @@ internal class PlaylistRepositoryImpl(
                     RoomRawQuery(
                         sql = """
                             SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\'
-                            ${order.toOrderBy("playlist_id")}
+                            ${order.toOrderBy("playlist_id", first = "is_pinned DESC")}
                         """.trimIndent(),
                         onBindStatement = {
                             it.bindText(1, userId)

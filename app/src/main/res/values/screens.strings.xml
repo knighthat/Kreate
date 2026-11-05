@@ -161,4 +161,5 @@
     <string name="screen_player_status_timer_running">Pauses in %1$s</string>
     <string name="screen_crash_hint">Something went wrong. Share the log below when you report it.</string>
     <string name="screen_crash_status_no_log">The crash log could not be read.</string>
+    <string name="screen_title_new_playlist">New playlist</string>
 </resources>

@@ -96,6 +96,13 @@ internal val Origin.sourceRes: Int
         Origin.OPEN_SUBSONIC -> R.string.source_opensubsonic
     }
 
+/**
+ * The origins of the playlists a song from this origin can go in: the app's own, and its source's.
+ * A source can't hold a song of another one, and a song of the device is only in the app's.
+ */
+internal val Origin.playlistOrigins: Set<Origin>
+    get() = setOf(Origin.LOCAL, this)
+
 /** The icon of the origin, on item badges and origin chips. */
 @get:DrawableRes
 internal val Origin.icon: Int

@@ -217,4 +217,10 @@
     <string name="snackbar_log_saved">Log saved</string>
     <string name="snackbar_log_save_failed">Couldn\'t save the log</string>
     <string name="snackbar_log_empty">There is no log yet</string>
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="snackbar_playlist_created">Created %1$s</string>
+    <!-- %1$s is the name of the playlist, in quotes. The playlist exists, only its description and who can see it were not saved -->
+    <string name="snackbar_playlist_options_not_saved">Created %1$s, but its description and visibility weren\'t saved</string>
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="error_create_playlist">Couldn\'t create %1$s</string>
 </resources>

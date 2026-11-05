@@ -58,6 +58,13 @@ data object Playlists : Route
 @Serializable
 data object Search : Route
 
+/**
+ * Makes a playlist, opened from the Playlists tab and the song menu. With [songId] of a song from
+ * [songOrigin] the playlist starts with that song.
+ */
+@Serializable
+data class CreatePlaylist(val songId: String? = null, val songOrigin: Origin? = null) : Route
+
 /** The list of settings pages. */
 @Serializable
 data object Settings : Route

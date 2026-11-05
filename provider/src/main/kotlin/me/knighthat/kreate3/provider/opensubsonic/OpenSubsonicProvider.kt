@@ -471,6 +471,88 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
+     * The playlists of the server the user may add songs to: the ones the server doesn't mark
+     * read only, or that are theirs when it doesn't say.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses the request
+     */
+    suspend fun addablePlaylists(): List<UserPlaylist>? {
+        serverUrl ?: return null
+
+        val username = settings.username()
+        return call("getPlaylists")["playlists"]?.jsonObject?.array("playlist").orEmpty()
+            .mapNotNull { element ->
+                val json = element.jsonObject
+                val readonly = (json["readonly"] as? JsonPrimitive)?.booleanOrNull
+                val owner = (json["owner"] as? JsonPrimitive)?.contentOrNull
+                val editable =
+                    readonly?.not() ?: (owner == null || owner.equals(username, ignoreCase = true))
+                if (!editable) return@mapNotNull null
+                json.toPlaylist(::coverUri)
+            }
+    }
+
+    /**
+     * Adds the song [songId] to the end of the playlist [playlistId], unless it is in already.
+     *
+     * @return `true` when it was added, `false` when the playlist had it, `null` while the server
+     * is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for a playlist of
+     * another user
+     */
+    suspend fun addToPlaylist(playlistId: String, songId: String): Boolean? {
+        serverUrl ?: return null
+
+        if (songId in entryIds(playlistId)) return false
+        call("updatePlaylist", "playlistId" to playlistId, "songIdToAdd" to songId)
+        return true
+    }
+
+    /**
+     * Makes a playlist on the server. The API takes the comment and whether the playlist is public
+     * only once it exists, so they are sent in a second request.
+     *
+     * @param comment what the playlist is about, blank for none
+     * @param songIds ids of the songs it starts with
+     * @return the new playlist, `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses to make the playlist
+     */
+    suspend fun createPlaylist(
+        name: String,
+        comment: String,
+        public: Boolean,
+        songIds: List<String> = emptyList(),
+    ): CreatedPlaylist? {
+        serverUrl ?: return null
+
+        val made = call(
+            "createPlaylist",
+            *(listOf("name" to name) + songIds.map { "songId" to it }).toTypedArray()
+        )["playlist"]?.jsonObject
+        // Servers before 1.14 answer with nothing: the newest playlist of that name is the one
+        val id = (made?.get("id") as? JsonPrimitive)?.contentOrNull
+            ?: libraryPlaylists()?.lastOrNull { it.name == name }?.remoteId
+            ?: return CreatedPlaylist(null, optionsSaved = comment.isBlank() && !public)
+
+        if (comment.isBlank() && !public) return CreatedPlaylist(id, optionsSaved = true)
+
+        val saved = try {
+            call(
+                "updatePlaylist",
+                "playlistId" to id,
+                "comment" to comment,
+                "public" to public.toString(),
+            )
+            true
+        } catch (e: ServerException) {
+            // The playlist exists, only its options are missing
+            false
+        }
+        return CreatedPlaylist(id, saved)
+    }
+
+    /**
      * Deletes the playlist [playlistId] from the server.
      *
      * @return `false` while the server is off or not set up, nothing is sent then

@@ -53,9 +53,11 @@ ui/component/ (shared composables; each file that draws something ends with its 
   button next to Share: Download / Cached → move-or-remove dialog with worse-quality warning /
   Downloading → stop dialog / Paused → stop or Resume / Downloaded → delete dialog).
 - `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
-  `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
-  `song` table is stored first (`SongStore`).
-  `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
+  `add` on the global scope with an Added/Already in/Couldn't message; a song not in the
+  `song` table is stored first (`SongStore`). The song's own source's playlists it may add to
+  (`addablePlaylists`) are fetched live under a header,
+  a progress ring while loading; `Origin.playlistOrigins` says which playlists a song can go in. New
+  playlists are made on the `CreatePlaylist` screen.
 - `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/covers.md`; a model in
   memory goes first unless under `minCachedSize`, then it is only the placeholder, no shimmer, the
   loaded one cross-fades over it), `LoadingShimmer`,

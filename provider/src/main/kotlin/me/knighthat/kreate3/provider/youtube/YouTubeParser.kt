@@ -524,6 +524,16 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         )
     }
 
+    /** The playlists of [response], an answer of [InnerTube.addToPlaylistOptions]. */
+    fun addToPlaylistOptions(response: JsonElement?): List<UserPlaylist> =
+        response.findAll("playlistAddToOptionRenderer").mapNotNull { option ->
+            UserPlaylist(
+                origin = Origin.YOUTUBE,
+                name = option.path("title").text().orEmpty(),
+                remoteId = option.path("playlistId").asString ?: return@mapNotNull null,
+            )
+        }
+
     /** @return `null` when [response] is not a playlist, like for an id YouTube doesn't know */
     fun playlistPage(playlistId: String, response: JsonElement?): YouTubePlaylistPage? {
         val header = responsiveHeader(response) ?: return null

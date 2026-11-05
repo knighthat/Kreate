@@ -410,6 +410,46 @@ class YouTubeProvider internal constructor(
     }
 
     /**
+     * The playlists of the signed in user the song [songId] can be added to, the ones they made.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun addablePlaylists(songId: String): List<UserPlaylist>? {
+        if (!isSignedIn()) return null
+
+        return parser.addToPlaylistOptions(innerTube.addToPlaylistOptions(songId))
+    }
+
+    /**
+     * Adds the song [songId] to the end of the playlist [playlistId] of the signed in user, unless
+     * it has it already.
+     *
+     * @return `false` when the playlist had the song
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun addToPlaylist(playlistId: String, songId: String): Boolean =
+        innerTube.addToPlaylist(playlistId, songId)
+
+    /**
+     * Makes a playlist for the signed in user.
+     *
+     * @param songIds ids of the songs it starts with
+     * @return the id of the playlist, or `null` while nobody is signed in
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun createPlaylist(
+        title: String,
+        description: String,
+        privacy: PlaylistPrivacy,
+        songIds: List<String> = emptyList(),
+    ): String? {
+        if (!isSignedIn()) return null
+
+        return innerTube.createPlaylist(title, description, privacy.name, songIds)
+    }
+
+    /**
      * Deletes the playlist [playlistId] of the signed in user.
      *
      * @throws YouTubeException see [removeFromPlaylist]

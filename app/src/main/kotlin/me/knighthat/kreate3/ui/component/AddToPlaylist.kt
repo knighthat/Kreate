@@ -18,28 +18,11 @@
 
 package me.knighthat.kreate3.ui.component
 
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.media3.common.MediaItem
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
@@ -54,6 +37,8 @@ import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.SongStore
 import org.koin.compose.koinInject
 
@@ -63,7 +48,8 @@ private const val TAG = "AddToPlaylist"
 private val NEWEST_FIRST = SortOrder(PlaylistSort.CREATED_AT, SortDirection.DESCENDING)
 
 /**
- * The playlists made in the app that a song can go in, and how to put it there. Each write runs
+ * The playlists that a song can go in, the ones made in the app and the ones of its own source, and
+ * how to put it there. Each write runs
  * on the app's scope, so it lands even once the menu is gone, and says how it went with a message.
  */
 @Immutable
@@ -71,9 +57,37 @@ internal class AddToPlaylist(
     /** The playlists made in the app, the newest first, `null` while they load. */
     val playlists: List<UserPlaylist>?,
     val add: (UserPlaylist) -> Unit,
-    /** Makes a playlist called `name` and puts the song in it. */
-    val create: (name: String) -> Unit,
+    /** The playlists of the song's own source, fetched when the menu opens. */
+    val remote: RemotePlaylists,
+    val addRemote: (UserPlaylist) -> Unit,
 )
+
+/** The playlists of the source a song comes from, fetched live and never stored. */
+@Immutable
+internal sealed interface RemotePlaylists {
+
+    /** There is none to show: a song of the device, or its source is off or signed out. */
+    data object None : RemotePlaylists
+
+    data object Loading : RemotePlaylists
+
+    /** The source couldn't be asked. */
+    data object Failed : RemotePlaylists
+
+    /** The ones the user may add the song to, empty when there are none. */
+    data class Loaded(val playlists: List<UserPlaylist>) : RemotePlaylists
+}
+
+/** The playlists [load] gives, as the menu shows them while and after they are fetched. */
+private suspend fun fetchRemote(load: suspend () -> List<UserPlaylist>?): RemotePlaylists =
+    try {
+        load()?.let { RemotePlaylists.Loaded(it) } ?: RemotePlaylists.None
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Logger.w(e, TAG) { "Couldn't fetch the playlists of the song's source" }
+        RemotePlaylists.Failed
+    }
 
 /**
  * Puts the song of [item] in a playlist made in the app. A song fetched live is stored first, see
@@ -83,12 +97,29 @@ internal class AddToPlaylist(
 internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
     val repository = koinInject<PlaylistRepository>()
     val songs = koinInject<SongStore>()
+    val youTube = koinInject<YouTubeProvider>()
+    val openSubsonic = koinInject<OpenSubsonicProvider>()
     val scope = koinInject<CoroutineScope>()
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
 
     val playlists by produceState<List<UserPlaylist>?>(null, repository) {
         value = repository.list(NEWEST_FIRST, setOf(Origin.LOCAL))
+    }
+
+    val origin = item.origin
+    val remote by produceState<RemotePlaylists>(
+        if (origin == Origin.YOUTUBE || origin == Origin.OPEN_SUBSONIC)
+            RemotePlaylists.Loading
+        else
+            RemotePlaylists.None,
+        item.mediaId,
+    ) {
+        value = when (origin) {
+            Origin.YOUTUBE -> fetchRemote { youTube.addablePlaylists(item.mediaId) }
+            Origin.OPEN_SUBSONIC -> fetchRemote { openSubsonic.addablePlaylists() }
+            else -> RemotePlaylists.None
+        }
     }
 
     /** Runs [undo] on the app's scope, the menu is long gone by the time it's tapped. */
@@ -134,6 +165,53 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
     }
 
     return AddToPlaylist(
+        remote = remote,
+        addRemote = { playlist ->
+            val name = playlist.name
+            val id = playlist.remoteId
+            scope.launch {
+                val message = try {
+                    val added = when {
+                        id == null -> null
+                        origin == Origin.YOUTUBE -> youTube.addToPlaylist(id, item.mediaId)
+                        origin == Origin.OPEN_SUBSONIC -> openSubsonic.addToPlaylist(
+                            id,
+                            item.mediaId
+                        )
+
+                        else -> null
+                    }
+                    when (added) {
+                        true -> Message(
+                            resources.getString(
+                                R.string.snackbar_added_to_playlist,
+                                name
+                            )
+                        )
+
+                        false -> Message(
+                            resources.getString(
+                                R.string.snackbar_already_in_playlist,
+                                name
+                            )
+                        )
+
+                        null -> Message(
+                            resources.getString(
+                                R.string.snackbar_couldnt_add_to_playlist,
+                                name
+                            )
+                        )
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Logger.w(e, TAG) { "Couldn't add ${item.mediaId} to $name" }
+                    Message(resources.getString(R.string.snackbar_couldnt_add_to_playlist, name))
+                }
+                notifier.post(message)
+            }
+        },
         playlists = playlists,
         add = { playlist ->
             write(playlist.name) {
@@ -143,60 +221,5 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
                     suspend { repository.removeSong(playlist.id, item.mediaId) }
             }
         },
-        create = { name ->
-            val trimmed = name.trim()
-            // Made once the song is stored, so a song that can't be leaves no empty playlist
-            write(trimmed) {
-                val id = repository.save(UserPlaylist(origin = Origin.LOCAL, name = trimmed))
-                repository.addSong(id, item.mediaId)
-                // Made for the song, it goes with it
-                suspend { repository.delete(id) }
-            }
-        },
     )
 }
-
-/**
- * Asks for the name of a new playlist, a name is needed.
- */
-@Composable
-fun CreatePlaylistDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
-    var name by rememberSaveable { mutableStateOf("") }
-    val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focus.requestFocus() }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_title_new_playlist)) },
-        text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.name)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Done,
-                ),
-                keyboardActions = KeyboardActions(onDone = { if (name.isNotBlank()) onCreate(name) }),
-                modifier = Modifier.focusRequester(focus),
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onCreate(name) }, enabled = name.isNotBlank()) {
-                Text(
-                    stringResource(R.string.action_create)
-                )
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
-    )
-}
-
-//<editor-fold defaultstate="collapsed" desc="Previews">
-@ComponentPreviews
-@Composable
-private fun CreatePlaylistDialogPreview() = PreviewTheme {
-    CreatePlaylistDialog(onCreate = {}, onDismiss = {})
-}
-//</editor-fold>

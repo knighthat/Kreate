@@ -83,4 +83,7 @@
     <string name="constant_log_level_info">Info</string>
     <string name="constant_log_level_warning">Warning</string>
     <string name="constant_log_level_error">Error</string>
+    <string name="constant_playlist_privacy_public">Public</string>
+    <string name="constant_playlist_privacy_unlisted">Anyone with the link</string>
+    <string name="constant_playlist_privacy_private">Private</string>
 </resources>

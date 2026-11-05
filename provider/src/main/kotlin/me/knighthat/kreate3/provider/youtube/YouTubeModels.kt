@@ -250,3 +250,15 @@ data class YouTubeStream(
         gain = loudnessDb?.toFloat(),
     )
 }
+
+/** Who can see a playlist on YouTube; the names are what the API takes. */
+enum class PlaylistPrivacy {
+    /** Anyone can find it. */
+    PUBLIC,
+
+    /** Anyone with the link can see it. */
+    UNLISTED,
+
+    /** Only its owner. */
+    PRIVATE,
+}

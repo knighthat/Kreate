@@ -29,7 +29,6 @@
     <string name="dialog_title_forget_certificate">Forget certificate?</string>
     <!-- %1$s is the host name or address of the user's own server. Certificate = the server's security certificate -->
     <string name="dialog_body_forget_certificate">The next certificate %1$s presents will be trusted without asking.</string>
-    <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
     <string name="dialog_title_unsaved_changes">Save the changes?</string>

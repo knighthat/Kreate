@@ -81,6 +81,8 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
     autoMigrations = [
         // Only the SQL text of the three views was reformatted
         AutoMigration(from = 1, to = 2),
+        // `user_playlist.is_pinned`, 0 for the playlists that exist
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @TypeConverters(Converters::class)
