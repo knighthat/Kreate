@@ -34,12 +34,14 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
@@ -50,6 +52,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -64,6 +67,8 @@ import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.source.withoutDislikedSongs
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
+import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.RefreshBox
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.Tab
@@ -96,7 +101,11 @@ abstract class LiveDetailViewModel<T : Any>(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<LiveState<T>>(LiveState.Loading)
+    private val _pulling = MutableStateFlow(false)
     private var job: Job? = null
+
+    /** Whether the user's pull to refresh is waiting for the item, see [pull]. */
+    val pulling: StateFlow<Boolean> = _pulling.asStateFlow()
 
     /** Ids of the songs the user disliked, they're never shown. */
     protected val disliked: StateFlow<Set<String>> =
@@ -131,19 +140,45 @@ abstract class LiveDetailViewModel<T : Any>(
         job?.cancel()
         job = viewModelScope.launch {
             _state.value = LiveState.Loading
-            _state.value = try {
-                // Turning the answer into the page takes long, never on the main thread
-                withContext(background) { fetch() }?.let { LiveState.Ready(it) }
-                    ?: LiveState.Failed(notFound)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: YouTubeException) {
-                LiveState.Failed(e.reason(context))
-            } catch (e: ServerException) {
-                LiveState.Failed(e.reason(context))
+            _state.value = fetchState()
+        }
+    }
+
+    /**
+     * Fetches the item again because the user pulled the screen down, [pulling] meanwhile. What
+     * the screen shows stays until the new one is there; when it can't be fetched the screen keeps
+     * it and [onFailed] gets what to tell the user, on the main thread. Does nothing before the
+     * first fetch is done, [load] retries those.
+     */
+    fun pull(onFailed: (String) -> Unit) {
+        if (_pulling.value || _state.value !is LiveState.Ready) return
+        _pulling.value = true
+        job = viewModelScope.launch {
+            try {
+                when (val fetched = fetchState()) {
+                    is LiveState.Ready -> _state.value = fetched
+                    is LiveState.Failed -> onFailed(fetched.reason)
+                    LiveState.Loading -> Unit
+                }
+            } finally {
+                _pulling.value = false
             }
         }
     }
+
+    /** What [fetch] gives, or why it can't. */
+    private suspend fun fetchState(): LiveState<T> =
+        try {
+            // Turning the answer into the page takes long, never on the main thread
+            withContext(background) { fetch() }?.let { LiveState.Ready(it) }
+                ?: LiveState.Failed(notFound)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: YouTubeException) {
+            LiveState.Failed(e.reason(context))
+        } catch (e: ServerException) {
+            LiveState.Failed(e.reason(context))
+        }
 }
 
 /**
@@ -249,6 +284,27 @@ fun <T : Any> LiveDetailScreen(
             )
         }
     }
+}
+
+/**
+ * Lets the user pull [content], the screen of this view model's item, down to fetch it again, see
+ * [LiveDetailViewModel.pull]. What can't be fetched is told in a message.
+ *
+ * @param enabled `false` while the screen can't take it, like while the playlist is edited
+ */
+@Composable
+fun <T : Any> LiveDetailViewModel<T>.RefreshOnPull(
+    enabled: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    val pulling by pulling.collectAsStateWithLifecycle()
+    val notifier = LocalNotifier.current
+    RefreshBox(
+        refreshing = pulling,
+        onRefresh = { pull(notifier::post) },
+        enabled = enabled,
+        content = content,
+    )
 }
 
 /**

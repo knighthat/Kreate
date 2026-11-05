@@ -54,16 +54,18 @@ fun OpenSubsonicArtistSongsScreen(
     val songs: suspend () -> List<MediaItem> =
         { (viewModel.state.value as? LiveState.Ready)?.value.orEmpty() }
 
-    OpenSubsonicArtistSongsContent(
-        name = viewModel.name,
-        state = state,
-        onRetry = viewModel::load,
-        onBack = onBack,
-        onAction = rememberQueueActions(songs),
-        onSongClick = rememberSongTap(null, songs),
-        modifier = modifier,
-        contentPadding = contentPadding,
-    )
+    viewModel.RefreshOnPull {
+        OpenSubsonicArtistSongsContent(
+            name = viewModel.name,
+            state = state,
+            onRetry = viewModel::load,
+            onBack = onBack,
+            onAction = rememberQueueActions(songs),
+            onSongClick = rememberSongTap(null, songs),
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+    }
 }
 
 @Composable

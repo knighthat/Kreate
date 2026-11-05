@@ -72,6 +72,7 @@ fun HomePlaylistsScreen(
     viewModel: HomePlaylistsViewModel = koinViewModel(),
 ) {
     val live by viewModel.live.collectAsStateWithLifecycle()
+    val pulling by viewModel.pulling.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val offersMonthly by viewModel.offersMonthly.collectAsStateWithLifecycle()
@@ -108,6 +109,8 @@ fun HomePlaylistsScreen(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = pulling,
+        onRefresh = viewModel::pull,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -135,6 +138,8 @@ private fun HomePlaylistsContent(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
+    refreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -148,6 +153,8 @@ private fun HomePlaylistsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = refreshing,
+        onRefresh = onRefresh,
         sheet = { onDismiss ->
             val any = playlists.itemCount > 0 || live.isNotEmpty()
             ConfigSheet(
@@ -217,5 +224,7 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         onSearch = {},
         onProfile = {},
         onSettings = {},
+        refreshing = false,
+        onRefresh = {},
     )
 }

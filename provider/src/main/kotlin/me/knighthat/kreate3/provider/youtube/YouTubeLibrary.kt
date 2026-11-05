@@ -20,6 +20,7 @@ package me.knighthat.kreate3.provider.youtube
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -60,8 +61,10 @@ class YouTubeLibrary(
      * Brings the liked songs up to date unless it was done recently or their syncing is off. A
      * failure, like a session that ended, leaves what is stored as it was and lets the next call
      * try again.
+     *
+     * @return the work, to wait for it
      */
-    fun refresh() {
+    fun refresh(): Job =
         scope.launch {
             if (!syncs()) return@launch
             val session = provider.sessionId() ?: return@launch
@@ -83,12 +86,11 @@ class YouTubeLibrary(
                 Logger.w(e, TAG) { "Couldn't bring the liked songs of YouTube up to date" }
             }
         }
-    }
 
     /** Brings the liked songs up to date now, like right after signing in. */
-    fun refreshNow() {
+    fun refreshNow(): Job {
         refreshed.clear()
-        refresh()
+        return refresh()
     }
 
     /**

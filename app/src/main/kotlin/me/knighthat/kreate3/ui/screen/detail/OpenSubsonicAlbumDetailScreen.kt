@@ -62,28 +62,30 @@ fun OpenSubsonicAlbumDetailScreen(
     val cover = (state as? LiveState.Ready)?.value?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
-    CoverTheme(coverModels) {
-        OpenSubsonicAlbumDetailContent(
-            albumId = viewModel.albumId,
-            opened = viewModel.opened,
-            state = state,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            action = action,
-            onAction = rememberQueueActions {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            onSongClick = rememberSongTap(null) {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            share = if (canShare) viewModel::shareLink else null,
-            isBookmarked = isBookmarked,
-            onToggleBookmark = viewModel.bookmark::toggle,
-            onOpenArtist = onOpenArtist,
-            onOpenStatistics = onOpenStatistics,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull {
+        CoverTheme(coverModels) {
+            OpenSubsonicAlbumDetailContent(
+                albumId = viewModel.albumId,
+                opened = viewModel.opened,
+                state = state,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                action = action,
+                onAction = rememberQueueActions {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                onSongClick = rememberSongTap(null) {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                share = if (canShare) viewModel::shareLink else null,
+                isBookmarked = isBookmarked,
+                onToggleBookmark = viewModel.bookmark::toggle,
+                onOpenArtist = onOpenArtist,
+                onOpenStatistics = onOpenStatistics,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

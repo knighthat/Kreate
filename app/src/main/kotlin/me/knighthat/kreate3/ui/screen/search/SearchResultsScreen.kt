@@ -62,6 +62,7 @@ import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.RefreshBox
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.TabBar
@@ -241,23 +242,34 @@ private fun SearchResultsContent(
             return@Scaffold
         }
 
-        when (selected) {
-            Tab.SONGS -> LazyColumn(contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-                items(songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
-                    songs[index]?.let { SongItem(it, onClick = { onSongClick(it) }) }
+        // What YouTube and the server found is searched again, the library's lists are live
+        RefreshBox(
+            refreshing = origin != Origin.LOCAL && refresh is LoadState.Loading,
+            onRefresh = current::refresh,
+            enabled = origin != Origin.LOCAL,
+            indicatorTop = padding.calculateTopPadding(),
+        ) {
+            when (selected) {
+                Tab.SONGS -> LazyColumn(
+                    contentPadding = padding,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
+                        songs[index]?.let { SongItem(it, onClick = { onSongClick(it) }) }
+                    }
                 }
-            }
 
-            Tab.ALBUMS -> ResultsGrid(albums, ALBUM_ITEM_SIZE, padding) {
-                AlbumItem(it, onClick = { onOpenAlbum(it) })
-            }
+                Tab.ALBUMS -> ResultsGrid(albums, ALBUM_ITEM_SIZE, padding) {
+                    AlbumItem(it, onClick = { onOpenAlbum(it) })
+                }
 
-            Tab.ARTISTS -> ResultsGrid(artists, ARTIST_ITEM_SIZE, padding) {
-                ArtistItem(it, onClick = { onOpenArtist(it) })
-            }
+                Tab.ARTISTS -> ResultsGrid(artists, ARTIST_ITEM_SIZE, padding) {
+                    ArtistItem(it, onClick = { onOpenArtist(it) })
+                }
 
-            Tab.PLAYLISTS -> ResultsGrid(playlists, PLAYLIST_ITEM_SIZE, padding) {
-                PlaylistItem(it, onClick = { onOpenPlaylist(it) })
+                Tab.PLAYLISTS -> ResultsGrid(playlists, PLAYLIST_ITEM_SIZE, padding) {
+                    PlaylistItem(it, onClick = { onOpenPlaylist(it) })
+                }
             }
         }
     }

@@ -60,6 +60,7 @@ fun HomeSongsScreen(
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomeSongsViewModel = koinViewModel(),
 ) {
+    val pulling by viewModel.pulling.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
@@ -82,6 +83,8 @@ fun HomeSongsScreen(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = pulling,
+        onRefresh = viewModel::pull,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -100,6 +103,8 @@ private fun HomeSongsContent(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
+    refreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -113,6 +118,8 @@ private fun HomeSongsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = refreshing,
+        onRefresh = onRefresh,
         sheet = { onDismiss -> SongsSheet(filters, onFilter, onAction, onDismiss) },
     ) { padding ->
         LazyColumn(
@@ -189,5 +196,7 @@ private fun HomeSongsPreview() = PreviewTheme {
         onSearch = {},
         onProfile = {},
         onSettings = {},
+        refreshing = false,
+        onRefresh = {},
     )
 }

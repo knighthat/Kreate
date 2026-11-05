@@ -124,22 +124,24 @@ fun YouTubePlaylistDetailScreen(
         listOfNotNull(thumbnailModel(cover, null)).ifEmpty { firstCovers.songCovers().take(1) }
     }
 
-    CoverTheme(coverModels) {
-        YouTubePlaylistDetailContent(
-            state = state,
-            songs = songs,
-            hasMore = hasMore,
-            onLoadMore = viewModel::loadMore,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            onAction = rememberQueueActions { viewModel.songs.value },
-            onSongClick = rememberSongTap(null) { viewModel.songs.value },
-            share = viewModel::shareLink,
-            edit = edit,
-            actions = actions,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull(enabled = !edit.editing) {
+        CoverTheme(coverModels) {
+            YouTubePlaylistDetailContent(
+                state = state,
+                songs = songs,
+                hasMore = hasMore,
+                onLoadMore = viewModel::loadMore,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                onAction = rememberQueueActions { viewModel.songs.value },
+                onSongClick = rememberSongTap(null) { viewModel.songs.value },
+                share = viewModel::shareLink,
+                edit = edit,
+                actions = actions,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

@@ -102,6 +102,9 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `rememberContentsAfterPicture()`: the alpha of the rest of such a screen (keep the picture out
   of it);
   `artistPictureKey`, `albumPictureKey`.
+- `RefreshBox.kt` — `RefreshBox`: pull-to-refresh around a scrollable (`pullToRefresh` + indicator,
+  `enabled`, `indicatorTop`); used by `HomeScaffold`, the live detail screens
+  (`LiveDetailViewModel.RefreshOnPull`), `YouTubeMoreScreen` and `SearchResultsScreen`.
 - `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
   and the search results tabs; drops labels under `LocalIconOnly`.
 - `Messages.kt` — `LocalNotifier`/`LocalMessageHost` (provided in `KreateApp`), `ShowMessages` (

@@ -39,14 +39,30 @@ class LiveItems(
 ) {
 
     private val _items = MutableStateFlow(emptyList<MediaItem>())
+    private val _pulling = MutableStateFlow(false)
     private var job: Job? = null
 
     val items: StateFlow<List<MediaItem>> = _items.asStateFlow()
+
+    /** Whether a pull to refresh is waiting for the items, see [pull]. */
+    val pulling: StateFlow<Boolean> = _pulling.asStateFlow()
 
     /** Fetches the items again, unless they are on their way already. */
     fun refresh() {
         if (job?.isActive == true) return
         job = scope.launch { _items.value = fetch() }
+    }
+
+    /** [refresh] asked by the user: [pulling] until the items arrived, also ones on their way. */
+    fun pull() {
+        if (_pulling.value) return
+        _pulling.value = true
+        val fetching = job?.takeIf { it.isActive }
+            ?: scope.launch { _items.value = fetch() }.also { job = it }
+        scope.launch {
+            fetching.join()
+            _pulling.value = false
+        }
     }
 }
 

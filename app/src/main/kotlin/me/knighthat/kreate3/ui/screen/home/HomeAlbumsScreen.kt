@@ -71,6 +71,7 @@ fun HomeAlbumsScreen(
     viewModel: HomeAlbumsViewModel = koinViewModel(),
 ) {
     val live by viewModel.live.collectAsStateWithLifecycle()
+    val pulling by viewModel.pulling.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val bookmarkedOnly by viewModel.bookmarkedOnly.collectAsStateWithLifecycle()
@@ -104,6 +105,8 @@ fun HomeAlbumsScreen(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = pulling,
+        onRefresh = viewModel::pull,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -127,6 +130,8 @@ private fun HomeAlbumsContent(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
+    refreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -140,6 +145,8 @@ private fun HomeAlbumsContent(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        refreshing = refreshing,
+        onRefresh = onRefresh,
         sheet = { onDismiss ->
             val any = albums.itemCount > 0 || live.isNotEmpty()
             ConfigSheet(
@@ -202,5 +209,7 @@ private fun HomeAlbumsPreview() = PreviewTheme {
         onSearch = {},
         onProfile = {},
         onSettings = {},
+        refreshing = false,
+        onRefresh = {},
     )
 }

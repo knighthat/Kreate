@@ -100,11 +100,17 @@ class HomePlaylistsViewModel internal constructor(
         combine(filter.live, monthly) { list, only -> if (only) emptyList() else list }
             .stateIn(viewModelScope, SharingStarted.Eagerly, filter.live.value)
 
+    /** Whether the user's pull to refresh is waiting for the items of the external sources. */
+    val pulling: StateFlow<Boolean> = remote.pulling
+
     /**
      * Fetches the playlists of the server and of YouTube again, call it when the tab shows. Each
      * adds nothing while it isn't set up.
      */
     fun refresh() = remote.refresh()
+
+    /** Fetches them again because the user pulled the list down. */
+    fun pull() = remote.pull()
 
     /** Turns [monthlyOnly] around. */
     fun toggleMonthlyOnly() = _monthlyOnly.update { !it }

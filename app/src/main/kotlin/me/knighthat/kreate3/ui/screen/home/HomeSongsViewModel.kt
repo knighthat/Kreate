@@ -35,6 +35,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.download.SongDownloads
@@ -92,6 +94,11 @@ class HomeSongsViewModel(
 
     val filters: StateFlow<SongFilters> = _filters.asStateFlow()
 
+    private val _pulling = MutableStateFlow(false)
+
+    /** Whether the user's pull to refresh is waiting for the libraries, see [pull]. */
+    val pulling: StateFlow<Boolean> = _pulling.asStateFlow()
+
     val songs: Flow<PagingData<MediaItem>> =
         combine(filter.selected, _filters.map { it.withDisliked }.distinctUntilChanged(), ::Pair)
             .flatMapLatest { (origins, withDisliked) ->
@@ -116,6 +123,22 @@ class HomeSongsViewModel(
     fun refresh() {
         openSubsonicLibrary.refresh()
         youtubeLibrary.refresh()
+    }
+
+    /**
+     * [refresh] asked by the user: each library syncs now, whatever was done lately, and [pulling]
+     * lasts until both are done. Each does nothing while it isn't set up.
+     */
+    fun pull() {
+        if (_pulling.value) return
+        _pulling.value = true
+        viewModelScope.launch {
+            try {
+                joinAll(openSubsonicLibrary.refreshNow(), youtubeLibrary.refreshNow())
+            } finally {
+                _pulling.value = false
+            }
+        }
     }
 
     /** Changes what the tab shows on top of its origins, at once. */

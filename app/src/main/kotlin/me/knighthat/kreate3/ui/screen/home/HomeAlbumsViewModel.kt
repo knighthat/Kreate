@@ -86,11 +86,17 @@ class HomeAlbumsViewModel internal constructor(
             if (only) list.filter { it.isBookmarked } else list
         }.stateIn(viewModelScope, SharingStarted.Eagerly, filter.live.value)
 
+    /** Whether the user's pull to refresh is waiting for the items of the external sources. */
+    val pulling: StateFlow<Boolean> = remote.pulling
+
     /**
      * Fetches the albums of the server and of YouTube again, call it when the tab shows. Each
      * adds nothing while it isn't set up.
      */
     fun refresh() = remote.refresh()
+
+    /** Fetches them again because the user pulled the list down. */
+    fun pull() = remote.pull()
 
     /** Turns [bookmarkedOnly] around. */
     fun toggleBookmarkedOnly() = _bookmarkedOnly.update { !it }

@@ -21,6 +21,7 @@ package me.knighthat.kreate3.provider.opensubsonic
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -58,19 +59,21 @@ class OpenSubsonicLibrary(
     /**
      * Brings the liked songs up to date unless it was done recently or their syncing is off. A
      * failure leaves what is stored as it was, and lets the next call try again.
+     *
+     * @return the work, to wait for it
      */
-    fun refresh() {
-        if (!syncs()) return
-        val server = provider.serverUrl ?: return
-        val now = clock.now()
-
-        // Claims the server, so a second call while this one runs does nothing
-        val last = refreshed[server]
-        if (last != null && now - last < MIN_INTERVAL) return
-        if (last == null && refreshed.putIfAbsent(server, now) != null) return
-        if (last != null && !refreshed.replace(server, last, now)) return
-
+    fun refresh(): Job =
         scope.launch {
+            if (!syncs()) return@launch
+            val server = provider.serverUrl ?: return@launch
+            val now = clock.now()
+
+            // Claims the server, so a second call while this one runs does nothing
+            val last = refreshed[server]
+            if (last != null && now - last < MIN_INTERVAL) return@launch
+            if (last == null && refreshed.putIfAbsent(server, now) != null) return@launch
+            if (last != null && !refreshed.replace(server, last, now)) return@launch
+
             try {
                 if (!sync(server)) refreshed.remove(server)
             } catch (e: CancellationException) {
@@ -81,12 +84,11 @@ class OpenSubsonicLibrary(
                 Logger.w(e, TAG) { "Couldn't bring the liked songs of the server up to date" }
             }
         }
-    }
 
     /** Brings the liked songs up to date now, like right after turning their syncing on. */
-    fun refreshNow() {
+    fun refreshNow(): Job {
         refreshed.clear()
-        refresh()
+        return refresh()
     }
 
     /**

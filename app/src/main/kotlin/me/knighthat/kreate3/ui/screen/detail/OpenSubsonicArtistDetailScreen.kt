@@ -81,28 +81,33 @@ fun OpenSubsonicArtistDetailScreen(
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
     val shownSongs = { (viewModel.topSongs.value as? LiveState.Ready)?.value?.songs.orEmpty() }
 
-    CoverTheme(coverModels) {
-        OpenSubsonicArtistDetailContent(
-            artistId = viewModel.artistId,
-            opened = viewModel.opened,
-            state = state,
-            topSongs = topSongs,
-            description = description,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            onOpenAlbum = onOpenAlbum,
-            onOpenSongs = onOpenSongs,
-            action = action,
-            onAction = rememberQuickQueueActions(shown = shownSongs, songs = viewModel::allSongs),
-            onSongClick = rememberSongTap(null, shownSongs),
-            share = if (canShare) viewModel::shareLink else null,
-            isFollowed = isFollowed,
-            onToggleFollow = viewModel.follow::toggle,
-            onOpenDetails = onOpenDetails,
-            onOpenStatistics = onOpenStatistics,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull {
+        CoverTheme(coverModels) {
+            OpenSubsonicArtistDetailContent(
+                artistId = viewModel.artistId,
+                opened = viewModel.opened,
+                state = state,
+                topSongs = topSongs,
+                description = description,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                onOpenAlbum = onOpenAlbum,
+                onOpenSongs = onOpenSongs,
+                action = action,
+                onAction = rememberQuickQueueActions(
+                    shown = shownSongs,
+                    songs = viewModel::allSongs
+                ),
+                onSongClick = rememberSongTap(null, shownSongs),
+                share = if (canShare) viewModel::shareLink else null,
+                isFollowed = isFollowed,
+                onToggleFollow = viewModel.follow::toggle,
+                onOpenDetails = onOpenDetails,
+                onOpenStatistics = onOpenStatistics,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

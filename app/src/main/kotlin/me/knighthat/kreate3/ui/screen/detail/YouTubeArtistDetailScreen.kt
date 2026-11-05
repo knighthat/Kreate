@@ -80,32 +80,34 @@ fun YouTubeArtistDetailScreen(
     val cover = viewModel.picture ?: (state as? LiveState.Ready)?.value?.thumbnail
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
-    CoverTheme(coverModels) {
-        YouTubeArtistDetailContent(
-            artistId = viewModel.artistId,
-            opened = viewModel.opened,
-            picture = viewModel.picture,
-            state = state,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            onOpen = onOpen,
-            onSeeMore = onSeeMore,
-            onOpenPlaylist = onOpenPlaylist,
-            action = action,
-            onAction = rememberQueueActions {
-                (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
-            },
-            onSongClick = rememberSongTap(null) {
-                (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
-            },
-            share = viewModel::shareLink,
-            isFollowed = isFollowed,
-            onToggleFollow = viewModel.follow::toggle,
-            onOpenDetails = onOpenDetails,
-            onOpenStatistics = onOpenStatistics,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull {
+        CoverTheme(coverModels) {
+            YouTubeArtistDetailContent(
+                artistId = viewModel.artistId,
+                opened = viewModel.opened,
+                picture = viewModel.picture,
+                state = state,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                onOpen = onOpen,
+                onSeeMore = onSeeMore,
+                onOpenPlaylist = onOpenPlaylist,
+                action = action,
+                onAction = rememberQueueActions {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
+                },
+                onSongClick = rememberSongTap(null) {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
+                },
+                share = viewModel::shareLink,
+                isFollowed = isFollowed,
+                onToggleFollow = viewModel.follow::toggle,
+                onOpenDetails = onOpenDetails,
+                onOpenStatistics = onOpenStatistics,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

@@ -83,6 +83,12 @@ data class PlaylistEditState(
 
     /** Whether a request of the page waits for the server: the sheet's rows are off. */
     val busy: Boolean get() = saving || preparing
+
+    /**
+     * Whether the page is in edit mode or about to enter or leave it: its songs are not the
+     * server's, so nothing may fetch them again.
+     */
+    val editing: Boolean get() = arranging != null || mode != CoverEditMode.NONE || busy || deleting
 }
 
 /**

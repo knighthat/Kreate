@@ -108,7 +108,9 @@ ui/screen/
   description and who can see it, OpenSubsonic a description and public, Local pin; places that
   are off or signed out have no item; with a song only Local and the song's own source),
   `OriginFilter.kt` (filter chips state),
-  `LiveItems.kt` (live items appended after DB items).
+  `LiveItems.kt` (live items appended after DB items; `pull` = the user's pull to refresh). Pulling
+  a home tab refetches its live items; Songs syncs both libraries now (`refreshNow`, past the time
+  gate).
 - detail/ — `AlbumDetail.kt` (`AlbumDetailScaffold`: header in a tone-30 shade of the cover's color
   (`rememberCoverSeed`), cover at the start with badges, ALBUM, name, `ArtistLine` (tap opens the
   artist), song count + length beside it, the description under them (name at most 2 lines). The

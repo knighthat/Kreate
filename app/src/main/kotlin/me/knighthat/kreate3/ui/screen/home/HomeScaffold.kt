@@ -23,9 +23,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +46,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -79,6 +83,8 @@ import me.knighthat.kreate3.ui.component.FilterIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.ProfileButton
+import me.knighthat.kreate3.ui.component.PullGate
+import me.knighthat.kreate3.ui.component.RefreshIndicator
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SettingsButton
 import me.knighthat.kreate3.ui.component.TooltipSide
@@ -263,6 +269,8 @@ private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit
  * @param selected the origins the tab shows, every origin while empty
  * @param sheet the tab's options, a [me.knighthat.kreate3.ui.component.ConfigSheet] that calls
  * `onDismiss` once closed; `null` for no button
+ * @param refreshing whether a pull to refresh is waiting for fresh data, see [onRefresh]
+ * @param onRefresh called when the user pulls [content] down from its top
  * @param contentPadding room [content] adds around its items on top of the bars', e.g. so the
  * last one can scroll clear of what floats over the screen
  */
@@ -278,11 +286,15 @@ fun HomeScaffold(
     onSearch: () -> Unit = {},
     onProfile: () -> Unit = {},
     onSettings: () -> Unit = {},
+    refreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
     sheet: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val toolbarScroll = remember { ToolbarScroll() }
+    val pullState = rememberPullToRefreshState()
+    val pullGate = remember { PullGate() }
     var configuring by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -300,10 +312,24 @@ fun HomeScaffold(
         },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         // The title collapses first, then the toolbar hides
+        // The pull is outside the bars' scroll, so a swipe up takes it back before they react
         modifier = modifier
+            .pullToRefresh(
+                state = pullState,
+                isRefreshing = refreshing,
+                enabled = pullGate.open,
+                onRefresh = onRefresh,
+            )
+            .nestedScroll(pullGate)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .nestedScroll(toolbarScroll),
-    ) { content(it + contentPadding) }
+    ) { padding ->
+        Box(Modifier.fillMaxSize()) {
+            content(padding + contentPadding)
+            // Comes down under the bars, the list scrolls behind them
+            RefreshIndicator(pullState, refreshing, padding.calculateTopPadding())
+        }
+    }
 
     if (configuring) sheet?.invoke { configuring = false }
 }

@@ -69,30 +69,32 @@ fun YouTubeAlbumDetailScreen(
     val cover = (state as? LiveState.Ready)?.value?.thumbnail ?: viewModel.opened.picture
     val coverModels = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
 
-    CoverTheme(coverModels) {
-        YouTubeAlbumDetailContent(
-            albumId = viewModel.albumId,
-            opened = viewModel.opened,
-            state = state,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            onOpen = onOpen,
-            onSeeMore = onSeeMore,
-            action = action,
-            onAction = rememberQueueActions {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            onSongClick = rememberSongTap(null) {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            share = viewModel::shareLink,
-            isBookmarked = isBookmarked,
-            onToggleBookmark = viewModel.bookmark::toggle,
-            onOpenArtist = onOpenArtist,
-            onOpenStatistics = onOpenStatistics,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull {
+        CoverTheme(coverModels) {
+            YouTubeAlbumDetailContent(
+                albumId = viewModel.albumId,
+                opened = viewModel.opened,
+                state = state,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                onOpen = onOpen,
+                onSeeMore = onSeeMore,
+                action = action,
+                onAction = rememberQueueActions {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                onSongClick = rememberSongTap(null) {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                share = viewModel::shareLink,
+                isBookmarked = isBookmarked,
+                onToggleBookmark = viewModel.bookmark::toggle,
+                onOpenArtist = onOpenArtist,
+                onOpenStatistics = onOpenStatistics,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

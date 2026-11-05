@@ -115,23 +115,25 @@ fun OpenSubsonicPlaylistDetailScreen(
         )
     }
 
-    CoverTheme(coverModels) {
-        OpenSubsonicPlaylistDetailContent(
-            state = state,
-            onRetry = viewModel::load,
-            onBack = onBack,
-            onAction = rememberQueueActions {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            onSongClick = rememberSongTap(null) {
-                (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-            },
-            share = if (canShare) viewModel::shareLink else null,
-            edit = edit,
-            actions = actions,
-            modifier = modifier,
-            contentPadding = contentPadding,
-        )
+    viewModel.RefreshOnPull(enabled = !edit.editing) {
+        CoverTheme(coverModels) {
+            OpenSubsonicPlaylistDetailContent(
+                state = state,
+                onRetry = viewModel::load,
+                onBack = onBack,
+                onAction = rememberQueueActions {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                onSongClick = rememberSongTap(null) {
+                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+                },
+                share = if (canShare) viewModel::shareLink else null,
+                edit = edit,
+                actions = actions,
+                modifier = modifier,
+                contentPadding = contentPadding,
+            )
+        }
     }
 }
 

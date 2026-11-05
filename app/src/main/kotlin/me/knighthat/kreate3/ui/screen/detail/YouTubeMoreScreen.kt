@@ -47,6 +47,7 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.RefreshBox
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.navigation.Tab
@@ -126,22 +127,28 @@ private fun YouTubeMoreContent(
             return@DetailScaffold
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = ITEM_SIZE.dp),
-            contentPadding = innerPadding + PaddingValues(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
+        RefreshBox(
+            refreshing = refresh is LoadState.Loading,
+            onRefresh = items::refresh,
+            indicatorTop = innerPadding.calculateTopPadding(),
         ) {
-            items(
-                count = items.itemCount,
-                key = items.itemKey { (tab, item) -> "${tab.name}:${item.mediaId}" },
-            ) { index ->
-                items[index]?.let { (tab, item) ->
-                    if (tab == Tab.ARTISTS)
-                        ArtistItem(item, onClick = { onOpen(tab, item) })
-                    else
-                        AlbumItem(item, onClick = { onOpen(tab, item) })
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = ITEM_SIZE.dp),
+                contentPadding = innerPadding + PaddingValues(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(
+                    count = items.itemCount,
+                    key = items.itemKey { (tab, item) -> "${tab.name}:${item.mediaId}" },
+                ) { index ->
+                    items[index]?.let { (tab, item) ->
+                        if (tab == Tab.ARTISTS)
+                            ArtistItem(item, onClick = { onOpen(tab, item) })
+                        else
+                            AlbumItem(item, onClick = { onOpen(tab, item) })
+                    }
                 }
             }
         }
