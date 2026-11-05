@@ -62,6 +62,9 @@
     <string name="constant_playback_failure_action_retry_then_skip">Try again, then skip</string>
     <string name="constant_playback_failure_action_retry_then_stop">Try again, then stop</string>
     <string name="constant_playback_failure_action_stop">Stop</string>
+    <string name="constant_playback_login_never">Never</string>
+    <string name="constant_playback_login_on_failure">On-failure</string>
+    <string name="constant_playback_login_always">Always</string>
     <string name="constant_stream_quality_ytm_low">Low, about 48 kbps</string>
     <string name="constant_stream_quality_ytm_medium">Medium, about 128 kbps</string>
     <string name="constant_stream_quality_ytm_high">High, about 160 kbps</string>

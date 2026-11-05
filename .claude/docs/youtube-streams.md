@@ -19,9 +19,13 @@
 
 ## Signed-out vs session
 
-- Streams stay signed out except ORIGINAL (see `.claude/rules/youtube.md`). Age-restricted songs
-  therefore return `null`, except that with ORIGINAL picked and someone signed in they may play as a
-  side effect.
+- Streams stay signed out except ORIGINAL and what `YOUTUBE_PLAYBACK_LOGIN` says. Signed out, an
+  age-restricted song answers `LOGIN_REQUIRED` "Sign in to confirm your age" with
+  `desktopLegacyAgeGateReason` 1 (probed 2026-11-05 on WEB_REMIX with `contentCheckOk` and
+  `racyCheckOk` sent, which innertubex always does), so `null` comes back. With the default
+  `ON_FAILURE`, `YouTubeStreams.stream` asks again in the session when the library says
+  `AGE_RESTRICTED`; `ALWAYS` asks in it first; `NEVER` keeps it signed out. Without a signed in
+  account the setting does nothing.
 - Premium isn't detected: a non-Premium account on ORIGINAL gets 251 (High), possibly after a 403 →
   refused retry.
 - Even a non-null signed-out stream can be refused (a `WEB_EMBEDDED_PLAYER__nopo` URL that 403s on

@@ -35,6 +35,7 @@ import com.metrolist.innertubex.extraction.generateClientPlaybackNonce
 import com.metrolist.innertubex.models.YouTubeLocale
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
+import me.knighthat.kreate3.constant.PlaybackLogin
 import me.knighthat.kreate3.constant.StreamQuality
 import java.util.Locale
 import com.metrolist.innertubex.InnerTube as InnerTubeX
@@ -44,9 +45,9 @@ import com.metrolist.innertubex.InnerTube as InnerTubeX
  * for, fastest first like the visionOS app, then the website's (`WEB_REMIX`) with a PO token from
  * [poTokens], and deciphers addresses for the clients that need it.
  *
- * Requests are in the user's session only for [StreamQuality.ORIGINAL], the only quality an account
- * changes, see [stream]. The library's player configuration isn't fetched from GitHub, the scripts
- * it ships with are used instead.
+ * Requests are in the user's session for [StreamQuality.ORIGINAL], the only quality an account
+ * changes, and as [PlaybackLogin] says, see [stream]. The library's player configuration isn't
+ * fetched from GitHub, the scripts it ships with are used instead.
  *
  * @param client needs JSON content negotiation, the library sends and reads objects
  * @param locale gives the language of the texts, read at each extraction
@@ -84,9 +85,13 @@ internal class YouTubeStreams(
     /**
      * @param refused the [YouTubeStream.client]s whose streams were refused for this song, not
      * asked again
-     * @param cookies the cookies of the signed in session, only used for
-     * [StreamQuality.ORIGINAL]. The library is told the account has Premium, which it can't find
-     * out: an account without it gets what [StreamQuality.HIGH] gets, maybe after a refusal.
+     * @param login whether to ask in the session: [PlaybackLogin.ALWAYS] always, and
+     * [PlaybackLogin.ON_FAILURE] again for a song that is age-restricted when asked signed out
+     * @param cookies the cookies of the signed in session, `null` or blank asks signed out only.
+     * [StreamQuality.ORIGINAL] is always asked in it, with the library told the account has
+     * Premium, which it can't find out: an account without it gets what [StreamQuality.HIGH]
+     * gets, maybe after a refusal. The other qualities are asked in it as [login] says, without
+     * telling the library anything about Premium.
      * @return `null` when the song can't be played
      * @throws YouTubeException when YouTube can't be reached or the library failed
      */
@@ -94,23 +99,38 @@ internal class YouTubeStreams(
         videoId: String,
         refused: Set<String> = emptySet(),
         quality: StreamQuality = StreamQuality.HIGH,
+        login: PlaybackLogin = PlaybackLogin.NEVER,
         cookies: String? = null,
     ): YouTubeStream? {
-        val inSession = quality == StreamQuality.ORIGINAL && !cookies.isNullOrBlank()
-        val stream = extract(videoId, refused, quality.audioQuality, inSession, cookies)
+        val signedIn = !cookies.isNullOrBlank()
+        val premium = quality == StreamQuality.ORIGINAL && signedIn
+        val inSession = premium || (login == PlaybackLogin.ALWAYS && signedIn)
+        val retryInSession = login == PlaybackLogin.ON_FAILURE && signedIn && !inSession
+
+        suspend fun find(audioQuality: AudioQuality): YouTubeStream? {
+            val first = extract(videoId, refused, audioQuality, inSession, premium, cookies)
+            if (first.stream != null || !first.ageRestricted || !retryInSession) return first.stream
+            Logger.d(tag = TAG) { "$videoId is age-restricted, asking again in the session" }
+            return extract(videoId, refused, audioQuality, true, false, cookies).stream
+        }
+
+        val stream = find(quality.audioQuality)
         // Nearly every video has the MP4 audio of 128 kbps, the best is played without it
-        if (stream == null && quality == StreamQuality.MEDIUM)
-            return extract(videoId, refused, AudioQuality.HIGH, false, null)
+        if (stream == null && quality == StreamQuality.MEDIUM) return find(AudioQuality.HIGH)
         return stream
     }
+
+    /** What [extract] found, with whether YouTube wants the viewer's age confirmed if not. */
+    private class Extraction(val stream: YouTubeStream?, val ageRestricted: Boolean = false)
 
     private suspend fun extract(
         videoId: String,
         refused: Set<String>,
         audioQuality: AudioQuality,
         inSession: Boolean,
+        premium: Boolean,
         cookies: String?,
-    ): YouTubeStream? {
+    ): Extraction {
         val innerTube = if (inSession) sessionInnerTube else innerTube
         innerTube.locale = YouTubeLocale(gl = region(), hl = locale().youTubeHl)
         // The same cookies change nothing, other ones start another session in the library
@@ -119,7 +139,7 @@ internal class YouTubeStreams(
         val extracted = try {
             (if (inSession) sessionExtractor else extractor).extract(
                 videoId = videoId,
-                hints = if (inSession) hints.withPremium() else hints,
+                hints = if (premium) hints.withPremium() else hints,
                 excludedClients = refused,
                 audioQuality = audioQuality,
                 clientPlaybackNonce = generateClientPlaybackNonce(),
@@ -133,7 +153,7 @@ internal class YouTubeStreams(
             ) { "No stream for $videoId, reason ${e.reason}, left out ${refused.size} clients" }
             if (e.reason == StreamResolveException.Reason.NETWORK)
                 throw YouTubeException("Couldn't reach YouTube", cause = e)
-            return null
+            return Extraction(null, e.reason == StreamResolveException.Reason.AGE_RESTRICTED)
         } catch (e: InnerTubeHttpException) {
             Logger.w(
                 e,
@@ -161,7 +181,7 @@ internal class YouTubeStreams(
                         "session: $inSession, left out: ${refused.joinToString()}"
             }
         }
-        return stream
+        return Extraction(stream)
     }
 
     private companion object {

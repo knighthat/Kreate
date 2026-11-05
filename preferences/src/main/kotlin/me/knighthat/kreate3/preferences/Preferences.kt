@@ -23,6 +23,7 @@ import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
+import me.knighthat.kreate3.constant.PlaybackLogin
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.constant.QueueAction
@@ -380,6 +381,13 @@ object Preferences : KoinComponent {
     val YOUTUBE_QUALITY_MOBILE_PREMIUM by lazy {
         enum("youtube_quality_mobile_premium", StreamQuality.MEDIUM)
     }
+
+    /**
+     * Whether the YouTube songs to play are found in the signed in session, see [PlaybackLogin].
+     * [PlaybackLogin.ON_FAILURE] by default. It does nothing while nobody is signed in or
+     * [YOUTUBE_ACCOUNT_ENABLED] is off, and applies to the songs read next.
+     */
+    val YOUTUBE_PLAYBACK_LOGIN by lazy { enum("youtube_playback_login", PlaybackLogin.ON_FAILURE) }
 
     /**
      * Whether every request to YouTube, streams and pictures too, goes through the proxy set by

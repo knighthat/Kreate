@@ -30,6 +30,7 @@ on
   LOW/MEDIUM/HIGH/ORIGINAL, order = ordinal), `SyncMode` (OFF/LIKED/ALL), `SleepTimerStep` (sleep
   timer add/remove amounts), `ProxyType` (HTTP/SOCKS), `AutoTapAction`
   (OPEN/PLAY_FROM_START/PLAY_RANDOMLY, Android Auto), `PlaybackFailureAction`
-  (SKIP/RETRY_THEN_SKIP/RETRY_THEN_STOP/STOP, `retries`/`skips`), `QueueAction`
+  (SKIP/RETRY_THEN_SKIP/RETRY_THEN_STOP/STOP, `retries`/`skips`), `PlaybackLogin`
+  (NEVER/ON_FAILURE/ALWAYS, YouTube streams in the session), `QueueAction`
   (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT, quick actions of lists and the album/artist page button),
   `LogLevel` (VERBOSE/DEBUG/INFO/WARNING/ERROR) enums.

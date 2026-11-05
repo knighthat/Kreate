@@ -27,6 +27,7 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.LogLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
+import me.knighthat.kreate3.constant.PlaybackLogin
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.StreamQuality
@@ -179,6 +180,14 @@ val PlaybackFailureAction.labelRes: Int
         PlaybackFailureAction.RETRY_THEN_SKIP -> R.string.constant_playback_failure_action_retry_then_skip
         PlaybackFailureAction.RETRY_THEN_STOP -> R.string.constant_playback_failure_action_retry_then_stop
         PlaybackFailureAction.STOP -> R.string.constant_playback_failure_action_stop
+    }
+
+@get:StringRes
+val PlaybackLogin.labelRes: Int
+    get() = when (this) {
+        PlaybackLogin.NEVER -> R.string.constant_playback_login_never
+        PlaybackLogin.ON_FAILURE -> R.string.constant_playback_login_on_failure
+        PlaybackLogin.ALWAYS -> R.string.constant_playback_login_always
     }
 
 /** How good a song is, in a word, see [youTubeLabelRes] for what it means there. */

@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.settings.network.youtube
 
+import androidx.annotation.StringRes
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.PlaybackLogin
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
@@ -43,6 +45,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.youTubeLabelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
@@ -76,6 +79,7 @@ fun YouTubeSettingsScreen(
     val pageId by viewModel.pageId.collectFlowAsState()
     val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
     val region by Preferences.YOUTUBE_REGION.collectAsStateWithLifecycle()
+    val playbackLogin by Preferences.YOUTUBE_PLAYBACK_LOGIN.collectAsStateWithLifecycle()
 
     YouTubeSettingsContent(
         enabled = enabled,
@@ -83,6 +87,7 @@ fun YouTubeSettingsScreen(
         channels = channels,
         pageId = pageId,
         region = region,
+        playbackLogin = playbackLogin,
         onEnabledChange = viewModel::setEnabled,
         onSignIn = onSignIn,
         onRetry = viewModel::retry,
@@ -110,6 +115,7 @@ fun YouTubeSettingsScreen(
 /**
  * @param pageId page id of the channel acted as now, empty for the account's own
  * @param region country code of the catalog, empty for the device's region
+ * @param playbackLogin whether the songs to play are found in the session
  * @param library what of the account's library is synced, see [LibrarySyncSettings]
  * @param quality the stream quality, with Original while someone is signed in
  * @param proxy YouTube's proxy, see [ProxySettings]
@@ -121,6 +127,7 @@ private fun YouTubeSettingsContent(
     channels: List<YouTubeChannel>,
     pageId: String,
     region: String,
+    playbackLogin: PlaybackLogin,
     onEnabledChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onRetry: () -> Unit,
@@ -266,10 +273,26 @@ private fun YouTubeSettingsContent(
         // YouTube plays signed out too, only Original needs the account
         SettingsSection(stringResource(R.string.setting_header_playback))
         quality(enabled && account is YouTubeAccountState.SignedIn)
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_login_for_playback),
+            value = playbackLogin,
+            options = PlaybackLogin.entries,
+            label = labelsOf(PlaybackLogin.entries) { it.labelRes },
+            summary = stringResource(playbackLogin.descriptionRes),
+            onSelect = { Preferences.YOUTUBE_PLAYBACK_LOGIN.update(it) },
+        )
 
         proxy()
     }
 }
+
+/** What the option does, the dialog only names it. */
+private val PlaybackLogin.descriptionRes: Int
+    @StringRes get() = when (this) {
+        PlaybackLogin.NEVER -> R.string.setting_description_login_for_playback_never
+        PlaybackLogin.ON_FAILURE -> R.string.setting_description_login_for_playback_on_failure
+        PlaybackLogin.ALWAYS -> R.string.setting_description_login_for_playback_always
+    }
 
 /**
  * The country of the catalog, each named in the app's language and sorted by that name, after
@@ -325,6 +348,7 @@ private fun YouTubeSettingsPreview() = PreviewTheme {
         channels = emptyList(),
         pageId = "",
         region = "VN",
+        playbackLogin = PlaybackLogin.ON_FAILURE,
         onEnabledChange = {},
         onSignIn = {},
         onRetry = {},

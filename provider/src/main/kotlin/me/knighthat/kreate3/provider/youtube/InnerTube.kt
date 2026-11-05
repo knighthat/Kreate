@@ -40,6 +40,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import me.knighthat.kreate3.constant.PlaybackLogin
 import me.knighthat.kreate3.constant.StreamQuality
 import java.security.MessageDigest
 import java.util.Locale
@@ -139,6 +140,7 @@ internal class YouTubeSession private constructor(
  * account's own. Read at each request too.
  * @param client gives the client to send with, read at each request: it changes with the proxy
  * @param poTokens makes the PO tokens [stream] may need, `null` for none
+ * @param playbackLogin gives whether [stream] asks in the session, read at each call
  */
 internal class InnerTube(
     private val client: suspend () -> HttpClient,
@@ -149,6 +151,7 @@ internal class InnerTube(
     private val clock: Clock = Clock.System,
     private val pageId: suspend () -> String = { "" },
     private val poTokens: TokenProvider? = null,
+    private val playbackLogin: () -> PlaybackLogin = { PlaybackLogin.NEVER },
 ) {
 
     /** The visitor id YouTube gave, with the [YouTubeSession.id] it was given to. */
@@ -164,7 +167,8 @@ internal class InnerTube(
     private var streams: Streams? = null
 
     /**
-     * The audio to play of [videoId], asked in the session only for [StreamQuality.ORIGINAL].
+     * The audio to play of [videoId], asked in the session for [StreamQuality.ORIGINAL] and as
+     * [PlaybackLogin] says, see [YouTubeStreams.stream].
      *
      * @param refused see [YouTubeStreams.stream]
      * @return `null` when it can't be played
@@ -175,8 +179,11 @@ internal class InnerTube(
         refused: Set<String> = emptySet(),
         quality: StreamQuality = StreamQuality.HIGH,
     ): YouTubeStream? {
-        val cookies = if (quality == StreamQuality.ORIGINAL) session()?.cookies else null
-        return streams().stream(videoId, refused, quality, cookies)
+        val login = playbackLogin()
+        val cookies =
+            if (quality == StreamQuality.ORIGINAL || login != PlaybackLogin.NEVER) session()?.cookies
+            else null
+        return streams().stream(videoId, refused, quality, login, cookies)
     }
 
     /** What finds the streams with the client now, made again when the client changes. */

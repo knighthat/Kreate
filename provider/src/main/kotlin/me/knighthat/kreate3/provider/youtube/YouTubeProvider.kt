@@ -579,8 +579,9 @@ class YouTubeProvider internal constructor(
     /**
      * The audio to play of [songId], the video id of a song or any other video. The visionOS app
      * is asked first, the website with a PO token after it. It is asked without the user's
-     * session, so what needs one, like videos with an age limit, can't be played. Only
-     * [StreamQuality.ORIGINAL] is asked in it while someone is signed in, for Premium's audio.
+     * session, so what needs one, like videos with an age limit, can't be played, unless
+     * [Preferences.YOUTUBE_PLAYBACK_LOGIN] says otherwise. [StreamQuality.ORIGINAL] is always asked
+     * in it while someone is signed in, for Premium's audio.
      *
      * @param refused the [YouTubeStream.client]s whose streams YouTube refused for this song,
      * like one that stopped after its first part. Others are asked instead.
@@ -657,6 +658,7 @@ class YouTubeProvider internal constructor(
             cookies,
             pageId = pageId,
             poTokens = context?.let { WebPoTokenProvider(it, client) },
+            playbackLogin = { Preferences.YOUTUBE_PLAYBACK_LOGIN.value },
         )
 
         suspend fun profileCookies(): String =

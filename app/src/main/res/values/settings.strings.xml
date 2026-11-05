@@ -193,6 +193,10 @@
     <string name="setting_description_load_next_song_ahead">Load the first %1$s of the next song early</string>
     <string name="setting_description_load_next_song_ahead_off">Only load the next song when it starts</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
+    <string name="setting_title_login_for_playback">Login for playback</string>
+    <string name="setting_description_login_for_playback_never">Don\'t use login for playback</string>
+    <string name="setting_description_login_for_playback_on_failure">Retry with login if failed</string>
+    <string name="setting_description_login_for_playback_always">Always use login for playback</string>
     <string name="setting_title_give_up_loading_after">Give up loading after</string>
     <!-- %1$s is a duration, e.g. "30 seconds". How long the app waits for a song to load before it reports a failure -->
     <string name="setting_description_give_up_loading_after">Wait %1$s before declaring a failure</string>
