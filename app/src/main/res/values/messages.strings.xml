@@ -39,6 +39,7 @@
     <string name="error_album_reset_order">Couldn\'t reset order</string>
     <string name="error_move_song">Couldn\'t move song</string>
     <string name="error_playlist_remove_song">Couldn\'t remove song</string>
+    <string name="error_playlist_delete">Couldn\'t delete the playlist</string>
     <string name="error_queue_every_song">Couldn\'t get all songs</string>
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
@@ -174,6 +175,7 @@
     <string name="snackbar_album_order_reset">Back in the album\'s order</string>
     <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
     <string name="snackbar_removed_from">Removed from %1$s</string>
+    <string name="snackbar_playlist_deleted">Deleted %1$s</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
     <string name="snackbar_removed_from_like">Removed from likes</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->

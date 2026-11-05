@@ -23,7 +23,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +34,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -84,6 +88,7 @@ fun LocalPlaylistDetailScreen(
     val resources = LocalResources.current
     val moveFailed = stringResource(R.string.error_move_song)
     val removeFailed = stringResource(R.string.error_playlist_remove_song)
+    val deleteFailed = stringResource(R.string.error_playlist_delete)
 
     val removedFrom = stringResource(
         R.string.snackbar_removed_from,
@@ -115,6 +120,24 @@ fun LocalPlaylistDetailScreen(
             mode = mode,
             arranged = arranged,
             onBack = onBack,
+            canRemove = playlist?.isMonthly == false,
+            onDelete = {
+                val name = playlist?.name
+                viewModel.delete { deleted ->
+                    if (deleted) {
+                        notifier.post(
+                            resources.getString(
+                                R.string.snackbar_playlist_deleted,
+                                name?.let { resources.getString(R.string.quoted, it) }
+                                    ?: resources.getString(R.string.snackbar_this_playlist)
+                            )
+                        )
+                        onBack()
+                    } else {
+                        notifier.post(deleteFailed)
+                    }
+                }
+            },
             onAction = rememberQueueActions(viewModel::allSongs),
             onSongClick = rememberSongTap(null, viewModel::allSongs),
             onModeChange = viewModel::edit,
@@ -145,6 +168,8 @@ fun LocalPlaylistDetailScreen(
  * [LocalPlaylistDetailViewModel.arranged]
  * @param onMoveSong moves a song to right after another one, to the start after `null`
  * @param onRemoveSong takes a song out
+ * @param canRemove whether songs can be taken out, not of a monthly playlist
+ * @param onDelete deletes the playlist, once the user confirmed
  */
 @Composable
 private fun LocalPlaylistDetailContent(
@@ -157,6 +182,8 @@ private fun LocalPlaylistDetailContent(
     mode: CoverEditMode,
     arranged: List<MediaItem>?,
     onBack: () -> Unit,
+    canRemove: Boolean,
+    onDelete: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     onModeChange: (CoverEditMode) -> Unit,
@@ -185,6 +212,7 @@ private fun LocalPlaylistDetailContent(
     val lifted = MaterialTheme.colorScheme.surfaceContainerHighest
     val models = remember(thumbnail) { listOfNotNull(thumbnailModel(thumbnail, null)) }
     val count = songs.itemCount
+    var confirmDelete by rememberSaveable { mutableStateOf(false) }
 
     PlaylistDetailScaffold(
         name = name.orEmpty(),
@@ -194,8 +222,9 @@ private fun LocalPlaylistDetailContent(
         summary = summary,
         origin = origin,
         onBack = onBack,
-        onPlay = if (count > 0) ({ onAction(QueueAction.PLAY) }) else null,
-        onShuffle = { onAction(QueueAction.SHUFFLE) },
+        onAction = onAction.takeIf { count > 0 },
+        share = null,
+        canShare = false,
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,
@@ -205,9 +234,12 @@ private fun LocalPlaylistDetailContent(
                 onDismiss = onDismiss,
                 onAction = onAction.takeIf { count > 0 },
                 share = null,
+                canShare = false,
                 mode = mode,
                 // Stays on while the last song is taken out, so it can be turned off
                 canEdit = mode != CoverEditMode.NONE || count > 0,
+                canRemove = canRemove,
+                onDelete = { confirmDelete = true },
                 onModeChange = onModeChange,
             )
         },
@@ -237,6 +269,7 @@ private fun LocalPlaylistDetailContent(
                         ),
                         onClick = { onSongClick(song) },
                         onRemove = { onRemoveSong(song) },
+                        canRemove = canRemove,
                         // Opaque, the songs it passes over don't show through it
                         modifier = if (isDragging) Modifier.background(lifted) else Modifier,
                     )
@@ -252,17 +285,44 @@ private fun LocalPlaylistDetailContent(
                         handle = Modifier,
                         onClick = { onSongClick(song) },
                         onRemove = { onRemoveSong(song) },
+                        canRemove = canRemove,
                     )
                 }
             }
         }
     }
+
+    if (confirmDelete)
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(stringResource(R.string.dialog_title_delete_playlist)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.dialog_body_delete_playlist,
+                        stringResource(R.string.quoted, name.orEmpty())
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete()
+                }) { Text(stringResource(R.string.action_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
 }
 
 /**
  * A song of the playlist, its cover as [mode] says, see [CoverEditOverlay].
  *
  * @param onRemove takes it out, from its menu or its cover
+ * @param canRemove whether it can be taken out, else neither of them offers it
  */
 @Composable
 private fun PlaylistSong(
@@ -271,6 +331,7 @@ private fun PlaylistSong(
     handle: Modifier,
     onClick: () -> Unit,
     onRemove: () -> Unit,
+    canRemove: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val removeLabel = stringResource(R.string.menu_remove_from_playlist)
@@ -289,7 +350,7 @@ private fun PlaylistSong(
                 onRemove = onRemove,
             )
         },
-        menuActions = listOf(remove),
+        menuActions = if (canRemove) listOf(remove) else emptyList(),
     )
 }
 
@@ -306,6 +367,8 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         mode = CoverEditMode.NONE,
         arranged = null,
         onBack = {},
+        canRemove = true,
+        onDelete = {},
         onAction = {},
         onSongClick = {},
         onModeChange = {},

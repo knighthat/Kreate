@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -48,6 +50,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +62,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -88,6 +92,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
@@ -107,6 +112,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
+import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.localSongId
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -135,7 +141,7 @@ private val PLACEHOLDER_ICON_SIZE = 72.dp
 /**
  * The frame of a playlist's page: its cover as an object, a large rounded square with a shadow,
  * standing on a heavily blurred copy of itself that fades into the page. Under it the name, the
- * [owner] and [summary], then Play and Shuffle. The header scrolls away with the list; the bar is
+ * [owner] and [summary], then the two buttons of [LocalPlaylistButtons]. The header scrolls away with the list; the bar is
  * see-through over it and, once the name has gone under it, shows the blurred cover with the name
  * and [summary].
  *
@@ -145,7 +151,10 @@ private val PLACEHOLDER_ICON_SIZE = 72.dp
  * @param songCovers covers of its songs, in its order, for a playlist without a picture: four of
  * them in a 2 × 2 grid, the first alone when there are fewer, a playlist icon with none
  * @param owner who made the playlist, like a YouTube channel, `null` when unknown
- * @param onPlay plays the playlist, `null` while it has no songs: Play and Shuffle are off
+ * @param onAction runs a [QueueAction] with the playlist's songs, `null` while it has none: the
+ * buttons that need songs are off
+ * @param share gives a link to the playlist, `null` turns the Share button off
+ * @param canShare `false` hides Share, for a playlist that has nothing to share
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,15 +167,39 @@ fun PlaylistDetailScaffold(
     summary: String?,
     origin: Origin?,
     onBack: () -> Unit,
-    onPlay: (() -> Unit)?,
-    onShuffle: () -> Unit,
+    onAction: ((QueueAction) -> Unit)?,
+    share: (suspend () -> Result<String>)?,
     modifier: Modifier = Modifier,
+    canShare: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
+        share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
+    }
+    val (first, second) = LocalPlaylistButtons.current
+    val buttons =
+        listOf(first, second).filter { canShare || it != PlaylistButton.SHARE }.map { button ->
+            PlaylistHeaderButton(
+                button = button,
+                enabled = if (button == PlaylistButton.SHARE)
+                    share != null && linkShare.enabled
+                else
+                    onAction != null,
+                loading = button == PlaylistButton.SHARE && linkShare.sharing,
+            ) {
+                when (button) {
+                    PlaylistButton.PLAY -> onAction?.invoke(QueueAction.PLAY)
+                    PlaylistButton.SHUFFLE -> onAction?.invoke(QueueAction.SHUFFLE)
+                    PlaylistButton.PLAY_NEXT -> onAction?.invoke(QueueAction.PLAY_NEXT)
+                    PlaylistButton.ENQUEUE -> onAction?.invoke(QueueAction.ENQUEUE)
+                    PlaylistButton.SHARE -> linkShare.share()
+                }
+            }
+        }
     val background = MaterialTheme.colorScheme.surfaceDim
     val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
             TopAppBarDefaults.TopAppBarExpandedHeight
@@ -206,8 +239,7 @@ fun PlaylistDetailScaffold(
                         summary = summary,
                         origin = origin,
                         topPadding = barHeight,
-                        onPlay = onPlay,
-                        onShuffle = onShuffle,
+                        buttons = buttons,
                         onNameBottom = { nameBottom = it },
                     )
                 }
@@ -237,8 +269,7 @@ private fun FramedHeader(
     summary: String?,
     origin: Origin?,
     topPadding: Dp,
-    onPlay: (() -> Unit)?,
-    onShuffle: () -> Unit,
+    buttons: List<PlaylistHeaderButton>,
     onNameBottom: (Int) -> Unit,
 ) = Box(Modifier.fillMaxWidth()) {
     val background = MaterialTheme.colorScheme.surfaceDim
@@ -324,35 +355,74 @@ private fun FramedHeader(
         }
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(
-                onClick = { onPlay?.invoke() },
-                enabled = onPlay != null,
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-            ) {
-                Icon(
-                    painterResource(R.drawable.play_arrow),
-                    contentDescription = null,
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                )
-                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-                Text(stringResource(R.string.action_play))
-            }
-            OutlinedButton(
-                onClick = onShuffle,
-                enabled = onPlay != null,
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-            ) {
-                Icon(
-                    painterResource(R.drawable.shuffle),
-                    contentDescription = null,
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                )
-                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-                Text(stringResource(R.string.action_shuffle))
-            }
+            buttons.forEachIndexed { index, button -> HeaderButton(button, filled = index == 0) }
         }
     }
 }
+
+/**
+ * One of the two buttons under a playlist's header.
+ *
+ * @param loading shows a spinner in place of the icon while a link is on its way
+ */
+private class PlaylistHeaderButton(
+    val button: PlaylistButton,
+    val enabled: Boolean,
+    val loading: Boolean,
+    val onClick: () -> Unit,
+)
+
+@Composable
+private fun HeaderButton(button: PlaylistHeaderButton, filled: Boolean) {
+    val label = stringResource(button.button.labelRes)
+    val content: @Composable RowScope.() -> Unit = {
+        if (button.loading)
+            CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+        else
+            Icon(
+                painterResource(button.button.icon),
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        Text(label)
+    }
+    if (filled)
+        Button(
+            onClick = button.onClick,
+            enabled = button.enabled,
+            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            content = content,
+        )
+    else
+        OutlinedButton(
+            onClick = button.onClick,
+            enabled = button.enabled,
+            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            content = content,
+        )
+}
+
+/** The icon of a playlist page button. */
+@get:DrawableRes
+private val PlaylistButton.icon: Int
+    get() = when (this) {
+        PlaylistButton.PLAY -> R.drawable.play_arrow
+        PlaylistButton.SHUFFLE -> R.drawable.shuffle
+        PlaylistButton.PLAY_NEXT -> R.drawable.queue_play_next
+        PlaylistButton.ENQUEUE -> R.drawable.playlist_add
+        PlaylistButton.SHARE -> R.drawable.share
+    }
+
+/**
+ * The two buttons under the header of a playlist's page, see `Preferences.PLAYLIST_FIRST_BUTTON`.
+ * Play and Shuffle unless provided, like in previews.
+ */
+val LocalPlaylistButtons =
+    compositionLocalOf { PlaylistButton.PLAY to PlaylistButton.SHUFFLE }
 
 /**
  * The bar of the playlist page: shaded and see-through over the header, then once [collapsed] the
@@ -431,12 +501,16 @@ internal fun List<MediaItem>.songCovers(): List<Any> =
 
 /**
  * The sheet of a playlist's ⋮ button: Play next, Add to queue and Share as buttons, then for a
- * playlist of the app the switches that move or take out its songs as rows, at most one on.
+ * playlist of the app the switches that move or take out its songs as rows, at most one on, and
+ * a row that deletes the playlist.
  *
  * @param onAction runs a [QueueAction] with the playlist's songs, `null` while there are none
  * @param share gives a link to the playlist, `null` turns Share off
+ * @param canShare `false` hides Share
  * @param mode what the songs' covers do, `null` for a playlist that can't be edited: no rows
  * @param canEdit whether the switches can be used
+ * @param canRemove whether songs can be taken out, `false` for a monthly playlist: no such row
+ * @param onDelete asks to delete the playlist, `null` for a playlist that can't be: no row
  */
 @Composable
 fun PlaylistMenu(
@@ -444,8 +518,11 @@ fun PlaylistMenu(
     onDismiss: () -> Unit,
     onAction: ((QueueAction) -> Unit)?,
     share: (suspend () -> Result<String>)?,
+    canShare: Boolean = true,
     mode: CoverEditMode? = null,
     canEdit: Boolean = true,
+    canRemove: Boolean = true,
+    onDelete: (() -> Unit)? = null,
     onModeChange: (CoverEditMode) -> Unit = {},
 ) {
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
@@ -465,13 +542,14 @@ fun PlaylistMenu(
                 label = stringResource(R.string.menu_add_to_queue),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
-            LabeledIconButton(
-                icon = R.drawable.share,
-                label = stringResource(R.string.menu_share),
-                enabled = share != null && linkShare.enabled,
-                loading = linkShare.sharing,
-                // A link of the server can take a moment, the sheet stays until it is there
-            ) { linkShare.share { close {} } }
+            if (canShare)
+                LabeledIconButton(
+                    icon = R.drawable.share,
+                    label = stringResource(R.string.menu_share),
+                    enabled = share != null && linkShare.enabled,
+                    loading = linkShare.sharing,
+                    // A link of the server can take a moment, the sheet stays until it is there
+                ) { linkShare.share { close {} } }
         },
         entries = if (mode == null) null else { close ->
             val reordering = mode == CoverEditMode.REORDER
@@ -486,16 +564,22 @@ fun PlaylistMenu(
             ) {
                 close { onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER) }
             }
-            ConfigEntry(
-                icon = R.drawable.delete,
-                label = if (removing)
-                    stringResource(R.string.semantic_stop_removing_songs)
-                else
-                    stringResource(R.string.semantic_remove_songs),
-                enabled = canEdit,
-            ) {
-                close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }
-            }
+            if (canRemove)
+                ConfigEntry(
+                    icon = R.drawable.playlist_remove,
+                    label = if (removing)
+                        stringResource(R.string.semantic_stop_removing_songs)
+                    else
+                        stringResource(R.string.semantic_remove_songs),
+                    enabled = canEdit,
+                ) {
+                    close { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) }
+                }
+            if (onDelete != null)
+                ConfigEntry(
+                    icon = R.drawable.delete,
+                    label = stringResource(R.string.semantic_delete_playlist),
+                ) { close { onDelete() } }
         },
     )
 }
@@ -529,8 +613,8 @@ private fun PlaylistDetailPreview() = PreviewTheme {
             songs.sumOf { it.mediaMetadata.durationMs ?: 0 }),
         origin = Origin.YOUTUBE,
         onBack = {},
-        onPlay = {},
-        onShuffle = {},
+        onAction = {},
+        share = null,
         menu = {},
     ) {
         items(songs, key = { it.mediaId }) { SongItem(it, onClick = {}) }

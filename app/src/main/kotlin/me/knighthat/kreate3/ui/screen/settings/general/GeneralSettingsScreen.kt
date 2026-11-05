@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.LogLevel
+import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.logging.LogActions
@@ -60,7 +61,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlow
 
 /**
  * How the app behaves: scanning the device, leaving the app, opening it from the media
- * notification and the button of album and artist pages, then logging. What is kept on the device
+ * notification, the button of album and artist pages and the buttons of playlist pages, then
+ * logging. What is kept on the device
  * is on the Data page. The logging settings are [GlobalPreferences], only the default profile
  * changes them; exporting and copying the log are open to every profile.
  */
@@ -78,6 +80,8 @@ fun GeneralSettingsScreen(
     val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
     val albumPageAction by Preferences.ALBUM_PAGE_ACTION.collectAsStateWithLifecycle()
     val artistPageAction by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
+    val playlistFirstButton by Preferences.PLAYLIST_FIRST_BUTTON.collectAsStateWithLifecycle()
+    val playlistSecondButton by Preferences.PLAYLIST_SECOND_BUTTON.collectAsStateWithLifecycle()
 
     val logLevel by GlobalPreferences.LOG_LEVEL.collectAsStateWithLifecycle()
     val logRolloverSize by GlobalPreferences.LOG_ROLLOVER_SIZE.collectAsStateWithLifecycle()
@@ -101,6 +105,8 @@ fun GeneralSettingsScreen(
         notificationOpensPlayer = notificationOpensPlayer,
         albumPageAction = albumPageAction,
         artistPageAction = artistPageAction,
+        playlistFirstButton = playlistFirstButton,
+        playlistSecondButton = playlistSecondButton,
         logLevel = logLevel,
         logRolloverSize = logRolloverSize,
         logKeep = logKeep,
@@ -132,6 +138,8 @@ private fun GeneralSettingsContent(
     notificationOpensPlayer: Boolean,
     albumPageAction: QueueAction,
     artistPageAction: QueueAction,
+    playlistFirstButton: PlaylistButton,
+    playlistSecondButton: PlaylistButton,
     logLevel: LogLevel,
     logRolloverSize: Long,
     logKeep: Int,
@@ -218,6 +226,24 @@ private fun GeneralSettingsContent(
             onSelect = { Preferences.ARTIST_PAGE_ACTION.update(it) },
         )
 
+        val buttonLabels = labelsOf(PlaylistButton.entries) { it.labelRes }
+        SettingsSection(stringResource(R.string.setting_header_playlists))
+        // The other button's choice is left out, both can't do the same
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_first_button),
+            value = playlistFirstButton,
+            options = PlaylistButton.entries - playlistSecondButton,
+            label = buttonLabels,
+            onSelect = { Preferences.PLAYLIST_FIRST_BUTTON.update(it) },
+        )
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_second_button),
+            value = playlistSecondButton,
+            options = PlaylistButton.entries - playlistFirstButton,
+            label = buttonLabels,
+            onSelect = { Preferences.PLAYLIST_SECOND_BUTTON.update(it) },
+        )
+
         SettingsSection(stringResource(R.string.setting_header_logging))
         if (!appWide && defaultProfileName != null)
             SettingsSummary(
@@ -302,6 +328,8 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         notificationOpensPlayer = true,
         albumPageAction = QueueAction.PLAY,
         artistPageAction = QueueAction.SHUFFLE,
+        playlistFirstButton = PlaylistButton.PLAY,
+        playlistSecondButton = PlaylistButton.SHUFFLE,
         logLevel = LogLevel.WARNING,
         logRolloverSize = MIB,
         logKeep = 5,

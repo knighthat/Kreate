@@ -49,6 +49,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.Message
@@ -143,6 +144,7 @@ import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.StatisticsScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
+import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistButtons
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistDetailScreen
@@ -224,6 +226,8 @@ fun KreateApp(
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
     val playlistInitial by Preferences.PLAYLIST_INITIAL.collectAsStateWithLifecycle()
+    val firstButton by Preferences.PLAYLIST_FIRST_BUTTON.collectAsStateWithLifecycle()
+    val secondButton by Preferences.PLAYLIST_SECOND_BUTTON.collectAsStateWithLifecycle()
     val songStorage by koinInject<SongDownloads>().songs.collectFlowAsState()
 
     val topLevel = rememberTopLevelBackStack()
@@ -277,6 +281,10 @@ fun KreateApp(
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,
             LocalPlaylistInitial provides playlistInitial,
+            // The settings keep them apart, a backup could bring two of a kind
+            LocalPlaylistButtons provides (firstButton to
+                    if (secondButton != firstButton) secondButton
+                    else PlaylistButton.entries.first { it != firstButton }),
             LocalSongStorage provides songStorage,
             LocalNotifier provides notifier,
             LocalMessageHost provides messages,

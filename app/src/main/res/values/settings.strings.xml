@@ -26,6 +26,7 @@
     <string name="setting_header_navigation">Navigation</string>
     <string name="setting_header_albums">Albums</string>
     <string name="setting_header_artists">Artists</string>
+    <string name="setting_header_playlists">Playlists</string>
     <string name="setting_title_theme">Theme</string>
     <string name="setting_title_translate_language">Translate this language</string>
     <string name="setting_description_translate_language">Help finish its translation on Crowdin</string>
@@ -116,6 +117,8 @@
     <string name="setting_title_notification_opens_player">Open player from notification</string>
     <string name="setting_description_notification_opens_player">Tapping the media notification opens the full player</string>
     <string name="setting_title_page_button">Page button</string>
+    <string name="setting_title_first_button">First button</string>
+    <string name="setting_title_second_button">Second button</string>
 
     <!-- UI -->
     <string name="setting_title_contrast">Contrast</string>

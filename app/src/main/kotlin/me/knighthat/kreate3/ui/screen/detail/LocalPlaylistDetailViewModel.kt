@@ -153,6 +153,25 @@ class LocalPlaylistDetailViewModel(
     }
 
     /**
+     * Deletes the playlist on the app's scope, the page is leaving. [onDone] tells whether it
+     * worked, on the main thread.
+     */
+    fun delete(onDone: (Boolean) -> Unit) {
+        scope.launch {
+            val deleted = try {
+                repository.delete(playlistId)
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.w(e, TAG) { "Couldn't delete playlist $playlistId" }
+                false
+            }
+            withContext(Dispatchers.Main) { onDone(deleted) }
+        }
+    }
+
+    /**
      * Puts the song [songId] back at [position], where [removeSong] took it from, on the app's
      * scope: the page may be gone by the time Undo is tapped.
      */

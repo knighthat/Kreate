@@ -27,6 +27,7 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.LogLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
+import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
@@ -131,6 +132,16 @@ val QueueAction.labelRes: Int
         QueueAction.SHUFFLE -> R.string.constant_queue_action_shuffle
         QueueAction.ENQUEUE -> R.string.constant_queue_action_enqueue
         QueueAction.PLAY_NEXT -> R.string.constant_queue_action_play_next
+    }
+
+@get:StringRes
+val PlaylistButton.labelRes: Int
+    get() = when (this) {
+        PlaylistButton.PLAY -> R.string.constant_playlist_button_play
+        PlaylistButton.SHUFFLE -> R.string.constant_playlist_button_shuffle
+        PlaylistButton.PLAY_NEXT -> R.string.constant_playlist_button_play_next
+        PlaylistButton.ENQUEUE -> R.string.constant_playlist_button_enqueue
+        PlaylistButton.SHARE -> R.string.constant_playlist_button_share
     }
 
 @get:StringRes

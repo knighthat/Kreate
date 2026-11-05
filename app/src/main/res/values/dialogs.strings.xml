@@ -32,6 +32,9 @@
     <string name="dialog_title_new_playlist">New playlist</string>
     <string name="dialog_title_reset_the_order">Reset the order?</string>
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
+    <string name="dialog_title_delete_playlist">Delete playlist?</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="dialog_body_delete_playlist">%1$s will be deleted. Its songs stay in your library.</string>
     <string name="dialog_title_restart_the_app">Restart the app?</string>
     <string name="dialog_body_restart_the_app">Playback stops and the app opens again, settings that need a restart apply then.</string>
     <string name="dialog_title_restart_the_player">Restart the player?</string>

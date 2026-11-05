@@ -107,8 +107,8 @@ private fun OpenSubsonicPlaylistDetailContent(
         },
         origin = Origin.OPEN_SUBSONIC,
         onBack = onBack,
-        onPlay = if (playlist?.songs?.isNotEmpty() == true) ({ onAction(QueueAction.PLAY) }) else null,
-        onShuffle = { onAction(QueueAction.SHUFFLE) },
+        onAction = onAction.takeIf { playlist?.songs?.isNotEmpty() == true },
+        share = if (share != null && playlist != null) ({ share(playlist.name) }) else null,
         modifier = modifier,
         contentPadding = contentPadding,
         menu = { onDismiss ->

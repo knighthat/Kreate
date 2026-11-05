@@ -50,6 +50,11 @@
     <string name="constant_queue_action_shuffle">Shuffle</string>
     <string name="constant_queue_action_enqueue">Add to queue</string>
     <string name="constant_queue_action_play_next">Play next</string>
+    <string name="constant_playlist_button_play">Play</string>
+    <string name="constant_playlist_button_shuffle">Shuffle</string>
+    <string name="constant_playlist_button_play_next">Play next</string>
+    <string name="constant_playlist_button_enqueue">Add to queue</string>
+    <string name="constant_playlist_button_share">Share</string>
     <string name="constant_playback_failure_action_skip">Skip to the next song</string>
     <string name="constant_playback_failure_action_retry_then_skip">Try again, then skip</string>
     <string name="constant_playback_failure_action_retry_then_stop">Try again, then stop</string>

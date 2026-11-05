@@ -23,6 +23,7 @@ import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
+import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.SleepTimerStep
@@ -95,6 +96,15 @@ object Preferences : KoinComponent {
 
     /** Like [ALBUM_PAGE_ACTION], for the songs of an artist's page. */
     val ARTIST_PAGE_ACTION by lazy { enum("artist_page_action", QueueAction.PLAY) }
+
+    /**
+     * The left button under the header of a playlist's page, set in the General settings and read
+     * by the playlist screens. Never the same as [PLAYLIST_SECOND_BUTTON].
+     */
+    val PLAYLIST_FIRST_BUTTON by lazy { enum("playlist_first_button", PlaylistButton.PLAY) }
+
+    /** Like [PLAYLIST_FIRST_BUTTON], for the right button. */
+    val PLAYLIST_SECOND_BUTTON by lazy { enum("playlist_second_button", PlaylistButton.SHUFFLE) }
 
     /**
      * Sizes of files and storage show in units of 1024 (1024 MiB make 1 GiB); off, in units of

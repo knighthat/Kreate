@@ -124,11 +124,14 @@ ui/screen/
   `PlaylistDetail.kt` (`PlaylistDetailScaffold`: the playlist's picture, else a 2 × 2 grid of its
   song covers (`songCovers`, `CoverGrid`), the first alone with fewer, a playlist icon with none,
   framed on a blurred copy that fades into the page; origin badge, name, owner (YouTube author),
-  count · length (YouTube's own "35 tracks • 1 hour" from the page), Play + Shuffle buttons; bar
+  count · length (YouTube's own "35 tracks • 1 hour" from the page), two buttons picked in the
+  General settings (`LocalPlaylistButtons`, default Play + Shuffle; Share, Play next, Add to queue
+  too); bar
   see-through, then the blurred cover under a scrim with name + count · length once the name scrolls
   under; pages wrapped in `CoverTheme` (picture, else first song cover); the app's playlist counts
   every song again when its paging refreshes (`totals`). `PlaylistMenu`: Play next / Add to queue /
-  Share buttons, move / remove switches as rows for the app's playlists. `EmptyPlaylist`. Used by
+  Share buttons, move / remove switches (remove not for monthly playlists) and Delete playlist (asks
+  first, monthly ones too) as rows for the app's playlists. `EmptyPlaylist`. Used by
   the three playlist screens),
   `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a

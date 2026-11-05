@@ -118,8 +118,8 @@ private fun YouTubePlaylistDetailContent(
         summary = playlist?.summary,
         origin = Origin.YOUTUBE,
         onBack = onBack,
-        onPlay = if (songs.isNotEmpty()) ({ onAction(QueueAction.PLAY) }) else null,
-        onShuffle = { onAction(QueueAction.SHUFFLE) },
+        onAction = onAction.takeIf { songs.isNotEmpty() },
+        share = share,
         modifier = modifier,
         contentPadding = contentPadding,
         menu = { onDismiss ->
