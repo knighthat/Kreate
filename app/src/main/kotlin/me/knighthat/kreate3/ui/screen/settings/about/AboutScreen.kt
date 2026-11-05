@@ -18,12 +18,10 @@
 
 package me.knighthat.kreate3.ui.screen.settings.about
 
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -82,13 +80,6 @@ private fun AboutContent(
             title = stringResource(R.string.screen_title_open_source_licenses),
             summary = stringResource(R.string.setting_description_open_source_licenses),
             onClick = onOpenLicenses,
-            // The row opens a page of its own
-            trailing = {
-                Icon(
-                    painterResource(R.drawable.chevron_right),
-                    contentDescription = null
-                )
-            },
         )
     }
 }
