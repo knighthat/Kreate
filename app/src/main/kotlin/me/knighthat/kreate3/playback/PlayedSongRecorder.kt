@@ -18,8 +18,8 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
 import androidx.media3.common.Player
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -108,7 +108,7 @@ class PlayedSongRecorder(
 
             val song = details(origin, songId)
             if (song == null) {
-                Log.w(TAG, "$origin doesn't know $songId, it isn't stored")
+                Logger.w(tag = TAG) { "$origin doesn't know $songId, it isn't stored" }
                 handled.remove(songId)
                 return
             }
@@ -118,7 +118,7 @@ class PlayedSongRecorder(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't store $songId", e)
+            Logger.w(e, TAG) { "Couldn't store $songId" }
             handled.remove(songId)
         }
     }

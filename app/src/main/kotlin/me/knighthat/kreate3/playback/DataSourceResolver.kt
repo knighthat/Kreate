@@ -28,6 +28,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceException
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.ResolvingDataSource
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.constant.StreamQuality
@@ -221,6 +222,9 @@ class DataSourceResolver internal constructor(
         val queued = QueuedSong.of(dataSpec.uri) ?: return dataSpec
         // The copy of the cache it is read for
         val song = queued.copy(quality = (dataSpec.customData as? QueuedSong)?.quality)
+        Logger.d(tag = TAG) {
+            "Resolving ${song.origin} ${song.id} from ${dataSpec.position}, copy ${song.quality}"
+        }
 
         if (song.origin == Origin.YOUTUBE) {
             val stream = streamOf(song, dataSpec.position)
@@ -267,6 +271,7 @@ class DataSourceResolver internal constructor(
         synchronized(youTubeSongs) {
             val known = youTubeSongs[song.id] ?: return
             if (known.stream?.client != client) return
+            Logger.w(tag = TAG) { "YouTube refused the address of ${song.id} from client $client" }
             youTubeSongs[song.id] = YouTubeSong(null, known.refused + client, known.quality)
         }
     }
@@ -288,10 +293,15 @@ class DataSourceResolver internal constructor(
             // The player reads to the end in one request, a client that answers only a range
             // at a time would stop it after the first one
             if (stream.rangeSize != null) {
+                Logger.d(tag = TAG) { "Skipping client ${stream.client} for $songId, it answers in parts" }
                 refused = refused + stream.client
                 continue
             }
             if (cached != null && stream.contentLength != null && stream.contentLength != cached) {
+                Logger.w(tag = TAG) {
+                    "Client ${stream.client} has another file of $songId than the cache " +
+                            "(${stream.contentLength} bytes, cached $cached)"
+                }
                 otherFile = otherFile + stream.client
                 firstOtherFile = firstOtherFile ?: stream
                 continue
@@ -301,11 +311,13 @@ class DataSourceResolver internal constructor(
 
         firstOtherFile?.let {
             // No client has the cached file any more, the song is cached again from the start
+            Logger.w(tag = TAG) { "No client has the cached file of $songId, caching it again" }
             dropCached(song)
             return keep(song, it, refused, quality)
         }
 
         // The next try starts again with every client, a refusal may not last
+        Logger.w(tag = TAG) { "No client gave a stream for $songId, left out: ${refused.joinToString()}" }
         synchronized(youTubeSongs) { youTubeSongs.remove(songId) }
         throw unavailable(Origin.YOUTUBE)
     }
@@ -323,7 +335,12 @@ class DataSourceResolver internal constructor(
             position > 0 && it.quality == quality && clock.now() < it.askedAt + SERVER_ADDRESS_LIFE
         }?.let { return it.stream to false }
 
-        val stream = ask(Origin.OPEN_SUBSONIC) { serverStream(song.id, quality) } ?: return null
+        val stream = ask(Origin.OPEN_SUBSONIC) { serverStream(song.id, quality) }
+        if (stream == null) {
+            Logger.w(tag = TAG) { "The server has no stream for ${song.id}" }
+            return null
+        }
+        Logger.d(tag = TAG) { "The server gave a stream for ${song.id} in $quality" }
         synchronized(serverSongs) {
             serverSongs[song.id] = ServerSong(stream, quality, clock.now())
         }
@@ -364,10 +381,13 @@ class DataSourceResolver internal constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
+            Logger.w(e, TAG) { "Couldn't find where to read the song of $origin" }
             throw e
         } catch (e: YouTubeException) {
+            Logger.w(e, TAG) { "Couldn't find where to read the song of $origin" }
             throw DataSourceException(e.message, e, e.errorCode())
         } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't find where to read the song of $origin" }
             throw DataSourceException(
                 "Couldn't find where to read the song of $origin",
                 e,
@@ -402,6 +422,8 @@ class DataSourceResolver internal constructor(
     }
 
     private companion object {
+        const val TAG = "DataSourceResolver"
+
         /** Songs kept of YouTube, and of the server, each about a long queue. */
         const val MAX_KNOWN_SONGS = 200
 

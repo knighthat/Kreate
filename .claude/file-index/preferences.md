@@ -8,7 +8,8 @@ on
 - `preferences/Preferences.kt` — every setting (`object Preferences`), keys on disk never renamed.
   `Preference.kt` — single setting following the active profile.
 - `preferences/GlobalPreferences.kt` — settings shared by every profile (cache/download sizes, image
-  memory cache), default profile edits them. `GlobalPreferenceStorage.kt` — `global.preferences_pb`
+  memory cache, log level/rollover/keep, crash log retention), default profile edits them.
+  `GlobalPreferenceStorage.kt` — `global.preferences_pb`
   (these + the profile list), its engine, damaged file rebuilt from profile folders.
 - `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens in
   `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`).
@@ -30,4 +31,5 @@ on
   timer add/remove amounts), `ProxyType` (HTTP/SOCKS), `AutoTapAction`
   (OPEN/PLAY_FROM_START/PLAY_RANDOMLY, Android Auto), `PlaybackFailureAction`
   (SKIP/RETRY_THEN_SKIP/RETRY_THEN_STOP/STOP, `retries`/`skips`), `QueueAction`
-  (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT, quick actions of lists and the album/artist page button) enums.
+  (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT, quick actions of lists and the album/artist page button),
+  `LogLevel` (VERBOSE/DEBUG/INFO/WARNING/ERROR) enums.

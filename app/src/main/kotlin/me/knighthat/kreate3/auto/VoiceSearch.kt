@@ -20,8 +20,8 @@ package me.knighthat.kreate3.auto
 
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -100,7 +100,7 @@ internal class VoiceSearch(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Log.w(TAG, "Couldn't search $origin for ${request.query}", e)
+                    Logger.w(e, TAG) { "Couldn't search $origin for ${request.query}" }
                     null
                 }
                 if (!found.isNullOrEmpty()) return@withContext found
@@ -207,7 +207,7 @@ internal class VoiceSearch(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't find songs like ${seed.mediaId}", e)
+            Logger.w(e, TAG) { "Couldn't find songs like ${seed.mediaId}" }
             emptyList()
         }
         return listOf(seed) + similar

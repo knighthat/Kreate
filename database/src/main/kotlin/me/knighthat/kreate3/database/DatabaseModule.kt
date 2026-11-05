@@ -20,7 +20,10 @@ package me.knighthat.kreate3.database
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.AlbumRepositoryImpl
@@ -60,6 +63,25 @@ internal const val DATABASE_FILE_NAME = "kreate.db"
  */
 internal const val DATABASE_VERSION = 2
 
+private const val LOG_TAG = "Database"
+
+/**
+ * The schema version [file] was last saved with, `null` when there is no file or it can't be read.
+ */
+private fun storedVersion(file: java.io.File): Int? {
+    if (!file.exists()) return null
+    return try {
+        BundledSQLiteDriver().open(file.path).use { connection ->
+            connection.prepare("PRAGMA user_version").use { statement ->
+                if (statement.step()) statement.getLong(0).toInt() else null
+            }
+        }
+    } catch (e: Exception) {
+        Logger.w(e, LOG_TAG) { "Couldn't read the version of the database" }
+        null
+    }
+}
+
 /**
  * Pass it to `startKoin` to make the repositories and [DatabaseBackup] available, `androidContext`
  * must be set.
@@ -68,9 +90,27 @@ internal const val DATABASE_VERSION = 2
  */
 val databaseModule = module {
     single<AppDatabase> {
-        Room.databaseBuilder<AppDatabase>(context = get<Context>(), name = DATABASE_FILE_NAME)
+        val context = get<Context>()
+        // Room migrates while opening, so what the file held has to be read first
+        val before = storedVersion(context.getDatabasePath(DATABASE_FILE_NAME))
+
+        Room.databaseBuilder<AppDatabase>(context = context, name = DATABASE_FILE_NAME)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
+            .addCallback(object : RoomDatabase.Callback() {
+
+                override fun onCreate(connection: SQLiteConnection) {
+                    Logger.i(tag = LOG_TAG) { "Created the database, version $DATABASE_VERSION" }
+                }
+
+                override fun onOpen(connection: SQLiteConnection) {
+                    // Runs once Room migrated the file
+                    if (before != null && before < DATABASE_VERSION)
+                        Logger.w(tag = LOG_TAG) { "Migrated the database from version $before to $DATABASE_VERSION" }
+                    else
+                        Logger.d(tag = LOG_TAG) { "Opened the database, version $DATABASE_VERSION" }
+                }
+            })
             .build()
     }
     // Injected so tests can replace it with a fixed clock and assert created_at / updated_at

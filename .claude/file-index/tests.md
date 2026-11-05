@@ -33,4 +33,6 @@ Tests mirror the main paths under `src/test/`.
   `OpenSubsonicProviderTest`, `ServerStreamTest`, `SelfSignedTrustManagerTest`; youtube/
   `BotGuardTest`, `YouTubeStreamsTest`, `YouTubeLibraryTest`, `YouTubeLinksTest`,
   `YouTubeParserTest`, `YouTubeProviderTest`, `YouTubeSignInTest`.
+- app: logging/ `RedactionTest`, `FileLogWriterTest` (level wait, rollover, keep, zip, tail, session
+  filter, recent activity).
 - Gotchas: `.claude/rules/testing.md`.

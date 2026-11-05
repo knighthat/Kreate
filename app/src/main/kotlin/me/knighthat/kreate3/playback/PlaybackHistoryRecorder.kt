@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -28,6 +27,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.analytics.PlaybackStats
 import androidx.media3.exoplayer.analytics.PlaybackStatsListener
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -139,7 +139,7 @@ class PlaybackHistoryRecorder(
                 throw e
             } catch (e: Exception) {
                 // The song may be missing from the database, or no user is active
-                Log.w(TAG, "Couldn't save the play of ${play.songId}", e)
+                Logger.w(e, TAG) { "Couldn't save the play of ${play.songId}" }
             }
     }
 

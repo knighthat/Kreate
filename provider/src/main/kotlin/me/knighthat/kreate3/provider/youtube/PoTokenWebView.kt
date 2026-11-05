@@ -22,7 +22,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
 import android.webkit.RenderProcessGoneDetail
@@ -31,6 +30,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
+import co.touchlab.kermit.Logger
 import com.metrolist.innertubex.extraction.potoken.parseIntegrityTokenData
 import com.metrolist.innertubex.extraction.potoken.stringToU8
 import com.metrolist.innertubex.extraction.potoken.u8ToBase64
@@ -119,10 +119,10 @@ internal class PoTokenWebView private constructor(
                     val error = "$text, source: ${message.sourceId()} (${message.lineNumber()})"
                     if (createdResumed.get()) {
                         // The page ran fine, so it came from Google's scripts: worth another try
-                        Log.e(TAG, "Uncaught JavaScript error after BotGuard started")
+                        Logger.e(tag = TAG) { "Uncaught JavaScript error after BotGuard started" }
                         die(PoTokenException(error))
                     } else {
-                        Log.e(TAG, "This WebView can't run BotGuard")
+                        Logger.e(tag = TAG) { "This WebView can't run BotGuard" }
                         val exception = PoTokenException(error, badWebView = true)
                         failCreation(exception)
                         failPending(exception)
@@ -139,7 +139,7 @@ internal class PoTokenWebView private constructor(
                 detail: RenderProcessGoneDetail
             ): Boolean {
                 // Killed for memory most of the time, a new one may work
-                Log.e(TAG, "BotGuard's renderer is gone, crashed: ${detail.didCrash()}")
+                Logger.e(tag = TAG) { "BotGuard's renderer is gone, crashed: ${detail.didCrash()}" }
                 val exception = PoTokenException("The WebView's renderer is gone")
                 failCreation(exception)
                 die(exception)
@@ -336,7 +336,7 @@ internal class PoTokenWebView private constructor(
             webView.onPause()
             webView.removeAllViews()
             webView.destroy()
-        }.onFailure { Log.w(TAG, "Couldn't destroy BotGuard's WebView", it) }
+        }.onFailure { Logger.w(it, TAG) { "Couldn't destroy BotGuard's WebView" } }
     }
 
     companion object {

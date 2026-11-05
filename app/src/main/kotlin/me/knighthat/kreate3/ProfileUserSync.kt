@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -103,11 +104,13 @@ class ProfileUserSync(
      */
     suspend fun createProfile(name: String): String? {
         val id = Uuid.random().toString()
+        Logger.i(tag = TAG) { "Creating a profile" }
         userRepository.save(User(id, name))
         synced += id
         if (profileManager.add(id) != null) return id
 
         // The failure is reported, the user goes so no profile is half made
+        Logger.w(tag = TAG) { "The profile couldn't be saved, taking it back" }
         synced -= id
         userRepository.delete(id)
         return null
@@ -121,6 +124,7 @@ class ProfileUserSync(
      * @throws IllegalArgumentException for the default profile
      */
     suspend fun deleteProfile(profileId: String): Boolean {
+        Logger.i(tag = TAG) { "Deleting a profile" }
         if (!profileManager.delete(profileId)) return false
 
         synced -= profileId
@@ -130,6 +134,7 @@ class ProfileUserSync(
 
     private companion object {
 
+        const val TAG = "ProfileUserSync"
         const val DEFAULT_NAME = "Default"
         const val FALLBACK_NAME = "Profile"
     }

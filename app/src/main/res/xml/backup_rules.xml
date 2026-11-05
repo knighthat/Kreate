@@ -32,4 +32,8 @@
     <exclude
         domain="database"
         path="exoplayer_internal.db-journal" />
+    <!-- Crash logs, in the app's folder of external storage (CrashHandler) -->
+    <exclude
+        domain="external"
+        path="crashlogs" />
 </full-backup-content>

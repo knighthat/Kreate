@@ -31,6 +31,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import java.io.File
 import java.io.IOException
@@ -51,19 +52,24 @@ internal fun failureReasonOf(error: Exception): PreferenceFailure.Reason = when 
  * Only one instance may be active per file, hold on to the returned store.
  * Cancelling [scope] shuts the store down.
  *
+ * @param name what the file is called in the log, like `global preferences`
  * @param replaceDamaged what a damaged file is replaced with, called once when the file is read
  * at opening. The store reads its file only then, later changes are saved from what it holds.
  */
 internal fun createPreferencesDataStore(
     scope: CoroutineScope,
     steps: List<SchemaStep>,
+    name: String,
     replaceDamaged: () -> Preferences,
     produceFile: () -> File,
 ): DataStore<Preferences> =
     PreferenceDataStoreFactory.create(
-        corruptionHandler = ReplaceFileCorruptionHandler { replaceDamaged() },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            Logger.e(it, "PreferencesDataStore") { "The $name file is damaged and was replaced" }
+            replaceDamaged()
+        },
         scope = scope,
-        migrations = listOf(SchemaMigration(steps)),
+        migrations = listOf(SchemaMigration(steps, name)),
         produceFile = produceFile,
     )
 

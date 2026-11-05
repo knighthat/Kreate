@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.screen.account
 
 import android.content.Context
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +28,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.flatMap
 import androidx.paging.insertSeparators
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -216,7 +216,7 @@ class HistoryViewModel(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Log.w(TAG, "Couldn't put back ${plays.size} plays", e)
+                    Logger.w(e, TAG) { "Couldn't put back ${plays.size} plays" }
                 }
             }
         }

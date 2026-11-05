@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3.ui.screen.player
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -27,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
@@ -137,7 +137,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         notifier.post(Message(e.youTubeFailure(resources, itemName()), MessageDuration.LONG))
         false
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't save the reaction to $songId", e)
+        Logger.w(e, TAG) { "Couldn't save the reaction to $songId" }
         notifier.post(Message(resources.getString(asked, itemName()), MessageDuration.LONG))
         false
     }

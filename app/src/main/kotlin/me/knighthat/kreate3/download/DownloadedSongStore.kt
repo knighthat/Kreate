@@ -21,8 +21,8 @@ package me.knighthat.kreate3.download
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -209,7 +209,7 @@ class DownloadedSongStore(
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't $what a downloaded song", e)
+        Logger.w(e, TAG) { "Couldn't $what a downloaded song" }
         false
     }
 

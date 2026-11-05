@@ -49,6 +49,7 @@ internal class GlobalPreferenceStorage(
     private val dataStore: DataStore<Preferences> = createPreferencesDataStore(
         scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
         steps = GLOBAL_STEPS,
+        name = "global preferences",
         replaceDamaged = {
             reports.report(GLOBAL, saving = false, PreferenceFailure.Reason.DAMAGED)
             val ids = File(rootDirectory, Profile.DIRECTORY_NAME)

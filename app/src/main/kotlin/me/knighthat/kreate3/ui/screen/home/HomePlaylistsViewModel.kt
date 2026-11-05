@@ -18,12 +18,12 @@
 
 package me.knighthat.kreate3.ui.screen.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,7 +138,7 @@ class HomePlaylistsViewModel internal constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't get the songs of ${playlist.mediaId}", e)
+            Logger.w(e, TAG) { "Couldn't get the songs of ${playlist.mediaId}" }
             emptyList()
         }
     }

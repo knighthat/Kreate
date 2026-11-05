@@ -18,8 +18,8 @@
 package me.knighthat.kreate3.provider.youtube
 
 import android.content.Context
-import android.util.Log
 import android.webkit.CookieManager
+import co.touchlab.kermit.Logger
 import com.metrolist.innertubex.extraction.PoTokenResult
 import com.metrolist.innertubex.extraction.TokenProvider
 import com.metrolist.innertubex.extraction.TokenProviderCapabilities
@@ -80,17 +80,21 @@ internal class WebPoTokenProvider(
             withTimeout(TIMEOUT) { tokens(videoId, visitorData, retry = true) }
         } catch (_: TimeoutCancellationException) {
             // Its process may have been killed and left the WebView hanging
-            Log.w(TAG, "Making a PO token timed out")
+            Logger.w(tag = TAG) { "Making a PO token timed out" }
             close()
             null
         } catch (e: CancellationException) {
             throw e
         } catch (e: PoTokenException) {
             if (e.badWebView) badWebView = true
-            Log.w(TAG, "Couldn't make a PO token: ${e.message?.lineSequence()?.firstOrNull()}")
+            Logger.w(tag = TAG) {
+                "Couldn't make a PO token: ${
+                    e.message?.lineSequence()?.firstOrNull()
+                }"
+            }
             null
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't make a PO token", e)
+            Logger.w(e, TAG) { "Couldn't make a PO token" }
             null
         }
     }

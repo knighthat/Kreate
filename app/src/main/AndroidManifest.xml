@@ -123,6 +123,14 @@
             android:name=".ProfilesActivity"
             android:exported="false" />
 
+        <!-- Opened after a crash. Its own process, so it works whatever state the app died in -->
+        <activity
+            android:name=".logging.CrashActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:process=":crash"
+            android:taskAffinity="" />
+
         <!-- Exported so media controllers, like the system's, Bluetooth devices and Android Auto,
              can connect. Auto browses the library through the legacy MediaBrowserService -->
         <service

@@ -20,7 +20,7 @@ package me.knighthat.kreate3.source
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
+import co.touchlab.kermit.Logger
 import coil3.request.Options
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -91,7 +91,7 @@ class CoverFiles(context: Context) {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't forget the covers that are gone", e)
+            Logger.w(e, TAG) { "Couldn't forget the covers that are gone" }
         }
     }
 

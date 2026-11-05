@@ -18,8 +18,8 @@
 
 package me.knighthat.kreate3.source
 
-import android.util.Log
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -128,7 +128,7 @@ private suspend fun fetchEach(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't fetch a library", e)
+                Logger.w(e, TAG) { "Couldn't fetch a library" }
                 emptyList()
             }
         }

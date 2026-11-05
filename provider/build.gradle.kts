@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.kermit)
     implementation(libs.androidx.core.ktx)
     // Providers hand out the models of the database
     api(project(":database"))

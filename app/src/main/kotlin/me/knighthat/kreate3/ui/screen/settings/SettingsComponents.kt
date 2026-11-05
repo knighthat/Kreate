@@ -316,6 +316,7 @@ fun <T> RadioSetting(
  * A setting with a few values to pick one from, in a dialog.
  *
  * @param summary shown under the title, defaults to the [label] of the [value]
+ * @param enabled while not, the row is dimmed and taps do nothing
  */
 @Composable
 fun <T> ChoiceSetting(
@@ -326,10 +327,16 @@ fun <T> ChoiceSetting(
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
     summary: String = label(value),
+    enabled: Boolean = true,
 ) {
     var open by remember { mutableStateOf(false) }
 
-    SettingsItem(title, modifier, summary = summary, onClick = { open = true })
+    SettingsItem(
+        title,
+        if (enabled) modifier else modifier.alpha(DISABLED_ALPHA),
+        summary = summary,
+        onClick = if (enabled) ({ open = true }) else null,
+    )
 
     if (open)
         AlertDialog(

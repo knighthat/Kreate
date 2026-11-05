@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -106,7 +106,7 @@ internal class QueueWriter(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't save the queue", e)
+                Logger.w(e, TAG) { "Couldn't save the queue" }
                 if (write !is QueueWrite.Queue && write !is QueueWrite.Position) onChangeFailed()
             }
     }
@@ -124,9 +124,9 @@ internal class QueueWriter(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IllegalStateException) {
-                Log.w(TAG, "Not stored: ${song.id}", e)
+                Logger.w(e, TAG) { "Not stored: ${song.id}" }
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't store the songs of the queue", e)
+                Logger.w(e, TAG) { "Couldn't store the songs of the queue" }
                 return
             }
         }

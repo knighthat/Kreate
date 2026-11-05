@@ -18,12 +18,12 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -123,7 +123,7 @@ class LocalPlaylistDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't move $songId after $after in playlist $playlistId", e)
+                Logger.w(e, TAG) { "Couldn't move $songId after $after in playlist $playlistId" }
                 false
             }
             if (!moved && _editMode.value == CoverEditMode.REORDER) {
@@ -145,7 +145,7 @@ class LocalPlaylistDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't remove $songId from playlist $playlistId", e)
+                Logger.w(e, TAG) { "Couldn't remove $songId from playlist $playlistId" }
                 Result.failure(e)
             }
             onDone(position.isSuccess, position.getOrNull()?.let { { putBack(songId, it) } })
@@ -168,7 +168,7 @@ class LocalPlaylistDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't put $songId back in playlist $playlistId", e)
+                Logger.w(e, TAG) { "Couldn't put $songId back in playlist $playlistId" }
             }
         }
     }

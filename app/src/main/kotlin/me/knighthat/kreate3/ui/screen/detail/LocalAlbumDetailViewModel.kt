@@ -18,12 +18,12 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -139,7 +139,7 @@ class LocalAlbumDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't move $songId after $after in album $albumId", e)
+                Logger.w(e, TAG) { "Couldn't move $songId after $after in album $albumId" }
                 false
             }
             if (!moved && _isReordering.value) {
@@ -162,7 +162,7 @@ class LocalAlbumDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't reset the order of album $albumId", e)
+                Logger.w(e, TAG) { "Couldn't reset the order of album $albumId" }
                 null
             }
             rearrange()
@@ -185,7 +185,7 @@ class LocalAlbumDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't restore the order of album $albumId", e)
+                Logger.w(e, TAG) { "Couldn't restore the order of album $albumId" }
             }
         }
     }
@@ -223,7 +223,7 @@ class LocalAlbumDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't save the bookmark of $albumId", e)
+                Logger.w(e, TAG) { "Couldn't save the bookmark of $albumId" }
             }
         }
     }

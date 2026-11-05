@@ -19,10 +19,10 @@
 package me.knighthat.kreate3.ui.screen.details
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -129,7 +129,7 @@ class SongDetailsViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Searching MusicBrainz failed", e)
+                Logger.w(e, TAG) { "Searching MusicBrainz failed" }
                 RecordingSearch(title, artist, emptyList(), failure(e))
             }
             _search.update { if (it == null) null else result }
@@ -156,7 +156,7 @@ class SongDetailsViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Fetching from MusicBrainz failed", e)
+                Logger.w(e, TAG) { "Fetching from MusicBrainz failed" }
                 SongDetailsState.Failed(failure(e))
             }
         }

@@ -70,6 +70,7 @@ internal class DataStorePreferenceStorage(
             val dataStore = createPreferencesDataStore(
                 storeScope,
                 PROFILE_STEPS,
+                name = "profile preferences",
                 replaceDamaged = {
                     onDamaged()
                     emptyPreferences()

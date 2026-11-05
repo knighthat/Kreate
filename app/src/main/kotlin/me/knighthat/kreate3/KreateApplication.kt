@@ -41,6 +41,9 @@ import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
 import me.knighthat.kreate3.download.downloadModule
+import me.knighthat.kreate3.logging.AppLog
+import me.knighthat.kreate3.logging.CrashHandler
+import me.knighthat.kreate3.logging.KermitCoilLogger
 import me.knighthat.kreate3.lyrics.LyricsSource
 import me.knighthat.kreate3.lyrics.lyricsModule
 import me.knighthat.kreate3.musicbrainz.MusicBrainz
@@ -109,6 +112,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
     @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
+            // Detail in debug builds, a line per problem in release ones
+            .logger(KermitCoilLogger(detailed = BuildConfig.DEBUG))
             .components {
                 // Before the network fetcher, server covers look like any address but need the sign in
                 add(OpenSubsonicCoverFetcher.Factory(get<OpenSubsonicProvider>()))
@@ -156,6 +161,13 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+
+        // The crash screen's process shows that screen and nothing else of the app
+        if (CrashHandler.isCrashProcess()) return
+
+        // First, so what the rest of the startup logs and any crash of it are kept
+        AppLog.install(this)
+        CrashHandler.install(this)
 
         // Before anything opens the files it replaces
         Backup.applyPendingRestore(this)
@@ -218,6 +230,10 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 viewModelModule
             )
         }
+
+        // The level, size and count the user picked, and the crash logs that outlived their time
+        AppLog.follow(get<CoroutineScope>())
+        CrashHandler.deleteExpired(this, get<CoroutineScope>())
 
         // Covers whose file is gone, like after a backup from another device was restored
         get<CoroutineScope>().launch { get<CoverFiles>().forgetMissing(get()) }

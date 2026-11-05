@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.provider.opensubsonic
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -78,7 +78,7 @@ class OpenSubsonicLibrary(
                 throw e
             } catch (e: Exception) {
                 refreshed.remove(server)
-                Log.w(TAG, "Couldn't bring the liked songs of the server up to date", e)
+                Logger.w(e, TAG) { "Couldn't bring the liked songs of the server up to date" }
             }
         }
     }
@@ -104,7 +104,10 @@ class OpenSubsonicLibrary(
     suspend fun react(songId: String, likedAt: (Instant?) -> Instant?) =
         sender.react(songId, likedAt) { before, after ->
             val liked = after.isLike
-            if (before.isLike != liked && syncs()) provider.setStarred(songId, liked)
+            if (before.isLike != liked && syncs()) {
+                Logger.d(tag = TAG) { "Telling the server the star of $songId is $liked" }
+                provider.setStarred(songId, liked)
+            }
         }
 
     /**
@@ -113,10 +116,19 @@ class OpenSubsonicLibrary(
      */
     private suspend fun sync(server: String): Boolean {
         val since = sender.mark()
-        val songs = provider.starredSongs() ?: return false
+        Logger.i(tag = TAG) { "Syncing the starred songs" }
+        val songs = provider.starredSongs()
+        if (songs == null) {
+            Logger.i(tag = TAG) { "No starred songs to sync, the server is off" }
+            return false
+        }
 
         return sender.store(since) {
-            if (provider.serverUrl != server || !syncs()) return@store false
+            if (provider.serverUrl != server || !syncs()) {
+                Logger.i(tag = TAG) { "The sync was dropped, the server or the setting changed" }
+                return@store false
+            }
+            Logger.i(tag = TAG) { "Storing ${songs.size} starred songs" }
             repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
             true
         }

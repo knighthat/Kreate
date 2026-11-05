@@ -17,7 +17,7 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import com.metrolist.innertubex.InnerTubeHttpException
 import com.metrolist.innertubex.InnerTubeLogLevel
 import com.metrolist.innertubex.InnerTubeLogger
@@ -127,18 +127,41 @@ internal class YouTubeStreams(
         } catch (e: CancellationException) {
             throw e
         } catch (e: StreamResolveException) {
+            Logger.w(
+                e,
+                TAG
+            ) { "No stream for $videoId, reason ${e.reason}, left out ${refused.size} clients" }
             if (e.reason == StreamResolveException.Reason.NETWORK)
                 throw YouTubeException("Couldn't reach YouTube", cause = e)
             return null
         } catch (e: InnerTubeHttpException) {
+            Logger.w(
+                e,
+                TAG
+            ) { "YouTube answered ${e.status} when asked for the stream of $videoId" }
             throw YouTubeException("YouTube answered ${e.status}", e.status.value, e)
         } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't find what to play for $videoId" }
             throw YouTubeException("Couldn't find what to play on YouTube", cause = e)
         } catch (e: UnsatisfiedLinkError) {
             // QuickJS, which deciphers addresses, isn't built for every device
+            Logger.e(e, TAG) { "The library to decipher addresses isn't available on this device" }
             throw YouTubeException("Couldn't decipher what to play on YouTube", cause = e)
         }
-        return extracted?.toYouTubeStream()
+        val stream = extracted?.toYouTubeStream()
+        // Never the address or the headers: they carry tokens
+        if (stream == null) {
+            Logger.w(tag = TAG) {
+                "Nothing playable for $videoId (session: $inSession, found: ${extracted != null})"
+            }
+        } else {
+            Logger.d(tag = TAG) {
+                "Stream for $videoId: client ${stream.client}, itag ${stream.itag}, " +
+                        "${stream.mimeType}, ${stream.bitrate} bps, ${stream.contentLength} bytes, " +
+                        "session: $inSession, left out: ${refused.joinToString()}"
+            }
+        }
+        return stream
     }
 
     private companion object {
@@ -165,8 +188,8 @@ internal class YouTubeStreams(
             val details = event.details.takeIf { it.isNotEmpty() }?.let { " $it" }.orEmpty()
             val message = event.message + details
             when (event.level) {
-                InnerTubeLogLevel.WARN -> Log.w(TAG, message)
-                InnerTubeLogLevel.ERROR -> Log.e(TAG, message)
+                InnerTubeLogLevel.WARN -> Logger.w(tag = TAG) { message }
+                InnerTubeLogLevel.ERROR -> Logger.e(tag = TAG) { message }
                 else -> Unit
             }
         }

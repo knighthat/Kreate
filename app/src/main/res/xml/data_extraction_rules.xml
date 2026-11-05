@@ -33,6 +33,10 @@
         <exclude
             domain="database"
             path="exoplayer_internal.db-journal" />
+        <!-- Crash logs, in the app's folder of external storage (CrashHandler) -->
+        <exclude
+            domain="external"
+            path="crashlogs" />
     </cloud-backup>
     <device-transfer>
         <!-- Index of the song caches (SongCaches), the songs are in folders never backed up -->
@@ -42,5 +46,9 @@
         <exclude
             domain="database"
             path="exoplayer_internal.db-journal" />
+        <!-- Crash logs, in the app's folder of external storage (CrashHandler) -->
+        <exclude
+            domain="external"
+            path="crashlogs" />
     </device-transfer>
 </data-extraction-rules>

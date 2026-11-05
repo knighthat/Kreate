@@ -17,7 +17,7 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -80,7 +80,7 @@ class YouTubeLibrary(
                 throw e
             } catch (e: Exception) {
                 refreshed.remove(session)
-                Log.w(TAG, "Couldn't bring the liked songs of YouTube up to date", e)
+                Logger.w(e, TAG) { "Couldn't bring the liked songs of YouTube up to date" }
             }
         }
     }
@@ -106,8 +106,10 @@ class YouTubeLibrary(
     suspend fun react(songId: String, likedAt: (Instant?) -> Instant?) =
         sender.react(songId, likedAt) { before, after ->
             val status = after.likeStatus
-            if (before.likeStatus != status && syncs() && provider.isSignedIn())
+            if (before.likeStatus != status && syncs() && provider.isSignedIn()) {
+                Logger.d(tag = TAG) { "Telling YouTube the reaction to $songId is $status" }
                 provider.rate(songId, status)
+            }
         }
 
     /**
@@ -116,10 +118,22 @@ class YouTubeLibrary(
      */
     private suspend fun sync(session: String): Boolean {
         val since = sender.mark()
-        val liked = provider.likedSongs() ?: return false
+        Logger.i(tag = TAG) { "Syncing the liked songs" }
+        val liked = provider.likedSongs()
+        if (liked == null) {
+            Logger.i(tag = TAG) { "No liked songs to sync, nobody is signed in" }
+            return false
+        }
 
         return sender.store(since) {
-            if (provider.sessionId() != session || !syncs()) return@store false
+            if (provider.sessionId() != session || !syncs()) {
+                Logger.i(tag = TAG) { "The sync was dropped, the session or the setting changed" }
+                return@store false
+            }
+            Logger.i(tag = TAG) {
+                "Storing ${liked.items.size} liked songs, " +
+                        if (liked.continuation == null) "the whole list" else "a part of the list"
+            }
             // More are liked than were fetched, the likes not fetched are left as they are then
             repository.syncLikedSongs(
                 Origin.YOUTUBE,

@@ -43,7 +43,8 @@ class SchemaMigrationTest {
                 ran += step
                 it[name] = it[name].orEmpty() + step
             }
-        }
+        },
+        "test",
     )
 
     @Test
@@ -97,7 +98,7 @@ class SchemaMigrationTest {
             songs to false, albums to true, artists to false, playlists to false, name to "kept",
         )
 
-        val migrated = SchemaMigration(PROFILE_STEPS.take(1)).migrate(old)
+        val migrated = SchemaMigration(PROFILE_STEPS.take(1), "test").migrate(old)
 
         // Off stays off, on falls back to the default of the mode
         assertFalse(migrated.contains(albums))
@@ -110,7 +111,7 @@ class SchemaMigrationTest {
 
     @Test
     fun withoutStepsAFileIsOnlyStamped() = runBlocking {
-        val migrated = SchemaMigration(emptyList()).migrate(preferencesOf(name to "kept"))
+        val migrated = SchemaMigration(emptyList(), "test").migrate(preferencesOf(name to "kept"))
 
         assertEquals(0, migrated[version])
         assertEquals("kept", migrated[name])

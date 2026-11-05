@@ -19,9 +19,9 @@
 package me.knighthat.kreate3.backup
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.core.content.pm.PackageInfoCompat
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -89,6 +89,7 @@ class Backup(
      * Writes a backup to [output] and closes it.
      */
     suspend fun export(output: OutputStream) = withContext(Dispatchers.IO) {
+        Logger.i(tag = TAG) { "Exporting a backup" }
         val snapshot = File(context.cacheDir, "backup_$DATABASE_ENTRY")
         try {
             database.export(snapshot)
@@ -100,6 +101,10 @@ class Backup(
                 zip.putFile(DATABASE_ENTRY, snapshot)
                 preferences.files().forEach { (path, file) -> zip.putFile(path, file) }
             }
+            Logger.i(tag = TAG) { "The backup was exported" }
+        } catch (e: Exception) {
+            Logger.e(e, TAG) { "Exporting the backup failed" }
+            throw e
         } finally {
             snapshot.delete()
         }
@@ -113,12 +118,15 @@ class Backup(
      */
     suspend fun stage(input: InputStream) = withContext(Dispatchers.IO) {
         val rollback = File(context.cacheDir, ROLLBACK_FILE)
+        Logger.i(tag = TAG) { "Staging a backup to restore" }
         try {
             keep(context) { partial ->
                 unpack(input, partial, preferences)
                 export(rollback.outputStream())
             }
+            Logger.i(tag = TAG) { "The backup is staged, it is restored on the next start" }
         } catch (e: Exception) {
+            Logger.w(e, TAG) { "Staging the backup failed" }
             rollback.delete()
             throw e
         }
@@ -172,12 +180,14 @@ class Backup(
                 return
             }
 
+            Logger.i(tag = TAG) { "Restoring the staged backup" }
             try {
                 DatabaseBackup.restore(context, File(pending, DATABASE_ENTRY))
                 PreferencesBackup(context).restore(pending)
                 pending.deleteRecursively()
+                Logger.i(tag = TAG) { "The backup was restored" }
             } catch (e: Exception) {
-                Log.e(TAG, "Restoring the backup failed", e)
+                Logger.e(e, TAG) { "Restoring the backup failed" }
 
                 // Deleted first, so a failure here can't restart the app into the same failure
                 pending.deleteRecursively()
@@ -186,7 +196,7 @@ class Backup(
                         val preferences = PreferencesBackup(context)
                         keep(context) { unpack(rollback.inputStream(), it, preferences) }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Keeping the roll back failed", e)
+                        Logger.e(e, TAG) { "Keeping the roll back failed" }
                     }
             } finally {
                 rollback.delete()

@@ -22,9 +22,9 @@ import android.content.ContentUris
 import android.content.Context
 import android.os.Process
 import android.provider.MediaStore
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +39,7 @@ import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.logging.logged
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.utils.hasAudioPermission
@@ -65,9 +66,11 @@ class LoudnessWorker(
     private val notifications: LocalScanNotifications by inject()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result = logged(TAG) { work() }
+
+    private suspend fun work(): Result {
         if (!applicationContext.hasAudioPermission()) {
-            Log.i(TAG, "Skipped, the audio permission isn't granted")
+            Logger.i(tag = TAG) { "Skipped, the audio permission isn't granted" }
             return Result.success()
         }
 
@@ -110,7 +113,7 @@ class LoudnessWorker(
             decoding.close()
         }
 
-        Log.i(TAG, "Measured ${done.size} songs, ${failed.size} couldn't be measured")
+        Logger.i(tag = TAG) { "Measured ${done.size} songs, ${failed.size} couldn't be measured" }
         // Nothing to tell when every song was measured already
         if (done.isNotEmpty() || failed.isNotEmpty())
             notifications.measured(done.size, done.size + failed.size, failed.map { nameOf(it) })
@@ -147,7 +150,7 @@ class LoudnessWorker(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't measure song $songId", e)
+            Logger.w(e, TAG) { "Couldn't measure song $songId" }
             null
         }
     }

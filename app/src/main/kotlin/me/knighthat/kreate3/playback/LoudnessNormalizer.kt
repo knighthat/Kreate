@@ -19,13 +19,13 @@
 package me.knighthat.kreate3.playback
 
 import android.media.audiofx.LoudnessEnhancer
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
@@ -172,10 +172,10 @@ class LoudnessNormalizer(
                 // The target gain is in millibels, hundredths of a dB
                 if (db > 0f) it.setTargetGain((db * 100).roundToInt())
             } catch (e: RuntimeException) {
-                Log.w(TAG, "Couldn't set the boost", e)
+                Logger.w(e, TAG) { "Couldn't set the boost" }
             }
         }
-        Log.d(TAG, "Adjusting the volume by $db dB")
+        Logger.d(tag = TAG) { "Adjusting the volume by $db dB" }
     }
 
     /** The effect belongs to an audio session, it has to follow the player's. */
@@ -188,7 +188,7 @@ class LoudnessNormalizer(
             LoudnessEnhancer(audioSessionId)
         } catch (e: RuntimeException) {
             // Not every device has the effect, a cut still works
-            Log.w(TAG, "No loudness enhancer on this device", e)
+            Logger.w(e, TAG) { "No loudness enhancer on this device" }
             null
         }
         adjust(adjustmentDb)

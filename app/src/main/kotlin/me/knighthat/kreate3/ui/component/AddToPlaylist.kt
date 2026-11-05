@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3.ui.component
 
-import android.util.Log
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -42,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -99,7 +99,7 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't take ${item.mediaId} back out of $playlist", e)
+                Logger.w(e, TAG) { "Couldn't take ${item.mediaId} back out of $playlist" }
             }
         }
     }
@@ -127,7 +127,7 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't add ${item.mediaId} to $playlist", e)
+            Logger.w(e, TAG) { "Couldn't add ${item.mediaId} to $playlist" }
             Message(resources.getString(R.string.snackbar_couldnt_add_to_playlist, playlist))
         }
         notifier.post(message)

@@ -54,6 +54,7 @@ dependencies {
     api(project(":model"))
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.kermit)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.sqlite.bundled)

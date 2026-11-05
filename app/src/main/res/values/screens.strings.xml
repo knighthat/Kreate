@@ -159,4 +159,6 @@
     <string name="screen_player_status_timer_on_hold">On hold, %1$s left</string>
     <!-- %1$s is the time left, e.g. 4:32. "Pauses" is a verb: the sleep timer will pause the music after that time -->
     <string name="screen_player_status_timer_running">Pauses in %1$s</string>
+    <string name="screen_crash_hint">Something went wrong. Share the log below when you report it.</string>
+    <string name="screen_crash_status_no_log">The crash log could not be read.</string>
 </resources>

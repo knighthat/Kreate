@@ -18,9 +18,9 @@
 package me.knighthat.kreate3.ui.screen.settings.network.youtube
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -205,7 +205,7 @@ class YouTubeAccountViewModel(
         try {
             provider.channels().orEmpty()
         } catch (e: YouTubeException) {
-            Log.w(TAG, "Couldn't read the channels of the account", e)
+            Logger.w(e, TAG) { "Couldn't read the channels of the account" }
             emptyList()
         }
 

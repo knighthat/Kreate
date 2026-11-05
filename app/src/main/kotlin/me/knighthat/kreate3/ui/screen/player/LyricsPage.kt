@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.player
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +64,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -270,7 +270,7 @@ internal suspend fun loadLyrics(
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't look up the lyrics of ${query.songId}", e)
+        Logger.w(e, TAG) { "Couldn't look up the lyrics of ${query.songId}" }
         return LyricsState.Failed
     }
 
@@ -328,7 +328,7 @@ internal fun LyricsPage(
                     throw e
                 } catch (e: Exception) {
                     // Like a song of YouTube that isn't stored yet, it is fetched again next time
-                    Log.w(TAG, "Couldn't store the lyrics of ${lyrics.songId}", e)
+                    Logger.w(e, TAG) { "Couldn't store the lyrics of ${lyrics.songId}" }
                 }
             }
         }

@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,7 +93,7 @@ class SongFormatRecorder(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't store the format of ${song.id}", e)
+            Logger.w(e, TAG) { "Couldn't store the format of ${song.id}" }
         }
     }
 
@@ -110,7 +110,7 @@ class SongFormatRecorder(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't store the format of ${song.id}", e)
+            Logger.w(e, TAG) { "Couldn't store the format of ${song.id}" }
         }
     }
 
@@ -126,7 +126,7 @@ class SongFormatRecorder(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't store the format of $songId", e)
+            Logger.w(e, TAG) { "Couldn't store the format of $songId" }
         }
     }
 

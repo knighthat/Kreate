@@ -18,7 +18,7 @@
 package me.knighthat.kreate3.playback
 
 import android.content.Context
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.model.Origin
@@ -97,7 +97,7 @@ class CacheCopies internal constructor(
             copies.keys.filter { it < quality }.forEach { drop(song.copy(quality = it)) }
         } catch (e: Exception) {
             // Kept for now, dropped next time
-            Log.w(TAG, "Couldn't drop the copies of ${song.id} below $quality", e)
+            Logger.w(e, TAG) { "Couldn't drop the copies of ${song.id} below $quality" }
         }
     }
 

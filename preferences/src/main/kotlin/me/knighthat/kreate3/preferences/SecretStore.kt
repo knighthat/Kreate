@@ -202,6 +202,7 @@ internal class SecretStore(
             val dataStore = createPreferencesDataStore(
                 storeScope,
                 SECRET_STEPS,
+                name = "secrets",
                 replaceDamaged = {
                     profiles.reports.report(
                         SECRETS,

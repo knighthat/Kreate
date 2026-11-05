@@ -37,6 +37,7 @@ robolectric = "4.17"
 reorderable = "3.1.0"
 vico = "3.3.1"
 aboutlibraries = "15.3.0"
+kermit = "2.2.0"
 
 [libraries]
 # Core
@@ -111,6 +112,9 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+
+# Logging
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 # Tooling
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }

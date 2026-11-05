@@ -19,8 +19,8 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.res.Resources
-import android.util.Log
 import androidx.annotation.StringRes
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +86,7 @@ class SourceToggle(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Log.w(TAG, "The source didn't take the change", e)
+                    Logger.w(e, TAG) { "The source didn't take the change" }
                     if (taps.get() == tap) _isOn.compareAndSet(on, !on)
                     notifier.post(Message(failure(e, on), MessageDuration.LONG))
                 }

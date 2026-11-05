@@ -26,9 +26,9 @@ import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -69,7 +69,7 @@ class OpenedFiles(
         resolver.openFileDescriptor(uri, "r")?.use { true } ?: false
     } catch (e: Exception) {
         // SecurityException without access, FileNotFoundException for a file that is gone
-        Log.w(TAG, "Can't read $uri", e)
+        Logger.w(e, TAG) { "Can't read $uri" }
         false
     }
 
@@ -81,7 +81,7 @@ class OpenedFiles(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't find $uri in the media index", e)
+            Logger.w(e, TAG) { "Couldn't find $uri in the media index" }
             null
         } ?: return null
         return songs.find(id.toString()).first()
@@ -194,7 +194,7 @@ class OpenedFiles(
                 .setArtworkUri(retriever.embeddedPicture?.let { coverOf(uri, it) })
         } catch (e: Exception) {
             // Not readable now, the player says why when it tries
-            Log.w(TAG, "Couldn't read the tags of $uri", e)
+            Logger.w(e, TAG) { "Couldn't read the tags of $uri" }
         } finally {
             retriever.release()
         }
@@ -229,7 +229,7 @@ class OpenedFiles(
             ?.forEach { it.delete() }
         Uri.fromFile(file)
     } catch (e: IOException) {
-        Log.w(TAG, "Couldn't keep the cover of $uri", e)
+        Logger.w(e, TAG) { "Couldn't keep the cover of $uri" }
         null
     }
 

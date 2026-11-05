@@ -25,7 +25,6 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Parcel
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -39,6 +38,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Requirements
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -250,6 +250,14 @@ class SongDownloads(
                 finalException: Exception?,
             ) {
                 setDownload(download.request.id, download.state)
+                Logger.i(tag = TAG) {
+                    "Download ${download.request.id} is ${stateName(download.state)}, " +
+                            "${download.bytesDownloaded} bytes, ${download.percentDownloaded.toInt()}%" +
+                            if (download.failureReason != Download.FAILURE_REASON_NONE)
+                                ", failure reason ${download.failureReason}"
+                            else
+                                ""
+                }
                 when (download.state) {
                     // Tried again, like from its Retry button
                     Download.STATE_QUEUED -> notifications.retrying(download.request.id)
@@ -269,7 +277,7 @@ class SongDownloads(
                     }
 
                     Download.STATE_FAILED -> {
-                        Log.w(TAG, "Couldn't download ${download.request.id}", finalException)
+                        Logger.w(finalException, TAG) { "Couldn't download ${download.request.id}" }
                         finalException?.failureRes()?.let {
                             synchronized(this@SongDownloads) { failures[download.request.id] = it }
                         }
@@ -279,6 +287,7 @@ class SongDownloads(
             }
 
             override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {
+                Logger.i(tag = TAG) { "Download ${download.request.id} was removed" }
                 setDownload(download.request.id, null)
                 notifications.removed(download.request.id)
                 download.request.songItem?.let {
@@ -293,6 +302,7 @@ class SongDownloads(
                 downloadManager: DownloadManager,
                 downloadsPaused: Boolean,
             ) {
+                Logger.i(tag = TAG) { "Downloads are ${if (downloadsPaused) "paused" else "resumed"}" }
                 // The service stops while nothing runs, its songs show that they wait
                 if (downloadsPaused)
                     notifications.downloading(downloadManager.currentDownloads, 0, true)
@@ -380,7 +390,7 @@ class SongDownloads(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't forget the download of $id", e)
+            Logger.w(e, TAG) { "Couldn't forget the download of $id" }
         }
         withContext(Dispatchers.Main) {
             DownloadService.sendRemoveDownload(context, SongDownloadService::class.java, id, false)
@@ -392,6 +402,7 @@ class SongDownloads(
      * no file anymore are forgotten. [known] are the downloads there are.
      */
     private suspend fun sweep(known: Set<String>) = try {
+        Logger.d(tag = TAG) { "Sweeping ${known.size} known downloads" }
         val wanted = userSongs.downloadedByAnyone()
         val songIds = known.mapNotNull { QueuedSong.ofCacheKey(it)?.id }.toSet()
         withContext(Dispatchers.Main) {
@@ -402,7 +413,7 @@ class SongDownloads(
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't sweep the downloads", e)
+        Logger.w(e, TAG) { "Couldn't sweep the downloads" }
     }
 
     private fun resumeService() {
@@ -410,7 +421,7 @@ class SongDownloads(
             DownloadService.sendResumeDownloads(context, SongDownloadService::class.java, true)
         } catch (e: IllegalStateException) {
             // Not allowed to start from the background, they go on with the next download
-            Log.w(TAG, "Couldn't resume the downloads", e)
+            Logger.w(e, TAG) { "Couldn't resume the downloads" }
         }
     }
 
@@ -669,6 +680,18 @@ class SongDownloads(
     companion object {
         private const val TAG = "SongDownloads"
 
+        /** The state of a Media3 download as the log says it. */
+        private fun stateName(state: Int) = when (state) {
+            Download.STATE_QUEUED -> "queued"
+            Download.STATE_STOPPED -> "stopped"
+            Download.STATE_DOWNLOADING -> "downloading"
+            Download.STATE_COMPLETED -> "completed"
+            Download.STATE_FAILED -> "failed"
+            Download.STATE_REMOVING -> "being removed"
+            Download.STATE_RESTARTING -> "restarting"
+            else -> "in state $state"
+        }
+
         /** How often [overview] looks again while a download runs or waits. */
         private const val OVERVIEW_INTERVAL = 1000L
 
@@ -725,7 +748,7 @@ internal val DownloadRequest.songItem: MediaItem?
             parcel.readBundle(MediaItem::class.java.classLoader)
                 ?.let { MediaItem.fromBundle(it, version) }
         } catch (e: RuntimeException) {
-            Log.w("SongDownloads", "Couldn't read the song of download $id", e)
+            Logger.w(e, "SongDownloads") { "Couldn't read the song of download $id" }
             null
         } finally {
             parcel.recycle()

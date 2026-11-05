@@ -206,4 +206,8 @@
     <string name="snackbar_couldnt_add_to_playlist">Couldn\'t add to %1$s</string>
     <string name="snackbar_exit_swipe">Swipe again to exit</string>
     <string name="snackbar_exit_press">Press again to exit</string>
+    <string name="snackbar_log_copied">Log copied</string>
+    <string name="snackbar_log_saved">Log saved</string>
+    <string name="snackbar_log_save_failed">Couldn\'t save the log</string>
+    <string name="snackbar_log_empty">There is no log yet</string>
 </resources>

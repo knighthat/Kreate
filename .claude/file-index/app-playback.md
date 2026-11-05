@@ -9,6 +9,8 @@ playback/
 - `PlaybackErrors.kt` — `PlaybackException.userMessage(item)`, `cantPlayMessage(item, reason)`;
   `PlaybackRecovery` posts them to `Notifier` (dismissable); `togglePlay` re-prepares after a
   failure.
+- `PlaybackLogger.kt` — `AnalyticsListener` on the player: states, song changes, load errors,
+  underruns, errors, never addresses with a query or headers.
 - `PlaybackRecovery.kt` — service-side listener: on a player error, or loading longer than
   `PLAYBACK_STALL_SECONDS` while playWhenReady (stall → `player.stop()`), follows
   `PLAYBACK_FAILURE_ACTION`: retry once per song (`prepare()`, reset on transition), skip to the

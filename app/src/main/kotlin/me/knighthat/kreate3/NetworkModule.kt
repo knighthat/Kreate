@@ -22,12 +22,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.ANDROID
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.logging.appLogging
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.HttpClientFactory
 import me.knighthat.kreate3.provider.networkProxy
@@ -44,7 +42,7 @@ import java.util.concurrent.TimeUnit
  *   with `client.newBuilder()`, it shares the pool. It has no HTTP cache on purpose.
  * - [Json]: the one configuration for reading and writing JSON.
  * - [HttpClientFactory]: Ktor on top of an [OkHttpClient], with JSON bodies, retries on server
- *   errors and a one line log per request. Compression needs no plugin, OkHttp handles gzip.
+ *   errors and the log of each request, see [appLogging]. Compression needs no plugin, OkHttp handles gzip.
  *   Sources make theirs with it on the client they derive, like one going through a proxy.
  * - [HttpClient]: the factory's client, for what isn't a source, on a variant of that same
  *   [OkHttpClient] going through the proxy of [Preferences.NETWORK_PROXY_ENABLED]. Sources go
@@ -84,11 +82,9 @@ val networkModule = module {
                     exponentialDelay()
                 }
 
-                // Url and status only, no headers or bodies, they may hold personal data
-                install(Logging) {
-                    logger = Logger.ANDROID
-                    level = LogLevel.INFO
-                }
+                // Debug builds log headers too, release builds only the address and the status. Never
+                // a body or a header that identifies the user, see appLogging
+                install(Logging) { appLogging(debug = BuildConfig.DEBUG) }
             }
         }
     }

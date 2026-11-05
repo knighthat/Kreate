@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.lyrics
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +51,7 @@ suspend fun parseLyrics(text: String): LyricsContent = withContext(Dispatchers.D
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't read the lyrics, they are shown as they are", e)
+        Logger.w(e, TAG) { "Couldn't read the lyrics, they are shown as they are" }
         PlainLyrics(trimmed)
     }
 }

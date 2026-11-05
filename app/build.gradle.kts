@@ -287,6 +287,7 @@ dependencies {
     // Koin
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
+    implementation(libs.kermit)
     implementation(libs.koin.androidx.compose)
 
     // Tooling

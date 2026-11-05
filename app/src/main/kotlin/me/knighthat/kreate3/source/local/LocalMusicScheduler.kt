@@ -27,8 +27,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.await
-import me.knighthat.kreate3.source.local.LocalMusicScheduler.scanNow
-import me.knighthat.kreate3.source.local.LocalMusicScheduler.schedule
+import co.touchlab.kermit.Logger
 import java.util.concurrent.TimeUnit
 
 /**
@@ -36,6 +35,7 @@ import java.util.concurrent.TimeUnit
  */
 object LocalMusicScheduler {
 
+    private const val TAG = "LocalMusicScheduler"
     private const val PERIODIC_NAME = "local_music_scan"
     private const val ONCE_NAME = "local_music_scan_now"
     private const val LOUDNESS_NAME = "local_music_loudness"
@@ -50,6 +50,14 @@ object LocalMusicScheduler {
      * work more often than every 15 minutes, smaller values are raised to that.
      */
     fun schedule(context: Context, intervalMinutes: Int) {
+        Logger.i(tag = TAG) {
+            "Scheduling the local scan every ${
+                maxOf(
+                    intervalMinutes.toLong(),
+                    MIN_INTERVAL_MINUTES
+                )
+            } minutes"
+        }
         val request = PeriodicWorkRequestBuilder<LocalMusicWorker>(
             maxOf(intervalMinutes.toLong(), MIN_INTERVAL_MINUTES),
             TimeUnit.MINUTES,
@@ -65,6 +73,7 @@ object LocalMusicScheduler {
      * Does nothing while an earlier extra scan is still waiting or running.
      */
     fun scanNow(context: Context) {
+        Logger.i(tag = TAG) { "Asking for a local scan now" }
         WorkManager.getInstance(context)
             .enqueueUniqueWork(
                 ONCE_NAME,
@@ -82,6 +91,7 @@ object LocalMusicScheduler {
      * finishing may still land, on the user it started with.
      */
     suspend fun cancelScans(context: Context) {
+        Logger.i(tag = TAG) { "Cancelling the local scans" }
         val workManager = WorkManager.getInstance(context)
         workManager.cancelUniqueWork(PERIODIC_NAME).await()
         workManager.cancelUniqueWork(ONCE_NAME).await()
@@ -93,6 +103,7 @@ object LocalMusicScheduler {
      * picks up the new songs too.
      */
     fun measureLoudness(context: Context) {
+        Logger.i(tag = TAG) { "Asking to measure the loudness of local songs" }
         val request = OneTimeWorkRequestBuilder<LoudnessWorker>()
             .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).build())
             .build()

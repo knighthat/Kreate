@@ -19,7 +19,7 @@
 package me.knighthat.kreate3.provider.opensubsonic
 
 import android.net.Uri
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -86,7 +86,8 @@ internal fun htmlToText(html: String): String? =
 /** When the item was starred, `null` when it isn't or the date can't be read. */
 /** The item's id, `null` (logged) when the server sent none: the item is then left out. */
 private fun JsonObject.idOrSkip(kind: String): String? =
-    string("id") ?: null.also { Log.w(TAG, "Left out a $kind the server sent without an id") }
+    string("id")
+        ?: null.also { Logger.w(tag = TAG) { "Left out a $kind the server sent without an id" } }
 
 private fun JsonObject.starred(): Instant? =
     string("starred")?.let { runCatching { Instant.parse(it) }.getOrNull() }

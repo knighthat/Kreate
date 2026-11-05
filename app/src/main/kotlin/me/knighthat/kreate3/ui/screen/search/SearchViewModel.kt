@@ -18,13 +18,13 @@
 
 package me.knighthat.kreate3.ui.screen.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -162,7 +162,7 @@ class SearchViewModel(
                     .distinctBy { (tab, item) -> tab to item.mediaId },
             )
         } catch (e: YouTubeException) {
-            Log.w(TAG, "Couldn't get suggestions from YouTube", e)
+            Logger.w(e, TAG) { "Couldn't get suggestions from YouTube" }
             LiveSuggestions.EMPTY
         }
 
@@ -170,7 +170,7 @@ class SearchViewModel(
         try {
             LiveSuggestions(queries = emptyList(), items = openSubsonic.suggestions(query))
         } catch (e: ServerException) {
-            Log.w(TAG, "Couldn't get suggestions from the server", e)
+            Logger.w(e, TAG) { "Couldn't get suggestions from the server" }
             LiveSuggestions.EMPTY
         }
 

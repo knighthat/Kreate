@@ -73,4 +73,9 @@
     <string name="constant_lyrics_sync_word">Word by word</string>
     <string name="constant_lyrics_sync_line">Line by line</string>
     <string name="constant_lyrics_sync_none">Plain text</string>
+    <string name="constant_log_level_verbose">Verbose</string>
+    <string name="constant_log_level_debug">Debug</string>
+    <string name="constant_log_level_info">Info</string>
+    <string name="constant_log_level_warning">Warning</string>
+    <string name="constant_log_level_error">Error</string>
 </resources>

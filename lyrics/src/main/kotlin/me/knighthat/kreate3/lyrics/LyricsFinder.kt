@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.lyrics
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
@@ -68,7 +68,7 @@ class LyricsFinder(val sources: List<LyricsSource>) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "${source.provider} couldn't look up ${query.songId}", e)
+                Logger.w(e, TAG) { "${source.provider} couldn't look up ${query.songId}" }
                 failure?.addSuppressed(e) ?: run { failure = e }
                 null
             } ?: continue

@@ -24,6 +24,7 @@ import me.knighthat.kreate3.AppIcon
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
+import me.knighthat.kreate3.constant.LogLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.QueueAction
@@ -130,6 +131,16 @@ val QueueAction.labelRes: Int
         QueueAction.SHUFFLE -> R.string.constant_queue_action_shuffle
         QueueAction.ENQUEUE -> R.string.constant_queue_action_enqueue
         QueueAction.PLAY_NEXT -> R.string.constant_queue_action_play_next
+    }
+
+@get:StringRes
+val LogLevel.labelRes: Int
+    get() = when (this) {
+        LogLevel.VERBOSE -> R.string.constant_log_level_verbose
+        LogLevel.DEBUG -> R.string.constant_log_level_debug
+        LogLevel.INFO -> R.string.constant_log_level_info
+        LogLevel.WARNING -> R.string.constant_log_level_warning
+        LogLevel.ERROR -> R.string.constant_log_level_error
     }
 
 @get:StringRes

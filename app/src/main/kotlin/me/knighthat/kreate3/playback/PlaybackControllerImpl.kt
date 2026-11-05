@@ -23,7 +23,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -32,6 +31,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -215,7 +215,7 @@ class PlaybackControllerImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't find songs like ${seed.mediaId}", e)
+                Logger.w(e, TAG) { "Couldn't find songs like ${seed.mediaId}" }
                 return@launch
             }
             run("queue ${similar.size} songs like ${seed.mediaId}") { controller ->
@@ -315,7 +315,7 @@ class PlaybackControllerImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e(TAG, "Couldn't $what", e)
+                Logger.e(e, TAG) { "Couldn't $what" }
             }
         }
     }
@@ -387,7 +387,7 @@ class PlaybackControllerImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e(TAG, "Couldn't connect", e)
+                Logger.e(e, TAG) { "Couldn't connect" }
             }
         }
         return future

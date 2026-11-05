@@ -38,6 +38,14 @@ Root
   restarts the app there); that file also holds the last shown tag.
 - `AppIcon.kt` — launcher icon choice (BLACK default, GRADIENT): enables one manifest
   `activity-alias` of `KreateActivity`, state lives in PackageManager, not Preferences.
+- logging/ — `AppLog.kt` (Kermit setup: Logcat + `FileLogWriter`, rolls `kreate.log` over in
+  `externalCacheDir/logs`, queues until the level is known, `follow` applies the `GlobalPreferences`
+  log settings), `LogFiles.kt` (folders, tail, zip), `LogActions.kt` (Copy/Export of the settings),
+  `Redaction.kt` (`redact` for every written text, `isSecretHeader`), `CrashHandler.kt` (uncaught
+  handler, crash log in `getExternalFilesDir/crashlogs`, `deleteExpired`), `CrashActivity.kt`
+  (`:crash` process screen: Copy/Export/Close/Restart, no Koin), `NetworkLogger.kt` (Ktor
+  `Logging`), `CoilLogger.kt` (Coil `Logger`), `WorkerLogging.kt` (`logged` for workers).
+  `.claude/docs/logging.md`.
 - `ProfileUserSync.kt` — keeps DB `user` table in step with `ProfileManager` ids; implements
   `ActiveUser`.
 - `ProfileSwitcher.kt` — switch/delete profile from `ProfilesActivity` (global scope):

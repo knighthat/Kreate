@@ -19,13 +19,14 @@
 package me.knighthat.kreate3.source.local
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.LocalCatalogRepository
+import me.knighthat.kreate3.logging.logged
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
@@ -45,9 +46,11 @@ class LocalMusicWorker(
     private val catalog: LocalCatalogRepository by inject()
     private val notifications: LocalScanNotifications by inject()
 
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result = logged(TAG) { work() }
+
+    private suspend fun work(): Result {
         if (!applicationContext.hasAudioPermission()) {
-            Log.i(TAG, "Skipped, the audio permission isn't granted")
+            Logger.i(tag = TAG) { "Skipped, the audio permission isn't granted" }
             return Result.success()
         }
 
@@ -56,7 +59,7 @@ class LocalMusicWorker(
             val songs = withContext(Dispatchers.IO) {
                 MediaStoreScanner(applicationContext.contentResolver).scan()
             }
-            Log.i(TAG, "Found ${songs.size} songs on the device")
+            Logger.i(tag = TAG) { "Found ${songs.size} songs on the device" }
             catalog.sync(songs)
             notifications.scanned(songs.size)
             LocalMusicScheduler.measureLoudness(applicationContext)
@@ -65,7 +68,7 @@ class LocalMusicWorker(
             notifications.cancelScan()
             throw e
         } catch (e: Exception) {
-            Log.e(TAG, "Scanning local music failed", e)
+            Logger.e(e, TAG) { "Scanning local music failed" }
             notifications.cancelScan()
             Result.retry()
         }

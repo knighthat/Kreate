@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
@@ -42,6 +41,7 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
+import co.touchlab.kermit.Logger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -124,6 +124,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
+        Logger.i(tag = TAG) { "The playback service started" }
 
         setMediaNotificationProvider(
             DefaultMediaNotificationProvider.Builder(this).build().apply {
@@ -146,6 +147,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
         val build = PlayerBuild.now()
         val player = get<KreatePlayer> { parametersOf(build) }
+        player.addAnalyticsListener(PlaybackLogger())
+        Logger.i(tag = TAG) { "Playback session created, keeping played songs: ${build.keepPlayed}" }
         playbackLifecycle.playerMade(build)
         // Before the saved queue would be restored, which is skipped then
         playbackLifecycle.takeCarried()?.applyTo(player)
@@ -414,6 +417,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             controller: MediaSession.ControllerInfo,
             mediaItems: List<MediaItem>,
         ): ListenableFuture<List<MediaItem>> {
+            Logger.d(tag = TAG) { "${controller.packageName} adds ${mediaItems.size} songs" }
             val queued = mediaItems.map {
                 it.queued() ?: return Futures.immediateFailedFuture(
                     IllegalArgumentException("${it.mediaId} has no origin")
@@ -473,6 +477,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             controller: MediaSession.ControllerInfo,
             isForPlayback: Boolean,
         ): ListenableFuture<MediaItemsWithStartPosition> {
+            Logger.i(tag = TAG) {
+                "${controller.packageName} asks to resume, ${if (isForPlayback) "to play" else "to show"}"
+            }
             if (!isForPlayback) return scope.future {
                 val saved = persistentQueue?.saved(currentOnly = true)
                     ?: error("Nothing saved to resume")
@@ -568,7 +575,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "Couldn't list $parentId", e)
+                Logger.w(e, TAG) { "Couldn't list $parentId" }
                 return@future LibraryResult.ofError(SessionError.ERROR_IO)
             }
             if (children == null) return@future LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
@@ -592,6 +599,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
      * Restart of a timer that finished, which may start the service again.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Only the action: a voice request's extras are what the user said
+        Logger.d(tag = TAG) { "Start command ${intent?.action}, flags $flags" }
         DownloadedSongAction.of(intent?.action)?.let { action ->
             val id = intent?.dataString ?: return START_NOT_STICKY
             // Android 16 gives audio focus to an app in the background only while its service
@@ -683,7 +692,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             )
         } catch (e: IllegalStateException) {
             // ForegroundServiceStartNotAllowedException, from Android 12 on
-            Log.w(TAG, "Couldn't go in the foreground", e)
+            Logger.w(e, TAG) { "Couldn't go in the foreground" }
         }
     }
 
@@ -695,12 +704,14 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
      * player doesn't leave a notification behind.
      */
     override fun onTaskRemoved(rootIntent: Intent?) {
+        Logger.i(tag = TAG) { "The app was swiped away from the recents" }
         val player = mediaSession?.player
         if (player == null || !player.playWhenReady || player.mediaItemCount == 0)
             stopSelf()
     }
 
     override fun onDestroy() {
+        Logger.i(tag = TAG) { "The playback service ends" }
         releaseSession()
         playbackLifecycle.detach(this)
         super.onDestroy()

@@ -19,8 +19,8 @@
 package me.knighthat.kreate3.ui.screen.account
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.StringRes
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -69,7 +69,7 @@ internal suspend fun reactToSong(
     } catch (e: YouTubeException) {
         e.youTubeFailure(context.resources, song)
     } catch (e: Exception) {
-        Log.w(TAG, "Couldn't change the reaction to $songId", e)
+        Logger.w(e, TAG) { "Couldn't change the reaction to $songId" }
         context.resources.getString(asked, song)
     }
 }

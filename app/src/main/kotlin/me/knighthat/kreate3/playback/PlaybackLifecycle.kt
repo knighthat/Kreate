@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,7 +31,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import me.knighthat.kreate3.playback.PlaybackLifecycle.Companion.WRITES_TIMEOUT
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -115,7 +114,7 @@ class PlaybackLifecycle(
                 carried = if (carry) service?.player?.let(CarriedQueue::of) else null
                 service?.stop()?.let { writes ->
                     if (withTimeoutOrNull(WRITES_TIMEOUT) { writes.join() } == null) {
-                        Log.w(TAG, "Playback writes took too long, cancelling them")
+                        Logger.w(tag = TAG) { "Playback writes took too long, cancelling them" }
                         writes.cancelAndJoin()
                     }
                 }

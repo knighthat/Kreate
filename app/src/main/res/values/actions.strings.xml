@@ -102,4 +102,6 @@
     <string name="menu_unlike_all">Unlike all</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_export">Export</string>
 </resources>

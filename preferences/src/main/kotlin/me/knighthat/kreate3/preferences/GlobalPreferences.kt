@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import me.knighthat.kreate3.constant.LogLevel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -78,11 +79,42 @@ object GlobalPreferences : KoinComponent {
     val IMAGE_MEMORY_CACHE_PERCENT by lazy { double("image_memory_cache_percent", .15) }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Logging">
+    /**
+     * The least important message written to the log files and to Logcat. The default is
+     * [LogLevel.WARNING]. Applies at once. Crash logs are written whatever this is.
+     */
+    val LOG_LEVEL by lazy { enum("log_level", LogLevel.WARNING) }
+
+    /**
+     * Size, in bytes, the log file grows to before it is rolled over: renamed to an older file
+     * and a new one started. The default is 1 MiB. Read when a message is written.
+     */
+    val LOG_ROLLOVER_SIZE by lazy { long("log_rollover_size", 1024L * 1024) }
+
+    /**
+     * How many rolled over log files are kept besides the one being written, the oldest is
+     * deleted first. The default is 5. Read when the log rolls over.
+     */
+    val LOG_KEEP by lazy { int("log_keep", 5) }
+
+    /**
+     * Days a crash log is kept, older ones are deleted when the app starts. The default is 30.
+     */
+    val CRASH_LOG_RETENTION_DAYS by lazy { int("crash_log_retention_days", 30) }
+    //</editor-fold>
+
     internal val isLoaded: Boolean get() = engine.isLoaded
 
     internal suspend fun awaitLoaded() = engine.awaitLoaded()
 
     internal suspend fun flush() = engine.flush()
+
+    private fun int(name: String, default: Int) =
+        Preference(name, default, codec<Int, Int>({ it }, { it }), engine)
+
+    private inline fun <reified E : Enum<E>> enum(name: String, default: E) =
+        Preference(name, default, enumCodec<E>(), engine)
 
     private fun long(name: String, default: Long) =
         Preference(name, default, codec<Long, Long>({ it }, { it }), engine)

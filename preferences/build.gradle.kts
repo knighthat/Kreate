@@ -31,6 +31,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
+    // Log calls in tests do nothing instead of throwing
+    testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
@@ -38,6 +41,7 @@ dependencies {
     api(project(":model"))
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.kermit)
     implementation(libs.androidx.datastore.preferences.core)
     api(libs.kotlinx.coroutines.core)
 

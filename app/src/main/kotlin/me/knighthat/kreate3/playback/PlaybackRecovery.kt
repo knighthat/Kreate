@@ -19,10 +19,10 @@
 package me.knighthat.kreate3.playback
 
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -74,7 +74,7 @@ class PlaybackRecovery(
 
     override fun onPlayerError(error: PlaybackException) {
         val item = player.currentMediaItem
-        Log.w(TAG, "Couldn't play ${item?.mediaId}", error)
+        Logger.w(error, TAG) { "Couldn't play ${item?.mediaId}" }
         recover(error.userMessage(context, item))
     }
 
@@ -143,7 +143,7 @@ class PlaybackRecovery(
                 }
             }
             val item = player.currentMediaItem
-            Log.w(TAG, "Gave up loading ${item?.mediaId}, nothing loaded for $seconds s")
+            Logger.w(tag = TAG) { "Gave up loading ${item?.mediaId}, nothing loaded for $seconds s" }
             // Stopping changes the state, this job must not be cancelled by it
             stallWatch = null
             // Drops the load, preparing again starts a new one where the song was
@@ -159,14 +159,14 @@ class PlaybackRecovery(
 
         if (action.retries && songId != null && songId != retried) {
             retried = songId
-            Log.i(TAG, "Trying $songId again")
+            Logger.i(tag = TAG) { "Trying $songId again" }
             player.prepare()
             return
         }
 
         if (action.skips && skipsInARow < MAX_SKIPS_IN_A_ROW && player.hasNextMediaItem()) {
             skipsInARow++
-            Log.i(TAG, "Skipping $songId")
+            Logger.i(tag = TAG) { "Skipping $songId" }
             skipping = true
             player.seekToNextMediaItem()
             player.prepare()

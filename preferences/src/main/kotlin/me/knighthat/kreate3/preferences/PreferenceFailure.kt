@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -72,6 +73,9 @@ internal class FailureReports {
     val failures: Flow<PreferenceFailure> = queue.receiveAsFlow()
 
     fun report(store: PreferenceFailure.Store, saving: Boolean, reason: PreferenceFailure.Reason) {
+        Logger.w(tag = "FailureReports") {
+            "${if (saving) "Saving" else "Loading"} the ${store.name.lowercase()} settings failed: $reason"
+        }
         queue.trySend(PreferenceFailure(store, saving, reason))
     }
 

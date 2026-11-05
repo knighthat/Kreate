@@ -322,4 +322,16 @@
     <string name="setting_description_back_up_status_saving">Saving…</string>
     <string name="setting_description_back_up_status_saved">Backup saved</string>
     <string name="setting_description_back_up_status_failed">Couldn\'t save the backup</string>
+    <string name="setting_header_logging">Logging</string>
+    <string name="setting_title_log_level">Log level</string>
+    <string name="setting_title_log_rollover_size">Rollover size</string>
+    <string name="setting_description_log_rollover_size">A new file starts once the current one is this big</string>
+    <string name="setting_title_log_keep">Keep</string>
+    <string name="setting_description_log_keep">Older files kept besides the current one</string>
+    <string name="setting_title_log_export">Export</string>
+    <string name="setting_description_log_export">Save the log files as a zip</string>
+    <string name="setting_title_log_copy">Copy</string>
+    <string name="setting_description_log_copy">Copy the latest part of the log</string>
+    <string name="setting_title_crash_log_retention">Delete crash logs after</string>
+    <string name="setting_description_crash_log_retention">Deleted when the app starts once they are %1$s old</string>
 </resources>

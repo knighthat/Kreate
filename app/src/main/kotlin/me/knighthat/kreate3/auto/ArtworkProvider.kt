@@ -27,9 +27,9 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
@@ -95,7 +95,7 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
                 }
             } catch (e: IOException) {
                 // Auto stopped reading, like when the row scrolled away
-                Log.d(TAG, "Couldn't send $source", e)
+                Logger.d(e, TAG) { "Couldn't send $source" }
             }
         }
         return read

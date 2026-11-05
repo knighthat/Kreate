@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.kermit)
     // Queries name the song by its Origin, answers are timed by LyricsSync and name their LyricsProvider
     api(project(":model"))
     api(libs.kotlinx.coroutines.core)

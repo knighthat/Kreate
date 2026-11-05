@@ -24,6 +24,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import co.touchlab.kermit.Logger
 
 /**
  * Key that stores the schema version of a file, reserved for the storage layer.
@@ -76,7 +77,11 @@ internal val GLOBAL_STEPS: List<SchemaStep> = emptyList()
  * - A file without a version is treated as version 0.
  * - A file newer than the app (after a downgrade) is left untouched.
  */
-internal class SchemaMigration(private val steps: List<SchemaStep>) : DataMigration<Preferences> {
+internal class SchemaMigration(
+    private val steps: List<SchemaStep>,
+    /** Names the file in the log, never its path or a profile's id. */
+    private val name: String,
+) : DataMigration<Preferences> {
 
     private val latest = steps.size
 
@@ -89,12 +94,25 @@ internal class SchemaMigration(private val steps: List<SchemaStep>) : DataMigrat
         val preferences = currentData.toMutablePreferences()
         val stored = preferences[SCHEMA_VERSION] ?: if (preferences.asMap().isEmpty()) latest else 0
 
-        for (version in stored until latest)
-            steps[version].migrate(preferences)
+        if (stored < latest)
+            Logger.w(tag = TAG) { "Migrating $name from version $stored to $latest" }
+        for (version in stored until latest) {
+            try {
+                steps[version].migrate(preferences)
+            } catch (e: Exception) {
+                Logger.e(e, TAG) { "Migrating $name failed at step $version" }
+                throw e
+            }
+        }
         preferences[SCHEMA_VERSION] = latest
 
         return preferences.toPreferences()
     }
 
     override suspend fun cleanUp() = Unit
+
+    private companion object {
+
+        const val TAG = "SchemaMigration"
+    }
 }

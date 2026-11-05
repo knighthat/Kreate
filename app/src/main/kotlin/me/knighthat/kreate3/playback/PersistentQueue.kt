@@ -18,10 +18,10 @@
 
 package me.knighthat.kreate3.playback
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -192,7 +192,7 @@ class PersistentQueue(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Couldn't read the saved queue", e)
+            Logger.w(e, TAG) { "Couldn't read the saved queue" }
             return null
         }
 
@@ -217,7 +217,7 @@ class PersistentQueue(
         if (player.mediaItemCount > 0) return
         // Not prepared, nothing loads until the user plays
         player.setMediaItems(saved.items, saved.start, saved.position)
-        Log.d(TAG, "Restored ${saved.items.size} songs")
+        Logger.d(tag = TAG) { "Restored ${saved.items.size} songs" }
     }
 
     /**
