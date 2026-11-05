@@ -127,6 +127,7 @@ private fun OpenSubsonicAlbumDetailContent(
         },
         origin = Origin.OPEN_SUBSONIC,
         isExplicit = album?.isExplicit == true,
+        releaseType = album?.releaseType,
         description = album?.description,
         onBack = onBack,
         onOpenArtist = artist?.let { { onOpenArtist(it) } },

@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -42,6 +43,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
  * @property songs in the album's order, each with its cover for the queue and the player
  * @property description the server's notes about the album, `null` when it has none
  * @property isExplicit whether the server marks the album explicit
+ * @property releaseType the kind of release the server tags, `null` when it says nothing
  */
 data class OpenSubsonicAlbumDetail(
     val name: String?,
@@ -51,6 +53,7 @@ data class OpenSubsonicAlbumDetail(
     val songs: List<MediaItem>,
     val description: String? = null,
     val isExplicit: Boolean = false,
+    val releaseType: ReleaseType? = null,
 )
 
 /**
@@ -113,6 +116,7 @@ class OpenSubsonicAlbumDetailViewModel(
             songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
             description = notes.await(),
             isExplicit = album.isExplicit == true,
+            releaseType = album.releaseType,
         )
     }
 

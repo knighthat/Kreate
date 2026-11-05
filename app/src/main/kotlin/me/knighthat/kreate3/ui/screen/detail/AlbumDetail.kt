@@ -89,6 +89,7 @@ import androidx.media3.common.MediaItem
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
+import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigEntry
@@ -107,6 +108,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.albumPictureKey
+import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -166,6 +168,7 @@ private val TINTED_BADGE_SIZE = 16.dp
  * @param tint the color the header is a shade of, the cover's own by default; the theme's primary
  * while there is none
  * @param description what the source says about the album, `null` when it says nothing
+ * @param releaseType the kind of release the overline names, `null` is an album
  * @param onOpenArtist opens the album's artist, `null` when there is none to open
  * @param action what the button beside ⋮ does with the songs, `null` hides the button
  * @param onAction runs [action], `null` turns the button off while there are no songs
@@ -187,6 +190,7 @@ fun AlbumDetailScaffold(
     onOpenArtist: (() -> Unit)?,
     modifier: Modifier = Modifier,
     standIn: Uri? = null,
+    releaseType: ReleaseType? = null,
     tint: Color = rememberCoverSeed(models),
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
@@ -309,6 +313,7 @@ fun AlbumDetailScaffold(
                 origin = origin,
                 isExplicit = isExplicit,
                 description = description,
+                releaseType = releaseType,
                 shade = shade,
                 topPadding = barHeight,
                 collapse = collapse,
@@ -362,6 +367,7 @@ private fun TintedHeader(
     origin: Origin?,
     isExplicit: Boolean,
     description: String?,
+    releaseType: ReleaseType?,
     shade: Color,
     topPadding: Dp,
     collapse: () -> Float,
@@ -397,7 +403,8 @@ private fun TintedHeader(
                     if (origin != null || isExplicit)
                         AlbumBadges(origin, isExplicit, dim, Modifier.padding(bottom = 2.dp))
                     Text(
-                        pluralStringResource(R.plurals.unit_album, 1).uppercase(),
+                        (releaseType?.let { stringResource(it.labelRes) }
+                            ?: pluralStringResource(R.plurals.unit_album, 1)).uppercase(),
                         style = MaterialTheme.typography.labelMedium,
                         color = dim,
                     )

@@ -24,6 +24,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
@@ -83,6 +84,19 @@ class OpenSubsonicMappersTest {
         assertNull(album.year)
         assertNull(album.isExplicit)
         assertEquals(emptyList<String>(), covers)
+    }
+
+    @Test
+    fun anAlbumReadsItsReleaseType() {
+        fun typeOf(types: String) =
+            json("""{"id":"a1","releaseTypes":$types}""").toAlbum(cover)!!.item.releaseType
+
+        assertEquals(ReleaseType.SINGLE, typeOf("""["Single"]"""))
+        assertEquals(ReleaseType.EP, typeOf("""["ep","live"]"""))
+        assertEquals(ReleaseType.ALBUM, typeOf("""["album","compilation"]"""))
+        assertNull(typeOf("""["soundtrack"]"""))
+        assertNull(typeOf("[]"))
+        assertNull(json("""{"id":"a1"}""").toAlbum(cover)!!.item.releaseType)
     }
 
     @Test

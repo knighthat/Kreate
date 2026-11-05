@@ -38,6 +38,9 @@
     <string name="constant_contrast_level_high">High</string>
     <string name="constant_app_icon_black">Black</string>
     <string name="constant_app_icon_gradient">Gradient</string>
+    <string name="constant_release_type_album">Album</string>
+    <string name="constant_release_type_ep">EP</string>
+    <string name="constant_release_type_single">Single</string>
     <string name="constant_sync_mode_off">Off</string>
     <string name="constant_sync_mode_liked">Liked only</string>
     <string name="constant_sync_mode_all">All</string>

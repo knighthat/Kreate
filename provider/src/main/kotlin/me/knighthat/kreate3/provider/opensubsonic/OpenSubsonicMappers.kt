@@ -30,6 +30,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
@@ -106,6 +107,7 @@ internal fun JsonObject.toAlbum(cover: (String) -> Uri?): RemoteItem<Album>? {
         year = get("year")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 },
         artists = artists.ifEmpty { null },
         isExplicit = explicit(),
+        releaseType = releaseType(),
     )
     return RemoteItem(album, starred())
 }
@@ -204,6 +206,23 @@ internal fun JsonObject.toTranscodedFormat(songId: String): SongFormat? {
 /** An artist as other items credit it, `null` without an id. */
 private fun JsonObject.toArtistOrNull(): Artist? =
     string("id")?.let { Artist(it, Origin.OPEN_SUBSONIC, string("name")) }
+
+/**
+ * The kind of release from `releaseTypes` (OpenSubsonic, the MusicBrainz types a server reads from
+ * the file tags). A single or an EP wins over the other types it carries, an album that is also a
+ * compilation or live stays an album. `null` without the field or with none of the three.
+ */
+private fun JsonObject.releaseType(): ReleaseType? {
+    val types = array("releaseTypes")
+        ?.mapNotNull { it.jsonPrimitive.contentOrNull?.trim()?.lowercase() }
+        ?: return null
+    return when {
+        "single" in types -> ReleaseType.SINGLE
+        "ep" in types -> ReleaseType.EP
+        "album" in types -> ReleaseType.ALBUM
+        else -> null
+    }
+}
 
 private fun JsonObject.explicit(): Boolean? = when (string("explicitStatus")) {
     "explicit" -> true

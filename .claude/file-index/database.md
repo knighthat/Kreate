@@ -31,6 +31,7 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
 - dao/ — one DAO per table (internal). `UserPlaylistDao.kt` also has `UserPlaylistRow` (a
   playlist + its `covers` JSON, for `PlaylistRepository.all`).
 - model/ — public models mirroring entities/views (`Origin`/`LyricsSync` now come from `:model`);
+  `ReleaseType.kt` (album/EP/single, read from the source, never stored);
   `LocalSong.kt` (+`LocalAlbum`/`LocalArtist` scan results), `QueuedSong.kt` (a saved-queue row; not
   the playback `QueuedSong` in `DataSourceResolver.kt`), `PeriodPlay.kt` (`PlayPeriod`,
   `PeriodPlay` = a play

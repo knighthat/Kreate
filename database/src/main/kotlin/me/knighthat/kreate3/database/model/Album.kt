@@ -32,6 +32,8 @@ import me.knighthat.kreate3.model.Origin
  * @property artists artist names as displayed by the source
  * @property url page of the album at its [origin]
  * @property isExplicit `null` when unknown
+ * @property releaseType `null` when the source doesn't say; only read from the source, never
+ * stored
  */
 data class Album(
     val id: String,
@@ -42,4 +44,5 @@ data class Album(
     val artists: List<String>? = null,
     val url: String? = null,
     val isExplicit: Boolean? = null,
+    val releaseType: ReleaseType? = null,
 )

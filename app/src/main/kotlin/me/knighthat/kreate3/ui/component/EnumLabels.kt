@@ -32,6 +32,7 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.provider.youtube.PlaylistPrivacy
@@ -109,6 +110,14 @@ val SyncMode.labelRes: Int
         SyncMode.OFF -> R.string.constant_sync_mode_off
         SyncMode.LIKED -> R.string.constant_sync_mode_liked
         SyncMode.ALL -> R.string.constant_sync_mode_all
+    }
+
+@get:StringRes
+val ReleaseType.labelRes: Int
+    get() = when (this) {
+        ReleaseType.ALBUM -> R.string.constant_release_type_album
+        ReleaseType.EP -> R.string.constant_release_type_ep
+        ReleaseType.SINGLE -> R.string.constant_release_type_single
     }
 
 @get:StringRes
