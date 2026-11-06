@@ -223,4 +223,6 @@
     <string name="snackbar_playlist_options_not_saved">Created %1$s, but its description and visibility weren\'t saved</string>
     <!-- %1$s is the name of the playlist, in quotes -->
     <string name="error_create_playlist">Couldn\'t create %1$s</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
+    <string name="snackbar_old_app_downloads_started">Downloading %1$s from the old app</string>
 </resources>

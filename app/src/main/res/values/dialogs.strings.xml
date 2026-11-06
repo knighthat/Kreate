@@ -103,4 +103,6 @@
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
     <string name="dialog_title_old_app_downloads">Downloads from the old app</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
+    <string name="dialog_body_old_app_downloads">Found %1$s of your library downloaded in the old app. Download again?</string>
 </resources>

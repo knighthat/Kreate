@@ -132,10 +132,9 @@ class LegacyDownloads(
     }
 
     private suspend fun started(count: Int): String =
-        context.resources.getQuantityString(
-            R.plurals.snackbar_old_app_downloads_started,
-            count,
-            count
+        context.getString(
+            R.string.snackbar_old_app_downloads_started,
+            context.resources.getQuantityString(R.plurals.song, count, count)
         )
 
     /** Makes the files, then marks the ones that are there for the users who have them. */

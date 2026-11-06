@@ -251,7 +251,14 @@ fun LegacyDownloadsDialog(
 ) = AlertDialog(
     onDismissRequest = {},
     title = { Text(stringResource(R.string.dialog_title_old_app_downloads)) },
-    text = { Text(pluralStringResource(R.plurals.dialog_body_old_app_downloads, count, count)) },
+    text = {
+        Text(
+            stringResource(
+                R.string.dialog_body_old_app_downloads,
+                pluralStringResource(R.plurals.song, count, count)
+            )
+        )
+    },
     // One under the other, three labels don't fit side by side
     confirmButton = {
         Column(horizontalAlignment = Alignment.End) {
