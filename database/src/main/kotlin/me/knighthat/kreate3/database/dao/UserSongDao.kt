@@ -207,6 +207,19 @@ internal interface UserSongDao {
     @Query("SELECT DISTINCT song_id FROM user_song WHERE downloaded_at IS NOT NULL")
     suspend fun downloadedByAnyone(): List<String>
 
+    /** The songs of [songIds] some user has in their library, once each, as one of them sees it. */
+    @Query("SELECT * FROM user_song_view WHERE song_id IN (:songIds) GROUP BY song_id")
+    suspend fun inAnyLibrary(songIds: List<String>): List<UserSongViewEntity>
+
+    /** Marks [songIds] as downloaded in every library that holds them, earlier marks stay. */
+    @Query(
+        """
+        UPDATE user_song SET downloaded_at = :now, updated_at = :now
+        WHERE song_id IN (:songIds) AND downloaded_at IS NULL
+        """
+    )
+    suspend fun markDownloaded(songIds: List<String>, now: Instant)
+
     /** The rows of every user who downloaded the song [songId]. */
     @Query("SELECT * FROM user_song WHERE song_id = :songId AND downloaded_at IS NOT NULL")
     suspend fun downloaders(songId: String): List<UserSongEntity>

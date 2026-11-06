@@ -86,4 +86,5 @@ val downloadModule = module {
             scope = get(),
         )
     }
+    single { LegacyDownloads(androidContext(), get(), get(), get(), get(), get()) }
 }

@@ -38,6 +38,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.backup.Backup
+import me.knighthat.kreate3.backup.LegacyBackup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
 import me.knighthat.kreate3.download.downloadModule
@@ -213,6 +214,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single { YouTubeLyricsSource(get()) } bind LyricsSource::class
 
                     single { Backup(get(), get(), get()) }
+                    single { LegacyBackup(get(), get(), get()) }
 
                     // Stores songs fetched live once the user keeps something about them
                     single { SongStore(get(), get(), get(), get()) }

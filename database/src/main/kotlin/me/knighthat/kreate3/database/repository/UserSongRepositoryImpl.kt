@@ -281,6 +281,17 @@ internal class UserSongRepositoryImpl(
     override suspend fun downloadedByAnyone(): Set<String> =
         userSongDao.downloadedByAnyone().toSet()
 
+    override suspend fun inAnyLibrary(songIds: Collection<String>): List<UserSongView> =
+        songIds.distinct().chunked(ID_CHUNK).flatMap { userSongDao.inAnyLibrary(it) }
+            .map { it.toModel() }
+
+    override suspend fun markDownloadedForEveryUser(songIds: Collection<String>) {
+        val now = clock.now()
+        database.inTransaction {
+            songIds.distinct().chunked(ID_CHUNK).forEach { userSongDao.markDownloaded(it, now) }
+        }
+    }
+
     override suspend fun forgetDownload(songId: String, thumbnail: Uri?, everyUser: Boolean) {
         val userId = if (everyUser) null else scope.requireId()
         database.inTransaction {
@@ -359,6 +370,9 @@ internal class UserSongRepositoryImpl(
 
         /** Plays this close to each other, in milliseconds, were part of one listening session. */
         const val SESSION_MS = 30 * 60 * 1000
+
+        /** Ids bound in one query, far under SQLite's limit. */
+        const val ID_CHUNK = 500
 
         // ?1 user, ?2 seed song, ?3 limit
         const val SIMILAR = """

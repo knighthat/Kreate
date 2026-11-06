@@ -18,6 +18,12 @@
 
 package me.knighthat.kreate3.preferences
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -82,5 +88,24 @@ class PreferencesBackupTest {
         )
         assertEquals("new", File(root, "global.preferences_pb").readText())
         assertFalse(File(root, "kreate.db").exists())
+    }
+
+    @Test
+    fun writesAProfileListTheManagerReads() = runBlocking<Unit> {
+        val source = Files.createTempDirectory("source").toFile()
+        backup.writeProfileList(source, listOf("default", "a1", "b2"))
+
+        assertTrue(backup.isRestorable(source))
+        backup.restore(source)
+        source.deleteRecursively()
+
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        try {
+            val manager =
+                ProfileManager(scope, root, ProfileManager.profileStorage(root, FailureReports()))
+            assertEquals(setOf("default", "a1", "b2"), manager.ids.first())
+        } finally {
+            scope.cancel()
+        }
     }
 }

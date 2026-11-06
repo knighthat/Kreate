@@ -23,6 +23,7 @@ import me.knighthat.kreate3.ui.screen.account.DownloadQueueViewModel
 import me.knighthat.kreate3.ui.screen.account.DownloadedViewModel
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.HistoryViewModel
+import me.knighthat.kreate3.ui.screen.account.LegacyDownloadsViewModel
 import me.knighthat.kreate3.ui.screen.account.LikedViewModel
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsViewModel
 import me.knighthat.kreate3.ui.screen.account.StatisticsViewModel
@@ -91,5 +92,6 @@ val viewModelModule = module {
 
     viewModelOf(::OpenSubsonicSettingsViewModel)
     viewModelOf(::BackupViewModel)
+    viewModelOf(::LegacyDownloadsViewModel)
     viewModelOf(::OpenSourceLicensesViewModel)
 }

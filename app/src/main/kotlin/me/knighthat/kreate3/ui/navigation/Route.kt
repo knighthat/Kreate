@@ -212,6 +212,10 @@ data object Disliked : Route
 @Serializable
 data object Downloaded : Route
 
+/** The songs the old app had downloaded, to pick which to download, opened from the dialog asking. */
+@Serializable
+data object LegacyDownloadsSelect : Route
+
 /** The profile's downloads that aren't whole yet, opened from [Downloaded]. */
 @Serializable
 data object DownloadQueue : Route

@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.backup
 
+import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import org.junit.After
@@ -172,5 +173,24 @@ class BackupTest {
 
         assertFalse(rollback.exists())
         assertFalse(pending.exists())
+    }
+
+    @Test
+    fun restoreKeepsTheDownloadsOfTheOldAppAndDropsStaleOnes() = runBlocking<Unit> {
+        val kept = File(context.noBackupFilesDir, "legacy_downloads.json")
+        kept.writeText("[\"stale\"]")
+
+        // A restore of anything else drops a list left from before
+        Backup.stageWithoutRollback(context, zip(complete))
+        Backup.applyPendingRestore(context)
+        assertFalse(kept.exists())
+
+        Backup.stageBuiltWithoutRollback(context) { partial ->
+            Backup.unpack(zip(complete), partial, preferences)
+            File(partial, "legacy_downloads.json").writeText("[\"dQw4w9WgXcQ\"]")
+        }
+        Backup.applyPendingRestore(context)
+        assertEquals("[\"dQw4w9WgXcQ\"]", kept.readText())
+        kept.delete()
     }
 }

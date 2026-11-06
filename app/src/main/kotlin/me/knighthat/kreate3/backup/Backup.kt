@@ -28,6 +28,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.DatabaseBackup
+import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import java.io.File
 import java.io.InputStream
@@ -116,12 +117,20 @@ class Backup(
      *
      * @throws BackupException when it is not a backup, or one this app can't read
      */
-    suspend fun stage(input: InputStream) = withContext(Dispatchers.IO) {
+    suspend fun stage(input: InputStream) =
+        stageBuilt { partial -> unpack(input, partial, preferences) }
+
+    /**
+     * Same as [stage] for a restore the caller makes: [fill] gets an empty folder to write it to,
+     * laid out like an unpacked backup (`kreate.db` and the preference files), and throws
+     * [BackupException] when it can't.
+     */
+    internal suspend fun stageBuilt(fill: suspend (File) -> Unit) = withContext(Dispatchers.IO) {
         val rollback = File(context.cacheDir, ROLLBACK_FILE)
         Logger.i(tag = TAG) { "Staging a backup to restore" }
         try {
             keep(context) { partial ->
-                unpack(input, partial, preferences)
+                fill(partial)
                 export(rollback.outputStream())
             }
             Logger.i(tag = TAG) { "The backup is staged, it is restored on the next start" }
@@ -150,7 +159,7 @@ class Backup(
 
         private val JSON = Json { ignoreUnknownKeys = true }
 
-        private val SQLITE_HEADER = "SQLite format 3\u0000".toByteArray()
+        internal val SQLITE_HEADER = "SQLite format 3\u0000".toByteArray()
 
         /**
          * Same as [stage] without a backup to roll back to, for an install with nothing to lose
@@ -158,11 +167,17 @@ class Backup(
          *
          * @throws BackupException when it is not a backup, or one this app can't read
          */
-        suspend fun stageWithoutRollback(context: Context, input: InputStream) =
-            withContext(Dispatchers.IO) {
-                val preferences = PreferencesBackup(context)
-                keep(context) { unpack(input, it, preferences) }
-            }
+        suspend fun stageWithoutRollback(context: Context, input: InputStream) {
+            val preferences = PreferencesBackup(context)
+            stageBuiltWithoutRollback(context) { unpack(input, it, preferences) }
+        }
+
+        /** [stageBuilt] without a backup to roll back to, see [stageWithoutRollback]. */
+        internal suspend fun stageBuiltWithoutRollback(
+            context: Context,
+            fill: suspend (File) -> Unit
+        ) =
+            withContext(Dispatchers.IO) { keep(context) { fill(it) } }
 
         /**
          * Moves a backup kept by [stage] in place. Call it when the process starts, before the
@@ -184,6 +199,11 @@ class Backup(
             try {
                 DatabaseBackup.restore(context, File(pending, DATABASE_ENTRY))
                 PreferencesBackup(context).restore(pending)
+                // Songs of the old app to download, a restore of anything else drops a list left
+                val downloads = File(context.noBackupFilesDir, LegacyDownloads.FILE_NAME)
+                downloads.delete()
+                File(pending, LegacyDownloads.FILE_NAME).takeIf(File::isFile)
+                    ?.copyTo(downloads, overwrite = true)
                 pending.deleteRecursively()
                 Logger.i(tag = TAG) { "The backup was restored" }
             } catch (e: Exception) {

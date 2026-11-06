@@ -26,6 +26,10 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `setMusicBrainzId` only on rows already there, not in the view),
   `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
+- legacy/ — import of the old app's databases (one per profile, schema ≤ 36): `LegacyLibrary.kt`
+  (rows read by column name, so any old version works), `LegacyMapper.kt` (`mapLegacyLibrary`:
+  what each old table becomes, what is left out), `LegacyImport.kt` (`LegacyImport.build` writes a
+  fresh `kreate.db`, one user per profile, shared songs stored once).
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:
   shared value; songs with `unavailable_since` hidden).
 - dao/ — one DAO per table (internal). `UserPlaylistDao.kt` also has `UserPlaylistRow` (a

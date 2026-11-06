@@ -111,6 +111,7 @@ import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.backup.LegacyBackup
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -159,7 +160,15 @@ private suspend fun Context.importBackup(uri: Uri): String? =
     try {
         val input = withContext(Dispatchers.IO) { contentResolver.openInputStream(uri) }
             ?: throw FileNotFoundException()
-        input.use { Backup.stageWithoutRollback(this, it) }
+        val isLegacy = input.use(LegacyBackup::isLegacy)
+        val again = withContext(Dispatchers.IO) { contentResolver.openInputStream(uri) }
+            ?: throw FileNotFoundException()
+        again.use {
+            if (isLegacy) LegacyBackup.stageWithoutRollback(
+                this,
+                it
+            ) else Backup.stageWithoutRollback(this, it)
+        }
         null
     } catch (e: BackupException) {
         e.describe(this)

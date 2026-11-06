@@ -610,6 +610,11 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         return YouTubePage(songs, continuationOf(panel))
     }
 
+    /** The songs of the answer to [InnerTube.queueOf], in the order asked. */
+    fun queueOfSongs(response: JsonElement?): List<RemoteSong> =
+        response.path("queueDatas").asArray.orEmpty()
+            .mapNotNull { queueSong(it.path("content"))?.first }
+
     private fun watchTabs(response: JsonElement?): JsonElement? =
         response.path(
             "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer",

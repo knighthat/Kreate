@@ -77,9 +77,17 @@ class DownloadedSongStore(
     /**
      * Stores the song of [item] with its album and artists, and the format found for it so far.
      * Called when it starts downloading: the format found while it downloads is stored at once.
+     *
+     * @param inLibrary whether the song joins the active user's library, `false` for a song that
+     * must be in the database already (the old app's, see [LegacyDownloads]): nothing is fetched
+     * and no library entry is made
      */
-    suspend fun store(item: MediaItem): Boolean = attempt("store") {
-        store.store(item.mediaId, item.origin)
+    suspend fun store(item: MediaItem, inLibrary: Boolean = true): Boolean = attempt("store") {
+        val origin = item.origin
+        if (inLibrary || origin == null)
+            store.store(item.mediaId, origin)
+        else
+            store.storeInCatalog(item.mediaId, origin)
         formats.flush(item.mediaId)
     }
 
@@ -88,7 +96,8 @@ class DownloadedSongStore(
      * like offline, then its cover is saved and, when the user wants, its lyrics.
      */
     suspend fun completed(item: MediaItem) {
-        store(item)
+        // The users' library entries were made when the download started, or on purpose not made
+        store(item, inLibrary = false)
         attempt("keep the cover of") { saveCover(item) }
         if (Preferences.DOWNLOAD_LYRICS.value) attempt("keep the lyrics of") { saveLyrics(item) }
     }

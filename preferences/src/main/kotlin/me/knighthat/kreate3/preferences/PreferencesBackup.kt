@@ -19,6 +19,13 @@
 package me.knighthat.kreate3.preferences
 
 import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import java.io.File
 
 /**
@@ -74,6 +81,29 @@ class PreferencesBackup internal constructor(private val rootDirectory: File) {
                 if (isBackupPath(path))
                     file.copyTo(File(rootDirectory, path), overwrite = true)
             }
+    }
+
+    /**
+     * Writes a global file into [destination], laid out by the paths in a backup, that lists
+     * [profileIds] and nothing else, for a restore of data that has no preferences of its own.
+     * Restoring it leaves every profile with default settings. The default profile needs no entry.
+     */
+    suspend fun writeProfileList(destination: File, profileIds: Collection<String>) {
+        destination.mkdirs()
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        try {
+            createPreferencesDataStore(
+                scope = scope,
+                steps = GLOBAL_STEPS,
+                name = "global preferences",
+                replaceDamaged = { emptyPreferences() },
+            ) { File(destination, GlobalPreferenceStorage.FILE_NAME) }.edit {
+                it[stringSetPreferencesKey(ProfileManager.PROFILE_IDS)] =
+                    profileIds.toSet() - Profile.DEFAULT_ID
+            }
+        } finally {
+            scope.cancel()
+        }
     }
 
     companion object {

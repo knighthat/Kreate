@@ -841,4 +841,41 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertNotNull(database.userAlbumDao().get("other", "a1"))
     }
     //</editor-fold>
+
+    @Test
+    fun downloadsOfTheOldAppAreMarkedOnlyWhereTheSongIsInTheLibrary() = runBlocking {
+        addUser("other")
+        listOf("a", "b", "c", "d", "e", "f").forEach { addSong(it) }
+        listOf("a", "b", "e", "f").forEach { librarySong(it) }
+        database.userSongDao().upsert(
+            me.knighthat.kreate3.database.entity.UserSongEntity(
+                userId = "other", songId = "a", createdAt = EPOCH, updatedAt = EPOCH,
+            )
+        )
+        database.userSongDao().upsert(
+            me.knighthat.kreate3.database.entity.UserSongEntity(
+                userId = "other", songId = "e", createdAt = EPOCH, updatedAt = EPOCH,
+            )
+        )
+
+        // c and d are in nobody's library
+        val offered = songs.inAnyLibrary(listOf("a", "b", "c", "d")).map { it.songId }
+        assertEquals(listOf("a", "b"), offered.sorted())
+
+        songs.markDownloadedForEveryUser(offered)
+
+        assertEquals(listOf("a", "b"), database.userSongDao().downloadedByAnyone().sorted())
+        // Everyone who has the song, and only them
+        assertEquals(
+            setOf("me", "other"),
+            database.userSongDao().downloaders("a").map { it.userId }.toSet()
+        )
+        assertEquals(setOf("me"), database.userSongDao().downloaders("b").map { it.userId }.toSet())
+        assertEquals(emptyList<String>(), database.userSongDao().downloaders("e").map { it.userId })
+        // No library entry was made for the songs nobody had
+        assertEquals(
+            listOf("a", "b", "e", "f"),
+            songs.inAnyLibrary(listOf("a", "b", "c", "d", "e", "f")).map { it.songId }.sorted(),
+        )
+    }
 }

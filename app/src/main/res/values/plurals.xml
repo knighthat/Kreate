@@ -105,4 +105,12 @@
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d files</item>
     </plurals>
+    <plurals name="dialog_body_old_app_downloads">
+        <item quantity="one">%1$d song of your library was downloaded in the old app. Download it again?</item>
+        <item quantity="other">%1$d songs of your library were downloaded in the old app. Download them again?</item>
+    </plurals>
+    <plurals name="snackbar_old_app_downloads_started">
+        <item quantity="one">Downloading %1$d song from the old app</item>
+        <item quantity="other">Downloading %1$d songs from the old app</item>
+    </plurals>
 </resources>

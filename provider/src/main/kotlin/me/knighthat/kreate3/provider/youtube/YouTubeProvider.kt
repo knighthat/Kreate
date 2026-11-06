@@ -310,6 +310,28 @@ class YouTubeProvider internal constructor(
         parser.queue(innerTube.next(songId, null)).items
             .firstOrNull { it.song.song.id == songId }?.song
 
+    /**
+     * The details of [songIds], at most a hundred at a time. Songs YouTube doesn't know are left
+     * out, in the order of [songIds]. One unknown id fails the request it is in (404, or 500), so a
+     * failed request is split in halves until the unknown ones are alone.
+     *
+     * @throws YouTubeException when YouTube can't be reached or refuses for another reason
+     */
+    suspend fun songDetailsOf(songIds: List<String>): List<RemoteSong> {
+        val ids = songIds.distinct()
+        if (ids.isEmpty()) return emptyList()
+
+        return try {
+            parser.queueOfSongs(innerTube.queueOf(ids))
+        } catch (e: YouTubeException) {
+            if (e.status != NOT_FOUND && e.status != INTERNAL_ERROR) throw e
+            if (ids.size == 1) return emptyList()
+
+            val half = ids.size / 2
+            songDetailsOf(ids.take(half)) + songDetailsOf(ids.drop(half))
+        }
+    }
+
     /** @return `null` when YouTube doesn't know the album */
     suspend fun albumPage(albumId: String): YouTubeAlbumPage? =
         parser.albumPage(albumId, innerTube.browse(albumId))
@@ -643,6 +665,13 @@ class YouTubeProvider internal constructor(
         )
 
     private companion object {
+        /**
+         * What YouTube answers with for an id it doesn't know: 404, or 500 when the request
+         * carries a visitor id (seen on a single unknown id, 2026-11-05).
+         */
+        const val NOT_FOUND = 404
+        const val INTERNAL_ERROR = 500
+
         fun innerTube(
             client: suspend () -> HttpClient,
             json: Json,

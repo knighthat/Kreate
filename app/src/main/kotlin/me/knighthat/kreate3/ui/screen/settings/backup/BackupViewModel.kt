@@ -34,6 +34,7 @@ import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.backup.LegacyBackup
 import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Notifier
@@ -57,6 +58,7 @@ enum class BackupTask { EXPORT, RESTORE }
 class BackupViewModel(
     private val context: Context,
     private val backup: Backup,
+    private val legacyBackup: LegacyBackup,
     private val scope: CoroutineScope,
     private val profileManager: ProfileManager,
     private val userRepository: UserRepository,
@@ -83,13 +85,19 @@ class BackupViewModel(
         notifier.post(context.getString(R.string.setting_description_back_up_status_saved))
     }
 
-    /** Restores the backup at [uri], the app restarts when it can be restored. */
+    /**
+     * Restores the backup at [uri], the app restarts when it can be restored. A zip from the old
+     * Kreate app is told by its manifest and imported instead.
+     */
     fun restore(uri: Uri) = run(
         BackupTask.RESTORE,
         context.getString(R.string.setting_description_restore_status_failed),
         AppChannel.OTHER,
     ) {
-        backup.stage(openStream { context.contentResolver.openInputStream(uri) })
+        val isLegacy = openStream { context.contentResolver.openInputStream(uri) }
+            .use(LegacyBackup::isLegacy)
+        val input = openStream { context.contentResolver.openInputStream(uri) }
+        input.use { if (isLegacy) legacyBackup.stage(it) else backup.stage(it) }
         (context.applicationContext as KreateApplication).restart()
     }
 

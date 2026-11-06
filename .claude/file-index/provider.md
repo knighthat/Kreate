@@ -28,7 +28,10 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   `ServerException.kt`, `OpenSubsonicSearch.kt` (`searchLibrary` result: RemoteSong/RemoteItem
   lists), `Shareable.kt`, `ArtistWithSongs.kt`.
 - youtube/ — `YouTubeProvider.kt` (public API: search, suggestions, album/artist/playlist pages,
-  browse, sign-in session, channels, lyrics; `isYouTubeSession`), `InnerTube.kt` (HTTP +
+  browse, sign-in session, channels, lyrics; `isYouTubeSession`; `songDetailsOf(ids)` =
+  `music/get_queue`,
+  100 ids a request, a 404 or 500 splits the request in halves to drop unknown ids), `InnerTube.kt`
+  (HTTP +
   `YouTubeSession` + `YouTubeException`; `stream` delegates to `YouTubeStreams.kt`, the innertubex
   extractor: signed-out and session extractors, `StreamQuality.audioQuality`, Original = session +
   premium hint), `WebPoTokenProvider.kt` + `PoTokenWebView.kt` + `BotGuard.kt` (PO tokens via a

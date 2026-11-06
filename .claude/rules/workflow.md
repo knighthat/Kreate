@@ -33,8 +33,10 @@
   `.claude/scripts/build.sh <task>…` (Gradle with `--continue`, printing only the failures) so every
   failure shows at once, fix, repeat. Don't build after each file.
 - **Commits:** the maintainer commits. "Make a commit message" means print it. Subject short and
-  lowercase like `git log`; body has one `- ` line per change, never hard-wrapped. Point out files
-  that probably shouldn't be staged (e.g. `.idea/*` touched by Studio) and new files to add.
+  lowercase like `git log`; body has one `- ` line per change, never hard-wrapped. Never a line
+  saying which rules, docs or file index parts were updated: they ship in the same commit and the
+  diff shows them. Point out files that probably shouldn't be staged (e.g. `.idea/*` touched by
+  Studio) and new files to add.
 - **CLAUDE.md stays lean:** only durable, approved rules; no descriptions of what exists. Details
   go in `.claude/rules/` (by path) or `.claude/docs/`.
 - **Rules stay lean too:** one topic per rule, with the narrowest `paths` that still cover it; split

@@ -28,7 +28,11 @@ ui/screen/
   by type, aliases, genres, ISNI, id), links (url relations, own site first); search button = "Find
   the artist" dialog, a pick shows that artist for the page's life). Shares `Notice`, `Message`,
   `SearchHint`, `Fact` with `SongDetailsScreen.kt`.
-- account/ — `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Liked,
+- account/ — `LegacyDownloadsScreen.kt` (+ `LegacyDownloadsViewModel.kt`: the old app's downloaded
+  songs looked up as they load, tap = pick with a green check over the cover, Clear all / Select
+  all, leaving downloads the picked ones, none is fine;
+  `LegacyDownloadsDialog` is shown by `KreateApp` while `LegacyDownloads.pending` has ids).
+  `AccountScreen.kt` (the profile button's page: rows open History, Statistics, Liked,
   Disliked,
   Downloaded, and Switch profile starts `ProfilesActivity`). `DownloadedScreen.kt` +
   `DownloadedViewModel.kt` (the active user's whole downloads from `UserSongRepository.downloaded`

@@ -358,6 +358,16 @@ internal class InnerTube(
         }
 
     /**
+     * The songs of [videoIds] with their details, in one request. A request holds a hundred ids
+     * (more weren't tried). One id YouTube doesn't know fails the whole request with status 404, or
+     * 500 once the session has a visitor id.
+     */
+    suspend fun queueOf(videoIds: List<String>): JsonObject =
+        post("music/get_queue") {
+            putJsonArray("videoIds") { videoIds.forEach { add(it) } }
+        }
+
+    /**
      * The next part of a list of [endpoint], which must be the one that gave [token].
      *
      * @param signedIn see [browse]

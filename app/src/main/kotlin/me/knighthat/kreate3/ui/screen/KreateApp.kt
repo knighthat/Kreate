@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.first
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
@@ -93,6 +94,7 @@ import me.knighthat.kreate3.ui.navigation.Downloaded
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.History
+import me.knighthat.kreate3.ui.navigation.LegacyDownloadsSelect
 import me.knighthat.kreate3.ui.navigation.Liked
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
@@ -140,6 +142,8 @@ import me.knighthat.kreate3.ui.screen.account.DownloadQueueScreen
 import me.knighthat.kreate3.ui.screen.account.DownloadedScreen
 import me.knighthat.kreate3.ui.screen.account.GroupStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.HistoryScreen
+import me.knighthat.kreate3.ui.screen.account.LegacyDownloadsDialog
+import me.knighthat.kreate3.ui.screen.account.LegacyDownloadsScreen
 import me.knighthat.kreate3.ui.screen.account.LikedScreen
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.StatisticsScreen
@@ -243,6 +247,11 @@ fun KreateApp(
     ShowMessages(notifier, messages)
     ShowPreferenceFailures(notifier)
 
+    // Songs the old app had downloaded, offered once after importing it
+    val legacyDownloads = koinInject<LegacyDownloads>()
+    LaunchedEffect(legacyDownloads) { legacyDownloads.load() }
+    val offered by legacyDownloads.pending.collectFlowAsState()
+
     val playerSheet = rememberPlayerSheetState()
     val miniPlayer = rememberMiniPlayerSpace()
     LaunchedEffect(openPlayer) {
@@ -280,6 +289,13 @@ fun KreateApp(
         contrastLevel = contrastLevel,
         colorSeed = seed,
     ) {
+        if (offered.isNotEmpty() && currentRoute != LegacyDownloadsSelect)
+            LegacyDownloadsDialog(
+                count = offered.size,
+                onDownloadAll = legacyDownloads::downloadAll,
+                onSelect = { topLevel.push(LegacyDownloadsSelect) },
+                onSkip = legacyDownloads::dismiss,
+            )
         CompositionLocalProvider(
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,
@@ -518,6 +534,13 @@ fun KreateApp(
                                         DownloadedScreen(
                                             onBack = topLevel::pop,
                                             onOpenQueue = { topLevel.push(DownloadQueue) },
+                                            modifier = paddingModifier,
+                                            contentPadding = contentPadding,
+                                        )
+                                    }
+                                    entry<LegacyDownloadsSelect> {
+                                        LegacyDownloadsScreen(
+                                            onBack = topLevel::pop,
                                             modifier = paddingModifier,
                                             contentPadding = contentPadding,
                                         )

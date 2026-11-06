@@ -239,6 +239,18 @@ interface UserSongRepository {
     suspend fun downloadedByAnyone(): Set<String>
 
     /**
+     * The ones of [songIds] that any user has in their library, once each, as one of those users
+     * sees it. Songs a scan missed are left out.
+     */
+    suspend fun inAnyLibrary(songIds: Collection<String>): List<UserSongView>
+
+    /**
+     * Marks [songIds] as downloaded for every user who has them in their library. No library
+     * entry is made, a user without a song doesn't get it, and marks that are there stay.
+     */
+    suspend fun markDownloadedForEveryUser(songIds: Collection<String>)
+
+    /**
      * The song [songId] is no longer downloaded by the active user, or by any user when
      * [everyUser]. Their cover [thumbnail] goes with it. A row that keeps nothing else about the
      * song is deleted, the song leaves that user's library.

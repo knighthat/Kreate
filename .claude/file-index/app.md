@@ -72,6 +72,11 @@ Root
   `stageWithoutRollback` (setup wizard: no DB/prefs opened); restarting is `Context.restart()` in
   `KreateApplication.kt`. Wizard Import page stages a backup; `KreateActivity` then applies only the
   ToS checksum (wizard sends no profile/theme extras after an import).
+- backup/`LegacyBackup.kt` — import of the old Kreate app's one-zip archive (`manifest.json` with
+  `source: "kreate-legacy"`, `profiles/<n>/data.db`): `unpack` validates, `stage`/
+  `stageWithoutRollback`
+  build `kreate.db` with `LegacyImport` and a profile list, through `Backup.stageBuilt`. Not wired
+  to any screen yet. Rules in `.claude/rules/backup.md`.
 
 notification/
 
@@ -107,6 +112,12 @@ notification/
 
 download/
 
+- `LegacyDownloads.kt` — songs the old Kreate app had downloaded (Koin single): the id list kept in
+  `noBackupFilesDir/legacy_downloads.json`, `load` (offers the ids some user has in `user_song`),
+  `downloadAll` (items built from the library, nothing looked up: `SongDownloads.downloadUnmarked`,
+  then `UserSongRepository.markDownloadedForEveryUser`), `details` (the picker's lookup, 100 ids a
+  request), `download(items)`, `dismiss`;
+  `parseLegacyDownloadIds`. Dialog and picker: `ui/screen/account/LegacyDownloads*.kt`.
 - `SongDownloads.kt` — `SongStorage` (CACHED/DOWNLOADING/PAUSED/DOWNLOADED; `resume`),
   `overview()` (`DownloadsOverview`: the active user's whole files with size and quality, unfinished
   downloads as `UnfinishedDownload`/`DownloadStage`, `DownloadWait`, this user's and all users'

@@ -443,19 +443,34 @@ class SongDownloads(
      * kept with the download, for its notifications to show and play it ([songItem]). A new file
      * is refused with a message once the downloads hold [GlobalPreferences.MEDIA3_DOWNLOAD_SIZE].
      */
-    fun download(item: MediaItem) = scope.launch {
-        val origin = item.origin ?: return@launch
+    fun download(item: MediaItem) = scope.launch { start(item, mark = true) }
+
+    /**
+     * Same as [download] for a song nobody is marked on: the file is made and shared, and the
+     * caller marks the users who have the song ([UserSongRepository.markDownloadedForEveryUser]).
+     * The files nobody marks go at the next start (`sweep`), so mark the songs this accepts.
+     *
+     * @return whether the file is there or on its way, `false` when it was refused
+     */
+    suspend fun downloadUnmarked(item: MediaItem): Boolean = start(item, mark = false)
+
+    private suspend fun start(item: MediaItem, mark: Boolean): Boolean {
+        val origin = item.origin ?: return false
         val id = item.mediaId
         val song = QueuedSong(origin, id)
         val wanted = plan(origin, id).quality
         val existing = withContext(Dispatchers.IO) { manager.downloadIndex.getDownload(key(song)) }
 
         // The user's download needs the song stored
-        if (!stored.store(item)) {
+        if (!stored.store(item, inLibrary = mark)) {
             notifier.post(context.getString(R.string.error_download_not_saved))
-            return@launch
+            return false
         }
-        userSongs.update(id) { it.copy(downloadedAt = it.downloadedAt ?: Clock.System.now()) }
+        if (mark) userSongs.update(id) {
+            it.copy(
+                downloadedAt = it.downloadedAt ?: Clock.System.now()
+            )
+        }
 
         val quality = existing?.request?.customCacheKey?.let(QueuedSong::ofCacheKey)?.quality
         val shared = existing != null && quality != null && quality >= wanted
@@ -464,16 +479,16 @@ class SongDownloads(
         if (shared) {
             // Their cover and lyrics, the file is there
             if (existing.state == Download.STATE_COMPLETED) stored.completed(item)
-            return@launch
+            return true
         }
 
         val full = withContext(Dispatchers.IO) {
             caches.downloads.cacheSpace >= GlobalPreferences.MEDIA3_DOWNLOAD_SIZE.value
         }
         if (full) {
-            userSongs.forgetDownload(id, null)
+            if (mark) userSongs.forgetDownload(id, null)
             notifier.post(context.getString(R.string.error_downloads_full))
-            return@launch
+            return false
         }
 
         val request = DownloadRequest.Builder(key(song), song.uri)
@@ -485,6 +500,7 @@ class SongDownloads(
             notifications.removed(request.id)
             DownloadService.sendAddDownload(context, SongDownloadService::class.java, request, true)
         }
+        return true
     }
 
     /** Resumes the paused download of the song of [origin] with [id], for every user. */

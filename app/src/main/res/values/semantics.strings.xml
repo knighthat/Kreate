@@ -97,4 +97,5 @@
     <string name="semantic_timing_of_the_lyrics">Timing of the lyrics</string>
     <string name="semantic_unfollow">Unfollow</string>
     <string name="semantic_app_crashed">Kreate stopped</string>
+    <string name="semantic_selected">Selected</string>
 </resources>
