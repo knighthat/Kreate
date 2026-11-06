@@ -1,0 +1,117 @@
+# Builds the Patreon APKs (universal + the four ABIs, signed) of every tag that is created or pushed
+# and creates its GitLab release with them attached. A release made by hand in the GitLab UI
+# creates its tag first, so the same pipeline runs and only adds the APKs to the release that is
+# already there. github-sync and renovate start from the same tag.
+#
+# The release description is the tag's annotation (empty for a lightweight tag). GitLab has no
+# pre-release flag, so betas get a release like any tag. The APKs are stored in the project's
+# package registry (Deploy > Package registry, package "kreate", version = the tag without "v")
+# and linked from the release, which keeps them past the expiry of job artifacts.
+#
+# Both jobs run on GitLab's shared Linux runners (Docker, 2 vCPU, 8 GB, a fresh VM every job; the
+# free plan has 400 compute minutes a month). build starts from a plain JDK 21 image and fetches the
+# Android command line tools itself, Gradle then downloads the SDK platform and build tools it needs;
+# the cache keeps both, so only the first build pays for them. On a runner of your own, add its
+# tag to build and keep or drop the cache as you like.
+#
+# CI/CD variables (Settings > CI/CD > Variables), all masked or File type and protected, with the
+# release tags (v*) protected too so that only they can read them:
+#   PRODUCTION_KEYSTORE                type File, the production.jks keystore
+#   PRODUCTION_STORE_PASSWORD          the keystore's password
+#   PRODUCTION_PATREON_KEY_PASSWORD    the password of the "kreate" key
+# The keystore is binary and a variable holds text, so PRODUCTION_KEYSTORE holds it base64 encoded
+# and the job decodes it. To post it from a terminal:
+#   curl --request POST --header "PRIVATE-TOKEN: <token with api scope>" \
+#     "https://gitlab.com/api/v4/projects/<project id>/variables" \
+#     --form key=PRODUCTION_KEYSTORE --form variable_type=file --form protected=true \
+#     --form "value=$(base64 -w0 .ignore.d/keystores/production.jks)"
+# In the UI, add a File variable and paste the output of `base64 -w0 production.jks`.
+
+build:
+  image: eclipse-temurin:21-jdk
+  timeout: 1h
+  rules:
+    - if: $CI_COMMIT_TAG
+  variables:
+    # The Gradle build reads PRODUCTION_KEY_PASSWORD, this pipeline keeps one per platform
+    PRODUCTION_KEY_PASSWORD: $PRODUCTION_PATREON_KEY_PASSWORD
+    # Gradle's home goes inside the project so that GitLab's cache can carry it between pipelines
+    GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle-home
+    # The SDK is cached the same way. AGP installs missing platforms and build tools into it
+    ANDROID_HOME: $CI_PROJECT_DIR/.android-sdk
+    # The shared runner has 8 GB: 4 GB for Gradle (gradle.properties), the rest for Kotlin and R8
+    GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.vfs.watch=false -Dkotlin.compiler.execution.strategy=in-process
+  # One cache for every tag: it holds the Gradle distribution, the downloaded dependencies and the
+  # task outputs of the build cache (org.gradle.caching=true), so a new tag only recompiles what
+  # changed since the last one. Not keyed per ref, a tag never repeats. app/build stays out: the
+  # APKs always come from the tagged source.
+  cache:
+    key: gradle-patreon
+    paths:
+      - .gradle-home/caches/
+      - .gradle-home/wrapper/
+      - .android-sdk/
+    policy: pull-push
+  before_script:
+    - |
+      if [ ! -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends unzip curl
+        curl -fsSL -o /tmp/tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+        mkdir -p "$ANDROID_HOME/cmdline-tools"
+        unzip -q /tmp/tools.zip -d /tmp/tools
+        mv /tmp/tools/cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
+      fi
+    - yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+  script:
+    - |
+      for v in PRODUCTION_KEYSTORE PRODUCTION_STORE_PASSWORD PRODUCTION_PATREON_KEY_PASSWORD; do
+        if [ -z "$(printenv "$v")" ]; then echo "$v is not set (is the tag protected?)"; exit 1; fi
+      done
+    - mkdir -p .ignore.d/keystores
+    - base64 -d "$PRODUCTION_KEYSTORE" > .ignore.d/keystores/production.jks
+    - ./gradlew --console=plain --build-cache assemblePatreonUniversalRelease assemblePatreonArmv7Release assemblePatreonArm64Release assemblePatreonX86Release assemblePatreonX86_64Release
+    - mkdir dist
+    - |
+      for apk in app/build/outputs/apk/patreon*/release/kreate-*.apk; do
+        cp "$apk" "dist/$(basename "$apk")"
+      done
+    - ls -l dist
+    - test "$(ls dist | wc -l)" = 5
+  after_script:
+    - rm -f .ignore.d/keystores/production.jks
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+release:
+  image: alpine:3
+  needs: [ build ]
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - apk add --no-cache curl jq git
+    - AUTH="JOB-TOKEN: $CI_JOB_TOKEN"
+    - PROJECT="$CI_API_V4_URL/projects/$CI_PROJECT_ID"
+    - VERSION="${CI_COMMIT_TAG#v}"
+    - TAG_URI=$(jq -rn --arg t "$CI_COMMIT_TAG" '$t|@uri')
+    - |
+      STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" "$PROJECT/releases/$TAG_URI")
+      if [ "$STATUS" = 200 ]; then
+        echo "$CI_COMMIT_TAG already has a release, adding the APKs to it"
+      else
+        NOTES=$(git tag -l --format='%(contents)' "$CI_COMMIT_TAG")
+        jq -n --arg tag "$CI_COMMIT_TAG" --arg desc "$NOTES" \
+          '{name: $tag, tag_name: $tag, description: $desc}' > /tmp/release.json
+        curl --fail-with-body -s -X POST -H "$AUTH" -H 'Content-Type: application/json' \
+          --data @/tmp/release.json "$PROJECT/releases"
+      fi
+    - |
+      for apk in dist/*.apk; do
+        name=$(basename "$apk")
+        url="$PROJECT/packages/generic/kreate/$VERSION/$name"
+        curl --fail-with-body -s -H "$AUTH" --upload-file "$apk" "$url"
+        jq -n --arg name "$name" --arg url "$url" '{name: $name, url: $url, link_type: "package"}' > /tmp/link.json
+        curl --fail-with-body -s -X POST -H "$AUTH" -H 'Content-Type: application/json' \
+          --data @/tmp/link.json "$PROJECT/releases/$TAG_URI/assets/links"
+      done
