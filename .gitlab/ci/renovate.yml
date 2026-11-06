@@ -1,0 +1,27 @@
+# Opens merge requests for outdated dependencies (gradle/libs.versions.toml and the like, see
+# renovate.json), once after each release and on demand. Renovate always works on the default
+# branch, whatever ref starts the pipeline.
+#
+# Runs when a tag is created (the same moment as github-sync) and from Build > Pipelines > New
+# pipeline with the variable RENOVATE_RUN set to true.
+#
+# Needs the CI/CD variable RENOVATE_TOKEN (masked; a project or personal access token with the api
+# and write_repository scopes). GITHUB_COM_TOKEN (masked; a GitHub token without scopes) is
+# optional, it lifts GitHub's rate limit when looking up releases of dependencies hosted there.
+
+renovate:
+  image:
+    name: renovate/renovate:latest
+    entrypoint: [ "" ]
+  variables:
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: $CI_API_V4_URL
+    RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
+    RENOVATE_ONBOARDING: "false"
+    RENOVATE_REQUIRE_CONFIG: required
+    LOG_LEVEL: info
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "web" && $RENOVATE_RUN == "true"
+  script:
+    - renovate
