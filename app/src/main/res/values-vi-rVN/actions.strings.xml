@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Button texts and menu items. -->
+<resources>
+    <string name="action_close">Đóng</string>
+    <string name="action_open_website">Mở trang web</string>
+    <string name="action_save">Lưu</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_ok">Đồng ý</string>
+    <string name="action_skip">Bỏ qua</string>
+    <string name="action_forget">Quên</string>
+    <string name="action_sign_in">Đăng nhập</string>
+    <string name="action_update">Cập nhật</string>
+    <string name="action_sign_out">Đăng xuất</string>
+    <string name="action_pick_backup">Chọn bản sao lưu</string>
+    <string name="action_trust_new_certificate">Tin chứng chỉ</string>
+    <string name="action_not_now">Không phải bây giờ</string>
+    <string name="action_search">Tìm</string>
+    <string name="action_create">Tạo mới</string>
+    <string name="action_try_again">Thử lại lần nữa</string>
+    <string name="action_retry">Thử lại</string>
+    <string name="action_undo">Hoàn tác</string>
+    <string name="action_reload">Tải lại</string>
+    <string name="action_account_switch">Chuyển</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_add">Thêm</string>
+    <string name="action_less">Ẩn bớt</string>
+    <string name="action_more">Xem thêm</string>
+    <string name="action_restart">Bắt đầu lại</string>
+    <string name="action_apply">Áp dụng</string>
+    <string name="action_apply_and_restart">Áp dụng &amp; khởi động lại</string>
+    <string name="action_reset">Đặt lại</string>
+    <string name="action_clear">Xóa</string>
+    <string name="action_undislike">Xóa khỏi không thích</string>
+    <string name="action_grant">Cấp phép</string>
+    <string name="action_go_back">Quay lại</string>
+    <string name="action_next">Tiếp theo</string>
+    <string name="action_stop">Ngừng</string>
+    <string name="action_download">Tải xuống</string>
+    <string name="action_move_to_downloads">Dời vào tải xuống</string>
+    <string name="action_remove_from_cache">Xoá khỏi bộ đệm</string>
+    <string name="action_play">Phát</string>
+    <string name="action_shuffle">Trộn</string>
+    <string name="action_play_next">Phát kế tiếp</string>
+    <string name="action_queue">Thêm vào cuối danh sách phát</string>
+    <string name="action_pause">Tạm dừng</string>
+    <string name="action_resume">Tiếp tục</string>
+    <string name="menu_dislike">Không thích</string>
+    <string name="menu_like">Thích</string>
+    <string name="menu_share">Chia sẻ</string>
+    <string name="menu_download">Tải xuống</string>
+    <string name="menu_cached">Đã lưu vào bộ đệm</string>
+    <string name="menu_downloading">Đang tải</string>
+    <string name="menu_downloaded">Đã tải về</string>
+    <string name="menu_paused">Đã tạm dừng</string>
+    <string name="menu_play_next">Phát bài này tiếp theo</string>
+    <string name="menu_add_to_queue">Thêm bài này vào danh sách phát</string>
+    <string name="menu_add_to_playlist">Thêm bài này vào danh sách nhạc</string>
+    <string name="menu_start_radio">Bắt đầu nghe đài</string>
+    <string name="menu_details">Chi tiết</string>
+    <string name="menu_play">Phát</string>
+    <string name="menu_follow">Theo dõi</string>
+    <string name="menu_bookmark">Đánh dấu</string>
+    <string name="menu_statistics">Thống kê</string>
+    <string name="menu_go_to_album">Xem album</string>
+    <string name="menu_title_artists">Nghệ sĩ</string>
+    <string name="menu_title_add_to_playlist">Thêm vào danh sách nhạc</string>
+    <string name="menu_remove_from_playlist">Xóa bài này khỏi danh sách nhạc</string>
+    <string name="menu_delete_from_history">Xoá khỏi lịch sử</string>
+    <string name="menu_play_all">Phát tất cả</string>
+    <string name="menu_shuffle">Phát ngẫu nhiên</string>
+    <string name="menu_clear_history">Xóa tất cả lịch sử</string>
+    <string name="menu_open_random">Mở ngẫu nhiên</string>
+    <string name="menu_play_random">Phát ngẫu nhiên</string>
+    <string name="menu_create_playlist">Tạo danh sách nhạc mới</string>
+    <string name="menu_show_disliked">Hiện nhạc đã ghét</string>
+    <string name="menu_cached_only">Lọc nhạc đã lưu vào bộ đệm</string>
+    <string name="menu_downloaded_only">Lọc nhạc đã tải xuống</string>
+    <string name="menu_bookmarked_only">Lọc album đã đánh dấu</string>
+    <string name="menu_followed_only">Lọc nghệ sẽ đang theo dõi</string>
+    <string name="menu_monthly_only">Lọc danh sách nhạc tháng</string>
+    <string name="menu_delete_all">Xóa tất cả</string>
+    <string name="menu_undislike_all">Bỏ ghét tất cả</string>
+    <string name="menu_off">Tắt</string>
+    <string name="menu_end_of_song">Đến hết bài</string>
+</resources>

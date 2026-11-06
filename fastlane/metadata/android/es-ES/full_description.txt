@@ -1,0 +1,22 @@
+<p>
+  Kreate reproduce música desde YouTube Music, desde tu propio servidor de OpenSubsonic (Navidrome y otros) y desde los archivos de música en tu dispositivo, todo en una biblioteca.
+</p>
+
+<b>Características:</b>
+<ul>
+  <li>Una biblioteca para YouTube Music, servidores de OpenSubsonic y archivos locales</li>
+  <li>Descarga canciones para escucharlas sin conexión; las canciones escuchadas se guardan en caché</li>
+  <li>Letra sincronizada, palabra por palabra si la tiene la fuente</li>
+  <li>Normalización de volumen, usando el ReplayGain de tu servidor si lo tiene</li>
+  <li>Historial y estadísticas de escucha, guardados en tu dispositivo</li>
+  <li>Listas de reproducción, me gusta y no me gusta, con las canciones que no te gustan ocultas si quieres</li>
+  <li>Android Auto</li>
+  <li>Temporizador de apagado</li>
+  <li>Perfiles, cada uno con su propia biblioteca y configuración</li>
+  <li>Copias de seguridad y restauración</li>
+  <li>Y mucho más</li>
+</ul>
+
+<p>
+  Kreate no está afiliado, financiado, autorizado o respaldado por YouTube, Google LLC o cualquiera de sus afiliados.
+</p>

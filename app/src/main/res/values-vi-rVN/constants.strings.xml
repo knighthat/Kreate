@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Display names of enum values. -->
+<resources>
+    <string name="constant_theme_mode_automatic">Theo hệ thống</string>
+    <string name="constant_theme_mode_automatic_dynamic">Theo hình nền</string>
+    <string name="constant_theme_mode_light">Sáng</string>
+    <string name="constant_history_range_all_time">Tất cả</string>
+    <string name="constant_history_range_today">Hôm nay</string>
+    <string name="constant_history_range_last_7_days">7 ngày gần đây</string>
+    <string name="constant_history_range_last_30_days">30 ngày gần đây</string>
+    <string name="constant_history_range_this_year">Năm nay</string>
+    <string name="constant_statistics_period_all_time">Tất cả</string>
+    <string name="constant_statistics_period_this_month">Tháng này</string>
+    <string name="constant_theme_mode_light_dynamic">Sáng linh hoạt</string>
+    <string name="constant_theme_mode_dark">Tối</string>
+    <string name="constant_theme_mode_dark_dynamic">Tối linh hoạt</string>
+    <string name="constant_theme_mode_pitch_black">Đen tuyền</string>
+    <string name="constant_theme_mode_thumbnail">Theo ảnh bìa</string>
+    <string name="constant_contrast_level_normal">Mặc định</string>
+    <string name="constant_contrast_level_medium">Vừa</string>
+    <string name="constant_contrast_level_high">Cao</string>
+    <string name="constant_app_icon_black">Đen</string>
+    <string name="constant_app_icon_gradient">Dải màu</string>
+    <string name="constant_sync_mode_off">Không đồng bộ</string>
+    <string name="constant_sync_mode_liked">Đã yêu thích</string>
+    <string name="constant_sync_mode_all">Tất cả</string>
+    <string name="constant_opensubsonic_auth_password">Mật khẩu</string>
+    <string name="constant_opensubsonic_auth_api_key">Mã API</string>
+    <string name="constant_auto_tap_action_open">Cho xem các bài hát</string>
+    <string name="constant_auto_tap_action_play_from_start">Phát từ đầu</string>
+    <string name="constant_auto_tap_action_play_randomly">Phát ngẫu nhiên</string>
+    <string name="constant_queue_action_play">Phát</string>
+    <string name="constant_queue_action_shuffle">Trộn</string>
+    <string name="constant_queue_action_enqueue">Thêm bài này vào danh sách phát</string>
+    <string name="constant_queue_action_play_next">Phát bài này tiếp theo</string>
+    <string name="constant_playback_failure_action_skip">Bỏ qua bài kế tiếp</string>
+    <string name="constant_playback_failure_action_retry_then_skip">Thử lại, rồi bỏ qua</string>
+    <string name="constant_playback_failure_action_retry_then_stop">Thử lại, rồi ngưng</string>
+    <string name="constant_playback_failure_action_stop">Chỉ ngưng</string>
+    <string name="constant_stream_quality_ytm_low">Thấp, khoảng 48 kbps</string>
+    <string name="constant_stream_quality_ytm_medium">Trung bình, khoảng 128 kbps</string>
+    <string name="constant_stream_quality_ytm_high">Cao, khoảng 160 kbps</string>
+    <string name="constant_stream_quality_ytm_original">Gốc, 256 kbps nếu có Premium, hoặc trùng với Cao</string>
+    <string name="constant_stream_quality_opensubsonic_low">Thấp, khoảng 64 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_medium">Trung bình, khoảng 128 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_high">Cao, khoảng 320 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_original">Gốc, trực tiếp từ máy chủ</string>
+    <string name="constant_stream_quality_low">Thấp</string>
+    <string name="constant_stream_quality_medium">Vừa</string>
+    <string name="constant_stream_quality_high">Cao</string>
+    <string name="constant_stream_quality_original">Gốc</string>
+    <string name="constant_download_stage_downloading">Đang tải</string>
+    <string name="constant_download_stage_queued">Đang chờ</string>
+    <string name="constant_download_stage_paused">Đã tạm dừng</string>
+    <string name="constant_download_stage_failed">Thất bại</string>
+    <string name="constant_lyrics_sync_word">Từng từ một</string>
+    <string name="constant_lyrics_sync_line">Từng dòng</string>
+    <string name="constant_lyrics_sync_none">Không đồng bộ</string>
+</resources>
