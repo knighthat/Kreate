@@ -1,7 +1,7 @@
 # Keeps the repository and Crowdin in sync, both directions run from here (Crowdin's own GitLab
 # integration is off).
 #
-# upload:   a push that changes the English texts (app/src/main/res/values/ and the en-US text files
+# upload:   only from the kreate3 branch (never from *_l10n or any other branch): a push that changes the English texts (app/src/main/res/values/ and the en-US text files
 #           in fastlane/metadata/android/en-US/) sends the sources listed in crowdin.yml to Crowdin.
 # download: pulls the translations of the branch the pipeline starts from (BRANCH) into BRANCH_l10n,
 #           without a merge request: one commit on top of BRANCH. BRANCH_l10n is Crowdin's alone: every
@@ -33,11 +33,11 @@ upload:
   extends: .crowdin
   rules:
     # Not for tags: their pipelines count every file as changed
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "kreate3"
       changes:
         - app/src/main/res/values/*
         - fastlane/metadata/android/en-US/*.txt
-    - if: $CI_PIPELINE_SOURCE == "web" && $CROWDIN_ACTION == "upload"
+    - if: $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == "kreate3" && $CROWDIN_ACTION == "upload"
   script:
     - crowdin upload sources --no-progress -b "$BRANCH"
 
