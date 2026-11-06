@@ -1,0 +1,62 @@
+# Keeps the repository and Crowdin in sync, both directions run from here (Crowdin's own GitLab
+# integration is off).
+#
+# upload:   a push that changes the English texts (app/src/main/res/values/ and the en-US text files
+#           in fastlane/metadata/android/en-US/) sends the sources listed in crowdin.yml to Crowdin.
+# download: pulls the translations of the branch the pipeline starts from (BRANCH) into BRANCH_l10n,
+#           without a merge request: one commit on top of BRANCH. BRANCH_l10n is Crowdin's alone: every
+#           run force-pushes it, replacing what it held. The runner's copy of the repository is only
+#           where that commit is made, it's gone after the job.
+#
+# Both name the Crowdin branch after the git branch. A scheduled pipeline always starts from the
+# default branch; pick another one in Build > Pipelines > New pipeline, together with the variable
+# CROWDIN_ACTION (upload or download, download when left out).
+#
+# Needs the CI/CD variables CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN (masked) and
+# CROWDIN_DEPLOY_KEY (type File, the private half of a deploy key with write access). The public
+# half is added in Settings > Repository > Deploy keys, and *_l10n is protected there so that
+# only this key may push (and force push) to it. The schedule (cron "0 3 * * 6", 03:00 UTC on Saturday) is
+# created in Build > Pipeline schedules; it only exists once this file is on the default branch.
+
+.crowdin:
+  image:
+    name: crowdin/cli:latest
+    entrypoint: [ "" ]
+  variables:
+    # The branch the pipeline started from
+    BRANCH: $CI_COMMIT_REF_NAME
+  # A job while Crowdin still builds the export of another one would fail with 409. Jobs of a
+  # branch queue one after the other
+  resource_group: crowdin-$CI_COMMIT_REF_SLUG
+
+upload:
+  extends: .crowdin
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - app/src/main/res/values/*
+        - fastlane/metadata/android/en-US/*.txt
+    - if: $CI_PIPELINE_SOURCE == "web" && $CROWDIN_ACTION == "upload"
+  script:
+    - crowdin upload sources --no-progress -b "$BRANCH"
+
+download:
+  extends: .crowdin
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web" && $CROWDIN_ACTION != "upload"
+  script:
+    - apk add --no-cache git openssh-client
+    - git config user.name "crowdin"
+    - git config user.email "crowdin@knighthat.me"
+    # Pushes go over SSH with the deploy key, the only identity *_l10n accepts pushes from
+    - install -m 600 "$CROWDIN_DEPLOY_KEY" /tmp/deploy_key
+    - export GIT_SSH_COMMAND="ssh -i /tmp/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+    - git remote set-url --push origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
+    # BRANCH_l10n belongs to Crowdin: it is rebuilt from BRANCH every run, whatever it held before
+    - git checkout -B "${BRANCH}_l10n"
+    - crowdin download --no-progress -b "$BRANCH"
+    - git add -A
+    # Without new translations the branch is simply BRANCH again
+    - git diff --cached --quiet || git commit -m "update translations from crowdin"
+    - git push --force origin "${BRANCH}_l10n"

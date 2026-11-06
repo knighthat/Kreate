@@ -1,5 +1,5 @@
 #
-# Crowdin CLI / GitHub Action configuration.
+# Crowdin CLI configuration (run from .gitlab/ci/crowdin.yml).
 #
 # Only the English texts (app/src/main/res/values/) live in this repo. Translations are downloaded
 # into app/src/main/res/values-<code>/ before each release, the app counts every folder it finds
