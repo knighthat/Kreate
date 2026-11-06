@@ -31,6 +31,8 @@ project(":discord").projectDir = file("extensions/discord")
 // Submodules
 include(":innertube")
 project(":innertube").projectDir = file("modules/innertube")
+include(":innertubex")
+project(":innertubex").projectDir = file("modules/innertubex")
 include(":kizzy")
 project(":kizzy").projectDir = file("modules/kizzy/gateway")
 include(":kizzyDomain")

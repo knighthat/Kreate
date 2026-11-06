@@ -74,7 +74,7 @@ kotlin {
             implementation(libs.vlcj)
         }
         androidMain.dependencies {
-            implementation( libs.innertubex )
+            implementation(projects.innertubex)
 
             implementation(libs.kotlinx.coroutines.guava)
             implementation(libs.nanojson)
