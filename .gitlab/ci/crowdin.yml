@@ -43,8 +43,8 @@ upload:
 download:
   extends: .crowdin
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "web" && $CROWDIN_ACTION != "upload"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $CROWDIN_ACTION != "download"
+    - if: $CI_PIPELINE_SOURCE == "web" && $CROWDIN_ACTION != "download"
   script:
     - apk add --no-cache git openssh-client
     - git config user.name "crowdin"
