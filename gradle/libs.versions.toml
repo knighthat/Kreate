@@ -47,7 +47,7 @@ androidTest = "1.7.0"
 lifecycle = "2.10.0"
 kotlinx-serialization = "1.11.0"
 koin = "4.2.2"
-kermit = "2.1.0"
+kermit = "2.2.0"
 javax = "1"
 
 
