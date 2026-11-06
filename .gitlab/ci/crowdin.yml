@@ -32,7 +32,8 @@
 upload:
   extends: .crowdin
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
+    # Not for tags: their pipelines count every file as changed
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
       changes:
         - app/src/main/res/values/*
         - fastlane/metadata/android/en-US/*.txt
