@@ -5,10 +5,26 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.dp
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -18,7 +34,7 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
-import me.knighthat.updater.ChangelogsDialog
+import it.fast4x.rimusic.ui.styling.LocalAppearance
 import me.knighthat.updater.Updater
 
 
@@ -48,8 +64,60 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.setting_entry_view_changelogs ) {
-        val context = LocalContext.current
-        val changelogs = remember { ChangelogsDialog(context) }
+        val changelogs = remember {
+            object: me.knighthat.component.dialog.Dialog {
+                override val dialogTitle: String
+                    @Composable
+                    get() = "This version has stopped receiving new features"
+
+                // Automatically enable dialog when this class is init
+                override var isActive: Boolean by mutableStateOf( false )
+
+                override fun hideDialog() {
+                    super.hideDialog()
+                    Preferences.SEEN_CHANGELOGS_VERSION.value = BuildConfig.VERSION_NAME
+                }
+
+                @Composable
+                override fun DialogBody() {
+                    val (colorPalette, typography) = LocalAppearance.current
+                    val style = typography.m.copy(
+                        color = colorPalette.text
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = "Version 2.x.x is now in maintenance mode.",
+                            style = style
+                        )
+                        Text(
+                            text = "Playback will keep working until v3 is released to the public.",
+                            style = style
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Want to try v3 early? Check out my ")
+                                withLink(
+                                    LinkAnnotation.Url(
+                                        url = "https://www.patreon.com/knighthat",
+                                        styles = TextLinkStyles(
+                                            style = SpanStyle(
+                                                color = Color(0xFF42A5F5),
+                                                textDecoration = TextDecoration.Underline
+                                            )
+                                        )
+                                    )
+                                ) { append("Patreon") }
+                                append(" to learn more.")
+                            },
+                            style = style
+                        )
+                    }
+                }
+            }
+        }
         changelogs.Render()
 
         SettingComponents.Text(

@@ -17,9 +17,11 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.util.UnstableApi
@@ -77,8 +85,8 @@ import it.fast4x.rimusic.ui.screens.search.SearchScreen
 import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
+import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kotlinx.coroutines.delay
-import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
 
@@ -439,13 +447,56 @@ fun AppNavigation(
 
     if( Preferences.SEEN_CHANGELOGS_VERSION.value != BuildConfig.VERSION_NAME ) {
         val changelogs = remember {
-            object: ChangelogsDialog(context) {
+            object: me.knighthat.component.dialog.Dialog {
+                override val dialogTitle: String
+                    @Composable
+                    get() = "This version has stopped receiving new features"
+
                 // Automatically enable dialog when this class is init
                 override var isActive: Boolean by mutableStateOf( !crashReportDialog.isActive )
 
                 override fun hideDialog() {
                     super.hideDialog()
                     Preferences.SEEN_CHANGELOGS_VERSION.value = BuildConfig.VERSION_NAME
+                }
+
+                @Composable
+                override fun DialogBody() {
+                    val (colorPalette, typography) = LocalAppearance.current
+                    val style = typography.m.copy(
+                        color = colorPalette.text
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = "Version 2.x.x is now in maintenance mode.",
+                            style = style
+                        )
+                        Text(
+                            text = "Playback will keep working until v3 is released to the public.",
+                            style = style
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Want to try v3 early? Check out my ")
+                                withLink(
+                                    LinkAnnotation.Url(
+                                        url = "https://www.patreon.com/knighthat",
+                                        styles = TextLinkStyles(
+                                            style = SpanStyle(
+                                                color = Color(0xFF42A5F5),
+                                                textDecoration = TextDecoration.Underline
+                                            )
+                                        )
+                                    )
+                                ) { append("Patreon") }
+                                append(" to learn more.")
+                            },
+                            style = style
+                        )
+                    }
                 }
             }
         }
