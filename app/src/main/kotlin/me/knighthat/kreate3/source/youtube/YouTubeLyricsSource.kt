@@ -19,6 +19,8 @@
 package me.knighthat.kreate3.source.youtube
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.lyrics.FoundLyrics
 import me.knighthat.kreate3.lyrics.LyricsQuery
@@ -44,7 +46,9 @@ class YouTubeLyricsSource(private val youTube: YouTubeProvider) : LyricsSource {
 
     override suspend fun find(query: LyricsQuery): FoundLyrics? {
         if (query.origin != Origin.YOUTUBE) return null
-        val lyrics = youTube.lyrics(query.songId) ?: return null
+        // Called from composition, the answers of YouTube are mapped where this runs
+        val lyrics = withContext(Dispatchers.Default) { youTube.lyrics(query.songId) }
+            ?: return null
         return FoundLyrics(lyrics.text, LyricsSync.NONE, provider, lyrics.credit)
     }
 }

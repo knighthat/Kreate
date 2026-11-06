@@ -27,7 +27,9 @@ import androidx.media3.common.MediaItem
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
@@ -78,10 +80,15 @@ internal sealed interface RemotePlaylists {
     data class Loaded(val playlists: List<UserPlaylist>) : RemotePlaylists
 }
 
-/** The playlists [load] gives, as the menu shows them while and after they are fetched. */
+/**
+ * The playlists [load] gives, as the menu shows them while and after they are fetched. Called from
+ * composition, so [load] runs off the main thread: its answer is mapped to playlists where it
+ * runs.
+ */
 private suspend fun fetchRemote(load: suspend () -> List<UserPlaylist>?): RemotePlaylists =
     try {
-        load()?.let { RemotePlaylists.Loaded(it) } ?: RemotePlaylists.None
+        withContext(Dispatchers.Default) { load() }
+            ?.let { RemotePlaylists.Loaded(it) } ?: RemotePlaylists.None
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
