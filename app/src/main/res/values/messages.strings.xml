@@ -157,6 +157,7 @@
 
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
     <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
+    <string name="snackbar_old_app_downloads_confirm">Tap the back arrow to confirm your selection</string>
     <string name="snackbar_this_song">this song</string>
     <string name="snackbar_this_album">this album</string>
     <string name="snackbar_this_artist">this artist</string>

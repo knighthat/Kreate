@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
@@ -64,7 +66,7 @@ private val PICKED = Color(0xFF2E7D32)
 
 /**
  * The songs the old app had downloaded, to pick the ones to download. A tap picks a song or takes
- * it back, a picked song shows a check mark in place of its cover. Leaving the page downloads
+ * it back, a picked song shows a check mark in place of its cover. Leaving the page with its back arrow (the system back does nothing) downloads
  * the songs picked.
  *
  * @param onBack leaves the page, which downloads the songs picked (none is fine)
@@ -81,6 +83,12 @@ fun LegacyDownloadsScreen(
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
+
+    // Only the page's back arrow confirms, the system back button and gesture do nothing
+    BackHandler {}
+    val notifier = LocalNotifier.current
+    val hint = stringResource(R.string.snackbar_old_app_downloads_confirm)
+    LaunchedEffect(Unit) { notifier.post(hint) }
 
     LegacyDownloadsContent(
         songs = songs,
@@ -111,8 +119,6 @@ private fun LegacyDownloadsContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    BackHandler(onBack = onBack)
-
     DetailScaffold(
         title = stringResource(R.string.screen_title_old_app_downloads),
         onBack = onBack,
