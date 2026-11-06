@@ -189,7 +189,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             onStored = { persistentQueue?.refresh() },
         )
 
-        return MediaLibrarySession.Builder(this, player, SessionCallback(scope))
+        return MediaLibrarySession.Builder(this, player, SessionCallback(scope, player))
             // Tapping the notification brings the app back with the player open, instead of
             // opening a second copy
             .setSessionActivity(
@@ -371,9 +371,11 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
      * The app's own controllers may also set the sleep timer, see [SleepTimerCommands].
      *
      * @param scope the player's, Auto's requests are answered in it
+     * @param player the session's, songs queued next go through it, see [PlayNextCommand]
      */
     private inner class SessionCallback(
         private val scope: CoroutineScope,
+        private val player: KreatePlayer,
     ) : MediaLibrarySession.Callback {
 
         private val library: AutoLibrary = get()
@@ -386,7 +388,10 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
             val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS
                 .buildUpon()
-                .apply { SleepTimerCommands.all.forEach(::add) }
+                .apply {
+                    SleepTimerCommands.all.forEach(::add)
+                    add(PlayNextCommand.COMMAND)
+                }
                 .build()
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session, controller)
                 .setAvailableSessionCommands(commands)
@@ -399,6 +404,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             customCommand: SessionCommand,
             args: Bundle,
         ): ListenableFuture<SessionResult> {
+            if (customCommand == PlayNextCommand.COMMAND) return playNext(args)
+
             val timer = sleepTimer
             val action = SleepTimerCommands.actionOf(customCommand.customAction)
             when {
@@ -409,6 +416,17 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 action != null -> timer.change(action)
                 else -> return super.onCustomCommand(session, controller, customCommand, args)
             }
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+        }
+
+        /** Adds the songs [args] carries after the current one, see [PlayNextCommand]. */
+        private fun playNext(args: Bundle): ListenableFuture<SessionResult> {
+            val items = PlayNextCommand.itemsOf(args)?.map {
+                it.queued() ?: return Futures.immediateFuture(
+                    SessionResult(SessionError.ERROR_BAD_VALUE)
+                )
+            } ?: return Futures.immediateFuture(SessionResult(SessionError.ERROR_BAD_VALUE))
+            player.playNext(items)
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
         }
 

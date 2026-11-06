@@ -14,6 +14,10 @@ paths:
 - `play()` from the background (notification button, widget) on Android 16 is refused audio focus
   unless the service is already foreground: `startForeground` with an id of its own **before**
   `play()`. Details: `.claude/docs/android-gotchas.md`.
+- "Play next" goes through `PlayNextCommand` to `KreatePlayer.playNext`, never a plain
+  `addMediaItems(index)` from a controller: only the player can place the songs in the shuffled
+  order. Pinned songs lose their spot on every shuffle toggle (a one-shot "next", maintainer's
+  design).
 - `LoudnessNormalizer` cuts via `player.volume` and boosts via `LoudnessEnhancer`
   (`MAX_BOOST_DB = 6`). Don't change it unasked.
 - A dislike, wherever it's made (player, song menu), takes every copy of the song out of the

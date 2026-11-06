@@ -57,7 +57,13 @@ playback/
 - `AudioEffectSession.kt` — per session: broadcasts OPEN/CLOSE_AUDIO_EFFECT_CONTROL_SESSION, puts
   the audio session id in the session extras (`EXTRA_AUDIO_SESSION_ID`).
 - `KreatePlayer.kt` — `ExoPlayer` delegate wrapper; enforces repeat-one ⇄ shuffle exclusion for
-  every controller (app and system media controls).
+  every controller (app and system media controls); `playNext` (songs after the current one, also
+  next in the shuffled order while shuffling) and scrambling those on every shuffle toggle.
+- `KreateShuffleOrder.kt` — the player's `ShuffleOrder` (`NextPlacement.anchor` says where added
+  items go: right after it, pinned, else random like `DefaultShuffleOrder`); `scrambled` moves the
+  pinned ones to random upcoming spots.
+- `PlayNextCommand.kt` — session command the app's controller queues songs next with (items as a
+  `BundleListRetriever`); handled in `SessionCallback.playNext`.
 - `DataSourceResolver.kt` — `QueuedSong` (`kreate://<ORIGIN>/<id>`, `quality`, `cacheKey` = uri
   `#QUALITY`), `MediaItem.withSongUri` (an item without origin queues its `content://`
   `requestMetadata.mediaUri`: an opened file), resolver: queued address → provider URL at read time

@@ -23,9 +23,6 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ShuffleOrder
-import kotlin.random.Random
 
 /**
  * What a player plays, handed over to the next one when the player restarts, see
@@ -46,16 +43,10 @@ internal class CarriedQueue private constructor(
 
     /** Queues it in [player], which has nothing queued yet. */
     @OptIn(UnstableApi::class)
-    fun applyTo(player: ExoPlayer) {
+    fun applyTo(player: KreatePlayer) {
         player.setMediaItems(items, index, positionMs)
         // Setting the items made a new order
-        if (shuffledOrder.size == items.size)
-            player.setShuffleOrder(
-                ShuffleOrder.DefaultShuffleOrder(
-                    shuffledOrder,
-                    Random.nextLong()
-                )
-            )
+        if (shuffledOrder.size == items.size) player.restoreShuffledOrder(shuffledOrder)
         player.repeatMode = repeatMode
         player.shuffleModeEnabled = shuffle
         player.playWhenReady = playWhenReady

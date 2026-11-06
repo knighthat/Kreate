@@ -13,7 +13,8 @@ Tests mirror the main paths under `src/test/`.
   `DataSourceResolverTest`,
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest` (read order, read-only downloads, the
   downloader's cache move), `LoudnessNormalizerTest`,
-  `PlaybackErrorsTest`, `ShuffledOrderTest`, source/`CoverCacheTest`, `LoudnessMeterTest`,
+  `PlaybackErrorsTest`, `ShuffledOrderTest`, `KreateShuffleOrderTest`, source/`CoverCacheTest`,
+  `LoudnessMeterTest`,
   `MediaStoreScannerTest`, `CoverFilesTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`,

@@ -30,6 +30,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.ListenableFuture
@@ -260,7 +261,12 @@ class PlaybackControllerImpl(
             val wasEmpty = controller.mediaItemCount == 0
             val index = if (wasEmpty) 0 else controller.currentMediaItemIndex + 1
             lastAdded = Added(items, index)
-            controller.addMediaItems(index, items)
+            // The service adds them, it knows where they go in the shuffled order
+            val result = controller
+                .sendCustomCommand(PlayNextCommand.COMMAND, PlayNextCommand.args(items))
+                .await()
+            if (result.resultCode != SessionResult.RESULT_SUCCESS)
+                Logger.w(TAG) { "The service refused to queue items next: ${result.resultCode}" }
             // Ready to play, the user starts it
             if (wasEmpty) controller.prepare()
         }
