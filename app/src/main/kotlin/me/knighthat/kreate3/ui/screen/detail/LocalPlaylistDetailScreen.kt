@@ -54,6 +54,7 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -68,6 +69,7 @@ import me.knighthat.kreate3.ui.component.songsLabel
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -100,7 +102,8 @@ fun LocalPlaylistDetailScreen(
     }
     val cover = playlist?.thumbnail
     val loaded = songs.itemSnapshotList.items
-    val songCovers = remember(loaded) { loaded.songCovers() }
+    val providers = koinInject<Providers>()
+    val songCovers = remember(loaded, providers) { loaded.songCovers(providers) }
     val coverModels = remember(cover, songCovers) {
         listOfNotNull(thumbnailModel(cover, null)).ifEmpty { songCovers.take(1) }
     }
@@ -111,7 +114,9 @@ fun LocalPlaylistDetailScreen(
             thumbnail = playlist?.thumbnail,
             songCovers = songCovers,
             summary = totals?.takeIf { (count, _) -> count > 0 }
-                ?.let { (count, length) -> resources.albumSummary(count, length) },
+                ?.let { (count, length) ->
+                    listOfNotNull(resources.songCount(count), resources.totalLength(length))
+                }.orEmpty(),
             origin = playlist?.origin,
             songs = songs,
             mode = mode,
@@ -180,7 +185,7 @@ private fun LocalPlaylistDetailContent(
     name: String?,
     thumbnail: Uri?,
     songCovers: List<Any>,
-    summary: String?,
+    summary: List<String>,
     origin: Origin?,
     songs: LazyPagingItems<MediaItem>,
     mode: CoverEditMode,
@@ -367,7 +372,7 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         name = "Road trip",
         thumbnail = null,
         songCovers = emptyList(),
-        summary = "6 songs · 23 minutes",
+        summary = listOf("6 songs", "23 minutes"),
         origin = Origin.LOCAL,
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         mode = CoverEditMode.NONE,

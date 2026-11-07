@@ -149,8 +149,9 @@ data class YouTubeArtistPage(
 
 /**
  * @property author who made the playlist, like "YouTube Music"
- * @property summary how many songs and how long, as YouTube words it in the page's language, like
- * "150 songs • 47+ hours", `null` when the page doesn't say
+ * @property summary the views, how many songs and how long, as YouTube words it in the page's
+ * language, like "68 views • 35 tracks • 1 hour, 8 minutes" (a made playlist has no views),
+ * `null` when the page doesn't say
  * @property entries the first places of the playlist, in its order
  * @property continuation gives the next songs to [YouTubeProvider.playlistSongs], `null` when
  * [entries] are all of them

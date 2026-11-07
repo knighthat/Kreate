@@ -42,6 +42,7 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -53,6 +54,7 @@ import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 /** Songs from the end of the list at which the next ones are asked for. */
 private const val PREFETCH_DISTANCE = 10
@@ -122,8 +124,11 @@ fun YouTubePlaylistDetailScreen(
 
     val cover = (state as? LiveState.Ready)?.value?.thumbnail
     val firstCovers = songs
-    val coverModels = remember(cover, firstCovers) {
-        listOfNotNull(thumbnailModel(cover, null)).ifEmpty { firstCovers.songCovers().take(1) }
+    val providers = koinInject<Providers>()
+    val coverModels = remember(cover, firstCovers, providers) {
+        listOfNotNull(thumbnailModel(cover, null)).ifEmpty {
+            firstCovers.songCovers(providers).take(1)
+        }
     }
 
     viewModel.RefreshOnPull(enabled = !edit.editing) {
@@ -184,7 +189,8 @@ private fun YouTubePlaylistDetailContent(
     PlaylistEditBackHandler(edit) { confirmLeave = true }
     val cover = playlist?.thumbnail
     val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
-    val songCovers = remember(songs) { songs.songCovers() }
+    val providers = koinInject<Providers>()
+    val songCovers = remember(songs, providers) { songs.songCovers(providers) }
 
     PlaylistDetailScaffold(
         name = playlist?.name.orEmpty(),
@@ -192,7 +198,7 @@ private fun YouTubePlaylistDetailContent(
         songCovers = songCovers,
         owner = playlist?.subtitle,
         // Its songs come part after part, YouTube says how many and how long
-        summary = playlist?.summary,
+        summary = listOfNotNull(playlist?.summary),
         origin = Origin.YOUTUBE,
         onBack = { if (edit.dirty) confirmLeave = true else onBack() },
         onAction = onAction.takeIf { songs.isNotEmpty() },
@@ -278,7 +284,7 @@ private fun YouTubePlaylistDetailPreview() = PreviewTheme {
                 name = "Road trip",
                 thumbnail = null,
                 subtitle = "Neon Coast",
-                summary = "42 songs • 2 hours",
+                summary = "1.2K views • 42 songs • 2 hours",
                 editable = true,
             )
         ),

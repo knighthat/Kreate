@@ -172,7 +172,9 @@ ui/screen/
   to the bar's; lists take its padding as content
   padding), `DetailHeader.kt` (`DetailHeader`, unused since the redesigns; `DetailDescription`;
   `AlbumTrack` (track number in
-  the cover's place), `DiscHeader`, `Resources.albumSummary`, `ArtistLine`; `DetailDescription`
+  the cover's place), `DiscHeader`, `Resources.albumSummary`, `Resources.songCount`,
+  `Resources.totalLength`,
+  `ArtistLine`; `DetailDescription`
   takes colors), `LiveDetail.kt` (
   `LiveDetailViewModel` (state re-filtered by `dislikedIds` through each subclass's
   `withoutSongs`), `LiveState`, `LiveSectionRow`, `LiveDetailScreen`, `LiveStatus` (spinner or

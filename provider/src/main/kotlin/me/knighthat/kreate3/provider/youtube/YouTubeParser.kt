@@ -582,8 +582,8 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
     }
 
     /**
-     * How many songs and how long, the last two parts of a playlist's second subtitle: a user's
-     * playlist puts its views first, like "68 views • 35 tracks • 1 hour, 8 minutes".
+     * A playlist's second subtitle as YouTube words it: a user's playlist puts its views first,
+     * like "68 views • 35 tracks • 1 hour, 8 minutes", a made one has only "150 songs • 47+ hours".
      */
     private fun summaryOf(subtitle: JsonElement?): String? {
         val runs = subtitle.runs()
@@ -591,7 +591,7 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         if (parts.isEmpty()) return null
         // The separator YouTube put between them, in the page's language
         val separator = runs.firstOrNull { it.text.trim() == SUBTITLE_SEPARATOR }?.text ?: " • "
-        return parts.takeLast(2).joinToString(separator) { it.text }
+        return parts.joinToString(separator) { it.text }
     }
 
     /** The next songs of a playlist. */

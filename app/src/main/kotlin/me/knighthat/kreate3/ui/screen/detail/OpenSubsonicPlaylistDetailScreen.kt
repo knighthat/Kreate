@@ -36,6 +36,7 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -47,6 +48,7 @@ import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 /**
  * A playlist of the OpenSubsonic server, fetched when the screen opens and never stored. Its
@@ -75,8 +77,11 @@ fun OpenSubsonicPlaylistDetailScreen(
 
     val cover = (state as? LiveState.Ready)?.value?.thumbnail
     val firstCovers = (state as? LiveState.Ready)?.value?.songs.orEmpty()
-    val coverModels = remember(cover, firstCovers) {
-        listOfNotNull(thumbnailModel(cover, null)).ifEmpty { firstCovers.songCovers().take(1) }
+    val providers = koinInject<Providers>()
+    val coverModels = remember(cover, firstCovers, providers) {
+        listOfNotNull(thumbnailModel(cover, null)).ifEmpty {
+            firstCovers.songCovers(providers).take(1)
+        }
     }
     val actions = remember(viewModel, notifier, resources, deleted, deleteFailed, onBack) {
         PlaylistEditActions(
@@ -168,7 +173,10 @@ private fun OpenSubsonicPlaylistDetailContent(
     PlaylistEditBackHandler(edit) { confirmLeave = true }
     val cover = playlist?.thumbnail
     val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
-    val songCovers = remember(playlist?.songs) { playlist?.songs.orEmpty().songCovers() }
+    val providers = koinInject<Providers>()
+    val songCovers = remember(playlist?.songs, providers) {
+        playlist?.songs.orEmpty().songCovers(providers)
+    }
 
     PlaylistDetailScaffold(
         name = playlist?.name.orEmpty(),
@@ -176,8 +184,11 @@ private fun OpenSubsonicPlaylistDetailContent(
         songCovers = songCovers,
         owner = null,
         summary = playlist?.songs?.takeIf { it.isNotEmpty() }?.let { songs ->
-            resources.albumSummary(songs.size, songs.sumOf { it.mediaMetadata.durationMs ?: 0 })
-        },
+            listOfNotNull(
+                resources.songCount(songs.size),
+                resources.totalLength(songs.sumOf { it.mediaMetadata.durationMs ?: 0 }),
+            )
+        }.orEmpty(),
         origin = Origin.OPEN_SUBSONIC,
         onBack = { if (edit.dirty) confirmLeave = true else onBack() },
         onAction = onAction.takeIf { playlist?.songs?.isNotEmpty() == true },

@@ -19,6 +19,9 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.res.Resources
+import android.icu.text.MeasureFormat
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import android.net.Uri
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
@@ -61,6 +64,7 @@ import me.knighthat.kreate3.ui.component.ExplicitBadge
 import me.knighthat.kreate3.ui.component.OriginBadge
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.Thumbnail
+import kotlin.time.Duration.Companion.milliseconds
 
 /** Lines of [DetailDescription] shown until it is opened. */
 private const val COLLAPSED_LINES = 3
@@ -269,6 +273,27 @@ internal fun Resources.albumSummary(songs: Int, totalMs: Long?): String = listOf
         getQuantityString(R.plurals.minute, minutes, minutes)
     },
 ).joinToString(" · ")
+
+/** `12 songs`. */
+internal fun Resources.songCount(songs: Int): String =
+    getQuantityString(R.plurals.song, songs, songs)
+
+/**
+ * `1 day, 1 hour`: [totalMs] in the locale's own words, in whole days, hours and minutes (60
+ * minutes show as 1 hour). `null` when the length isn't known.
+ */
+internal fun Resources.totalLength(totalMs: Long?): String? = totalMs?.takeIf { it > 0 }?.let {
+    (it + 30_000).milliseconds.toComponents { days, hours, minutes, _, _ ->
+        val parts = listOf(
+            Measure(days, MeasureUnit.DAY),
+            Measure(hours, MeasureUnit.HOUR),
+            Measure(minutes, MeasureUnit.MINUTE),
+        ).filter { part -> part.number.toLong() > 0 }
+        val shown = parts.ifEmpty { listOf(Measure(0, MeasureUnit.MINUTE)) }
+        MeasureFormat.getInstance(configuration.locales[0], MeasureFormat.FormatWidth.WIDE)
+            .formatMeasures(*shown.toTypedArray())
+    }
+}
 
 /**
  * `Artist · 2004`, the artist in [linkColor] and tappable when [onOpenArtist] is given. Shared by

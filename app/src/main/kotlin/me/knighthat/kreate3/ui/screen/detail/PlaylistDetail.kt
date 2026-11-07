@@ -96,6 +96,8 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.provider.Providers
+import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.Blur
 import me.knighthat.kreate3.ui.component.BlurredCover
@@ -115,10 +117,9 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.labelRes
-import me.knighthat.kreate3.ui.component.localSongId
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
-import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.component.songThumbnailModels
 
 /** Share of the screen's width the framed cover takes. */
 private const val FRAMED_COVER_WIDTH = 0.62f
@@ -147,7 +148,8 @@ private val PLACEHOLDER_ICON_SIZE = 72.dp
  * see-through over it and, once the name has gone under it, shows the blurred cover with the name
  * and [summary].
  *
- * @param summary how many songs and how long, `12 songs · 47 minutes`
+ * @param summary the lines under the name: `12 songs` and `47 minutes` as two, or YouTube's own
+ * text as one; empty while there is nothing to say
  *
  * @param models the playlist's own picture, empty for none
  * @param songCovers covers of its songs, in its order, for a playlist without a picture: four of
@@ -166,7 +168,7 @@ fun PlaylistDetailScaffold(
     models: List<Any>,
     songCovers: List<Any>,
     owner: String?,
-    summary: String?,
+    summary: List<String>,
     origin: Origin?,
     onBack: () -> Unit,
     onAction: ((QueueAction) -> Unit)?,
@@ -268,7 +270,7 @@ private fun FramedHeader(
     models: List<Any>,
     songCovers: List<Any>,
     owner: String?,
-    summary: String?,
+    summary: List<String>,
     origin: Origin?,
     topPadding: Dp,
     buttons: List<PlaylistHeaderButton>,
@@ -348,10 +350,11 @@ private fun FramedHeader(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        summary?.let {
+        summary.forEach {
             Text(
                 it,
                 style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -436,7 +439,7 @@ val LocalPlaylistButtons =
 @Composable
 private fun FramedTopBar(
     name: String,
-    summary: String?,
+    summary: List<String>,
     models: List<Any>,
     collapsed: Boolean,
     onBack: () -> Unit,
@@ -462,9 +465,10 @@ private fun FramedTopBar(
             title = {
                 Column(Modifier.alpha(shown)) {
                     Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    summary?.let {
+                    if (summary.isNotEmpty()) {
+                        // One line under the name, however many lines the header gives it
                         Text(
-                            it,
+                            summary.joinToString(" · "),
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -494,12 +498,16 @@ private fun FramedTopBar(
 
 /**
  * Covers of the songs of a playlist for [PlaylistDetailScaffold]'s grid, each cover once, in the
- * playlist's order.
+ * playlist's order, stopping at the fourth so a long list isn't walked on the main thread. A
+ * song's cover is the first of [songThumbnailModels] at [HEADER_ARTWORK], the sharp one the
+ * player shows, not the small one of its row.
  */
-internal fun List<MediaItem>.songCovers(): List<Any> =
-    mapNotNull { thumbnailModel(it.mediaMetadata.artworkUri, it.localSongId) }
+internal fun List<MediaItem>.songCovers(providers: Providers): List<Any> =
+    asSequence()
+        .mapNotNull { songThumbnailModels(it, providers, HEADER_ARTWORK).firstOrNull() }
         .distinct()
         .take(GRID_COVERS)
+        .toList()
 
 /**
  * The sheet of a playlist's ⋮ button: Play next, Add to queue and Share as buttons, then for a
@@ -655,9 +663,10 @@ private fun PlaylistDetailPreview() = PreviewTheme {
         models = models,
         songCovers = emptyList(),
         owner = "Neon Coast",
-        summary = resources.albumSummary(
-            songs.size,
-            songs.sumOf { it.mediaMetadata.durationMs ?: 0 }),
+        summary = listOfNotNull(
+            resources.songCount(songs.size),
+            resources.totalLength(songs.sumOf { it.mediaMetadata.durationMs ?: 0 }),
+        ),
         origin = Origin.YOUTUBE,
         onBack = {},
         onAction = {},
