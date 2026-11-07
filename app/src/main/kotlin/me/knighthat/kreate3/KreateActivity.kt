@@ -49,6 +49,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
+import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.repository.UserRepository
@@ -101,6 +103,24 @@ class KreateActivity : ComponentActivity() {
         const val SETUP_WIZARD_PROFILE_NAME = "me.knighthat.kreate3.SETUP_WIZARD_PROFILE_NAME"
         const val SETUP_WIZARD_THEME_MODE = "me.knighthat.kreate3.SETUP_WIZARD_THEME_MODE"
         const val SETUP_WIZARD_CONTRAST_LEVEL = "me.knighthat.kreate3.SETUP_WIZARD_CONTRAST_LEVEL"
+
+        // Signed in during setup: the session is already kept, what is left is turning the source on
+        const val SETUP_WIZARD_YOUTUBE_SIGNED_IN =
+            "me.knighthat.kreate3.SETUP_WIZARD_YOUTUBE_SIGNED_IN"
+        const val SETUP_WIZARD_OPEN_SUBSONIC_URL =
+            "me.knighthat.kreate3.SETUP_WIZARD_OPEN_SUBSONIC_URL"
+        const val SETUP_WIZARD_OPEN_SUBSONIC_AUTH =
+            "me.knighthat.kreate3.SETUP_WIZARD_OPEN_SUBSONIC_AUTH"
+
+        // Stream quality, the YouTube pair belongs to the signed in settings when signed in
+        const val SETUP_WIZARD_YOUTUBE_QUALITY_WIFI =
+            "me.knighthat.kreate3.SETUP_WIZARD_YOUTUBE_QUALITY_WIFI"
+        const val SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE =
+            "me.knighthat.kreate3.SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE"
+        const val SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI =
+            "me.knighthat.kreate3.SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI"
+        const val SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_MOBILE =
+            "me.knighthat.kreate3.SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_MOBILE"
         //</editor-fold>
     }
 
@@ -183,6 +203,35 @@ class KreateActivity : ComponentActivity() {
                 }
                 themeMode?.let { Preferences.THEME_MODE.update(it) }
                 contrastLevel?.let { Preferences.CONTRAST_LEVEL.update(it) }
+
+                // The credentials were kept while the wizard was open, a restore leaves them, but
+                // it replaced every preference: the address and the switches are set here
+                val youTubeSignedIn = intent.getBooleanExtra(SETUP_WIZARD_YOUTUBE_SIGNED_IN, false)
+                if (youTubeSignedIn) Preferences.YOUTUBE_ACCOUNT_ENABLED.update(true)
+                val openSubsonicUrl = intent.getStringExtra(SETUP_WIZARD_OPEN_SUBSONIC_URL)
+                if (!openSubsonicUrl.isNullOrBlank()) {
+                    Preferences.OPEN_SUBSONIC_URL.update(openSubsonicUrl)
+                    OpenSubsonicAuth.entries.firstOrNull {
+                        it.name == intent.getStringExtra(SETUP_WIZARD_OPEN_SUBSONIC_AUTH)
+                    }?.let { Preferences.OPEN_SUBSONIC_AUTH.update(it) }
+                    Preferences.OPEN_SUBSONIC_ENABLED.update(true)
+                }
+
+                fun quality(key: String) = StreamQuality.entries.firstOrNull {
+                    it.name == intent.getStringExtra(key)
+                }
+                quality(SETUP_WIZARD_YOUTUBE_QUALITY_WIFI)?.let {
+                    (if (youTubeSignedIn) Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
+                    else Preferences.YOUTUBE_QUALITY_WIFI).update(it)
+                }
+                quality(SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE)?.let {
+                    (if (youTubeSignedIn) Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM
+                    else Preferences.YOUTUBE_QUALITY_MOBILE).update(it)
+                }
+                quality(SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI)
+                    ?.let { Preferences.OPEN_SUBSONIC_QUALITY_WIFI.update(it) }
+                quality(SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_MOBILE)
+                    ?.let { Preferences.OPEN_SUBSONIC_QUALITY_MOBILE.update(it) }
             }
             //</editor-fold>
             isReady = true

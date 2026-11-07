@@ -30,6 +30,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.preferences.PreferencesBackup
+import me.knighthat.kreate3.preferences.StagedOpenSubsonic
 import me.knighthat.kreate3.source.CoverFiles
 import java.io.File
 import java.io.InputStream
@@ -182,6 +183,19 @@ class Backup(
             fill: suspend (File) -> Unit
         ) =
             withContext(Dispatchers.IO) { keep(context) { fill(it) } }
+
+        /**
+         * The OpenSubsonic server of the backup kept by [stageWithoutRollback], `null` when there
+         * is none or it can't be read. Opens nothing of the app, for the setup wizard.
+         */
+        suspend fun stagedOpenSubsonic(context: Context): StagedOpenSubsonic? =
+            try {
+                PreferencesBackup(context)
+                    .stagedOpenSubsonic(File(context.noBackupFilesDir, PENDING_DIRECTORY))
+            } catch (e: Exception) {
+                Logger.w(e, TAG) { "Couldn't read the staged OpenSubsonic server" }
+                null
+            }
 
         /**
          * Moves a backup kept by [stage] in place. Call it when the process starts, before the

@@ -16,7 +16,8 @@ on
 - `app/res/xml/backup_rules.xml` (API ≤30) + `data_extraction_rules.xml` (API 31+) — backup/transfer
   exclusions (`.claude/rules/storage.md`).
 - `preferences/PreferencesBackup.kt` — preference files for a backup (global + profiles/<id>
-  /preferences), path check, `restore`, schema versions.
+  /preferences), path check, `restore`, schema versions.; `stagedOpenSubsonic` reads the
+  OpenSubsonic address/sign-in way of a staged backup from a copy (setup wizard prefill)
 - `preferences/ProfileManager.kt` — profile ids, active profile (settings of the global file), file
   layout. `Profile.kt` —
   constants.

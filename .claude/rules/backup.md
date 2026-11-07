@@ -17,6 +17,11 @@ paths:
   the next start; current data is first exported to `cacheDir/rollback.zip`, which is staged
   instead if applying fails. `applyPendingRestore` always deletes the pending folder (crash-loop
   guard); keep that.
+- The setup wizard signs in to the sources after its import page: secrets are kept at once (a
+  restore
+  leaves them) and a Kreate zip's server address is read from the staged files
+  (`Backup.stagedOpenSubsonic`); the address, sign-in way and "enabled" switches are written by
+  `KreateActivity` after the restore, which replaces every preference.
 - Only the default profile may back up or restore (a backup holds every profile).
 - File name: `kreate_backup_{versionName}_{yyyy-MM-dd_HH-mm-ss}.zip`.
 - A new per-profile file that belongs in backups needs `PreferencesBackup.files()`/`isBackupPath`

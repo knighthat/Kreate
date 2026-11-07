@@ -47,6 +47,10 @@ import org.koin.core.component.inject
  */
 object Preferences : KoinComponent {
 
+    /** Stored names of the OpenSubsonic address and sign in way, [PreferencesBackup] reads them. */
+    internal const val OPEN_SUBSONIC_URL_NAME = "open_subsonic_url"
+    internal const val OPEN_SUBSONIC_AUTH_NAME = "open_subsonic_auth"
+
     private val engine: PreferenceEngine by inject()
 
     /**
@@ -239,10 +243,10 @@ object Preferences : KoinComponent {
      * Address of the OpenSubsonic server without `/rest`, like `https://music.example.com`.
      * Empty until the user sets one.
      */
-    val OPEN_SUBSONIC_URL by lazy { string("open_subsonic_url", "") }
+    val OPEN_SUBSONIC_URL by lazy { string(OPEN_SUBSONIC_URL_NAME, "") }
 
     /** Which credentials sign in, see [OpenSubsonicAuth]. */
-    val OPEN_SUBSONIC_AUTH by lazy { enum("open_subsonic_auth", OpenSubsonicAuth.PASSWORD) }
+    val OPEN_SUBSONIC_AUTH by lazy { enum(OPEN_SUBSONIC_AUTH_NAME, OpenSubsonicAuth.PASSWORD) }
 
     /**
      * Whether a server whose certificate chain ends in a self-signed certificate is trusted.

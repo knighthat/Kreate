@@ -107,7 +107,7 @@ fun OpenSubsonicSignInScreen(onBack: () -> Unit, modifier: Modifier = Modifier) 
  * (trimmed), password and API key (trimmed)
  */
 @Composable
-private fun OpenSubsonicSignInContent(
+internal fun OpenSubsonicSignInContent(
     server: String,
     url: String,
     auth: OpenSubsonicAuth,

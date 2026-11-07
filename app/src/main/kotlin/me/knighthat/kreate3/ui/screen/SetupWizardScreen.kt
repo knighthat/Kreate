@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -101,29 +102,58 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_CONTRAST_LEVEL
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_DONE_ACTION
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_OPEN_SUBSONIC_AUTH
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_MOBILE
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_OPEN_SUBSONIC_URL
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_PROFILE_NAME
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_THEME_MODE
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_TOS_CHECKSUM
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_YOUTUBE_QUALITY_WIFI
+import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_YOUTUBE_SIGNED_IN
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
 import me.knighthat.kreate3.backup.LegacyBackup
 import me.knighthat.kreate3.constant.ContrastLevel
+import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Secrets
+import me.knighthat.kreate3.preferences.StagedOpenSubsonic
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.HttpClientFactory
+import me.knighthat.kreate3.provider.youtube.YouTubeChannel
+import me.knighthat.kreate3.provider.youtube.YouTubeException
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.TileButton
+import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.labelRes
+import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.openSubsonicLabelRes
+import me.knighthat.kreate3.ui.component.youTubeLabelRes
+import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
+import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSignInContent
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeChannelPicker
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSignInContent
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.keepYouTubeSession
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
 import me.knighthat.kreate3.utils.hasAudioPermission
 import me.knighthat.kreate3.utils.hasNotificationPermission
 import me.knighthat.kreate3.utils.shouldShowRequestPermissionRationale
 import me.knighthat.kreate3.utils.verticalScrollbar
+import okhttp3.OkHttpClient
+import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -140,23 +170,37 @@ private const val LICENSE_NAME = "GPL 3.0 License"
 private const val PAGE_WELCOME = 0
 private const val PAGE_PERMISSIONS = 1
 private const val PAGE_IMPORT = 2
-private const val PAGE_PROFILE = 3
-private const val PAGE_TERMS = 4
+private const val PAGE_SIGN_IN = 3
+private const val PAGE_PROFILE = 4
+private const val PAGE_TERMS = 5
 
 private val PAGE_TITLES = listOf(
     R.string.screen_title_welcome,
     R.string.screen_title_permissions,
     R.string.screen_title_import,
+    R.string.screen_title_sign_in,
     R.string.screen_title_basic_settings,
     R.string.screen_title_terms_of_service,
 )
 
 /**
- * Keeps the backup at [uri], it is restored when the app starts after setup.
- *
- * @return why it can't be restored, `null` when it will be
+ * @param message why the backup can't be restored, `null` when it will be
+ * @param legacy whether it is the old app's archive, which brings no settings of its own
+ * @param server the OpenSubsonic server the backup keeps, to fill in the sign in page
  */
-private suspend fun Context.importBackup(uri: Uri): String? =
+private class ImportResult(
+    val message: String?,
+    val legacy: Boolean = false,
+    val server: StagedOpenSubsonic? = null,
+)
+
+/** The sources the wizard signs in to, each on a page of its own over the wizard. */
+private enum class WizardSource { YOUTUBE_MUSIC, OPEN_SUBSONIC }
+
+/**
+ * Keeps the backup at [uri], it is restored when the app starts after setup.
+ */
+private suspend fun Context.importBackup(uri: Uri): ImportResult =
     try {
         val input = withContext(Dispatchers.IO) { contentResolver.openInputStream(uri) }
             ?: throw FileNotFoundException()
@@ -169,13 +213,17 @@ private suspend fun Context.importBackup(uri: Uri): String? =
                 it
             ) else Backup.stageWithoutRollback(this, it)
         }
-        null
+        ImportResult(
+            message = null,
+            legacy = isLegacy,
+            server = if (isLegacy) null else Backup.stagedOpenSubsonic(this),
+        )
     } catch (e: BackupException) {
-        e.describe(this)
+        ImportResult(e.describe(this))
     } catch (_: IOException) {
-        getString(R.string.setting_description_restore_status_failed)
+        ImportResult(getString(R.string.setting_description_restore_status_failed))
     } catch (_: SecurityException) {
-        getString(R.string.setting_description_restore_status_failed)
+        ImportResult(getString(R.string.setting_description_restore_status_failed))
     }
 
 @Composable
@@ -241,15 +289,22 @@ private fun Welcome() {
             Text(stringResource(R.string.wizard_intro))
 
             Entry(
-                stringResource(PAGE_TITLES[1]),
+                stringResource(PAGE_TITLES[PAGE_PERMISSIONS]),
                 stringResource(R.string.wizard_permissions_entry, stringResource(R.string.app_name))
             )
             Entry(
-                stringResource(PAGE_TITLES[2]),
+                stringResource(PAGE_TITLES[PAGE_IMPORT]),
                 stringResource(R.string.wizard_import_entry)
             )
-            Entry(stringResource(PAGE_TITLES[3]), stringResource(R.string.wizard_profile_entry))
-            Entry(stringResource(PAGE_TITLES[4]), "")
+            Entry(
+                stringResource(PAGE_TITLES[PAGE_SIGN_IN]),
+                stringResource(R.string.wizard_sign_in_entry)
+            )
+            Entry(
+                stringResource(PAGE_TITLES[PAGE_PROFILE]),
+                stringResource(R.string.wizard_profile_entry)
+            )
+            Entry(stringResource(PAGE_TITLES[PAGE_TERMS]), "")
         }
     }
 }
@@ -366,6 +421,211 @@ private fun Permissions() {
 }
 
 /**
+ * One tile per source to sign in to, the account is kept at once but only used after setup.
+ *
+ * @param youTubeSignedIn whether a YouTube Music session is kept
+ * @param youTubeChannelChoice whether its account has several channels, a tap changes the one used
+ * @param openSubsonicSignedIn whether OpenSubsonic credentials are kept
+ */
+@Composable
+private fun SignIn(
+    youTubeSignedIn: Boolean,
+    youTubeChannelChoice: Boolean,
+    openSubsonicSignedIn: Boolean,
+    onYouTube: () -> Unit,
+    onOpenSubsonic: () -> Unit,
+) {
+    @Composable
+    fun Tile(
+        origin: Origin,
+        name: String,
+        signedIn: Boolean,
+        onClick: () -> Unit,
+        signedInText: Int = R.string.status_signed_in,
+    ) =
+        TileButton(
+            icon = origin.icon,
+            title = name,
+            subtitle = stringResource(
+                if (signedIn) signedInText else R.string.wizard_sign_in_tile_description
+            ),
+            onClick = onClick,
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+    StepColumn {
+        Text(stringResource(R.string.wizard_sign_in_intro))
+        Tile(
+            Origin.YOUTUBE,
+            stringResource(R.string.source_ytm),
+            youTubeSignedIn,
+            onYouTube,
+            signedInText = if (youTubeChannelChoice)
+                R.string.setting_description_tap_to_change_channel
+            else
+                R.string.status_signed_in,
+        )
+        Tile(
+            Origin.OPEN_SUBSONIC,
+            stringResource(R.string.source_opensubsonic),
+            openSubsonicSignedIn,
+            onOpenSubsonic
+        )
+    }
+}
+
+/**
+ * The YouTube provider of the wizard. The account is off until setup is done, so it asks with the
+ * session just kept as a secret.
+ */
+@Composable
+private fun rememberWizardYouTubeProvider(): YouTubeProvider {
+    val base = koinInject<OkHttpClient>()
+    val factory = koinInject<HttpClientFactory>()
+    val json = koinInject<Json>()
+    return remember {
+        YouTubeProvider(base, factory, json, null) { Secrets.YOUTUBE_COOKIES.current() }
+    }
+}
+
+/** The channels of the signed in account, empty when they can't be read. */
+private suspend fun YouTubeProvider.channelsOrNone(): List<YouTubeChannel> =
+    try {
+        channels().orEmpty()
+    } catch (_: YouTubeException) {
+        emptyList()
+    }
+
+/**
+ * Google's sign in page, then the channel of the account to act as when there are several. The
+ * session is kept as a secret and nothing else, the account is turned on after setup.
+ *
+ * @param onChannels the channels found after signing in
+ */
+@Composable
+private fun YouTubeSignInStep(
+    provider: YouTubeProvider,
+    onChannels: (List<YouTubeChannel>) -> Unit,
+    onSignedIn: () -> Unit,
+    onBack: () -> Unit,
+) = YouTubeSignInContent(
+    onBack = onBack,
+    onSignedIn = onSignedIn,
+    signIn = ::keepYouTubeSession,
+    channelsAfterSignIn = { provider.channelsOrNone().also(onChannels) },
+    finishSignIn = { channel -> Secrets.YOUTUBE_PAGE_ID.update(channel?.pageId.orEmpty()) },
+)
+
+/** Changes the channel of the account signed in to, [channels] has several. */
+@Composable
+private fun YouTubeChannelStep(channels: List<YouTubeChannel>, onClose: () -> Unit) {
+    val pageId by Secrets.YOUTUBE_PAGE_ID.collectAsStateWithLifecycle()
+
+    YouTubeChannelPicker(
+        channels = channels,
+        pageId = pageId,
+        onPick = {
+            Secrets.YOUTUBE_PAGE_ID.update(it.pageId.orEmpty())
+            onClose()
+        },
+        onDismiss = onClose,
+    )
+}
+
+/**
+ * The sign in page of the OpenSubsonic settings. The credentials are kept at once, the address
+ * and the way to sign in go to [onSaved] to be written to the preferences after setup.
+ */
+@Composable
+private fun OpenSubsonicSignInStep(
+    url: String,
+    auth: OpenSubsonicAuth,
+    onSaved: (String, OpenSubsonicAuth) -> Unit,
+    onSignedOut: () -> Unit,
+    onBack: () -> Unit,
+) {
+    val username by Secrets.OPEN_SUBSONIC_USERNAME.collectAsStateWithLifecycle()
+    val password by Secrets.OPEN_SUBSONIC_PASSWORD.collectAsStateWithLifecycle()
+    val apiKey by Secrets.OPEN_SUBSONIC_API_KEY.collectAsStateWithLifecycle()
+
+    OpenSubsonicSignInContent(
+        server = stringResource(R.string.source_opensubsonic),
+        url = url,
+        auth = auth,
+        username = username,
+        password = password,
+        apiKey = apiKey,
+        onSave = { address, method, user, secret, key ->
+            when (method) {
+                OpenSubsonicAuth.PASSWORD -> {
+                    Secrets.OPEN_SUBSONIC_USERNAME.update(user)
+                    Secrets.OPEN_SUBSONIC_PASSWORD.update(secret)
+                }
+
+                OpenSubsonicAuth.API_KEY -> Secrets.OPEN_SUBSONIC_API_KEY.update(key)
+            }
+            onSaved(address, method)
+        },
+        onSignOut = {
+            Secrets.OPEN_SUBSONIC_USERNAME.clear()
+            Secrets.OPEN_SUBSONIC_PASSWORD.clear()
+            Secrets.OPEN_SUBSONIC_API_KEY.clear()
+            onSignedOut()
+        },
+        onBack = onBack,
+    )
+}
+
+/**
+ * The quality sliders of the sources, the same preferences as their settings pages. YouTube Music
+ * always shows, Original is its top step only while [youTubeSignedIn]. OpenSubsonic shows only
+ * while [openSubsonicSignedIn].
+ */
+@Composable
+private fun QualityChoices(
+    youTubeSignedIn: Boolean,
+    youTubeWifi: StreamQuality,
+    youTubeMobile: StreamQuality,
+    onYouTubeWifi: (StreamQuality) -> Unit,
+    onYouTubeMobile: (StreamQuality) -> Unit,
+    openSubsonicSignedIn: Boolean,
+    openSubsonicWifi: StreamQuality,
+    openSubsonicMobile: StreamQuality,
+    onOpenSubsonicWifi: (StreamQuality) -> Unit,
+    onOpenSubsonicMobile: (StreamQuality) -> Unit,
+) {
+    Text(stringResource(R.string.wizard_quality_intro))
+
+    Text(stringResource(R.string.source_ytm), style = MaterialTheme.typography.titleMedium)
+    StreamQualitySettings(
+        wifi = youTubeWifi,
+        mobile = youTubeMobile,
+        label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
+        onWifiChange = onYouTubeWifi,
+        onMobileChange = onYouTubeMobile,
+        options = if (youTubeSignedIn)
+            StreamQuality.entries
+        else
+            StreamQuality.entries - StreamQuality.ORIGINAL,
+    )
+
+    if (openSubsonicSignedIn) {
+        Text(
+            stringResource(R.string.source_opensubsonic),
+            style = MaterialTheme.typography.titleMedium
+        )
+        StreamQualitySettings(
+            wifi = openSubsonicWifi,
+            mobile = openSubsonicMobile,
+            label = labelsOf(StreamQuality.entries) { it.openSubsonicLabelRes },
+            onWifiChange = onOpenSubsonicWifi,
+            onMobileChange = onOpenSubsonicMobile,
+        )
+    }
+}
+
+/**
  * @param imported whether a backup is kept to be restored
  * @param importing whether the chosen backup is being read
  * @param message why the last chosen backup can't be restored
@@ -426,20 +686,26 @@ private fun Settings(
     onThemeModeChange: (ThemeMode) -> Unit,
     contrastLevel: ContrastLevel,
     onContrastLevelChange: (ContrastLevel) -> Unit,
+    quality: @Composable () -> Unit,
+    migrated: Boolean = false,
 ) {
     StepColumn {
         Text(
-            stringResource(
-                R.string.wizard_profile_intro,
-                stringResource(R.string.quoted, DEFAULT_PROFILE_NAME)
-            )
+            if (migrated)
+                stringResource(R.string.wizard_profile_intro_migrated)
+            else
+                stringResource(
+                    R.string.wizard_profile_intro,
+                    stringResource(R.string.quoted, DEFAULT_PROFILE_NAME)
+                )
         )
 
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
             label = { Text(stringResource(R.string.name)) },
-            placeholder = { Text(DEFAULT_PROFILE_NAME) },
+            // The migrated profile has a name of its own, which the wizard can't know yet
+            placeholder = { if (!migrated) Text(DEFAULT_PROFILE_NAME) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -472,6 +738,8 @@ private fun Settings(
                 )
             }
         }
+
+        quality()
     }
 }
 
@@ -640,12 +908,14 @@ private fun Context.termsChecksum(): String {
 }
 
 /**
- * Asks the first questions of a new install: access to music, old data, profile name,
- * and the terms and license.
+ * Asks the first questions of a new install: access to music, old data, signing in to the sources
+ * (a backup's server address is filled in), profile name, stream quality, and the terms and license.
  *
  * Nothing is loaded or started while it is open: no preferences, no database, no music scan.
  * The answers are kept in memory and handed to [KreateActivity], which applies them under its
- * splash screen.
+ * splash screen. Signing in is the one thing kept at once, as secrets: a restore leaves them, but
+ * it replaces every preference, so the address and the switches of the sources are handed over
+ * like the rest.
  */
 @Composable
 fun SetupWizardScreen(modifier: Modifier = Modifier) {
@@ -656,26 +926,80 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
     var themeMode by rememberSaveable { mutableStateOf(ThemeMode.AUTOMATIC_DYNAMIC) }
     var contrastLevel by rememberSaveable { mutableStateOf(ContrastLevel.NORMAL) }
     var imported by rememberSaveable { mutableStateOf(false) }
+    // The old app's data has no settings, so profile and quality are still asked
+    var migrated by rememberSaveable { mutableStateOf(false) }
     var importing by remember { mutableStateOf(false) }
     var importMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var signingIn by rememberSaveable { mutableStateOf<WizardSource?>(null) }
+    var youTubeSignedIn by rememberSaveable { mutableStateOf(false) }
+    var youTubeChannelChoice by rememberSaveable { mutableStateOf(false) }
+    var changingChannel by remember { mutableStateOf<List<YouTubeChannel>?>(null) }
+    val youTubeProvider = rememberWizardYouTubeProvider()
+    var openSubsonicSignedIn by rememberSaveable { mutableStateOf(false) }
+    var openSubsonicUrl by rememberSaveable { mutableStateOf("") }
+    var openSubsonicAuth by rememberSaveable { mutableStateOf(OpenSubsonicAuth.PASSWORD) }
+    var youTubeWifi by rememberSaveable { mutableStateOf(StreamQuality.HIGH) }
+    var youTubeMobile by rememberSaveable { mutableStateOf(StreamQuality.MEDIUM) }
+    var openSubsonicWifi by rememberSaveable { mutableStateOf(StreamQuality.ORIGINAL) }
+    var openSubsonicMobile by rememberSaveable { mutableStateOf(StreamQuality.HIGH) }
 
     // Shown live, so the choices on the profile page can be judged right away
     KreateTheme(themeMode, contrastLevel, Color.Unspecified) {
         val state = rememberPagerState { PAGE_TITLES.size }
         val page = state.currentPage
 
-        // Imported data already carries a profile, so the profile page is skipped
-        val next = if (page == PAGE_IMPORT && imported) PAGE_TERMS else page + 1
-        val previous = if (page == PAGE_TERMS && imported) PAGE_IMPORT else page - 1
+        // A restored backup of this app brings its profile and settings, so that page is skipped
+        val skipsSettings = imported && !migrated
+        val next = if (page == PAGE_SIGN_IN && skipsSettings) PAGE_TERMS else page + 1
+        val previous = if (page == PAGE_TERMS && skipsSettings) PAGE_SIGN_IN else page - 1
 
         fun goTo(target: Int) {
             scope.launch { state.animateScrollToPage(target) }
         }
 
         // Pages stay put while a backup is read, "next" depends on whether it can be restored
-        BackHandler(enabled = page > PAGE_WELCOME || importing) {
+        BackHandler(enabled = signingIn == null && (page > PAGE_WELCOME || importing)) {
             if (!importing) goTo(previous)
         }
+        BackHandler(enabled = signingIn != null) { signingIn = null }
+
+        when (signingIn) {
+            WizardSource.YOUTUBE_MUSIC -> {
+                YouTubeSignInStep(
+                    provider = youTubeProvider,
+                    onChannels = { youTubeChannelChoice = it.size > 1 },
+                    onSignedIn = {
+                        youTubeSignedIn = true
+                        signingIn = null
+                    },
+                    onBack = { signingIn = null },
+                )
+                return@KreateTheme
+            }
+
+            WizardSource.OPEN_SUBSONIC -> {
+                OpenSubsonicSignInStep(
+                    url = openSubsonicUrl,
+                    auth = openSubsonicAuth,
+                    onSaved = { address, method ->
+                        openSubsonicUrl = address
+                        openSubsonicAuth = method
+                        openSubsonicSignedIn = true
+                        signingIn = null
+                    },
+                    onSignedOut = {
+                        openSubsonicSignedIn = false
+                        signingIn = null
+                    },
+                    onBack = { signingIn = null },
+                )
+                return@KreateTheme
+            }
+
+            null -> {}
+        }
+
+        changingChannel?.let { YouTubeChannelStep(it) { changingChannel = null } }
 
         Scaffold(
             modifier = modifier,
@@ -697,11 +1021,41 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                             (context.applicationContext as KreateApplication).restart {
                                 action = SETUP_WIZARD_DONE_ACTION
                                 putExtra(SETUP_WIZARD_TOS_CHECKSUM, checksum)
+                                // The restore replaces preferences, so the sources are turned on after it
+                                if (youTubeSignedIn) putExtra(SETUP_WIZARD_YOUTUBE_SIGNED_IN, true)
+                                if (openSubsonicSignedIn) {
+                                    putExtra(SETUP_WIZARD_OPEN_SUBSONIC_URL, openSubsonicUrl)
+                                    putExtra(SETUP_WIZARD_OPEN_SUBSONIC_AUTH, openSubsonicAuth.name)
+                                }
                                 // A restored backup brings its own profile and settings
-                                if (imported) return@restart
+                                if (skipsSettings) return@restart
                                 putExtra(SETUP_WIZARD_PROFILE_NAME, profileName)
                                 putExtra(SETUP_WIZARD_THEME_MODE, themeMode.name)
                                 putExtra(SETUP_WIZARD_CONTRAST_LEVEL, contrastLevel.name)
+                                // Original is only offered to a signed in account
+                                fun youTubeQuality(quality: StreamQuality) =
+                                    if (!youTubeSignedIn && quality == StreamQuality.ORIGINAL)
+                                        StreamQuality.HIGH
+                                    else
+                                        quality
+                                putExtra(
+                                    SETUP_WIZARD_YOUTUBE_QUALITY_WIFI,
+                                    youTubeQuality(youTubeWifi).name
+                                )
+                                putExtra(
+                                    SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE,
+                                    youTubeQuality(youTubeMobile).name
+                                )
+                                if (openSubsonicSignedIn) {
+                                    putExtra(
+                                        SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI,
+                                        openSubsonicWifi.name
+                                    )
+                                    putExtra(
+                                        SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_MOBILE,
+                                        openSubsonicMobile.name
+                                    )
+                                }
                             }
                         }
                     }
@@ -717,6 +1071,25 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                 when (page) {
                     PAGE_WELCOME -> Welcome()
                     PAGE_PERMISSIONS -> Permissions()
+                    PAGE_SIGN_IN -> SignIn(
+                        youTubeSignedIn = youTubeSignedIn,
+                        youTubeChannelChoice = youTubeChannelChoice,
+                        openSubsonicSignedIn = openSubsonicSignedIn,
+                        onYouTube = {
+                            if (youTubeSignedIn && youTubeChannelChoice)
+                                scope.launch {
+                                    val channels = youTubeProvider.channelsOrNone()
+                                    youTubeChannelChoice = channels.size > 1
+                                    // A lookup that failed leaves the sign in to try again
+                                    if (channels.size > 1) changingChannel = channels
+                                    else signingIn = WizardSource.YOUTUBE_MUSIC
+                                }
+                            else
+                                signingIn = WizardSource.YOUTUBE_MUSIC
+                        },
+                        onOpenSubsonic = { signingIn = WizardSource.OPEN_SUBSONIC },
+                    )
+
                     PAGE_IMPORT -> Import(
                         imported = imported,
                         importing = importing,
@@ -724,9 +1097,19 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                         onImport = { uri ->
                             importing = true
                             scope.launch {
-                                importMessage = context.importBackup(uri)
+                                val result = context.importBackup(uri)
+                                importMessage = result.message
                                 // A failed one leaves the backup chosen before in place
-                                if (importMessage == null) imported = true
+                                if (result.message == null) {
+                                    imported = true
+                                    migrated = result.legacy
+                                    // What was typed stays, an account was signed in to it
+                                    if (!openSubsonicSignedIn) {
+                                        openSubsonicUrl = result.server?.url.orEmpty()
+                                        openSubsonicAuth =
+                                            result.server?.auth ?: OpenSubsonicAuth.PASSWORD
+                                    }
+                                }
                                 importing = false
                             }
                         },
@@ -738,6 +1121,21 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                         onThemeModeChange = { themeMode = it },
                         contrastLevel = contrastLevel,
                         onContrastLevelChange = { contrastLevel = it },
+                        migrated = migrated,
+                        quality = {
+                            QualityChoices(
+                                youTubeSignedIn = youTubeSignedIn,
+                                youTubeWifi = youTubeWifi,
+                                youTubeMobile = youTubeMobile,
+                                onYouTubeWifi = { youTubeWifi = it },
+                                onYouTubeMobile = { youTubeMobile = it },
+                                openSubsonicSignedIn = openSubsonicSignedIn,
+                                openSubsonicWifi = openSubsonicWifi,
+                                openSubsonicMobile = openSubsonicMobile,
+                                onOpenSubsonicWifi = { openSubsonicWifi = it },
+                                onOpenSubsonicMobile = { openSubsonicMobile = it },
+                            )
+                        },
                     )
 
                     PAGE_TERMS -> TermOfService()
@@ -778,10 +1176,23 @@ private fun WizardPermissionsPreview() = WizardPreview(PAGE_PERMISSIONS) { Permi
 
 @ScreenPreviews
 @Composable
+private fun WizardSignInPreview() = WizardPreview(PAGE_SIGN_IN) {
+    SignIn(
+        youTubeSignedIn = true,
+        youTubeChannelChoice = true,
+        openSubsonicSignedIn = false,
+        onYouTube = {},
+        onOpenSubsonic = {},
+    )
+}
+
+@ScreenPreviews
+@Composable
 private fun WizardImportPreview() = WizardPreview(PAGE_IMPORT) {
     Import(imported = false, importing = false, message = null, onImport = {})
 }
 
+/** Both sources signed in, as after a migration: the name is the imported profile's to change. */
 @ScreenPreviews
 @Composable
 private fun WizardProfilePreview() = WizardPreview(PAGE_PROFILE) {
@@ -792,6 +1203,21 @@ private fun WizardProfilePreview() = WizardPreview(PAGE_PROFILE) {
         onThemeModeChange = {},
         contrastLevel = ContrastLevel.NORMAL,
         onContrastLevelChange = {},
+        migrated = true,
+        quality = {
+            QualityChoices(
+                youTubeSignedIn = true,
+                youTubeWifi = StreamQuality.ORIGINAL,
+                youTubeMobile = StreamQuality.MEDIUM,
+                onYouTubeWifi = {},
+                onYouTubeMobile = {},
+                openSubsonicSignedIn = true,
+                openSubsonicWifi = StreamQuality.ORIGINAL,
+                openSubsonicMobile = StreamQuality.HIGH,
+                onOpenSubsonicWifi = {},
+                onOpenSubsonicMobile = {},
+            )
+        },
     )
 }
 

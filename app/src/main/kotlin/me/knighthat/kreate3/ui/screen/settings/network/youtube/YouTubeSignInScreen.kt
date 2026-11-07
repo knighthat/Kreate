@@ -109,13 +109,38 @@ private fun SignInStatus(@StringRes reason: Int?, innerPadding: PaddingValues) =
  * The page goes through YouTube's proxy while it shows, so Google sees the sign in from where the
  * requests come from after it. When it can't, the page doesn't load at all.
  */
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun YouTubeSignInScreen(
     onBack: () -> Unit,
     onSignedIn: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: YouTubeAccountViewModel = koinViewModel(),
+) = YouTubeSignInContent(
+    onBack = onBack,
+    onSignedIn = onSignedIn,
+    signIn = viewModel::signIn,
+    channelsAfterSignIn = viewModel::channelsAfterSignIn,
+    finishSignIn = viewModel::finishSignIn,
+    modifier = modifier,
+)
+
+/**
+ * [YouTubeSignInScreen] with what happens to the session given, so the setup wizard can keep it
+ * without the account's view model, which reaches the database.
+ *
+ * @param signIn keeps the session of the cookies, `false` when they are not of a signed in one
+ * @param channelsAfterSignIn the channels of the account just signed in, empty to use its own
+ * @param finishSignIn acts as the channel chosen, `null` for the account's own
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+internal fun YouTubeSignInContent(
+    onBack: () -> Unit,
+    onSignedIn: () -> Unit,
+    signIn: (String) -> Boolean,
+    channelsAfterSignIn: suspend () -> List<YouTubeChannel>,
+    finishSignIn: (YouTubeChannel?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     // The page waits for YouTube's proxy, it never loads without it
@@ -126,12 +151,12 @@ fun YouTubeSignInScreen(
     BackHandler(enabled = !signedIn) { webView?.takeIf { it.canGoBack() }?.goBack() ?: onBack() }
 
     val finish = { channel: YouTubeChannel? ->
-        viewModel.finishSignIn(channel)
+        finishSignIn(channel)
         onSignedIn()
     }
     LaunchedEffect(signedIn) {
         if (!signedIn) return@LaunchedEffect
-        val found = viewModel.channelsAfterSignIn()
+        val found = channelsAfterSignIn()
         // An account with a single channel has nothing to choose
         if (found.size > 1) channels = found else finish(null)
     }
@@ -179,7 +204,7 @@ fun YouTubeSignInScreen(
                             if (signedIn || url?.toUri()?.host != YOUTUBE_MUSIC.toUri().host) return
                             val cookies =
                                 CookieManager.getInstance().getCookie(YOUTUBE_MUSIC) ?: return
-                            if (viewModel.signIn(cookies)) signedIn = true
+                            if (signIn(cookies)) signedIn = true
                         }
 
                         override fun onReceivedHttpAuthRequest(

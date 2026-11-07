@@ -22,6 +22,8 @@
     <string name="wizard_intro">A few quick steps and you are ready to listen. Here is what comes next:</string>
     <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
     <string name="wizard_permissions_entry">Control what %1$s can and cannot do or see.</string>
+    <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
+    <string name="wizard_sign_in_entry">Sign in to your music accounts.</string>
     <string name="wizard_import_entry">Bring over existing data from another machine or backup.</string>
     <string name="wizard_profile_entry">Tailor the app to your taste.</string>
     <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
@@ -30,6 +32,8 @@
     <string name="wizard_music_description">Read the audio files stored on this device to build your library</string>
     <string name="wizard_notifications">Notifications</string>
     <string name="wizard_notifications_description">Allow app to inform you what is going on within the app</string>
+    <string name="wizard_sign_in_intro">Sign in to bring your accounts along. You can skip this and sign in later in the settings.</string>
+    <string name="wizard_sign_in_tile_description">Tap to sign in</string>
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <string name="wizard_import_intro">Have a backup of %1$s? Choose it to bring your profiles, settings and library along. You can skip this.</string>
     <string name="wizard_reading_the_backup">Reading the backup…</string>
@@ -39,6 +43,9 @@
     <string name="wizard_restore_a_backup_description">Choose a backup made in previous versions</string>
     <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
     <string name="wizard_profile_intro">Leave the name empty to keep %1$s. You can change all of this later.</string>
+    <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->
+    <string name="wizard_profile_intro_migrated">Your profile keeps its name unless you type a new one. You can change all of this later.</string>
+    <string name="wizard_quality_intro">How good should streamed songs sound? You can change this later in the settings of each source.</string>
     <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
     <string name="wizard_distributed_under">Distributed under the %1$s.</string>
     <string name="wizard_get_started">Get started</string>

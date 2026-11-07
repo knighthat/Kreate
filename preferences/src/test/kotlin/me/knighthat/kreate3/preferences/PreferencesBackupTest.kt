@@ -18,12 +18,16 @@
 
 package me.knighthat.kreate3.preferences
 
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -88,6 +92,44 @@ class PreferencesBackupTest {
         )
         assertEquals("new", File(root, "global.preferences_pb").readText())
         assertFalse(File(root, "kreate.db").exists())
+    }
+
+    @Test
+    fun readsTheOpenSubsonicServerOfAStagedBackup() = runBlocking<Unit> {
+        val source = Files.createTempDirectory("source").toFile()
+        val file = File(source, "profiles/default/preferences.preferences_pb")
+        file.parentFile!!.mkdirs()
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        try {
+            createPreferencesDataStore(
+                scope,
+                PROFILE_STEPS,
+                "test",
+                { emptyPreferences() }) { file }
+                .edit {
+                    it[stringPreferencesKey(Preferences.OPEN_SUBSONIC_URL_NAME)] =
+                        "https://music.example.com"
+                    it[stringPreferencesKey(Preferences.OPEN_SUBSONIC_AUTH_NAME)] = "API_KEY"
+                }
+        } finally {
+            scope.cancel()
+        }
+        val before = file.readBytes().toList()
+
+        val server = backup.stagedOpenSubsonic(source)
+        // The backup is read from a copy
+        assertEquals(before, file.readBytes().toList())
+        source.deleteRecursively()
+
+        assertEquals("https://music.example.com", server?.url)
+        assertEquals(OpenSubsonicAuth.API_KEY, server?.auth)
+    }
+
+    @Test
+    fun readsNothingFromABackupWithoutTheDefaultProfile() = runBlocking<Unit> {
+        val source = Files.createTempDirectory("source").toFile()
+        assertEquals(null, backup.stagedOpenSubsonic(source))
+        source.deleteRecursively()
     }
 
     @Test

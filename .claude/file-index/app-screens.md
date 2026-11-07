@@ -16,7 +16,11 @@ ui/screen/
   back and posted to `LocalNotifier`). A song not in the library shows neutral and is added on its
   first reaction (`SongStore` first); `null` (buttons off) only while the lookup loads or the item
   has no origin. A dislike also calls `PlaybackController.remove(items)`.
-- `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
+- `SetupWizardScreen.kt` — first-run wizard (permissions, import, sign-in to YouTube
+  Music/OpenSubsonic (a Kreate zip's server address is read from the staged backup and filled in),
+  profile name + theme + stream quality sliders, ToS); sign-in keeps
+  secrets at once, address/switches/quality go to `KreateActivity` as extras and are written after
+  the restore; a migrated (old app) import still gets the profile page, a Kreate zip skips it;
   `setupCompletedFile`.
 - details/ — `AlbumDetailsScreen.kt` + `AlbumDetailsViewModel.kt` (album menu's Details: best match
   of a MusicBrainz release-group search by title + artist, no search picker),
@@ -286,7 +290,8 @@ ui/screen/
     `OpenSubsonicServer`, nothing asked there), `network/youtube/` (`YouTubeSettingsScreen.kt`
     account
     page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
-  `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
+    `YouTubeSignInScreen.kt` WebView sign-in (`YouTubeSignInContent` takes callbacks, the wizard
+    reuses it), `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
     `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, "Sign
     in" row with the check's status, direct play (disabled while the song cache is Off, value kept),
     quality sliders, ReplayGain reference (LUFS), library; `OpenSubsonicSignInScreen.kt`: a

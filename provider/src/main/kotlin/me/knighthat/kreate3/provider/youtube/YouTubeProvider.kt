@@ -102,12 +102,24 @@ class YouTubeProvider internal constructor(
      * @param base the app's client
      * @param factory sets up the Ktor clients like the app's
      * @param context runs the WebView that makes PO tokens, `null` plays without them
+     * @param cookies the cookies of the signed in session, the active profile's while its YouTube
+     * account is on by default; the setup wizard gives its own, nothing is enabled yet there
      */
-    constructor(base: OkHttpClient, factory: HttpClientFactory, json: Json, context: Context?) :
-            this(YouTubeClients(base, factory), json, context)
+    constructor(
+        base: OkHttpClient,
+        factory: HttpClientFactory,
+        json: Json,
+        context: Context?,
+        cookies: suspend () -> String = ::profileCookies,
+    ) : this(YouTubeClients(base, factory), json, context, cookies)
 
-    private constructor(clients: YouTubeClients, json: Json, context: Context?) : this(
-        innerTube(clients::current, json, context, ::profileCookies, ::profilePageId),
+    private constructor(
+        clients: YouTubeClients,
+        json: Json,
+        context: Context?,
+        cookies: suspend () -> String,
+    ) : this(
+        innerTube(clients::current, json, context, cookies, ::profilePageId),
         YouTubeParser { it.toUri() },
         clients,
     )

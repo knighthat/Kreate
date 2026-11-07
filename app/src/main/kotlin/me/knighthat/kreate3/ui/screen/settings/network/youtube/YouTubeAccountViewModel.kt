@@ -93,12 +93,7 @@ class YouTubeAccountViewModel(
      *
      * @return `false` when the cookies are not of a signed in session, nothing is kept then
      */
-    fun signIn(cookies: String): Boolean {
-        if (!isYouTubeSession(cookies)) return false
-        Secrets.YOUTUBE_PAGE_ID.update("")
-        Secrets.YOUTUBE_COOKIES.update(cookies)
-        return true
-    }
+    fun signIn(cookies: String): Boolean = keepYouTubeSession(cookies)
 
     /**
      * The channels of the account just signed in, the user chooses one when there are several.
@@ -159,4 +154,16 @@ class YouTubeAccountViewModel(
     private companion object {
         const val TAG = "YouTubeAccount"
     }
+}
+
+/**
+ * Keeps the session of [cookies] as the account's own channel, also used by the setup wizard.
+ *
+ * @return `false` when the cookies are not of a signed in session, nothing is kept then
+ */
+internal fun keepYouTubeSession(cookies: String): Boolean {
+    if (!isYouTubeSession(cookies)) return false
+    Secrets.YOUTUBE_PAGE_ID.update("")
+    Secrets.YOUTUBE_COOKIES.update(cookies)
+    return true
 }

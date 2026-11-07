@@ -26,7 +26,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import java.io.File
+
+/**
+ * The OpenSubsonic server a backup keeps for the default profile.
+ *
+ * @param url the address, empty when the backup has none
+ * @param auth the way to sign in, `null` when the backup left the default
+ */
+class StagedOpenSubsonic(val url: String, val auth: OpenSubsonicAuth?)
 
 /**
  * Takes the preferences of every profile out for a backup, and puts them back. Secrets are left
@@ -82,6 +93,46 @@ class PreferencesBackup internal constructor(private val rootDirectory: File) {
                     file.copyTo(File(rootDirectory, path), overwrite = true)
             }
     }
+
+    /**
+     * What the default profile of a backup laid out in [source], by its paths, keeps of the
+     * OpenSubsonic server, read from a copy so the backup stays as it is. Nothing is opened for
+     * the app: use it while the backup waits for the next start.
+     *
+     * @return `null` when the backup has no file for the default profile
+     */
+    suspend fun stagedOpenSubsonic(source: File): StagedOpenSubsonic? =
+        withContext(Dispatchers.IO) {
+            val staged = File(
+                Profile.directory(source, Profile.DEFAULT_ID),
+                DataStorePreferenceStorage.PROFILE_FILE_NAME
+            )
+            if (!staged.isFile) return@withContext null
+
+            val copy = File.createTempFile("staged", ".preferences_pb")
+            val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+            try {
+                staged.copyTo(copy, overwrite = true)
+                val values = createPreferencesDataStore(
+                    scope = scope,
+                    steps = PROFILE_STEPS,
+                    name = "staged preferences",
+                    replaceDamaged = { emptyPreferences() },
+                ) { copy }.data.first().entries()
+
+                StagedOpenSubsonic(
+                    url = values[Preferences.OPEN_SUBSONIC_URL_NAME] as? String ?: "",
+                    auth = OpenSubsonicAuth.entries.firstOrNull {
+                        it.name == values[Preferences.OPEN_SUBSONIC_AUTH_NAME]
+                    },
+                )
+            } finally {
+                scope.cancel()
+                // The store leaves files beside its own
+                copy.parentFile?.listFiles { file -> file.name.startsWith(copy.name) }
+                    ?.forEach(File::delete)
+            }
+        }
 
     /**
      * Writes a global file into [destination], laid out by the paths in a backup, that lists
