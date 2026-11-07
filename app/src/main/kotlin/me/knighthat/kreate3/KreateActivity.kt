@@ -270,7 +270,7 @@ class KreateActivity : ComponentActivity() {
 
     /**
      * Plays an audio file another app opened with this one ("Open with"), see [OpenedFiles], and
-     * opens the player on it. It is added to the queue like a song tapped in the app.
+     * opens the player on it. It replaces the queue, like any file manager's player would.
      */
     private fun playOpenedFile(intent: Intent) {
         if (intent.action != Intent.ACTION_VIEW) return
@@ -281,7 +281,7 @@ class KreateActivity : ComponentActivity() {
                 postMessage(R.string.error_open_file)
                 return@launch
             }
-            get<PlaybackController>().play(item)
+            get<PlaybackController>().play(listOf(item))
             openPlayer.value = true
         }
     }
@@ -316,7 +316,7 @@ class KreateActivity : ComponentActivity() {
                     postMessage(R.string.error_open_link)
                     return@launch
                 }
-                get<PlaybackController>().play(song.toLiveMediaItem())
+                get<PlaybackController>().play(listOf(song.toLiveMediaItem()))
                 openPlayer.value = true
             }
         }

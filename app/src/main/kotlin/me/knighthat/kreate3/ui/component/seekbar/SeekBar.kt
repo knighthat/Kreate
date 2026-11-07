@@ -162,14 +162,10 @@ private class PreviewController(
     override val shuffledOrder: StateFlow<List<Int>?> = MutableStateFlow(null)
     override val sleepTimer: StateFlow<SleepTimer?> = MutableStateFlow(null)
 
-    override fun play(item: MediaItem) = Unit
-    override fun playAll(items: List<MediaItem>) = Unit
+    override fun play(items: List<MediaItem>, index: Int) = Unit
     override fun radio(seed: MediaItem, append: Boolean) = Unit
-    override fun enqueue(items: List<MediaItem>) = Unit
     override fun follow(seed: MediaItem, items: List<MediaItem>) = Unit
-    override fun playNext(items: List<MediaItem>) = Unit
-    override fun unqueue(items: List<MediaItem>) = Unit
-    override fun insert(index: Int, items: List<MediaItem>) = Unit
+    override fun add(items: List<MediaItem>, index: Int) = Unit
     override fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean) =
         Unit
     override fun progress(): Float = durationMs?.let { positionMs.toFloat() / it } ?: 0f
@@ -177,11 +173,12 @@ private class PreviewController(
     override fun position(): Long = positionMs
     override fun duration(): Long? = durationMs
     override fun next() = Unit
-    override fun drop(mediaId: String) = Unit
+    override fun remove(items: List<MediaItem>) = Unit
     override fun remove(index: Int) = Unit
+    override fun remove(start: Int, end: Int) = Unit
     override fun clear() = Unit
     override fun move(from: Int, to: Int) = Unit
-    override fun skipTo(index: Int) = Unit
+    override fun jumpTo(index: Int) = Unit
     override fun previous() = Unit
     override fun seekTo(positionMs: Long) {
         this.positionMs = positionMs

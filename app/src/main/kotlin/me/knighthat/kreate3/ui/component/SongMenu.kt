@@ -667,11 +667,10 @@ private fun SongMenuActions(
         ) {
             close {
                 val items = listOf(item)
-                playback.playNext(items)
+                val start = playback.state.value.index + 1
+                playback.add(items, start)
                 notifier.post(undoMessage(resources, willPlayNext(resources, items)) {
-                    playback.unqueue(
-                        items
-                    )
+                    playback.undoAdd(items, start)
                 })
             }
         }

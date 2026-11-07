@@ -15,7 +15,7 @@ ui/screen/
   (OpenSubsonic songs through `OpenSubsonicLibrary.react`, which stars them; a failed star is taken
   back and posted to `LocalNotifier`). A song not in the library shows neutral and is added on its
   first reaction (`SongStore` first); `null` (buttons off) only while the lookup loads or the item
-  has no origin. A dislike also calls `PlaybackController.drop`.
+  has no origin. A dislike also calls `PlaybackController.remove(items)`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
 - details/ — `AlbumDetailsScreen.kt` + `AlbumDetailsViewModel.kt` (album menu's Details: best match
@@ -228,7 +228,7 @@ ui/screen/
   size stepper, copy), `PlayerButtons.kt` (Player page bar: EQ = system effect panel via
   StartActivityForResult, sleep timer menu with countdown, more button opening the song menu via
   `SongMenuHost.openPlaying`), `QueuePage.kt` (`PlaybackController.queue`,
-  rows in `shuffledOrder` while shuffled (queue order while its size lags), tap → `skipTo` and
+  rows in `shuffledOrder` while shuffled (queue order while its size lags), tap → `jumpTo` and
   remove at `positionOf` (row in queue order, queue index less pending removals when shuffled),
   `FullPlayer` scrolls the list to the playing song's row when the order switches; entries keyed
   `mediaId#n`, `CoverEditMode` (`CoverEdit.kt`) turns covers into

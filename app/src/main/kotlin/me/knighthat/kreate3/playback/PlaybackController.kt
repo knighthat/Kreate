@@ -82,13 +82,10 @@ interface PlaybackController {
     val sleepTimer: StateFlow<SleepTimer?>
 
     /**
-     * Plays [item] now. It is added to the end of the queue, unless it is already in it, and
-     * the queue then jumps to it.
+     * Replaces the queue with [items] and plays them from the item at [index], from its start.
+     * Nothing happens without [items].
      */
-    fun play(item: MediaItem)
-
-    /** Replaces the queue with [items] and plays them from the first. */
-    fun playAll(items: List<MediaItem>)
+    fun play(items: List<MediaItem>, index: Int = 0)
 
     /**
      * Fills the queue with songs like [seed] once they are found: from the library for a song of
@@ -102,34 +99,21 @@ interface PlaybackController {
      */
     fun radio(seed: MediaItem, append: Boolean = false)
 
-    /** Adds [items] to the end of the queue, without starting to play. */
-    fun enqueue(items: List<MediaItem>)
-
     /**
-     * Adds [items] to the end of a queue started from [seed] with [playAll], like the rest of a
+     * Adds [items] to the end of a queue started from [seed] with [play], like the rest of a
      * list fetched while [seed] already plays. Nothing is added when the queue was changed to
      * something else meanwhile.
      */
     fun follow(seed: MediaItem, items: List<MediaItem>)
 
     /**
-     * Adds [items] right after the current item, in their order, without starting to play. With
-     * an empty queue they become the queue.
-     */
-    fun playNext(items: List<MediaItem>)
-
-    /**
-     * Takes back what [enqueue] or [playNext] added, [items] being the list it was given: the
-     * items where they were added, or the last copy of each song once the queue changed around
-     * them. Like [remove], taking the current item out moves on first.
-     */
-    fun unqueue(items: List<MediaItem>)
-
-    /**
      * Puts [items] at [index] of [queue], in their order, at its end when it is shorter, without
-     * starting to play. With an empty queue they become the queue.
+     * starting to play. With an empty queue they become the queue. The end of the queue is
+     * `queue.value.size`, right after the current item `state.value.index + 1`: while shuffling,
+     * items put there play next in the shuffled order too, anywhere else they take a random spot.
+     * An item already in the queue, even the one playing, is added again.
      */
-    fun insert(index: Int, items: List<MediaItem>)
+    fun add(items: List<MediaItem>, index: Int)
 
     /**
      * Replaces the queue with [items], at the item [index] from [positionMs], playing when
@@ -159,18 +143,24 @@ interface PlaybackController {
     fun next()
 
     /**
-     * Takes every item of the song [mediaId] out of the queue for good, like a song the user
-     * disliked. When the current item is one of them, the next item plays first, or the player
-     * stops when none comes next. Unlike [next], it never stays on it, nor comes back to it when
-     * the queue repeats.
+     * Takes every copy of the songs of [items], matched by their `mediaId`, out of the queue for
+     * good, like a song the user disliked. When the current item is one of them, the next item
+     * plays first, or the player stops when none comes next. Unlike [next], it never stays on it,
+     * nor comes back to it when the queue repeats.
      */
-    fun drop(mediaId: String)
+    fun remove(items: List<MediaItem>)
 
     /**
      * Takes the item at [index] of [queue] out of it. Removing the current item moves on to the
      * next one first, the queue ends when none comes next.
      */
     fun remove(index: Int)
+
+    /**
+     * Takes the items from [start] up to, but not including, [end] of [queue] out of it, what is
+     * outside the queue is left alone. Like [remove], taking the current item out moves on first.
+     */
+    fun remove(start: Int, end: Int)
 
     /**
      * Takes every item but the current one out of the queue, it keeps playing alone. Songs a
@@ -182,7 +172,7 @@ interface PlaybackController {
     fun move(from: Int, to: Int)
 
     /** Plays the item at [index] of [queue] from its start. */
-    fun skipTo(index: Int)
+    fun jumpTo(index: Int)
 
     /**
      * Goes back to the start of the current item, or to the item before it when the current one

@@ -155,7 +155,7 @@ class DislikedViewModel(
     private fun dislikeAgain(songs: List<UserSongView>, onFailed: (Message) -> Unit) {
         scope.launch {
             val failures = songs.mapNotNull { song ->
-                playback.drop(song.songId)
+                playback.remove(playback.queue.value.filter { it.mediaId == song.songId })
                 react(song.songId, song.origin, song.name, R.string.error_dislike_song) {
                     it ?: song.likedAt
                 }

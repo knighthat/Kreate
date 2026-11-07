@@ -94,7 +94,7 @@ They run inside the app's process, so Koin, Preferences and Secrets are live:
 afterwards `adb uninstall me.knighthat.kreate3.test` (test APK only). **Never**
 `connectedGithubUniversalDebugAndroidTest`: it uninstalls the app and wipes its data. Log results
 with a `LIVE` tag and read `adb logcat -d -s LIVE:I`. Read secrets inside the test, never copy them
-off the device. A player failure can be triggered with `PlaybackController.playAll` on a `file://`
+off the device. A player failure can be triggered with `PlaybackController.play` on a `file://`
 URI that doesn't exist.
 
 Image benchmarks the same way: time `SingletonImageLoader.get(context).execute(…)` with

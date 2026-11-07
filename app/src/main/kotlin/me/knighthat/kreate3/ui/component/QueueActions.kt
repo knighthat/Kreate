@@ -82,11 +82,15 @@ fun PlaybackController.queue(
             )
         )
 
+    // Where they go, for the Undo to find them again
+    val start = when (action) {
+        QueueAction.ENQUEUE -> queue.value.size
+        else -> state.value.index + 1
+    }
     when (action) {
-        QueueAction.PLAY -> playAll(playable)
-        QueueAction.SHUFFLE -> playAll(playable.shuffled())
-        QueueAction.ENQUEUE -> enqueue(playable)
-        QueueAction.PLAY_NEXT -> playNext(playable)
+        QueueAction.PLAY -> play(playable)
+        QueueAction.SHUFFLE -> play(playable.shuffled())
+        QueueAction.ENQUEUE, QueueAction.PLAY_NEXT -> add(playable, start)
     }
     val text = when (action) {
         QueueAction.ENQUEUE ->
@@ -96,7 +100,19 @@ fun PlaybackController.queue(
 
         else -> return null
     }
-    return undoMessage(resources, text) { unqueue(playable) }
+    return undoMessage(resources, text) { undoAdd(playable, start) }
+}
+
+/**
+ * Takes back [items] that [PlaybackController.add] put at [start]. Only while they still sit there:
+ * once the queue changed around them, nothing is taken out rather than songs that weren't added.
+ */
+internal fun PlaybackController.undoAdd(items: List<MediaItem>, start: Int) {
+    val queued = queue.value
+    val end = start + items.size
+    if (start < 0 || end > queued.size) return
+    if (items.indices.any { queued[start + it].mediaId != items[it].mediaId }) return
+    remove(start, end)
 }
 
 /**
@@ -129,8 +145,8 @@ internal fun PlaybackController.clearUndoable(resources: Resources, notifier: No
     val after = items.subList(index + 1, items.size).toList()
     notifier.post(undoMessage(resources, resources.getString(R.string.snackbar_queue_cleared)) {
         // In order, the second one counts the first one's songs
-        insert(0, before)
-        insert(before.size + 1, after)
+        add(before, 0)
+        add(after, before.size + 1)
     })
 }
 
@@ -169,7 +185,7 @@ fun PlaybackController.playTapped(
     val below = songs.dropWhile { it.mediaId != song.mediaId }
         .drop(1)
         .filter { it.mediaMetadata.isPlayable == true }
-    playAll(listOf(song) + below)
+    play(listOf(song) + below)
     return null
 }
 
@@ -267,7 +283,7 @@ fun rememberQuickQueueActions(
                     .filter { it.mediaMetadata.isPlayable == true }
                     .takeIf { action == QueueAction.PLAY || action == QueueAction.SHUFFLE }
                     ?.randomOrNull()
-                first?.let { playback.playAll(listOf(it)) }
+                first?.let { playback.play(listOf(it)) }
 
                 val all = currentSongs()
                 if (all == null) {

@@ -166,7 +166,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         notifier.post(undoMessage(resources, text) {
             scope.launch {
                 // The dislike back, it leaves the queue again
-                if (removing) playback.drop(songId)
+                if (removing) playback.remove(listOf(item))
                 save(
                     if (removing)
                         R.string.error_dislike_song
@@ -182,7 +182,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         toggleLike = { set(Reaction.LIKED) { Clock.System.now() } },
         toggleDislike = {
             // A song the user dislikes isn't worth finishing, nor hearing again
-            if (reaction != Reaction.DISLIKED) playback.drop(songId)
+            if (reaction != Reaction.DISLIKED) playback.remove(listOf(item))
             // Its time made negative, so the Disliked page can say when
             set(Reaction.DISLIKED) {
                 Instant.fromEpochMilliseconds(-Clock.System.now().toEpochMilliseconds())

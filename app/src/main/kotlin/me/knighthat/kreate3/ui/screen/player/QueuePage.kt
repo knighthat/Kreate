@@ -158,7 +158,7 @@ internal fun QueuePage(
 
                 SongItem(
                     item = entry.item,
-                    onClick = { controller.skipTo(positionOf(entry)) },
+                    onClick = { controller.jumpTo(positionOf(entry)) },
                     modifier = background,
                     hasMenu = false,
                     thumbnailOverlay = {
@@ -185,7 +185,7 @@ internal fun QueuePage(
                                 entries = entries.filterNot { it.key == entry.key }
                                 controller.remove(position)
                                 notifier.post(undoMessage(resources, removedFromQueue) {
-                                    controller.insert(position, listOf(entry.item))
+                                    controller.add(listOf(entry.item), position)
                                 })
                             },
                         )

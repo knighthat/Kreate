@@ -77,9 +77,6 @@ class PlaybackControllerImpl(
     private var controller: MediaController? = null
     private var radioSearch: Job? = null
 
-    /** What the last [enqueue] or [playNext] added and where, for [unqueue]. */
-    private var lastAdded: Added? = null
-
     /** Held by an action of [run], so one that waits doesn't let the next start meanwhile. */
     private val running = Mutex()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -110,25 +107,19 @@ class PlaybackControllerImpl(
 
     override fun next() = run("skip to next") { it.seekToNext() }
 
-    override fun drop(mediaId: String) = run("drop $mediaId") { controller ->
-        // Its other items first, so moving on never lands on one of them
-        for (index in controller.mediaItemCount - 1 downTo 0) {
-            if (index == controller.currentMediaItemIndex) continue
-            if (controller.getMediaItemAt(index).mediaId == mediaId) controller.removeMediaItem(
-                index
-            )
+    override fun remove(items: List<MediaItem>) =
+        run("remove ${items.size} songs") { controller ->
+            val ids = items.mapTo(HashSet(), MediaItem::mediaId)
+            controller.removeAll((0 until controller.mediaItemCount).filter {
+                controller.getMediaItemAt(it).mediaId in ids
+            })
         }
-        if (controller.currentMediaItem?.mediaId != mediaId) return@run
-
-        val index = controller.currentMediaItemIndex
-        // With nothing after it, the player stops first: removing it would end the queue on the
-        // item before it
-        val next = controller.nextMediaItemIndex
-        if (next == C.INDEX_UNSET || next == index) controller.stop()
-        controller.removeAt(index)
-    }
 
     override fun remove(index: Int) = run("remove item $index") { it.removeAt(index) }
+
+    override fun remove(start: Int, end: Int) = run("remove items $start to $end") { controller ->
+        controller.removeAll(start.coerceAtLeast(0) until end.coerceAtMost(controller.mediaItemCount))
+    }
 
     override fun clear() {
         // A radio still looking would queue its songs again
@@ -149,7 +140,7 @@ class PlaybackControllerImpl(
         controller.moveMediaItem(from, to)
     }
 
-    override fun skipTo(index: Int) = run("skip to item $index") { controller ->
+    override fun jumpTo(index: Int) = run("jump to item $index") { controller ->
         if (index !in 0 until controller.mediaItemCount) return@run
         controller.seekToDefaultPosition(index)
         if (controller.playbackState == Player.STATE_IDLE) controller.prepare()
@@ -191,25 +182,17 @@ class PlaybackControllerImpl(
         ?.getInt(EXTRA_AUDIO_SESSION_ID, C.AUDIO_SESSION_ID_UNSET)
         ?.takeIf { it != C.AUDIO_SESSION_ID_UNSET }
 
-    override fun play(item: MediaItem) = run("play ${item.mediaId}") { controller ->
-        val queued = (0 until controller.mediaItemCount)
-            .firstOrNull { controller.getMediaItemAt(it).mediaId == item.mediaId }
-        val index = queued ?: controller.mediaItemCount.also { controller.addMediaItem(item) }
-
-        controller.seekToDefaultPosition(index)
-        controller.prepare()
-        controller.play()
-    }
-
-    override fun playAll(items: List<MediaItem>) = run("play ${items.size} items") { controller ->
-        controller.setMediaItems(items)
-        controller.prepare()
-        controller.play()
-    }
+    override fun play(items: List<MediaItem>, index: Int) =
+        run("play ${items.size} items") { controller ->
+            if (items.isEmpty()) return@run
+            controller.setMediaItems(items, index.coerceIn(0, items.lastIndex), C.TIME_UNSET)
+            controller.prepare()
+            controller.play()
+        }
 
     override fun radio(seed: MediaItem, append: Boolean) {
         radioSearch?.cancel()
-        if (!append) playAll(listOf(seed))
+        if (!append) play(listOf(seed))
         radioSearch = scope.launch {
             val similar = try {
                 radio.after(seed, RADIO_SIZE)
@@ -239,14 +222,6 @@ class PlaybackControllerImpl(
         }
     }
 
-    override fun enqueue(items: List<MediaItem>) = run("queue ${items.size} items") { controller ->
-        val wasEmpty = controller.mediaItemCount == 0
-        lastAdded = Added(items, controller.mediaItemCount)
-        controller.addMediaItems(items)
-        // Ready to play, the user starts it
-        if (wasEmpty) controller.prepare()
-    }
-
     override fun follow(seed: MediaItem, items: List<MediaItem>) =
         run("queue ${items.size} items after ${seed.mediaId}") { controller ->
             // The user started something else meanwhile
@@ -256,50 +231,23 @@ class PlaybackControllerImpl(
             controller.addMediaItems(items)
         }
 
-    override fun playNext(items: List<MediaItem>) =
-        run("queue ${items.size} items next") { controller ->
-            val wasEmpty = controller.mediaItemCount == 0
-            val index = if (wasEmpty) 0 else controller.currentMediaItemIndex + 1
-            lastAdded = Added(items, index)
-            // The service adds them, it knows where they go in the shuffled order
-            val result = controller
-                .sendCustomCommand(PlayNextCommand.COMMAND, PlayNextCommand.args(items))
-                .await()
-            if (result.resultCode != SessionResult.RESULT_SUCCESS)
-                Logger.w(TAG) { "The service refused to queue items next: ${result.resultCode}" }
-            // Ready to play, the user starts it
-            if (wasEmpty) controller.prepare()
-        }
-
-    override fun unqueue(items: List<MediaItem>) =
-        run("take back ${items.size} queued items") { controller ->
-            val ids = items.map(MediaItem::mediaId)
-            val start = lastAdded?.takeIf { it.items === items }?.index
-            lastAdded = null
-            val count = controller.mediaItemCount
-            val where = if (
-                start != null && start + ids.size <= count &&
-                ids.indices.all { controller.getMediaItemAt(start + it).mediaId == ids[it] }
-            ) {
-                (start until start + ids.size).toSet()
-            } else {
-                // Moved or removed meanwhile, the copies added were the last ones
-                val found = HashSet<Int>()
-                for (id in ids) (count - 1 downTo 0)
-                    .firstOrNull { it !in found && controller.getMediaItemAt(it).mediaId == id }
-                    ?.let(found::add)
-                found
-            }
-            // From the end, the indexes before stay right
-            where.sortedDescending().forEach { controller.removeAt(it) }
-        }
-
-    override fun insert(index: Int, items: List<MediaItem>) =
-        run("put back ${items.size} items at $index") { controller ->
+    override fun add(items: List<MediaItem>, index: Int) =
+        run("add ${items.size} items at $index") { controller ->
             if (items.isEmpty()) return@run
-            val wasEmpty = controller.mediaItemCount == 0
-            controller.addMediaItems(index.coerceIn(0, controller.mediaItemCount), items)
-            if (wasEmpty) controller.prepare()
+            val count = controller.mediaItemCount
+            val at = index.coerceIn(0, count)
+            if (count > 0 && at == controller.currentMediaItemIndex + 1) {
+                // The service adds them, it knows where they go in the shuffled order
+                val result = controller
+                    .sendCustomCommand(PlayNextCommand.COMMAND, PlayNextCommand.args(items))
+                    .await()
+                if (result.resultCode != SessionResult.RESULT_SUCCESS)
+                    Logger.w(TAG) { "The service refused to add items next: ${result.resultCode}" }
+            } else {
+                controller.addMediaItems(at, items)
+            }
+            // Ready to play, the user starts it
+            if (count == 0) controller.prepare()
         }
 
     override fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean) =
@@ -421,6 +369,24 @@ class PlaybackControllerImpl(
             if (controller.shuffleModeEnabled) controller.currentTimeline.shuffledOrder() else null
     }
 
+    /**
+     * Takes the items at [indexes] out of the queue. The current one, when it is among them, goes
+     * last: the others first, so moving on never lands on one of them, then it stops the player
+     * when nothing else comes next, since removing it would end the queue on the item before it.
+     */
+    private suspend fun MediaController.removeAll(indexes: Iterable<Int>) {
+        val removesCurrent = currentMediaItemIndex in indexes.toSet()
+        for (index in indexes.sortedDescending()) {
+            if (index == currentMediaItemIndex || index !in 0 until mediaItemCount) continue
+            removeMediaItem(index)
+        }
+        if (!removesCurrent) return
+
+        val next = nextMediaItemIndex
+        if (next == C.INDEX_UNSET || next == currentMediaItemIndex) stop()
+        removeAt(currentMediaItemIndex)
+    }
+
     /** Takes the item at [index] out of the queue, moving on first when it is the current one. */
     private suspend fun MediaController.removeAt(index: Int) {
         if (index !in 0 until mediaItemCount) return
@@ -447,9 +413,6 @@ class PlaybackControllerImpl(
         mainHandler.post(resume)
         continuation.invokeOnCancellation { mainHandler.removeCallbacks(resume) }
     }
-
-    /** [items] as given to [enqueue] or [playNext], added at [index] of the queue. */
-    private class Added(val items: List<MediaItem>, val index: Int)
 
     private fun ListenableFuture<MediaController>.isUsable(): Boolean =
         !isCancelled && runCatching { get().isConnected }.getOrDefault(false)

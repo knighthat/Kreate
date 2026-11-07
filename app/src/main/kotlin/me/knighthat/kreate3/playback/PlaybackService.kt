@@ -669,7 +669,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
      */
     private fun playDownloaded(action: DownloadedSongAction, id: String) =
         get<CoroutineScope>().launch(Dispatchers.Main) {
-            // A service just started puts the saved queue back first, the song goes after it
+            // A service just started puts the saved queue back first, or it would replace the song
             persistentQueue?.awaitRestored()
             val item = get<SongDownloads>().item(id)
             if (item == null) {
@@ -678,9 +678,12 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             }
             val playback = get<PlaybackController>()
             when (action) {
-                DownloadedSongAction.PLAY -> playback.play(item)
-                DownloadedSongAction.PLAY_NEXT -> playback.playNext(listOf(item))
-                DownloadedSongAction.ENQUEUE -> playback.enqueue(listOf(item))
+                DownloadedSongAction.PLAY -> playback.play(listOf(item))
+                DownloadedSongAction.PLAY_NEXT ->
+                    playback.add(listOf(item), playback.state.value.index + 1)
+
+                DownloadedSongAction.ENQUEUE ->
+                    playback.add(listOf(item), playback.queue.value.size)
             }
             if (action != DownloadedSongAction.PLAY) return@launch
             // The media notification takes the foreground over as music plays

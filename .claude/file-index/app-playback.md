@@ -31,7 +31,7 @@ playback/
   playing song, cover as `artworkData`.
   `onStartCommand` also takes a downloaded song's notification buttons (`DownloadedSongAction`,
   data = download id): Play goes foreground first (5000, "Starting music"), then
-  `PlaybackController.play`/`playNext`/`enqueue` with the item `SongDownloads.item` decodes.
+  `PlaybackController.play`/`add` with the item `SongDownloads.item` decodes.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
   `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`queue` in its own
   order, `shuffledOrder` = queue positions in play order while shuffled else `null`, walked from
