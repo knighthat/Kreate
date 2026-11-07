@@ -70,6 +70,15 @@ internal interface UserArtistDao {
     @Upsert
     suspend fun upsert(artist: UserArtistEntity)
 
+    /** The user's rows of the artists that come from [origin]. */
+    @Query(
+        """
+        SELECT * FROM user_artist WHERE user_id = :userId
+        AND artist_id IN (SELECT id FROM artist WHERE origin = :origin)
+        """
+    )
+    suspend fun ofOrigin(userId: String, origin: Origin): List<UserArtistEntity>
+
     /**
      * Adds the artists the user doesn't have yet. Artists already there keep their overrides.
      */

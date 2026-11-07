@@ -23,7 +23,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.UserAlbumRepository
+import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
@@ -37,17 +40,29 @@ import kotlin.time.Instant
 /**
  * Keeps the songs starred on the server liked in the active user's library, and the likes given
  * in the app starred on the server. Starred songs are the only part of the server's library that
- * is stored, its albums, artists and playlists are fetched each time they show. Turning the server
- * or the syncing off only stops the syncing, the likes stay as they are.
+ * is added to the database, its albums, artists and playlists are fetched each time they show. The
+ * albums and artists already stored take their bookmark and follow from the server's stars, see
+ * [UserAlbumRepository.syncBookmarks] and [UserArtistRepository.syncFollows]. Turning the server
+ * or the syncing off only stops the syncing, the likes, bookmarks and follows stay as they are.
  *
+ * @param syncsAlbums whether the bookmarks of stored albums are synced, [Preferences.OPEN_SUBSONIC_SYNC_ALBUMS] isn't off
+ * @param syncsArtists whether the follows of stored artists are synced, [Preferences.OPEN_SUBSONIC_SYNC_ARTISTS] isn't off
  * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS]
  */
 class OpenSubsonicLibrary(
     private val provider: OpenSubsonicProvider,
     private val repository: RemoteCatalogRepository,
     private val userSongs: UserSongRepository,
+    private val userAlbums: UserAlbumRepository,
+    private val userArtists: UserArtistRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
+    private val syncsAlbums: () -> Boolean = {
+        Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.value != SyncMode.OFF
+    },
+    private val syncsArtists: () -> Boolean = {
+        Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.value != SyncMode.OFF
+    },
     private val syncs: () -> Boolean = { Preferences.OPEN_SUBSONIC_SYNC_SONGS.value },
 ) {
 
@@ -64,7 +79,7 @@ class OpenSubsonicLibrary(
      */
     fun refresh(): Job =
         scope.launch {
-            if (!syncs()) return@launch
+            if (!syncs() && !syncsAlbums() && !syncsArtists()) return@launch
             val server = provider.serverUrl ?: return@launch
             val now = clock.now()
 
@@ -75,7 +90,10 @@ class OpenSubsonicLibrary(
             if (last != null && !refreshed.replace(server, last, now)) return@launch
 
             try {
-                if (!sync(server)) refreshed.remove(server)
+                val stored = !syncs() || sync(server)
+                syncAlbums(server)
+                syncArtists(server)
+                if (!stored) refreshed.remove(server)
             } catch (e: CancellationException) {
                 refreshed.remove(server)
                 throw e
@@ -133,6 +151,42 @@ class OpenSubsonicLibrary(
             Logger.i(tag = TAG) { "Storing ${songs.size} starred songs" }
             repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
             true
+        }
+    }
+
+    /**
+     * Brings the bookmarks of the albums stored up to date when their syncing is on. A failure
+     * leaves them as they were.
+     */
+    private suspend fun syncAlbums(server: String) {
+        if (!syncsAlbums()) return
+        try {
+            val starred = provider.libraryAlbums(starredOnly = true) ?: return
+            if (provider.serverUrl != server || !syncsAlbums()) return
+            Logger.i(tag = TAG) { "Syncing the bookmarks of ${starred.size} albums" }
+            userAlbums.syncBookmarks(Origin.OPEN_SUBSONIC, starred.map { it.item.id }.toSet())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't bring the bookmarked albums up to date" }
+        }
+    }
+
+    /**
+     * Brings the follows of the artists stored up to date when their syncing is on. A failure
+     * leaves them as they were.
+     */
+    private suspend fun syncArtists(server: String) {
+        if (!syncsArtists()) return
+        try {
+            val starred = provider.libraryArtists(starredOnly = true) ?: return
+            if (provider.serverUrl != server || !syncsArtists()) return
+            Logger.i(tag = TAG) { "Syncing the follows of ${starred.size} artists" }
+            userArtists.syncFollows(Origin.OPEN_SUBSONIC, starred.map { it.item.id }.toSet())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't bring the followed artists up to date" }
         }
     }
 

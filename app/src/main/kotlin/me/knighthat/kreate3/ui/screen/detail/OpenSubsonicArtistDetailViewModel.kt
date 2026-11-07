@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -84,6 +85,7 @@ class OpenSubsonicArtistDetailViewModel(
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
+    private val userArtists: UserArtistRepository,
 ) : LiveDetailViewModel<OpenSubsonicArtistDetail>(context, library.dislikedIds()) {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
@@ -135,6 +137,8 @@ class OpenSubsonicArtistDetailViewModel(
                     on
                 )
             ) throw ServerException(ServerCheck.Disabled)
+            // The server took it, a row of the library follows it
+            userArtists.syncFollow(artistId, on)
         },
         failure = { e, _ ->
             e.serverFailure(

@@ -477,13 +477,19 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 ?: header.path("description").text(),
             sections = shelves.filter { it.path("musicShelfRenderer") == null }
                 .mapNotNull(::section),
-            // The library button is a toggle, its other toggles are like "More" of the description
-            saved = header.path("buttons").asArray.orEmpty()
-                .mapNotNull { it.path("toggleButtonRenderer") }
-                .firstOrNull { it.path("defaultIcon", "iconType").asString in LIBRARY_ADD_ICONS }
-                ?.path("isToggled")?.asString == "true",
+            saved = libraryToggle(header) == true,
         )
     }
+
+    /**
+     * Whether the page's library button is on, `null` when the header has none, like a playlist of
+     * the user. It is a toggle, the other toggles are like "More" of the description.
+     */
+    private fun libraryToggle(header: JsonElement): Boolean? =
+        header.path("buttons").asArray.orEmpty()
+            .mapNotNull { it.path("toggleButtonRenderer") }
+            .firstOrNull { it.path("defaultIcon", "iconType").asString in LIBRARY_ADD_ICONS }
+            ?.let { it.path("isToggled").asString == "true" }
 
     /** @return `null` when [response] is not an artist, like for an id YouTube doesn't know */
     fun artistPage(artistId: String, response: JsonElement?): YouTubeArtistPage? {
@@ -560,6 +566,7 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 .map { YouTubePlaylistEntry(it.song, it.setVideoId) },
             continuation = continuationOf(shelf, contents),
             summary = summaryOf(header.path("secondSubtitle")),
+            saved = libraryToggle(header),
             editable = shelves(response).any {
                 it.path("musicEditablePlaylistDetailHeaderRenderer") != null
             },

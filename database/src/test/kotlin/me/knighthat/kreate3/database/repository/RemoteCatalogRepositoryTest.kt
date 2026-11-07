@@ -65,6 +65,15 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         UserSongEntity(USER, songId, likedAt = DISLIKED, createdAt = EPOCH, updatedAt = EPOCH)
     )
 
+    /** Puts songs in the user's library, not liked, sync only reaches those. */
+    private suspend fun stored(vararg ids: String, origin: Origin = server) {
+        for (id in ids) {
+            addSong(id, origin)
+            database.userSongDao()
+                .upsert(UserSongEntity(USER, id, createdAt = EPOCH, updatedAt = EPOCH))
+        }
+    }
+
     @Before
     fun setUp() = runBlocking {
         addUser()
@@ -81,6 +90,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun likedSongsBringWhatTheyPointAt() = runBlocking {
+        stored("s1")
         repository.syncLikedSongs(
             server,
             listOf(song("s1", album("a1"), listOf(artist("r1"), artist("r2")), star))
@@ -100,6 +110,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aSongDoesNotOverwriteWhatIsKnownAboutItsAlbum() = runBlocking {
+        stored("s1")
         addAlbum("a1", origin = server, name = "Full", year = 2001)
 
         // A song only knows part of its album
@@ -112,7 +123,8 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun theServersValuesOfASongReplaceTheStoredOnes() = runBlocking {
-        addSong("s1", origin = server, name = "Old")
+        stored("s1")
+        database.songDao().upsert(database.songDao().get("s1")!!.copy(name = "Old"))
 
         repository.syncLikedSongs(server, listOf(song("s1")))
 
@@ -121,6 +133,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aSongIsCreditedToExactlyTheArtistsTheServerNames() = runBlocking {
+        stored("s1", "s2")
         repository.syncLikedSongs(
             server,
             listOf(
@@ -145,7 +158,8 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aSongTheServerHasIsAvailableAgain() = runBlocking {
-        addSong("s1", origin = server, unavailableSince = EPOCH)
+        stored("s1")
+        database.songDao().upsert(database.songDao().get("s1")!!.copy(unavailableSince = EPOCH))
 
         repository.syncLikedSongs(server, listOf(song("s1")))
 
@@ -154,6 +168,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun likedSongsAreLikedAtTheirTimeOrNowInTheServersOrder() = runBlocking {
+        stored("newest", "dated", "oldest")
         repository.syncLikedSongs(
             server,
             listOf(song("newest"), song("dated", starredAt = star), song("oldest"))
@@ -166,6 +181,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun theServersLikeTimeReplacesTheStoredOne() = runBlocking {
+        stored("s1")
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
 
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star + 1.hours)))
@@ -175,6 +191,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aLikeAlreadyStoredKeepsItsTimeWhenTheServerGivesNone() = runBlocking {
+        stored("s1")
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
         clock.advance(1.hours)
 
@@ -185,6 +202,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aLikeTheServerNoLongerHasIsTakenAwayButTheSongStays() = runBlocking {
+        stored("kept", "gone")
         repository.syncLikedSongs(
             server,
             listOf(song("kept", starredAt = star), song("gone", starredAt = star))
@@ -200,6 +218,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun anIncompleteListTakesNoLikeAway() = runBlocking {
+        stored("first", "second")
         repository.syncLikedSongs(
             server,
             listOf(song("first", starredAt = star), song("second", starredAt = star))
@@ -212,7 +231,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun aLikeReplacesADislikeAndOtherDislikesStay() = runBlocking {
-        repository.syncLikedSongs(server, listOf(song("liked"), song("disliked")))
+        stored("liked", "disliked")
         dislike("liked")
         dislike("disliked")
         clock.advance(1.hours)
@@ -226,6 +245,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun likesOfOtherOriginsStay() = runBlocking {
+        stored("yt", origin = Origin.YOUTUBE)
         repository.syncLikedSongs(
             Origin.YOUTUBE,
             listOf(song("yt", starredAt = star, origin = Origin.YOUTUBE))
@@ -238,14 +258,16 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun anUnchangedSongIsNotWrittenAgain() = runBlocking {
-        val created = clock.now()
+        stored("s1")
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
+        val songStamp = database.songDao().get("s1")?.updatedAt
+        val userStamp = database.userSongDao().get(USER, "s1")?.updatedAt
         clock.advance()
 
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
 
-        assertEquals(created, database.songDao().get("s1")?.updatedAt)
-        assertEquals(created, database.userSongDao().get(USER, "s1")?.updatedAt)
+        assertEquals(songStamp, database.songDao().get("s1")?.updatedAt)
+        assertEquals(userStamp, database.userSongDao().get(USER, "s1")?.updatedAt)
     }
 
     @Test
@@ -265,13 +287,26 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
     fun aSyncWaitsForTheActiveUser() = runBlocking {
         activeUser.id.value = null
 
+        stored("s1")
         val sync = async { repository.syncLikedSongs(server, listOf(song("s1"))) }
         delay(200)
         assertFalse(sync.isCompleted)
 
         activeUser.id.value = USER
         sync.await()
-        assertNotNull(database.userSongDao().get(USER, "s1"))
+        assertNotNull(likedAt("s1"))
+    }
+
+    @Test
+    fun songsTheLibraryDoesNotHaveAreNotAdded() = runBlocking {
+        stored("kept")
+
+        repository.syncLikedSongs(server, listOf(song("kept"), song("new", album("a1"))))
+
+        assertNotNull(likedAt("kept"))
+        assertNull(database.userSongDao().get(USER, "new"))
+        assertNull(database.songDao().get("new"))
+        assertNull(database.albumDao().get("a1"))
     }
 
     @Test
@@ -287,8 +322,8 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun playingASongOfTheLibraryKeepsItsRowButTakesTheServersValues() = runBlocking {
+        stored("s1", "s2")
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
-        addSong("s2", origin = server)
         dislike("s2")
 
         repository.savePlayedSong(song("s1", artists = listOf(artist("r1"))))
@@ -321,6 +356,7 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
 
     @Test
     fun addingToTheLibraryKeepsARowAndNeedsTheCatalog() = runBlocking {
+        stored("s1")
         repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
 
         assertEquals(true, repository.addToLibrary("s1"))

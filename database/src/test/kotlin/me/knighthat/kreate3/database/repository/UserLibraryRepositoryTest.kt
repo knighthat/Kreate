@@ -663,6 +663,93 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun syncedBookmarksFollowTheSourceForStoredAlbumsOnly() = runBlocking {
+        listOf("keep", "add", "drop", "dislike", "stays", "gone").forEach {
+            addAlbum(it, origin = Origin.YOUTUBE)
+        }
+        addAlbum("device")
+        albums.save(UserAlbum("keep", bookmarkedAt = liked))
+        albums.save(UserAlbum("drop", bookmarkedAt = liked))
+        albums.save(UserAlbum("dislike", bookmarkedAt = DISLIKED))
+        albums.save(UserAlbum("stays", bookmarkedAt = DISLIKED))
+        albums.save(UserAlbum("device", bookmarkedAt = liked))
+        albums.save(UserAlbum("gone", name = "Mine", bookmarkedAt = liked))
+        albums.save(UserAlbum("add"))
+
+        albums.syncBookmarks(Origin.YOUTUBE, setOf("keep", "add", "dislike", "unstored"))
+
+        // Listed: bookmarked, a bookmark made before keeps its time
+        assertEquals(liked, albums.own("keep")?.bookmarkedAt)
+        assertEquals(true, albums.own("add")?.bookmarkedAt != null)
+        // Not listed: the row goes when it only held the bookmark, else it stays without it
+        assertEquals(null, albums.own("drop"))
+        assertEquals(null, albums.own("gone")?.bookmarkedAt)
+        assertEquals("Mine", albums.own("gone")?.name)
+        // The source wins over a dislike when it lists the album, else the dislike stays
+        assertEquals(
+            true,
+            albums.own("dislike")?.bookmarkedAt?.let { it.toEpochMilliseconds() >= 0 })
+        assertEquals(DISLIKED, albums.own("stays")?.bookmarkedAt)
+        // Other origins and albums that aren't stored are left alone
+        assertEquals(liked, albums.own("device")?.bookmarkedAt)
+        assertEquals(null, albums.own("unstored"))
+    }
+
+    @Test
+    fun anIncompleteListOnlyAddsSyncedBookmarks() = runBlocking {
+        listOf("a1", "a2").forEach { addAlbum(it, origin = Origin.YOUTUBE) }
+        albums.save(UserAlbum("a1", bookmarkedAt = liked))
+        albums.save(UserAlbum("a2"))
+
+        albums.syncBookmarks(Origin.YOUTUBE, setOf("a2"), complete = false)
+
+        assertEquals(liked, albums.own("a1")?.bookmarkedAt)
+        assertEquals(true, albums.own("a2")?.bookmarkedAt != null)
+    }
+
+    @Test
+    fun syncedFollowsFollowTheSourceForStoredArtistsOnly() = runBlocking {
+        listOf("keep", "add", "drop", "dislike", "stays", "gone").forEach {
+            addArtist(it, origin = Origin.YOUTUBE)
+        }
+        addArtist("device")
+        artists.save(UserArtist("keep", followSince = liked))
+        artists.save(UserArtist("drop", followSince = liked))
+        artists.save(UserArtist("dislike", followSince = DISLIKED))
+        artists.save(UserArtist("stays", followSince = DISLIKED))
+        artists.save(UserArtist("device", followSince = liked))
+        artists.save(UserArtist("gone", name = "Mine", followSince = liked))
+        artists.save(UserArtist("add"))
+
+        artists.syncFollows(Origin.YOUTUBE, setOf("keep", "add", "dislike", "unstored"))
+
+        assertEquals(liked, artists.own("keep")?.followSince)
+        assertEquals(true, artists.own("add")?.followSince != null)
+        assertEquals(null, artists.own("drop"))
+        assertEquals(null, artists.own("gone")?.followSince)
+        assertEquals("Mine", artists.own("gone")?.name)
+        // The source wins over a dislike when it lists the artist, else the dislike stays
+        assertEquals(
+            true,
+            artists.own("dislike")?.followSince?.let { it.toEpochMilliseconds() >= 0 })
+        assertEquals(DISLIKED, artists.own("stays")?.followSince)
+        assertEquals(liked, artists.own("device")?.followSince)
+        assertEquals(null, artists.own("unstored"))
+    }
+
+    @Test
+    fun anIncompleteListOnlyAddsSyncedFollows() = runBlocking {
+        listOf("r1", "r2").forEach { addArtist(it, origin = Origin.YOUTUBE) }
+        artists.save(UserArtist("r1", followSince = liked))
+        artists.save(UserArtist("r2"))
+
+        artists.syncFollows(Origin.YOUTUBE, setOf("r2"), complete = false)
+
+        assertEquals(liked, artists.own("r1")?.followSince)
+        assertEquals(true, artists.own("r2")?.followSince != null)
+    }
+
+    @Test
     fun theLibraryCanShowOnlyBookmarkedAlbumsAndFollowedArtists() = runBlocking {
         addAlbum("a1", origin = Origin.YOUTUBE)
         listOf("a2", "a3").forEach { addAlbum(it) }

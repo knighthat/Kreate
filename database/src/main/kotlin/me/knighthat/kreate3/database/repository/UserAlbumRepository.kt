@@ -136,6 +136,25 @@ interface UserAlbumRepository {
     suspend fun update(albumId: String, transform: (UserAlbum) -> UserAlbum)
 
     /**
+     * Makes the bookmarks of the stored albums from [origin] what the source says: an album it lists
+     * becomes bookmarked (now) unless it already is, one it doesn't list loses its bookmark, and
+     * the row goes when it held nothing else, see [removeIfEmpty]. A listed album that
+     * was disliked becomes bookmarked, a disliked one the source doesn't list stays disliked. Albums that
+     * aren't stored are not added.
+     *
+     * @param bookmarked the ids of the albums the source lists as bookmarked
+     * @param complete whether [bookmarked] is every one, when `false` nothing loses its bookmark
+     */
+    suspend fun syncBookmarks(origin: Origin, bookmarked: Set<String>, complete: Boolean = true)
+
+    /**
+     * Applies a bookmark the source just took, or took away, to the stored row of [albumId]: the
+     * same as [syncBookmarks] for one album, without asking the source for its list, which may not
+     * show the change yet. Nothing when the album isn't in the library.
+     */
+    suspend fun syncBookmark(albumId: String, bookmarked: Boolean)
+
+    /**
      * Removes the album from the library. The shared album stays.
      */
     suspend fun remove(albumId: String)

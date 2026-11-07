@@ -46,8 +46,8 @@ val providerModule = module {
     }
     single { OpenSubsonicProvider(get(), get()) }
     // The scope is the app's long lived one
-    single { OpenSubsonicLibrary(get(), get(), get(), get()) }
-    single { YouTubeLibrary(get(), get(), get(), get()) }
+    single { OpenSubsonicLibrary(get(), get(), get(), get(), get(), get()) }
+    single { YouTubeLibrary(get(), get(), get(), get(), get(), get()) }
     // Who is signed in to each source, asked at the app's start and when the settings change
     single(createdAtStart = true) { YouTubeAccountStore(get(), get()) }
     single(createdAtStart = true) {

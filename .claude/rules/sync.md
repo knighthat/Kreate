@@ -10,19 +10,23 @@ paths:
 
 ## Pull from the server
 
-- External sources sync liked songs, albums, artists and playlists separately. Of the synced data,
-  only liked songs are written to the database, and the server wins. Albums, artists and playlists
-  are never stored by sync: lists and detail screens show only what the server returns, live.
-- `liked_at`: the server's like time replaces the stored one; with none given, an already liked
-  song keeps its time and a newly liked/inserted one gets now − index ms (keeps server order). A
-  liked song of that origin the server doesn't list as liked gets `liked_at = NULL`. Rows are never
-  deleted by sync, only `liked_at` changes. Dislikes (`-1`) can't be listed by YouTube or Subsonic,
-  so sync never touches them.
+- External sources sync liked songs, albums, artists and playlists separately. Sync only changes
+  items the database already has (songs in the user's library, stored albums and artists), the
+  server wins; it never adds one, by the maintainer's spec (2026-11-06, replacing the earlier
+  "liked songs are inserted"). Lists and detail screens of albums, artists and playlists show what
+  the server returns, live. Albums and artists: bookmark/follow below.
+- `liked_at` of a song already in the library: the server's like time replaces the stored one;
+  with none given, an already liked song keeps its time and a newly liked one gets now − index ms
+  (keeps server order; the index counts only the stored songs). A liked song of that origin the
+  server doesn't list as liked gets `liked_at = NULL`. Rows are never deleted by sync, only
+  `liked_at` changes. Dislikes (`-1`) can't be listed by YouTube or Subsonic, so sync never
+  touches an unlisted one; a listed one becomes a like. A song the server lists that the library
+  lacks is ignored (and its catalog rows aren't stored).
 - Signing out or turning off a source or its sync only stops syncing, it never clears synced likes.
 - Each source has four per-profile settings: liked-songs sync plus show/hide of the live albums,
   artists and playlists. OpenSubsonic albums/artists are `SyncMode` (`OFF`/`LIKED`/`ALL`).
-- Rejected, don't propose again: a sync that never inserts and shows liked songs live (likes need
-  their timestamp), and an OpenSubsonic "all songs" mode (fetching the whole library bloats the
+- Rejected, don't propose again: an OpenSubsonic "all songs" mode (fetching the whole library bloats
+  the
   app).
 
 ## Song reactions sent to the server
@@ -47,7 +51,8 @@ Detail screens' top bar. Device items write `bookmarked_at`/`follow_since`. Remo
 stored: the button shows and changes the source's own state live (`SourceToggle`), whatever the
 sync settings:
 
-- OpenSubsonic: star (`albumId`/`artistId`).
+- OpenSubsonic: star (`albumId`/`artistId`); stored albums/artists follow the stars like YouTube's
+  below (`OpenSubsonicLibrary.syncAlbums`/`syncArtists`, while the setting isn't `OFF`).
 - YouTube: library save (`like/like` of the album's playlist) and subscription (the page's
   `channelId`, not the artist id). Signed in, YouTube's own state shows and local ones are ignored.
   Signed out the buttons still work, on the device only (`DeviceReactions`: the album or artist is
@@ -55,4 +60,21 @@ sync settings:
   `user_album`/`user_artist` row unless it holds a name, cover or artists of the user's own; the
   `album`/`artist` row stays. Device albums and artists keep their rows (the scan put them in the
   library). All by the maintainer's choice (2026-10-22).
-- Server playlists get no like: neither API can keep one (maintainer, 2026-10-22).
+- YouTube (and, by the same rules, OpenSubsonic) albums and artists already stored (bookmarked or
+  followed signed out, or opened from the library) take their bookmark/follow from the account on
+  each sync (`YouTubeLibrary.syncAlbums` /
+  `syncArtists`, while the albums/artists sync setting is on; `UserAlbumRepository.syncBookmarks`,
+  `UserArtistRepository.syncFollows`): listed → bookmarked/followed (an existing time is kept),
+  not listed → removed, and the row dropped if empty; a dislike of a listed one becomes a
+  bookmark/follow (the account wins), one it doesn't list stays; items the database doesn't have
+  are not added; a library longer than the pages fetched only adds. Only device items open the
+  stored (`Local*`) pages; the live YouTube and OpenSubsonic pages send the change to the account
+  first
+  and, once it took it, apply `syncBookmark`/`syncFollow` to the item's row if one exists (never
+  adding one). All by the maintainer's spec (2026-11-06).
+- YouTube playlists: the menu's "Add to library" (`YouTubePlaylistDetailViewModel.bookmark`, the
+  same `like/like` as albums, `YouTubeProvider.savePlaylist`) shows the account's own state live;
+  nothing is stored, so there's no signed-out mode and no sync. Hidden while signed out, for the
+  user's own playlists and when the page has no library button (`YouTubePlaylistPage.saved` is
+  `null`). Chosen by the maintainer (2026-11-06) over a stored `bookmarked_at` for playlists.
+- OpenSubsonic playlists get no like: its API can't keep one (maintainer, 2026-10-22).

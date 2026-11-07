@@ -59,14 +59,16 @@ internal class RemoteCatalogRepositoryImpl(
 
         database.inTransaction {
             val now = clock.now()
-            val incoming = songs.distinctBy { it.song.id }
-            val library = storeSongs(userId, origin, now, incoming)
+            val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
+            // Songs the library doesn't have are never added, only the stored ones follow the server
+            val incoming = songs.distinctBy { it.song.id }.filter { it.song.id in library }
+            storeSongs(origin, now, incoming, library)
 
             if (!complete) return@inTransaction
             // Only the like goes, the song stays in the user's library
-            val kept = incoming.map { it.song.id }.toSet()
+            val kept = songs.map { it.song.id }.toSet()
             userSongDao.upsertAll(
-                library.filter { it.songId !in kept && it.likedAt.isLike }
+                library.values.filter { it.songId !in kept && it.likedAt.isLike }
                     .map { it.copy(likedAt = null, updatedAt = now) }
             )
         }
@@ -117,40 +119,25 @@ internal class RemoteCatalogRepositoryImpl(
     }
 
     /**
-     * Upserts [incoming] with what they point at and likes each in the user's library, see
-     * [syncLikedSongs].
-     *
-     * @return the user's rows of [origin] as they were before
+     * Upserts [incoming], songs [library] holds, with what they point at and likes each in the
+     * user's library, see [syncLikedSongs].
      */
     private suspend fun storeSongs(
-        userId: String,
         origin: Origin,
         now: Instant,
         incoming: List<RemoteSong>,
-    ): Collection<UserSongEntity> {
+        library: Map<String, UserSongEntity>,
+    ) {
         storeCatalog(origin, now, incoming)
 
-        val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
         userSongDao.upsertAll(incoming.mapIndexedNotNull { index, remote ->
-            val old = library[remote.song.id]
+            val old = library.getValue(remote.song.id)
             val likedAt = remote.starredAt
-                ?: old?.likedAt?.takeIf { it.isLike }
+                ?: old.likedAt?.takeIf { it.isLike }
                 ?: (now - index.milliseconds)
 
-            when {
-                old == null -> UserSongEntity(
-                    userId,
-                    remote.song.id,
-                    likedAt = likedAt,
-                    createdAt = now,
-                    updatedAt = now,
-                )
-
-                likedAt == old.likedAt -> null
-                else -> old.copy(likedAt = likedAt, updatedAt = now)
-            }
+            if (likedAt == old.likedAt) null else old.copy(likedAt = likedAt, updatedAt = now)
         })
-        return library.values
     }
 
     /**

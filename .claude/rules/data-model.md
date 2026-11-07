@@ -48,8 +48,8 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
   maintainer's call 2026-11-04; the queue reads back through `user_song` first, `song` for the
   rest, `PersistentQueueDao.details`; the first play, reaction, playlist add or download adds the
   song to the library from that row, `RemoteCatalogRepository.addToLibrary`),
-  when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it) or
-  when synced as liked. A planned Import button will store a remote item only on an explicit user
+  or when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it);
+  sync never adds one. A planned Import button will store a remote item only on an explicit user
   action.
 - Artists stored from the songs crediting them have no picture: credits carry only an id and a name.
   `ArtistPictures.fillMissing` asks the artist's source (`Provider.artist`) once per run and stores

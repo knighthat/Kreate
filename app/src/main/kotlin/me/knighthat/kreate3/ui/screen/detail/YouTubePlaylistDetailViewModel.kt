@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubePlaylistEntry
@@ -65,7 +66,10 @@ data class YouTubePlaylistDetail(
 
 /**
  * Fetches the playlist whose id is in the saved state from YouTube, and its songs part after part
- * as they are scrolled to. Nothing is stored. The user's own playlists can be edited, see [edit].
+ * as they are scrolled to. Nothing is stored. The user's own playlists can be edited, see [edit];
+ * another's can be added to the library of the signed in account, see [bookmark].
+ *
+ * @param scope the app's, where a change is sent
  */
 class YouTubePlaylistDetailViewModel(
     context: Context,
@@ -73,6 +77,7 @@ class YouTubePlaylistDetailViewModel(
     private val provider: YouTubeProvider,
     library: UserSongRepository,
     scope: CoroutineScope,
+    notifier: Notifier,
 ) : LiveDetailViewModel<YouTubePlaylistDetail>(context, library.dislikedIds()) {
 
     val playlistId: String = checkNotNull(savedStateHandle[YouTubePlaylist.ID]) {
@@ -88,6 +93,22 @@ class YouTubePlaylistDetailViewModel(
             R.string.error_source_not_found_playlist,
             R.string.error_source_not_found_playlist_unnamed
         )
+
+    /**
+     * Whether the playlist is in the library of the signed in account ("Add to library"). Off
+     * (`null`) while signed out, for the user's own playlists and for the ones without the button.
+     */
+    val bookmark = SourceToggle(
+        scope,
+        notifier,
+        send = { on -> provider.savePlaylist(playlistId, on) },
+        failure = { e, _ ->
+            e.youTubeFailure(
+                context.resources,
+                context.resources.itemName(opened.name, R.string.snackbar_this_playlist)
+            )
+        },
+    )
 
     private val _songs = MutableStateFlow(emptyList<MediaItem>())
     private val _hasMore = MutableStateFlow(false)
@@ -135,6 +156,8 @@ class YouTubePlaylistDetailViewModel(
         _songs.value = emptyList()
         places.value = emptyMap()
         add(page.entries, page.continuation)
+        // Asked in the session, the page tells whether the playlist is in the library
+        bookmark.known(page.saved.takeIf { provider.isSignedIn() && !page.editable })
         return YouTubePlaylistDetail(
             name = page.playlist.name,
             thumbnail = provider.artwork(page.playlist.thumbnail, HEADER_ARTWORK),

@@ -105,6 +105,7 @@ import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverGrid
 import me.knighthat.kreate3.ui.component.GRID_COVERS
 import me.knighthat.kreate3.ui.component.LabeledIconButton
+import me.knighthat.kreate3.ui.component.LabeledIconToggle
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MoreSheetButton
 import me.knighthat.kreate3.ui.component.OriginBadge
@@ -512,6 +513,7 @@ internal fun List<MediaItem>.songCovers(): List<Any> =
  * @param canEdit whether the switches can be used
  * @param canRemove whether songs can be taken out, `false` for a monthly playlist: no such row
  * @param onDelete asks to delete the playlist, `null` for a playlist that can't be: no row
+ * @param isSaved whether the playlist is in the account's library, `null` hides the button
  * @param canDelete whether the user may delete it, the row is grayed out otherwise
  * @param busy for a playlist of a server, whose edits are sent when the user turns the mode off:
  * whether the page waits for the server. The row that was tapped is a spinner then and the other
@@ -525,6 +527,8 @@ fun PlaylistMenu(
     onAction: ((QueueAction) -> Unit)?,
     share: (suspend () -> Result<String>)?,
     canShare: Boolean = true,
+    isSaved: Boolean? = null,
+    onToggleSaved: () -> Unit = {},
     mode: CoverEditMode? = null,
     canEdit: Boolean = true,
     canRemove: Boolean = true,
@@ -551,6 +555,15 @@ fun PlaylistMenu(
                 label = stringResource(R.string.menu_add_to_queue),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
+            if (isSaved != null)
+                LabeledIconToggle(
+                    isSet = isSaved,
+                    enabled = true,
+                    setIcon = R.drawable.bookmark_filled,
+                    unsetIcon = R.drawable.bookmark_outline,
+                    label = stringResource(R.string.menu_add_to_library),
+                    onClick = onToggleSaved,
+                )
             if (canShare)
                 LabeledIconButton(
                     icon = R.drawable.share,

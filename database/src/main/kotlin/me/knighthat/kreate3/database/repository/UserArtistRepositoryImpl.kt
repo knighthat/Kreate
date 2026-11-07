@@ -180,6 +180,42 @@ internal class UserArtistRepositoryImpl(
         }
     }
 
+    override suspend fun syncFollows(origin: Origin, followed: Set<String>, complete: Boolean) {
+        val userId = scope.requireId()
+        database.inTransaction {
+            val now = clock.now()
+            for (row in userArtistDao.ofOrigin(userId, origin)) {
+                val since = row.followSince
+                val disliked = since != null && since.toEpochMilliseconds() < 0
+
+                val listed = row.artistId in followed
+                // The source wins over a dislike too, one it doesn't list stays, it can't hold one
+                if (listed && (since == null || disliked)) {
+                    userArtistDao.upsert(row.copy(followSince = now, updatedAt = now))
+                } else if (!listed && since != null && !disliked && complete) {
+                    userArtistDao.upsert(row.copy(followSince = null, updatedAt = now))
+                    userArtistDao.deleteIfEmpty(userId, row.artistId, Origin.LOCAL)
+                }
+            }
+        }
+    }
+
+    override suspend fun syncFollow(artistId: String, followed: Boolean) {
+        val userId = scope.requireId()
+        database.inTransaction {
+            val row = userArtistDao.get(userId, artistId) ?: return@inTransaction
+            val since = row.followSince
+            val disliked = since != null && since.toEpochMilliseconds() < 0
+            val now = clock.now()
+            if (followed && (since == null || disliked)) {
+                userArtistDao.upsert(row.copy(followSince = now, updatedAt = now))
+            } else if (!followed && since != null) {
+                userArtistDao.upsert(row.copy(followSince = null, updatedAt = now))
+                userArtistDao.deleteIfEmpty(userId, artistId, Origin.LOCAL)
+            }
+        }
+    }
+
     override suspend fun remove(artistId: String) =
         userArtistDao.delete(scope.requireId(), artistId)
 

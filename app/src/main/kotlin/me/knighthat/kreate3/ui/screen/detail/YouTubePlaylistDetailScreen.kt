@@ -73,6 +73,7 @@ fun YouTubePlaylistDetailScreen(
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val hasMore by viewModel.hasMore.collectAsStateWithLifecycle()
     val preparing by viewModel.preparing.collectAsStateWithLifecycle()
+    val isSaved by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
     val edit = viewModel.edit.collectState(preparing)
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
@@ -131,6 +132,8 @@ fun YouTubePlaylistDetailScreen(
                 state = state,
                 songs = songs,
                 hasMore = hasMore,
+                isSaved = isSaved,
+                onToggleSaved = viewModel.bookmark::toggle,
                 onLoadMore = viewModel::loadMore,
                 onRetry = viewModel::load,
                 onBack = onBack,
@@ -150,6 +153,7 @@ fun YouTubePlaylistDetailScreen(
 /**
  * @param songs the songs fetched so far
  * @param hasMore whether YouTube has songs after [songs], [onLoadMore] fetches them
+ * @param isSaved whether the playlist is in the account's library, `null` hides the row
  * @param edit where moving and taking out songs stands
  * @param actions what the user can do about it
  */
@@ -158,6 +162,8 @@ private fun YouTubePlaylistDetailContent(
     state: LiveState<YouTubePlaylistDetail>,
     songs: List<MediaItem>,
     hasMore: Boolean,
+    isSaved: Boolean?,
+    onToggleSaved: () -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit,
     onBack: () -> Unit,
@@ -200,6 +206,8 @@ private fun YouTubePlaylistDetailContent(
                 onDismiss = onDismiss,
                 onAction = onAction.takeIf { songs.isNotEmpty() },
                 share = share,
+                isSaved = isSaved,
+                onToggleSaved = onToggleSaved,
                 mode = edit.mode,
                 // Stays on while the last song is taken out, so it can be turned off
                 canEdit = playlist?.editable == true &&
@@ -276,6 +284,8 @@ private fun YouTubePlaylistDetailPreview() = PreviewTheme {
         ),
         songs = previewSongs(Origin.YOUTUBE),
         hasMore = true,
+        isSaved = false,
+        onToggleSaved = {},
         onLoadMore = {},
         onRetry = {},
         onBack = {},

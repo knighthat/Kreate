@@ -158,8 +158,22 @@ class YouTubeProvider internal constructor(
      * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
      */
     suspend fun libraryAlbums(): List<Album>? =
-        library(LIBRARY_ALBUMS)?.filterIsInstance<AlbumItem>()?.map { it.album }
+        library(LIBRARY_ALBUMS)?.items?.filterIsInstance<AlbumItem>()?.map { it.album }
             ?.distinctBy { it.id }
+
+    /**
+     * The ids of the albums the user saved to their library.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun libraryAlbumIds(): LibraryIds? =
+        library(LIBRARY_ALBUMS)?.let { library ->
+            LibraryIds(
+                ids = library.items.filterIsInstance<AlbumItem>().map { it.album.id }.toSet(),
+                complete = library.complete,
+            )
+        }
 
     /**
      * The artists the user subscribed to.
@@ -168,8 +182,22 @@ class YouTubeProvider internal constructor(
      * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
      */
     suspend fun libraryArtists(): List<Artist>? =
-        library(LIBRARY_ARTISTS)?.filterIsInstance<ArtistItem>()?.map { it.artist }
+        library(LIBRARY_ARTISTS)?.items?.filterIsInstance<ArtistItem>()?.map { it.artist }
             ?.distinctBy { it.id }
+
+    /**
+     * The ids of the artists the user subscribed to.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun libraryArtistIds(): LibraryIds? =
+        library(LIBRARY_ARTISTS)?.let { library ->
+            LibraryIds(
+                ids = library.items.filterIsInstance<ArtistItem>().map { it.artist.id }.toSet(),
+                complete = library.complete,
+            )
+        }
 
     /**
      * The playlists in the user's library, theirs and the ones they saved, with "Liked Music"
@@ -179,7 +207,7 @@ class YouTubeProvider internal constructor(
      * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
      */
     suspend fun libraryPlaylists(): List<UserPlaylist>? =
-        library(LIBRARY_PLAYLISTS)?.filterIsInstance<PlaylistItem>()?.map { it.playlist }
+        library(LIBRARY_PLAYLISTS)?.items?.filterIsInstance<PlaylistItem>()?.map { it.playlist }
             ?.distinctBy { it.remoteId }
 
     /**
@@ -213,12 +241,13 @@ class YouTubeProvider internal constructor(
     }
 
     /**
-     * Every item of a page of the user's library, part after part up to [LIBRARY_PAGES] parts.
+     * Every item of a page of the user's library, part after part up to [LIBRARY_PAGES] parts,
+     * and whether that was all of it.
      * An answer outside the session fails, it would list nothing and empty the library.
      *
      * @return `null` while nobody is signed in
      */
-    private suspend fun library(browseId: String): List<YouTubeItem>? {
+    private suspend fun library(browseId: String): LibraryItems? {
         if (!isSignedIn()) return null
 
         var page = parser.browsePage(innerTube.browse(browseId, signedIn = true))
@@ -231,7 +260,7 @@ class YouTubeProvider internal constructor(
             items += page.items
             pages++
         }
-        return items
+        return LibraryItems(items, complete = page.continuation == null)
     }
 
     /**
@@ -358,6 +387,17 @@ class YouTubeProvider internal constructor(
      * [YouTubeException.signedOut] when nobody is signed in or the session ended
      */
     suspend fun saveAlbum(playlistId: String, saved: Boolean) {
+        innerTube.likePlaylist(playlistId, saved)
+    }
+
+    /**
+     * Saves the playlist to the user's library ("Add to library"), or takes it out.
+     *
+     * @param playlistId the playlist's id, without `VL`
+     * @throws YouTubeException when YouTube can't be reached or refuses, with
+     * [YouTubeException.signedOut] when nobody is signed in or the session ended
+     */
+    suspend fun savePlaylist(playlistId: String, saved: Boolean) {
         innerTube.likePlaylist(playlistId, saved)
     }
 
@@ -752,3 +792,15 @@ class YouTubeProvider internal constructor(
         const val LIBRARY_PAGES = 40
     }
 }
+
+/**
+ * The ids of the albums saved to, or artists subscribed to in, the user's library on YouTube.
+ *
+ * @property ids the ids listed
+ * @property complete whether that is the whole library, `false` when it is longer than what was
+ * asked for, an id not listed may be in it then
+ */
+class LibraryIds(val ids: Set<String>, val complete: Boolean)
+
+/** A page of the library, see [YouTubeProvider.libraryAlbumIds]. */
+private class LibraryItems(val items: List<YouTubeItem>, val complete: Boolean)

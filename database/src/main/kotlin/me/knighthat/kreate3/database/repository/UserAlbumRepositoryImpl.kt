@@ -187,6 +187,46 @@ internal class UserAlbumRepositoryImpl(
         }
     }
 
+    override suspend fun syncBookmarks(
+        origin: Origin,
+        bookmarked: Set<String>,
+        complete: Boolean,
+    ) {
+        val userId = scope.requireId()
+        database.inTransaction {
+            val now = clock.now()
+            for (row in userAlbumDao.ofOrigin(userId, origin)) {
+                val at = row.bookmarkedAt
+                val disliked = at != null && at.toEpochMilliseconds() < 0
+
+                val listed = row.albumId in bookmarked
+                // The source wins over a dislike too, one it doesn't list stays, it can't hold one
+                if (listed && (at == null || disliked)) {
+                    userAlbumDao.upsert(row.copy(bookmarkedAt = now, updatedAt = now))
+                } else if (!listed && at != null && !disliked && complete) {
+                    userAlbumDao.upsert(row.copy(bookmarkedAt = null, updatedAt = now))
+                    userAlbumDao.deleteIfEmpty(userId, row.albumId, Origin.LOCAL)
+                }
+            }
+        }
+    }
+
+    override suspend fun syncBookmark(albumId: String, bookmarked: Boolean) {
+        val userId = scope.requireId()
+        database.inTransaction {
+            val row = userAlbumDao.get(userId, albumId) ?: return@inTransaction
+            val at = row.bookmarkedAt
+            val disliked = at != null && at.toEpochMilliseconds() < 0
+            val now = clock.now()
+            if (bookmarked && (at == null || disliked)) {
+                userAlbumDao.upsert(row.copy(bookmarkedAt = now, updatedAt = now))
+            } else if (!bookmarked && at != null) {
+                userAlbumDao.upsert(row.copy(bookmarkedAt = null, updatedAt = now))
+                userAlbumDao.deleteIfEmpty(userId, albumId, Origin.LOCAL)
+            }
+        }
+    }
+
     override suspend fun remove(albumId: String) =
         userAlbumDao.delete(scope.requireId(), albumId)
 

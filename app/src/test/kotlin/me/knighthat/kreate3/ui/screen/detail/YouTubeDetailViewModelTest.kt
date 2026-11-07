@@ -136,6 +136,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
 
         // The answer comes on the client's own thread
@@ -161,6 +162,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
 
         val album = (viewModel.state.first { it !is LiveState.Loading } as LiveState.Ready).value
@@ -181,6 +183,7 @@ class YouTubeDetailViewModelTest {
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,
             backgroundScope,
+            Notifier(),
         )
 
         assertEquals(listOf("v1"), viewModel.songs.first { it.isNotEmpty() }.map { it.mediaId })
@@ -198,6 +201,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
         viewModel.state.first { it !is LiveState.Loading }
         assertEquals(false, viewModel.bookmark.isOn.value)
@@ -222,6 +226,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
         viewModel.state.first { it !is LiveState.Loading }
         assertEquals(true, viewModel.follow.isOn.value)
@@ -244,6 +249,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
 
         val state = viewModel.state.first { it !is LiveState.Loading }
@@ -261,6 +267,7 @@ class YouTubeDetailViewModelTest {
             library,
             backgroundScope,
             Notifier(),
+            unused(),
         )
 
         assertTrue(viewModel.state.first { it !is LiveState.Loading } is LiveState.Failed)
@@ -278,6 +285,7 @@ class YouTubeDetailViewModelTest {
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,
             backgroundScope,
+            Notifier(),
         )
 
         val playlist = (viewModel.state.first { it !is LiveState.Loading } as LiveState.Ready).value
@@ -331,3 +339,8 @@ class YouTubeDetailViewModelTest {
             "continuationItems":[${song("v2")},${song("v3")}]}}]}"""
     }
 }
+
+private inline fun <reified T> unused(): T =
+    java.lang.reflect.Proxy.newProxyInstance(
+        T::class.java.classLoader, arrayOf(T::class.java)
+    ) { _, _, _ -> error("Not used by the test") } as T

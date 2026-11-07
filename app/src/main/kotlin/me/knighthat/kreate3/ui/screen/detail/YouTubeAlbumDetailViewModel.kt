@@ -24,6 +24,7 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
@@ -80,6 +81,7 @@ class YouTubeAlbumDetailViewModel(
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
+    private val userAlbums: UserAlbumRepository,
 ) : LiveDetailViewModel<YouTubeAlbumDetail>(context, library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -113,10 +115,13 @@ class YouTubeAlbumDetailViewModel(
         notifier,
         send = { on ->
             val album = onDevice
-            if (album != null)
+            if (album != null) {
                 device.setBookmarked(album, on)
-            else
+            } else {
                 provider.saveAlbum(checkNotNull(playlistId), on)
+                // The account took it, a row of the library follows it without asking for the list
+                userAlbums.syncBookmark(albumId, on)
+            }
         },
         failure = { e, on ->
             val album = context.resources.itemName(opened.name, R.string.snackbar_this_album)

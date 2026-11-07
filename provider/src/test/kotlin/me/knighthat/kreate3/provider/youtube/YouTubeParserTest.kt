@@ -280,6 +280,27 @@ class YouTubeParserTest {
     }
 
     @Test
+    fun aPlaylistTellsWhetherItIsInTheLibraryWhenItHasTheButton() {
+        fun page(buttons: String) = Json.parseToJsonElement(
+            """{"contents":{"twoColumnBrowseResultsRenderer":{
+                "tabs":[{"tabRenderer":{"content":{"sectionListRenderer":{"contents":[{
+                    "musicResponsiveHeaderRenderer":{"title":{"runs":[{"text":"Other"}]},
+                    "buttons":[$buttons]}}]}}}}]}}}"""
+        )
+
+        fun toggle(icon: String, on: Boolean) =
+            """{"toggleButtonRenderer":{"defaultIcon":{"iconType":"$icon"},"isToggled":$on}}"""
+
+        val saved = parser.playlistPage("PL1", page(toggle("LIBRARY_ADD", true)))!!
+        val notSaved = parser.playlistPage("PL1", page(toggle("BOOKMARK_BORDER", false)))!!
+        val noButton = parser.playlistPage("PL1", page(toggle("MORE_HORIZ", false)))!!
+
+        assertEquals(true, saved.saved)
+        assertEquals(false, notSaved.saved)
+        assertNull(noButton.saved)
+    }
+
+    @Test
     fun playlistContinuationGivesTheRest() {
         val page = parser.playlistSongs(fixture("pl_cont"))
 

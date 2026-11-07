@@ -80,6 +80,15 @@ internal interface UserAlbumDao {
     @Query("SELECT * FROM user_album WHERE user_id = :userId AND album_id = :albumId")
     suspend fun get(userId: String, albumId: String): UserAlbumEntity?
 
+    /** The user's rows of the albums that come from [origin]. */
+    @Query(
+        """
+        SELECT * FROM user_album WHERE user_id = :userId
+        AND album_id IN (SELECT id FROM album WHERE origin = :origin)
+        """
+    )
+    suspend fun ofOrigin(userId: String, origin: Origin): List<UserAlbumEntity>
+
     @Upsert
     suspend fun upsert(album: UserAlbumEntity)
 

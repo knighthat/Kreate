@@ -27,6 +27,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.ReleaseType
+import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -69,6 +70,7 @@ class OpenSubsonicAlbumDetailViewModel(
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
+    private val userAlbums: UserAlbumRepository,
 ) : LiveDetailViewModel<OpenSubsonicAlbumDetail>(context, library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -89,6 +91,8 @@ class OpenSubsonicAlbumDetailViewModel(
         notifier,
         send = { on ->
             if (!provider.setAlbumStarred(albumId, on)) throw ServerException(ServerCheck.Disabled)
+            // The server took it, a row of the library follows it
+            userAlbums.syncBookmark(albumId, on)
         },
         failure = { e, _ ->
             e.serverFailure(

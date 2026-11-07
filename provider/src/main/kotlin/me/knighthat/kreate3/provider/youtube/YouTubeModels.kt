@@ -154,6 +154,8 @@ data class YouTubeArtistPage(
  * @property entries the first places of the playlist, in its order
  * @property continuation gives the next songs to [YouTubeProvider.playlistSongs], `null` when
  * [entries] are all of them
+ * @property saved whether the playlist is in the user's library, only meaningful for a page asked
+ * in the session; `null` when the page has no library button, like the user's own playlists
  * @property editable whether the signed in user may change or delete the playlist: YouTube gives
  * the page its editing header only to the owner
  * @property privacy who can see the playlist, `null` when the page doesn't say, which it does only
@@ -166,6 +168,7 @@ data class YouTubePlaylistPage(
     val entries: List<YouTubePlaylistEntry>,
     val continuation: String?,
     val summary: String? = null,
+    val saved: Boolean? = null,
     val editable: Boolean = false,
     val privacy: PlaylistPrivacy? = null,
 ) {

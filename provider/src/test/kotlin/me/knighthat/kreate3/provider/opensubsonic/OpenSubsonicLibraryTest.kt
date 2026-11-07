@@ -157,7 +157,10 @@ class OpenSubsonicLibraryTest {
     private var syncing = true
 
     private val library =
-        OpenSubsonicLibrary(provider, repository, reactions, scope, clock) { syncing }
+        OpenSubsonicLibrary(
+            provider, repository, reactions, unused(), unused(), scope, clock,
+            syncsAlbums = { false }, syncsArtists = { false },
+        ) { syncing }
 
     private fun ok(content: String) =
         """{"subsonic-response":{"status":"ok","version":"1.16.1",$content}}"""

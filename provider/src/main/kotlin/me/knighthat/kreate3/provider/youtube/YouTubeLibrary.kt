@@ -23,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.UserAlbumRepository
+import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
@@ -38,17 +40,26 @@ import kotlin.time.Instant
 /**
  * Keeps the songs the signed in user liked on YouTube liked in their library, and the likes and
  * dislikes given in the app on YouTube. Liked songs are the only part of the YouTube library that
- * is stored, its albums, artists and playlists are fetched each time they show. Signing out, or
- * turning the account or the syncing off, only stops the syncing, the likes stay as they are.
+ * is added to the database, its albums, artists and playlists are fetched each time they show. The
+ * albums and artists already stored take their bookmark and follow from the library, see
+ * [UserAlbumRepository.syncBookmarks] and [UserArtistRepository.syncFollows]. Signing out, or
+ * turning the account or the syncing off, only stops the syncing, the likes, bookmarks and follows
+ * stay as they are.
  *
+ * @param syncsArtists whether the follows of stored artists are synced, [Preferences.YOUTUBE_SYNC_ARTISTS]
+ * @param syncsAlbums whether the bookmarks of stored albums are synced, [Preferences.YOUTUBE_SYNC_ALBUMS]
  * @param syncs whether the liked songs are synced, [Preferences.YOUTUBE_SYNC_SONGS]
  */
 class YouTubeLibrary(
     private val provider: YouTubeProvider,
     private val repository: RemoteCatalogRepository,
     userSongs: UserSongRepository,
+    private val userAlbums: UserAlbumRepository,
+    private val userArtists: UserArtistRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
+    private val syncsAlbums: () -> Boolean = { LibrarySection.ALBUMS.youTubeSyncSetting.value },
+    private val syncsArtists: () -> Boolean = { LibrarySection.ARTISTS.youTubeSyncSetting.value },
     private val syncs: () -> Boolean = { LibrarySection.SONGS.youTubeSyncSetting.value },
 ) {
 
@@ -66,7 +77,7 @@ class YouTubeLibrary(
      */
     fun refresh(): Job =
         scope.launch {
-            if (!syncs()) return@launch
+            if (!syncs() && !syncsAlbums() && !syncsArtists()) return@launch
             val session = provider.sessionId() ?: return@launch
             val now = clock.now()
 
@@ -77,7 +88,10 @@ class YouTubeLibrary(
             if (last != null && !refreshed.replace(session, last, now)) return@launch
 
             try {
-                if (!sync(session)) refreshed.remove(session)
+                val stored = !syncs() || sync(session)
+                syncAlbums(session)
+                syncArtists(session)
+                if (!stored) refreshed.remove(session)
             } catch (e: CancellationException) {
                 refreshed.remove(session)
                 throw e
@@ -143,6 +157,42 @@ class YouTubeLibrary(
                 complete = liked.continuation == null,
             )
             true
+        }
+    }
+
+    /**
+     * Brings the bookmarks of the albums stored up to date when their syncing is on. A failure
+     * leaves them as they were.
+     */
+    private suspend fun syncAlbums(session: String) {
+        if (!syncsAlbums()) return
+        try {
+            val saved = provider.libraryAlbumIds() ?: return
+            if (provider.sessionId() != session || !syncsAlbums()) return
+            Logger.i(tag = TAG) { "Syncing the bookmarks of ${saved.ids.size} albums" }
+            userAlbums.syncBookmarks(Origin.YOUTUBE, saved.ids, saved.complete)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't bring the bookmarked albums up to date" }
+        }
+    }
+
+    /**
+     * Brings the follows of the artists stored up to date when their syncing is on. A failure
+     * leaves them as they were.
+     */
+    private suspend fun syncArtists(session: String) {
+        if (!syncsArtists()) return
+        try {
+            val subscribed = provider.libraryArtistIds() ?: return
+            if (provider.sessionId() != session || !syncsArtists()) return
+            Logger.i(tag = TAG) { "Syncing the follows of ${subscribed.ids.size} artists" }
+            userArtists.syncFollows(Origin.YOUTUBE, subscribed.ids, subscribed.complete)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't bring the followed artists up to date" }
         }
     }
 

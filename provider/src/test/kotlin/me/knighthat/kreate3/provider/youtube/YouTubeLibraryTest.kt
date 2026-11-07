@@ -151,7 +151,10 @@ class YouTubeLibraryTest {
 
     private val reactions = Reactions()
 
-    private val library = YouTubeLibrary(provider, repository, reactions, scope, clock) { syncing }
+    private val library = YouTubeLibrary(
+        provider, repository, reactions, unused(), unused(), scope, clock,
+        syncsAlbums = { false }, syncsArtists = { false }
+    ) { syncing }
 
     private val liked = Instant.parse("2024-03-04T05:06:07Z")
     private val disliked = Instant.fromEpochMilliseconds(-1)

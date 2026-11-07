@@ -86,6 +86,7 @@
     <string name="menu_play">Play</string>
     <string name="menu_follow">Follow</string>
     <string name="menu_bookmark">Bookmark</string>
+    <string name="menu_add_to_library">Add to library</string>
     <string name="menu_statistics">Statistics</string>
     <string name="menu_go_to_album">Go to album</string>
     <string name="menu_title_artists">Artists</string>

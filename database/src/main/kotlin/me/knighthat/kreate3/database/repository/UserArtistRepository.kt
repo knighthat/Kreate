@@ -130,6 +130,25 @@ interface UserArtistRepository {
     suspend fun update(artistId: String, transform: (UserArtist) -> UserArtist)
 
     /**
+     * Makes the follows of the stored artists from [origin] what the source says: an artist it lists
+     * becomes followed (now) unless they already are, one it doesn't list is unfollowed, and the
+     * row goes when it held nothing else, see [removeIfEmpty]. A listed artist that was disliked
+     * becomes followed, a disliked one the source doesn't list stays disliked. Artists that aren't
+     * stored are not added.
+     *
+     * @param followed the ids of the artists the source lists as followed
+     * @param complete whether [followed] is every one, when `false` nobody is unfollowed
+     */
+    suspend fun syncFollows(origin: Origin, followed: Set<String>, complete: Boolean = true)
+
+    /**
+     * Applies a follow the source just took, or took away, to the stored row of [artistId]: the
+     * same as [syncFollows] for one artist, without asking the source for its list, which may not
+     * show the change yet. Nothing when the artist isn't in the library.
+     */
+    suspend fun syncFollow(artistId: String, followed: Boolean)
+
+    /**
      * Removes the artist from the library. The shared artist stays.
      */
     suspend fun remove(artistId: String)
