@@ -83,6 +83,8 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
         AutoMigration(from = 1, to = 2),
         // `user_playlist.is_pinned`, 0 for the playlists that exist
         AutoMigration(from = 2, to = 3),
+        // Index `playback_history(user_id, song_id)`, for the play counts of the playlist covers
+        AutoMigration(from = 3, to = 4),
     ],
 )
 @TypeConverters(Converters::class)

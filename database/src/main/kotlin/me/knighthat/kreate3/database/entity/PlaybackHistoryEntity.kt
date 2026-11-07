@@ -51,7 +51,7 @@ import kotlin.time.Instant
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("song_id"), Index("user_id", "created_at")],
+    indices = [Index("song_id"), Index("user_id", "created_at"), Index("user_id", "song_id")],
 )
 internal data class PlaybackHistoryEntity(
     @PrimaryKey(autoGenerate = true)
