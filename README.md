@@ -25,7 +25,20 @@
 
 # 📲 Installation
 
-The app is currently available on [Patreon](https://patreon.com/knighthat).
+> Kreate v3 is not yet available for everyone yet.
+
+Beta versions are available if you want to try the app early, visit
+my [Patreon](https://patreon.com/knighthat) page to learn more.
+
+# 📖 History
+
+Kreate used to be a RiMusic's fork. Since v3, everything is written from scratch, with a migration
+backend
+to ensure your data can be safely moved to new app without much of the headache.
+
+Reason: Very simple, old app wasn't written to incorporate multiple streaming services, this is the
+main reason I decided to rewrite the code. With new app, you don't have to depend entirely on
+YouTube Music for music playback, OpenSubsonic server and local songs are fully supported.
 
 # ✨ Features
 
