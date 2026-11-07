@@ -88,16 +88,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
+import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.download.SongStorage
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.songTitle
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.navigation.CreatePlaylist
 import me.knighthat.kreate3.ui.navigation.EditSong
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
@@ -105,6 +110,7 @@ import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.SongDetails
 import me.knighthat.kreate3.ui.navigation.albumRoute
 import me.knighthat.kreate3.ui.navigation.artistRoute
+import me.knighthat.kreate3.ui.screen.detail.itemName
 import me.knighthat.kreate3.ui.screen.detail.rememberSongShare
 import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
 import me.knighthat.kreate3.ui.screen.player.Reaction
@@ -278,7 +284,9 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
     val placement = remember(sheetState) { SheetPlacement(sheetState) }
     val scope = rememberCoroutineScope()
     var page by remember { mutableStateOf(SongMenuPage.ACTIONS) }
-    val artists = rememberSongArtists(request.item)
+    val lookup = rememberSongLookup(request.item)
+    val known = rememberSongArtists(request.item)
+    val artists = known.ifEmpty { lookup.artists }
 
     // Slides the sheet away, taking the row back to the list, before doing what was picked
     fun close(then: () -> Unit) {
@@ -312,6 +320,7 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
                 SongMenuPage.ACTIONS -> SongMenuActions(
                     item = request.item,
                     artists = artists,
+                    lookup = lookup,
                     actions = request.actions,
                     showQueueActions = request.showQueueActions,
                     close = ::close,
@@ -441,6 +450,91 @@ private fun rememberSongArtists(item: MediaItem): List<SongArtist> {
     return artists
 }
 
+/**
+ * What a YouTube song that carries no album or artist is looked up for, when one of the "Go to"
+ * rows is tapped: [resolve] fetches the song once, [loading] is on meanwhile. [needed] is `false`
+ * for every song that already knows where it belongs.
+ */
+/** The "Go to" rows that fetch the song. */
+private enum class LookupRow { ALBUM, ARTIST }
+
+@Stable
+private class SongLookup(
+    val needed: Boolean,
+    private val current: Route?,
+    private val scope: CoroutineScope,
+    private val fetch: suspend () -> RemoteSong?,
+    private val onFailure: () -> Unit,
+) {
+    /** The row the fetch was started from, `null` while none is fetching. */
+    var loadingFor by mutableStateOf<LookupRow?>(null)
+        private set
+    private val loading get() = loadingFor != null
+    private var song by mutableStateOf<RemoteSong?>(null)
+
+    /** The album of the fetched song, without the one open. */
+    val album: Route?
+        get() = song?.album?.let { albumRoute(Origin.YOUTUBE, it.id) }?.takeIf { it != current }
+
+    /** The artists of the fetched song, without the one open. */
+    val artists: List<SongArtist>
+        get() = song?.artists.orEmpty()
+            .map { SongArtist(it.id, it.name, artistRoute(Origin.YOUTUBE, it.id)) }
+            .filter { it.route != current }
+
+    /** Runs [then] once the song is fetched, at once when it already is. */
+    fun resolve(row: LookupRow, then: () -> Unit) {
+        if (song != null) return then()
+        if (loading) return
+
+        loadingFor = row
+        scope.launch {
+            song = try {
+                fetch()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+            loadingFor = null
+            if (song == null) onFailure() else then()
+        }
+    }
+}
+
+@Composable
+private fun rememberSongLookup(item: MediaItem): SongLookup {
+    val youTube = koinInject<YouTubeProvider>()
+    val notifier = LocalNotifier.current
+    val resources = LocalResources.current
+    val navigator = LocalNavigator.current
+    val scope = rememberCoroutineScope()
+    val extras = item.mediaMetadata.extras
+    val needed = item.origin == Origin.YOUTUBE
+            && extras?.getString(EXTRA_ALBUM_ID) == null
+            && extras?.getStringArray(EXTRA_ARTIST_IDS).orEmpty().isEmpty()
+    val mediaId = item.mediaId
+    val title = item.songTitle()
+    return remember(mediaId, needed, navigator?.current) {
+        SongLookup(
+            needed = needed,
+            current = navigator?.current,
+            scope = scope,
+            fetch = { youTube.songDetailsOf(listOf(mediaId)).firstOrNull() },
+            onFailure = {
+                notifier.post(
+                    Message(
+                        resources.getString(
+                            R.string.error_song_lookup,
+                            resources.itemName(title, R.string.snackbar_this_song)
+                        )
+                    )
+                )
+            },
+        )
+    }
+}
+
 /** The reactions, Share and the download button, at the top of the sheet. */
 @Composable
 private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) {
@@ -486,6 +580,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
 private fun SongMenuActions(
     item: MediaItem,
     artists: List<SongArtist>,
+    lookup: SongLookup,
     actions: List<SongMenuAction>,
     showQueueActions: Boolean,
     close: (then: () -> Unit) -> Unit,
@@ -498,6 +593,11 @@ private fun SongMenuActions(
     val navigator = LocalNavigator.current
     val openRoute = rememberRouteOpener()
     val playable = item.mediaMetadata.isPlayable == true
+    // A song of the device without them has nothing to go to, its rows stay but are grayed out
+    val extras = item.mediaMetadata.extras
+    val noAlbum = item.origin == Origin.LOCAL && extras?.getString(EXTRA_ALBUM_ID) == null
+    val noArtist = item.origin == Origin.LOCAL
+            && extras?.getStringArray(EXTRA_ARTIST_IDS).orEmpty().isEmpty()
     val album = remember(item, navigator?.current) {
         item.mediaMetadata.extras?.getString(EXTRA_ALBUM_ID)
             ?.let { albumRoute(item.origin, it) }
@@ -544,18 +644,69 @@ private fun SongMenuActions(
             R.drawable.album,
             stringResource(R.string.menu_go_to_album)
         ) { close { openRoute(album) } }
-    if (navigator != null && artists.isNotEmpty())
+    else if (navigator != null && lookup.needed)
+        MenuRow(
+            R.drawable.album,
+            stringResource(R.string.menu_go_to_album),
+            loading = lookup.loadingFor == LookupRow.ALBUM,
+            enabled = lookup.loadingFor != LookupRow.ARTIST,
+        ) {
+            lookup.resolve(LookupRow.ALBUM) {
+                val route = lookup.album
+                if (route != null)
+                    close { openRoute(route) }
+                else
+                    notifier.post(
+                        Message(
+                            resources.getString(
+                                R.string.error_song_album_not_found,
+                                resources.itemName(item.songTitle(), R.string.snackbar_this_song)
+                            )
+                        )
+                    )
+            }
+        }
+    else if (navigator != null && noAlbum)
+        MenuRow(R.drawable.album, stringResource(R.string.menu_go_to_album), enabled = false) {}
+    if (navigator != null && (artists.isNotEmpty() || lookup.needed))
         MenuRow(
             icon = R.drawable.artist,
-            label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size)
+            label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size.coerceAtLeast(1))
                 .replaceFirstChar { it.uppercase() },
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
+            loading = lookup.loadingFor == LookupRow.ARTIST,
+            enabled = lookup.loadingFor != LookupRow.ALBUM,
         ) {
+            val open: () -> Unit = {
+                val found = lookup.artists
+                if (found.size == 1)
+                    close { openRoute(found.single().route) }
+                else if (found.size > 1)
+                    onPickArtist()
+                else
+                    notifier.post(
+                        Message(
+                            resources.getString(
+                                R.string.error_song_artist_not_found,
+                                resources.itemName(item.songTitle(), R.string.snackbar_this_song)
+                            )
+                        )
+                    )
+            }
             if (artists.size == 1)
                 close { openRoute(artists.single().route) }
-            else
+            else if (artists.size > 1)
                 onPickArtist()
+            else
+                lookup.resolve(LookupRow.ARTIST, open)
         }
+    else if (navigator != null && noArtist)
+        MenuRow(
+            icon = R.drawable.artist,
+            label = pluralStringResource(R.plurals.menu_go_to_artist, 1)
+                .replaceFirstChar { it.uppercase() },
+            enabled = false,
+        ) {}
     actions.forEach { action ->
         MenuRow(action.icon, action.label) { close(action.onClick) }
     }
@@ -724,14 +875,23 @@ private fun MenuRow(
     label: String,
     enabled: Boolean = true,
     @DrawableRes trailing: Int? = null,
+    loading: Boolean = false,
     onClick: () -> Unit,
 ) = ListItem(
     headlineContent = { Text(label) },
-    leadingContent = { Icon(painterResource(icon), contentDescription = null) },
+    leadingContent = {
+        // A spinner takes the icon's place while the row fetches what it opens
+        if (loading)
+            Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+            }
+        else
+            Icon(painterResource(icon), contentDescription = null)
+    },
     trailingContent = trailing?.let { { Icon(painterResource(it), contentDescription = null) } },
     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     modifier = Modifier
-        .clickable(enabled = enabled, onClick = onClick)
+        .clickable(enabled = enabled && !loading, onClick = onClick)
         // The look of a disabled button
         .alpha(if (enabled) 1f else 0.38f),
 )

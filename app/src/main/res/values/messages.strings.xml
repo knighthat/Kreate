@@ -130,6 +130,12 @@
     <string name="error_unfollow_artist">Couldn\'t unfollow %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
     <string name="error_like_song">Couldn\'t like %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Shown when its album or artist can't be fetched to open their page -->
+    <string name="error_song_lookup">Couldn\'t load the details of %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
+    <string name="error_song_album_not_found">Couldn\'t find the album of %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
+    <string name="error_song_artist_not_found">Couldn\'t find the artist of %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
     <string name="error_remove_like">Couldn\'t remove the like from %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
