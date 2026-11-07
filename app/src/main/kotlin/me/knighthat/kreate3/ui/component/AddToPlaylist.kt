@@ -47,7 +47,7 @@ import org.koin.compose.koinInject
 private const val TAG = "AddToPlaylist"
 
 /** The playlists a song can be added to, the newest first. */
-private val NEWEST_FIRST = SortOrder(PlaylistSort.CREATED_AT, SortDirection.DESCENDING)
+internal val NEWEST_FIRST = SortOrder(PlaylistSort.CREATED_AT, SortDirection.DESCENDING)
 
 /**
  * The playlists that a song can go in, the ones made in the app and the ones of its own source, and

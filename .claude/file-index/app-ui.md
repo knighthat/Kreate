@@ -52,6 +52,19 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `StorageBadge` (downloaded > cached, in `ItemBadges`), `SongDownloadAction` (song menu header
   button next to Share: Download / Cached → move-or-remove dialog with worse-quality warning /
   Downloading → stop dialog / Paused → stop or Resume / Downloaded → delete dialog).
+- `CollectionMenu.kt` — the long-press menu of an album, artist or playlist item (rides in a
+  `SongMenuRequest.collection`, drawn by `SongMenu.kt`'s sheet): `rememberCollectionAnchor` (the
+  item's modifier + `onLongClick`, lifted copy: grid cards (albums, artists) stay in the grid and a
+  row (`LiftedItemRow`)
+  slides up with the sheet; playlist rows rise out of their place and widen), `CollectionSongs` (an
+  item's songs by origin,
+  dislikes left out; YouTube artists give their top songs, as their page plays),
+  `CollectionMenuContent`
+  (Play / Shuffle / Share (not local) on top, songs fetched under a spinner, then Play next, Add to
+  queue, Add to playlist (albums and artists: the app's playlists, every song stored), Details
+  (album, artist), Go to
+  artist (s) (album), Edit (playlists too: the app's, or the source's `EditOnlinePlaylist`), Delete
+  playlist (local only, asks)).
 - `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
   `add` on the global scope with an Added/Already in/Couldn't message; a song not in the
   `song` table is stored first (`SongStore`). The song's own source's playlists it may add to

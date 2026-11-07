@@ -43,6 +43,7 @@ import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreViewModel
 import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailViewModel
+import me.knighthat.kreate3.ui.screen.details.AlbumDetailsViewModel
 import me.knighthat.kreate3.ui.screen.details.ArtistDetailsViewModel
 import me.knighthat.kreate3.ui.screen.details.SongDetailsViewModel
 import me.knighthat.kreate3.ui.screen.home.CreatePlaylistViewModel
@@ -71,6 +72,7 @@ val viewModelModule = module {
     viewModelOf(::StatisticsViewModel)
     viewModelOf(::SongStatisticsViewModel)
     viewModelOf(::SongDetailsViewModel)
+    viewModelOf(::AlbumDetailsViewModel)
     viewModelOf(::ArtistDetailsViewModel)
     viewModelOf(::GroupStatisticsViewModel)
     viewModelOf(::HomeAlbumsViewModel)

@@ -178,6 +178,25 @@ data class ArtistDetails(val name: String) : Route {
     }
 }
 
+/**
+ * What MusicBrainz knows about the album called [title], opened from an album's menu. The title
+ * and [artist] (the album's credit as a line, if it has one) are what it is searched by.
+ */
+@Serializable
+data class AlbumDetails(val title: String, val artist: String?) : Route {
+
+    override val arguments: Bundle
+        get() = Bundle().apply {
+            putString(TITLE, title)
+            putString(ARTIST, artist)
+        }
+
+    companion object {
+        const val TITLE = "albumTitle"
+        const val ARTIST = "albumArtist"
+    }
+}
+
 /** How the profile listens to the songs of the album [albumId], opened from [Statistics]. */
 @Serializable
 data class AlbumStatistics(val albumId: String) : Route {

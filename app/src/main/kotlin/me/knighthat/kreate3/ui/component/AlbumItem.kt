@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +39,9 @@ import androidx.media3.common.MediaItem
  * An album as a card for a grid: a square cover, the title and "artist · year" under it.
  * Icons for a local or explicit album sit above the title, their space is kept when there are
  * none. It takes the width it is given.
+ *
+ * A long press lifts the card above the album's menu, see [CollectionMenu]. The card stays empty
+ * in the grid meanwhile.
  */
 @Composable
 fun AlbumItem(
@@ -46,19 +49,42 @@ fun AlbumItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val metadata = item.mediaMetadata
-    val shape = MaterialTheme.shapes.medium
     // Moves into the header of the album's page as it opens, it doesn't come back from there
-    val picture = rememberSharedPicture(albumPictureKey(item.mediaId), shape, onlyAway = true)
+    val picture = rememberSharedPicture(
+        albumPictureKey(item.mediaId),
+        MaterialTheme.shapes.medium,
+        onlyAway = true
+    )
+    val menu = rememberCollectionAnchor(item, CollectionKind.ALBUM, slides = true) {
+        LiftedItemRow(item)
+    }
 
-    Column(modifier = modifier.clickable(onClick = onClick)) {
+    AlbumCard(
+        item = item,
+        modifier = modifier
+            .then(menu.modifier)
+            .combinedClickable(onClick = onClick, onLongClick = menu.onLongClick),
+        pictureModifier = picture.modifier,
+    )
+}
+
+/** What [AlbumItem] shows, also lifted above its menu. */
+@Composable
+private fun AlbumCard(
+    item: MediaItem,
+    modifier: Modifier = Modifier,
+    pictureModifier: Modifier = Modifier,
+) {
+    val metadata = item.mediaMetadata
+
+    Column(modifier = modifier) {
         Thumbnail(
             uri = metadata.artworkUri,
-            shape = shape,
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .then(picture.modifier),
+                .then(pictureModifier),
         )
         ItemBadges(item, reserveHeight = true, modifier = Modifier.padding(top = 6.dp))
         Text(

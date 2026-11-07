@@ -42,7 +42,7 @@ import androidx.media3.common.MediaMetadata
 import me.knighthat.kreate3.model.Origin
 
 /** Where a row is laid out, so its menu can lift it from there. */
-private class RowAnchor {
+internal class RowAnchor {
     var coordinates: LayoutCoordinates? = null
 }
 

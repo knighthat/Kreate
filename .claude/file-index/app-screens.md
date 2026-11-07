@@ -18,7 +18,9 @@ ui/screen/
   has no origin. A dislike also calls `PlaybackController.drop`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
-- details/ — `SongDetailsScreen.kt` + `SongDetailsViewModel.kt` (song menu's Details: the kept
+- details/ — `AlbumDetailsScreen.kt` + `AlbumDetailsViewModel.kt` (album menu's Details: best match
+  of a MusicBrainz release-group search by title + artist, no search picker),
+  `SongDetailsScreen.kt` + `SongDetailsViewModel.kt` (song menu's Details: the kept
   `user_song.music_brainz_id` fetched again, else `MusicBrainz.identify`; header, facts (length,
   first released, ISRCs, genres, id opens musicbrainz.org), releases; search button = "Find the
   recording" dialog listing matches, a tap shows and keeps one; every fetched id is kept on the

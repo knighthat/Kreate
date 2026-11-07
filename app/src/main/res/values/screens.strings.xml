@@ -45,6 +45,7 @@
     <string name="screen_title_statistics">Statistics</string>
     <string name="screen_title_song_details">Details</string>
     <string name="screen_title_artist_details">Details</string>
+    <string name="screen_title_album_details">Details</string>
     <string name="screen_title_liked">Liked</string>
     <string name="screen_title_disliked">Disliked</string>
     <string name="screen_title_downloaded">Downloaded</string>
@@ -125,6 +126,8 @@
     <string name="screen_artist_details_status_not_found">%1$s has no match for %2$s.</string>
     <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <string name="screen_artist_details_hint_search">Press Search (%1$s) to search with another name.</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an album title in quotes, or "this album" when unknown -->
+    <string name="screen_album_details_status_not_found">%1$s has no match for %2$s.</string>
     <string name="screen_profiles_hint_search_or_add">Search or add profile</string>
     <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
     <string name="screen_profiles_status_active_since">Active since %1$s</string>

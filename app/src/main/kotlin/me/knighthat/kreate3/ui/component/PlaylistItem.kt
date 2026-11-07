@@ -88,18 +88,39 @@ fun PlaylistItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val menu = rememberCollectionAnchor(item, CollectionKind.PLAYLIST, slides = false) {
+        PlaylistRow(item, onClick = {})
+    }
+
+    PlaylistRow(
+        item = item,
+        onClick = onClick,
+        modifier = modifier.then(menu.modifier),
+        onLongClick = menu.onLongClick,
+    )
+}
+
+/** What [PlaylistItem] shows, also lifted above its menu. */
+@Composable
+private fun PlaylistRow(
+    item: MediaItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
+) {
     val covers = remember(item) { item.playlistCovers }
 
     when {
         item.mediaMetadata.artworkUri != null ->
-            ItemRow(item = item, onClick = onClick, modifier = modifier)
+            ItemRow(item = item, onClick = onClick, modifier = modifier, onLongClick = onLongClick)
 
         covers.size in 1 until GRID_COVERS ->
             ItemRow(
                 item = item,
                 onClick = onClick,
                 modifier = modifier,
-                thumbnails = covers.take(1)
+                thumbnails = covers.take(1),
+                onLongClick = onLongClick,
             )
 
         // The grid or the empty cover takes the place of the cover, ItemRow draws the overlay
@@ -109,6 +130,7 @@ fun PlaylistItem(
             onClick = onClick,
             modifier = modifier,
             showThumbnail = false,
+            onLongClick = onLongClick,
             thumbnailOverlay = {
                 if (covers.isEmpty()) {
                     EmptyCover(

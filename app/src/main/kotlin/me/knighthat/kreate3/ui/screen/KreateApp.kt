@@ -81,6 +81,7 @@ import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.screenTransform
 import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.Account
+import me.knighthat.kreate3.ui.navigation.AlbumDetails
 import me.knighthat.kreate3.ui.navigation.AlbumStatistics
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.ArtistDetails
@@ -170,6 +171,7 @@ import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailScreen
+import me.knighthat.kreate3.ui.screen.details.AlbumDetailsScreen
 import me.knighthat.kreate3.ui.screen.details.ArtistDetailsScreen
 import me.knighthat.kreate3.ui.screen.details.SongDetailsScreen
 import me.knighthat.kreate3.ui.screen.home.CreatePlaylistScreen
@@ -513,6 +515,14 @@ fun KreateApp(
                                     }
                                     entry<SongDetails> {
                                         SongDetailsScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = paddingModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<AlbumDetails> {
+                                        AlbumDetailsScreen(
                                             onBack = topLevel::pop,
                                             modifier = paddingModifier,
                                             contentPadding = contentPadding,

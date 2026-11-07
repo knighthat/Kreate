@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,7 +70,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -159,6 +162,8 @@ internal class SongMenuRequest(
     val showDisliked: Boolean = true,
     /** Whether Play next and Add to queue are in the menu, not for the song playing. */
     val showQueueActions: Boolean = true,
+    /** Set when the row is an album, artist or playlist: its menu is not a song's, see [CollectionMenu]. */
+    val collection: CollectionMenu? = null,
 )
 
 /**
@@ -192,7 +197,7 @@ val LocalSongMenuHost = staticCompositionLocalOf<SongMenuHost?> { null }
 
 /** An artist of a song, [name] is `null` while it isn't known. */
 @Immutable
-private class SongArtist(val id: String, val name: String?, val route: Route)
+internal class SongArtist(val id: String, val name: String?, val route: Route)
 
 private enum class SongMenuPage { ACTIONS, ARTISTS, PLAYLISTS }
 
@@ -265,7 +270,7 @@ fun SongMenuOverlay(host: SongMenuHost) {
     }
 }
 
-private val LocalOverlayScope = staticCompositionLocalOf<CoroutineScope> {
+internal val LocalOverlayScope = staticCompositionLocalOf<CoroutineScope> {
     error("No overlay scope, see SongMenuOverlay")
 }
 
@@ -283,10 +288,6 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val placement = remember(sheetState) { SheetPlacement(sheetState) }
     val scope = rememberCoroutineScope()
-    var page by remember { mutableStateOf(SongMenuPage.ACTIONS) }
-    val lookup = rememberSongLookup(request.item)
-    val known = rememberSongArtists(request.item)
-    val artists = known.ifEmpty { lookup.artists }
 
     // Slides the sheet away, taking the row back to the list, before doing what was picked
     fun close(then: () -> Unit) {
@@ -298,14 +299,22 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
 
     LiftedRow(request, placement)
 
+    val collection = request.collection
+    // The copy of an album or artist card is a part of the sheet's own window, so that it moves
+    // with it by construction: the sheet is transparent, the copy and the menu are its two cards
+    val withPreview = collection?.slides == true
+
     ModalBottomSheet(
         onDismissRequest = onClosed,
         sheetState = sheetState,
         // The lifted row dims the screen, so that it stays clear itself
-        scrimColor = Color.Transparent,
+        scrimColor = if (withPreview) BottomSheetDefaults.ScrimColor else Color.Transparent,
+        containerColor = if (withPreview) Color.Transparent else BottomSheetDefaults.ContainerColor,
         dragHandle = null,
         // Padded inside, so the content is as big as the sheet, see SheetPlacement
         contentWindowInsets = { WindowInsets(0) },
+        // The transparent container gives no content color
+        contentColor = MaterialTheme.colorScheme.onSurface,
     ) {
         Column(
             Modifier
@@ -313,35 +322,72 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
                 .windowInsetsPadding(BottomSheetDefaults.windowInsets)
                 .verticalScroll(rememberScrollState())
         ) {
-            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
-            SongMenuButtons(request.item, ::close)
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            when (page) {
-                SongMenuPage.ACTIONS -> SongMenuActions(
-                    item = request.item,
-                    artists = artists,
-                    lookup = lookup,
-                    actions = request.actions,
-                    showQueueActions = request.showQueueActions,
-                    close = ::close,
-                    onPickArtist = { page = SongMenuPage.ARTISTS },
-                    onPickPlaylist = { page = SongMenuPage.PLAYLISTS },
-                )
-
-                SongMenuPage.ARTISTS -> ArtistPicker(
-                    artists = artists,
-                    onBack = { page = SongMenuPage.ACTIONS },
-                    close = ::close,
-                )
-
-                SongMenuPage.PLAYLISTS -> PlaylistPicker(
-                    item = request.item,
-                    onBack = { page = SongMenuPage.ACTIONS },
-                    close = ::close,
-                )
+            if (withPreview) {
+                Box(
+                    Modifier
+                        .padding(horizontal = LIFTED_ROW_GAP)
+                        .padding(bottom = LIFTED_ROW_GAP)
+                        .shadow(LIFTED_ROW_ELEVATION, RoundedCornerShape(LIFTED_ROW_CORNER))
+                        .background(
+                            BottomSheetDefaults.ContainerColor,
+                            RoundedCornerShape(LIFTED_ROW_CORNER)
+                        )
+                        .clip(RoundedCornerShape(LIFTED_ROW_CORNER))
+                        .height(LIFTED_ROW_HEIGHT)
+                ) { collection.lifted() }
             }
-            Spacer(Modifier.height(16.dp))
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        if (withPreview) BottomSheetDefaults.ContainerColor else Color.Transparent,
+                        BottomSheetDefaults.ExpandedShape,
+                    )
+            ) {
+                BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
+                if (collection != null)
+                    CollectionMenuContent(collection, ::close)
+                else
+                    SongMenuContent(request, ::close)
+                Spacer(Modifier.height(16.dp))
+            }
         }
+    }
+}
+
+/** The buttons and rows of the menu of a song. */
+@Composable
+private fun SongMenuContent(request: SongMenuRequest, close: (then: () -> Unit) -> Unit) {
+    var page by remember { mutableStateOf(SongMenuPage.ACTIONS) }
+    val lookup = rememberSongLookup(request.item)
+    val known = rememberSongArtists(request.item)
+    val artists = known.ifEmpty { lookup.artists }
+
+    SongMenuButtons(request.item, close)
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    when (page) {
+        SongMenuPage.ACTIONS -> SongMenuActions(
+            item = request.item,
+            artists = artists,
+            lookup = lookup,
+            actions = request.actions,
+            showQueueActions = request.showQueueActions,
+            close = close,
+            onPickArtist = { page = SongMenuPage.ARTISTS },
+            onPickPlaylist = { page = SongMenuPage.PLAYLISTS },
+        )
+
+        SongMenuPage.ARTISTS -> ArtistPicker(
+            artists = artists,
+            onBack = { page = SongMenuPage.ACTIONS },
+            close = close,
+        )
+
+        SongMenuPage.PLAYLISTS -> PlaylistPicker(
+            item = request.item,
+            onBack = { page = SongMenuPage.ACTIONS },
+            close = close,
+        )
     }
 }
 
@@ -359,6 +405,8 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
     val statusBars = WindowInsets.statusBars
     var origin by remember { mutableStateOf(Offset.Zero) }
     val row = request.rowBounds
+    // The copy of a card is part of the sheet, see SongMenu: nothing to lift, nothing to dim here
+    if (request.collection?.slides == true) return
 
     Box(
         Modifier
@@ -367,54 +415,61 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
             .drawBehind { drawRect(scrim, alpha = placement.progress) }
     ) {
         if (row == null) return@Box
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-            SongRow(
-                item = request.item,
-                // The sheet's window takes the taps, a tap here closes the menu
-                onClick = {},
-                showThumbnail = request.showThumbnail,
-                showAlbum = request.showAlbum,
-                trailing = request.trailing,
-                overline = request.overline,
-                overlineColor = request.overlineColor,
-                showBadges = request.showBadges,
-                showDisliked = request.showDisliked,
-                modifier = Modifier
-                    .layout { measurable, _ ->
-                        val progress = placement.progress
-                        val sheet = placement.sheet
-                        val gap = LIFTED_ROW_GAP.toPx()
-                        val left =
-                            lerp(row.left, sheet?.let { it.left + gap } ?: row.left, progress)
-                        val right =
-                            lerp(row.right, sheet?.let { it.right - gap } ?: row.right, progress)
-                        // Above the open sheet, not where the sheet is now: on the way the row
-                        // would dip under the rising sheet. Both move with the progress, so the
-                        // sheet stays below the row all along. A tall sheet leaves no room above
-                        // it, the row then stays below the status bar and covers the sheet's top
-                        val highest = origin.y + statusBars.getTop(this) + gap
-                        val above = placement.openTop
-                            ?.let { max(it - gap - row.height, highest) } ?: row.top
-                        val top = lerp(row.top, above, progress)
+        val collection = request.collection
+        val lift = Modifier
+            .layout { measurable, _ ->
+                val progress = placement.progress
+                val sheet = placement.sheet
+                val gap = LIFTED_ROW_GAP.toPx()
+                val left =
+                    lerp(row.left, sheet?.let { it.left + gap } ?: row.left, progress)
+                val right =
+                    lerp(row.right, sheet?.let { it.right - gap } ?: row.right, progress)
+                // Above the open sheet, not where the sheet is now: on the way the row
+                // would dip under the rising sheet. Both move with the progress, so the
+                // sheet stays below the row all along. A tall sheet leaves no room above
+                // it, the row then stays below the status bar and covers the sheet's top
+                val highest = origin.y + statusBars.getTop(this) + gap
+                val above = placement.openTop
+                    ?.let { max(it - gap - row.height, highest) } ?: row.top
+                val top = lerp(row.top, above, progress)
 
-                        val width = (right - left).roundToInt().coerceAtLeast(0)
-                        val placeable =
-                            measurable.measure(Constraints.fixed(width, row.height.roundToInt()))
-                        layout(placeable.width, placeable.height) {
-                            placeable.place(
-                                (left - origin.x).roundToInt(),
-                                (top - origin.y).roundToInt()
-                            )
-                        }
-                    }
-                    .graphicsLayer {
-                        val progress = placement.progress
-                        shadowElevation = LIFTED_ROW_ELEVATION.toPx() * progress
-                        shape = RoundedCornerShape(LIFTED_ROW_CORNER.toPx() * progress)
-                        clip = true
-                    }
-                    .drawBehind { drawRect(container, alpha = placement.progress) },
-            )
+                val width = (right - left).roundToInt().coerceAtLeast(0)
+                val placeable =
+                    measurable.measure(Constraints.fixed(width, row.height.roundToInt()))
+                layout(placeable.width, placeable.height) {
+                    placeable.place(
+                        (left - origin.x).roundToInt(),
+                        (top - origin.y).roundToInt()
+                    )
+                }
+            }
+            .graphicsLayer {
+                val progress = placement.progress
+                shadowElevation = LIFTED_ROW_ELEVATION.toPx() * progress
+                shape = RoundedCornerShape(LIFTED_ROW_CORNER.toPx() * progress)
+                clip = true
+            }
+            .drawBehind { drawRect(container, alpha = placement.progress) }
+
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+            if (collection != null) {
+                Box(lift) { collection.lifted() }
+            } else {
+                SongRow(
+                    item = request.item,
+                    // The sheet's window takes the taps, a tap here closes the menu
+                    onClick = {},
+                    showThumbnail = request.showThumbnail,
+                    showAlbum = request.showAlbum,
+                    trailing = request.trailing,
+                    overline = request.overline,
+                    overlineColor = request.overlineColor,
+                    showBadges = request.showBadges,
+                    showDisliked = request.showDisliked,
+                    modifier = lift,
+                )
+            }
         }
     }
 }
@@ -743,7 +798,7 @@ private fun MediaItem.detailsRoute(): SongDetails {
  * would stay hidden behind it otherwise. Collapses on the overlay's scope, the menu is gone by then.
  */
 @Composable
-private fun rememberRouteOpener(): (Route) -> Unit {
+internal fun rememberRouteOpener(): (Route) -> Unit {
     val navigator = LocalNavigator.current
     val playerSheet = LocalPlayerSheet.current
     val scope = LocalOverlayScope.current
@@ -754,7 +809,7 @@ private fun rememberRouteOpener(): (Route) -> Unit {
 }
 
 @Composable
-private fun ArtistPicker(
+internal fun ArtistPicker(
     artists: List<SongArtist>,
     onBack: () -> Unit,
     close: (then: () -> Unit) -> Unit,
@@ -854,7 +909,7 @@ private fun PlaylistPicker(
 
 /** The name of a group of playlists in the picker. */
 @Composable
-private fun PickerHeader(text: String) = Text(
+internal fun PickerHeader(text: String) = Text(
     text = text,
     style = MaterialTheme.typography.labelLarge,
     color = MaterialTheme.colorScheme.primary,
@@ -862,7 +917,7 @@ private fun PickerHeader(text: String) = Text(
 )
 
 @Composable
-private fun PickerStatus(text: String) = Text(
+internal fun PickerStatus(text: String) = Text(
     text = text,
     style = MaterialTheme.typography.bodyMedium,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -870,7 +925,7 @@ private fun PickerStatus(text: String) = Text(
 )
 
 @Composable
-private fun MenuRow(
+internal fun MenuRow(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean = true,

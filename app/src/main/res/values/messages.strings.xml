@@ -55,6 +55,10 @@
     <string name="error_song_details">Couldn\'t get details from %1$s</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the artist -->
     <string name="error_artist_details">Couldn\'t get details from %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the album -->
+    <string name="error_album_details">Couldn\'t get details from %1$s</string>
+    <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <string name="error_collection_songs">Couldn\'t get the songs of %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
@@ -136,6 +140,8 @@
     <string name="error_song_album_not_found">Couldn\'t find the album of %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
     <string name="error_song_artist_not_found">Couldn\'t find the artist of %1$s</string>
+    <!-- %1$s is an album title in quotes, or "this album" when the title isn\'t known -->
+    <string name="error_album_artist_not_found">Couldn\'t find the artist of %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
     <string name="error_remove_like">Couldn\'t remove the like from %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->

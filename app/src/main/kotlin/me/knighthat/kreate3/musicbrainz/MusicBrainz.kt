@@ -169,6 +169,48 @@ data class MusicBrainzArtist(
 data class MusicBrainzLink(val type: String, val url: String)
 
 /**
+ * An album ("release group" for MusicBrainz) found by a search.
+ *
+ * @property artists the artist credit as a line, like `A feat. B`
+ * @property type `Album`, `Single`, `EP` …
+ * @property firstReleased `YYYY`, `YYYY-MM` or `YYYY-MM-DD`
+ * @property score how well it matches the search, 0 to 100
+ */
+data class MusicBrainzAlbumMatch(
+    val id: String,
+    val title: String,
+    val artists: String?,
+    val type: String?,
+    val firstReleased: String?,
+    val score: Int,
+)
+
+/**
+ * One album of [MusicBrainz], with what is known about it.
+ *
+ * @property type the kind of release, like `Album`, `Single` or `EP`
+ * @property secondaryTypes what else it is, like `Live` or `Compilation`
+ * @property firstReleased when its first release came out, like `1975-11-21`
+ * @property genres its genres, then the tags people gave it, the most voted first
+ * @property links pages about it elsewhere
+ */
+data class MusicBrainzAlbum(
+    val id: String,
+    val title: String,
+    val artists: String?,
+    val type: String?,
+    val secondaryTypes: List<String>,
+    val firstReleased: String?,
+    val disambiguation: String?,
+    val genres: List<String>,
+    val links: List<MusicBrainzLink>,
+) {
+
+    /** The album's page on the MusicBrainz site. */
+    val url: String get() = "https://musicbrainz.org/release-group/$id"
+}
+
+/**
  * [MusicBrainz](https://musicbrainz.org), an open database of music anyone can edit. It is asked
  * at most once a second, all callers together, as its rules ask; a faster client is blocked.
  */
@@ -244,6 +286,50 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             parameter("inc", "aliases+genres+tags+url-rels")
         } ?: return@withContext null
         json.parseToJsonElement(body).jsonObject.toArtist()
+    }
+
+    /**
+     * The album [identifyAlbum] picks among the ones named [title] by [artist] (any when `null`),
+     * the best matches first, as MusicBrainz ranks them. Matched as a phrase first, word by word
+     * when that finds nothing.
+     *
+     * @throws IOException when MusicBrainz can't be reached or answers with an error
+     */
+    suspend fun searchAlbums(title: String, artist: String?): List<MusicBrainzAlbumMatch> =
+        withContext(Dispatchers.Default) {
+            searchAlbumsBy(albumQuery(title, artist, phrase = true))
+                .ifEmpty { searchAlbumsBy(albumQuery(title, artist, phrase = false)) }
+        }
+
+    /**
+     * The album [searchAlbums] finds that is most likely the one called [title]: of the best
+     * scored ones, the one with that very title, a proper album before a single.
+     *
+     * @return `null` when nothing was found
+     */
+    suspend fun identifyAlbum(title: String, artist: String?): MusicBrainzAlbumMatch? =
+        searchAlbums(title, artist).best(title)
+
+    /**
+     * Everything about the album [id].
+     *
+     * @return `null` when MusicBrainz has no such album
+     * @throws IOException when MusicBrainz can't be reached or answers with an error
+     */
+    suspend fun album(id: String): MusicBrainzAlbum? = withContext(Dispatchers.Default) {
+        val body = request("release-group/${id.encodeURLPathPart()}") {
+            parameter("inc", "artist-credits+genres+tags+url-rels")
+        } ?: return@withContext null
+        json.parseToJsonElement(body).jsonObject.toAlbum()
+    }
+
+    private suspend fun searchAlbumsBy(query: String): List<MusicBrainzAlbumMatch> {
+        val body = request("release-group") {
+            parameter("query", query)
+            parameter("limit", SEARCH_LIMIT)
+        } ?: return emptyList()
+        return json.parseToJsonElement(body).jsonObject.array("release-groups")
+            .map { it.jsonObject.toAlbumMatch() }
     }
 
     private suspend fun searchArtistsBy(query: String): List<MusicBrainzArtistMatch> {
@@ -340,6 +426,27 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
         )
     }
 
+    private fun JsonObject.toAlbumMatch() = MusicBrainzAlbumMatch(
+        id = string("id").orEmpty(),
+        title = string("title").orEmpty(),
+        artists = credit(),
+        type = string("primary-type"),
+        firstReleased = string("first-release-date"),
+        score = this["score"]?.jsonPrimitive?.intOrNull ?: 0,
+    )
+
+    private fun JsonObject.toAlbum() = MusicBrainzAlbum(
+        id = string("id").orEmpty(),
+        title = string("title").orEmpty(),
+        artists = credit(),
+        type = string("primary-type"),
+        secondaryTypes = array("secondary-types").mapNotNull { it.jsonPrimitive.contentOrNull },
+        firstReleased = string("first-release-date"),
+        disambiguation = string("disambiguation"),
+        genres = (namesByVotes("genres") + namesByVotes("tags")).distinct(),
+        links = links(),
+    )
+
     private fun JsonObject.toArtist(): MusicBrainzArtist {
         val name = string("name").orEmpty()
         val lifeSpan = this["life-span"] as? JsonObject
@@ -348,17 +455,6 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             .mapNotNull { it.string("name") }
             .filter { it != name }
             .distinct()
-        val links = array("relations").map { it.jsonObject }
-            .filter { it.string("target-type") == "url" }
-            .mapNotNull { relation ->
-                val url = (relation["url"] as? JsonObject)?.string("resource")
-                    ?: return@mapNotNull null
-                MusicBrainzLink(relation.string("type") ?: "", url)
-            }
-            .distinctBy { it.url }
-            // Their own site first, the rest by what they are
-            .sortedWith(compareBy({ it.type != OFFICIAL_HOMEPAGE }, { it.type }))
-
         return MusicBrainzArtist(
             id = string("id").orEmpty(),
             name = name,
@@ -372,9 +468,20 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             aliases = aliases,
             genres = (namesByVotes("genres") + namesByVotes("tags")).distinct(),
             isnis = array("isnis").mapNotNull { it.jsonPrimitive.contentOrNull },
-            links = links,
+            links = links(),
         )
     }
+
+    /** The pages about the item elsewhere, its own site first, the rest by what they are. */
+    private fun JsonObject.links(): List<MusicBrainzLink> = array("relations").map { it.jsonObject }
+        .filter { it.string("target-type") == "url" }
+        .mapNotNull { relation ->
+            val url = (relation["url"] as? JsonObject)?.string("resource")
+                ?: return@mapNotNull null
+            MusicBrainzLink(relation.string("type") ?: "", url)
+        }
+        .distinctBy { it.url }
+        .sortedWith(compareBy({ it.type != OFFICIAL_HOMEPAGE }, { it.type }))
 
     /** The artist credit with its join phrases, like `A feat. B`. */
     private fun JsonObject.credit(): String? =
@@ -423,6 +530,12 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
         private fun artistQuery(name: String, phrase: Boolean): String =
             "artist:${terms(name.trim(), phrase)}"
 
+        private fun albumQuery(title: String, artist: String?, phrase: Boolean): String {
+            val album = "releasegroup:${terms(title.trim(), phrase)}"
+            val credit = artist?.trim()?.takeIf { it.isNotEmpty() } ?: return album
+            return "$album AND artist:${terms(credit, phrase)}"
+        }
+
         private fun query(title: String, artist: String?, phrase: Boolean): String {
             val recording = "recording:${terms(title.trim(), phrase)}"
             val credit = artist?.trim()?.takeIf { it.isNotEmpty() } ?: return recording
@@ -436,6 +549,15 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             return candidates.firstOrNull { it.name == name.trim() }
                 ?: candidates.firstOrNull { it.name.equals(name.trim(), ignoreCase = true) }
                 ?: first()
+        }
+
+        @JvmName("bestAlbum")
+        internal fun List<MusicBrainzAlbumMatch>.best(title: String): MusicBrainzAlbumMatch? {
+            val top = maxOfOrNull { it.score } ?: return null
+            val candidates = filter { it.score >= top - SCORE_MARGIN }
+            val named = candidates.filter { it.title.equals(title.trim(), ignoreCase = true) }
+                .ifEmpty { candidates }
+            return named.firstOrNull { it.type == "Album" } ?: named.first()
         }
 
         internal fun List<MusicBrainzMatch>.best(

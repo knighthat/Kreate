@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +43,9 @@ import me.knighthat.kreate3.model.Origin
 /**
  * An artist for a grid: a round picture, the name and the number of songs under it, both centered.
  * It takes the width it is given.
+ *
+ * A long press lifts the card above the artist's menu, see [CollectionMenu]. The card stays empty
+ * in the grid meanwhile.
  */
 @Composable
 fun ArtistItem(
@@ -50,7 +53,6 @@ fun ArtistItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val metadata = item.mediaMetadata
     // Round here, square at the top of the artist's page; it doesn't come back from there
     val picture = rememberSharedPicture(
         artistPictureKey(item.mediaId),
@@ -58,10 +60,32 @@ fun ArtistItem(
         otherCorners = 0,
         onlyAway = true,
     )
+    val menu = rememberCollectionAnchor(item, CollectionKind.ARTIST, slides = true) {
+        LiftedItemRow(item)
+    }
+
+    ArtistCard(
+        item = item,
+        modifier = modifier
+            .then(menu.modifier)
+            .combinedClickable(onClick = onClick, onLongClick = menu.onLongClick),
+        // Grows into the top of the artist's page as it opens
+        pictureModifier = picture.modifier,
+    )
+}
+
+/** What [ArtistItem] shows, also lifted above its menu. */
+@Composable
+private fun ArtistCard(
+    item: MediaItem,
+    modifier: Modifier = Modifier,
+    pictureModifier: Modifier = Modifier,
+) {
+    val metadata = item.mediaMetadata
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = modifier,
     ) {
         Thumbnail(
             uri = metadata.artworkUri,
@@ -70,8 +94,7 @@ fun ArtistItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                // Grows into the top of the artist's page as it opens
-                .then(picture.modifier),
+                .then(pictureModifier),
         )
         ItemBadges(
             item,
