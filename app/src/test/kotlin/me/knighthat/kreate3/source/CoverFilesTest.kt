@@ -23,12 +23,15 @@ import android.net.Uri
 import coil3.request.Options
 import coil3.size.Size
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.File
+import java.nio.file.Files
 
 /** Covers kept as files: what kind a song's own cover is, and the size drawn. */
 @RunWith(RobolectricTestRunner::class)
@@ -49,10 +52,36 @@ class CoverFilesTest {
         // Only in a profile's folder
         assertEquals(
             CoverKind.OTHER,
-            files.kindOf(Uri.fromFile(File(context.noBackupFilesDir, "custom_thumbnail/x.jpg"))),
+            files.kindOf(Uri.fromFile(File(context.noBackupFilesDir, "custom_thumbnails/x.jpg"))),
         )
         assertEquals(CoverKind.OTHER, files.kindOf(Uri.fromFile(File(context.filesDir, "x.jpg"))))
         assertEquals(CoverKind.OTHER, files.kindOf(Uri.parse("https://example.com/c.jpg")))
+    }
+
+    @Test
+    fun pickedCoversGoInAndOutOfABackup() {
+        val picked = File(files.custom("default"), "playlist-1-5.jpg").apply {
+            parentFile?.mkdirs()
+            writeText("picture")
+        }
+        val path = "profiles/default/custom_thumbnails/playlist-1-5.jpg"
+        try {
+            assertEquals(mapOf(path to picked), files.backupFiles())
+            assertTrue(CoverFiles.isBackupPath(path))
+            assertFalse(CoverFiles.isBackupPath("profiles/default/custom_thumbnails/../x.jpg"))
+            assertFalse(CoverFiles.isBackupPath("profiles/default/download_covers/x.jpg"))
+
+            val source = Files.createTempDirectory("covers").toFile()
+            File(source, "profiles/other/custom_thumbnails").mkdirs()
+            File(source, "profiles/other/custom_thumbnails/b.jpg").writeText("other")
+            files.restore(source)
+
+            // Replaced, not merged
+            assertFalse(picked.exists())
+            assertEquals(setOf("profiles/other/custom_thumbnails/b.jpg"), files.backupFiles().keys)
+        } finally {
+            File(context.noBackupFilesDir, "profiles").deleteRecursively()
+        }
     }
 
     @Test

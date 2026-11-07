@@ -418,6 +418,35 @@ class YouTubeProvider internal constructor(
     }
 
     /**
+     * Changes the name, description and who can see the playlist [playlistId] of the signed in
+     * user, the ones that aren't `null`, in one request.
+     *
+     * @throws YouTubeException see [removeFromPlaylist]
+     */
+    suspend fun updatePlaylist(
+        playlistId: String,
+        name: String? = null,
+        description: String? = null,
+        privacy: PlaylistPrivacy? = null,
+    ) {
+        val actions = buildList {
+            if (name != null) add(buildJsonObject {
+                put("action", "ACTION_SET_PLAYLIST_NAME")
+                put("playlistName", name)
+            })
+            if (description != null) add(buildJsonObject {
+                put("action", "ACTION_SET_PLAYLIST_DESCRIPTION")
+                put("playlistDescription", description)
+            })
+            if (privacy != null) add(buildJsonObject {
+                put("action", "ACTION_SET_PLAYLIST_PRIVACY")
+                put("playlistPrivacy", privacy.name)
+            })
+        }
+        if (actions.isNotEmpty()) innerTube.editPlaylist(playlistId, actions)
+    }
+
+    /**
      * Moves the place [setVideoId] of the playlist [playlistId] of the signed in user to right
      * before the place [before], to the end when it is `null`.
      *

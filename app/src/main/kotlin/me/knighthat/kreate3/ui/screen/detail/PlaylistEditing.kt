@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.res.Resources
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -277,10 +278,11 @@ fun PlaylistLeaveDialog(
     onSave: () -> Unit,
     onDiscard: () -> Unit,
     onClose: () -> Unit,
+    @StringRes body: Int = R.string.dialog_body_unsaved_changes,
 ) = AlertDialog(
     onDismissRequest = onClose,
     title = { Text(stringResource(R.string.dialog_title_unsaved_changes)) },
-    text = { Text(stringResource(R.string.dialog_body_unsaved_changes)) },
+    text = { Text(stringResource(body)) },
     // One under the other, three labels don't fit side by side
     confirmButton = {
         Column(horizontalAlignment = Alignment.End) {

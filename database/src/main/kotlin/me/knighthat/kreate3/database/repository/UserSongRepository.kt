@@ -171,6 +171,12 @@ interface UserSongRepository {
 
     fun find(songId: String): Flow<UserSongView?>
 
+    /**
+     * What the active user keeps of their own about the song, as stored: the values they changed, `null` for the others.
+     * `null` when the song isn't in the library.
+     */
+    suspend fun own(songId: String): UserSong?
+
     /** The MusicBrainz recording the song was identified as, see [UserSong.musicBrainzId]. */
     suspend fun musicBrainzId(songId: String): String?
 

@@ -528,6 +528,7 @@ fun PlaylistMenu(
     mode: CoverEditMode? = null,
     canEdit: Boolean = true,
     canRemove: Boolean = true,
+    onEdit: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
     canDelete: Boolean = true,
     onModeChange: (CoverEditMode) -> Unit = {},
@@ -563,6 +564,12 @@ fun PlaylistMenu(
             val unlocked = mode == CoverEditMode.REORDER
             val removing = mode == CoverEditMode.REMOVE
             val waiting = busy == true
+            if (onEdit != null)
+                ConfigEntry(
+                    icon = R.drawable.edit,
+                    label = stringResource(R.string.semantic_edit_playlist),
+                    enabled = !waiting,
+                ) { close { onEdit() } }
             // The row tapped last, it shows the spinner while the page waits
             var tapped by remember { mutableStateOf<CoverEditMode?>(null) }
             if (busy != null) {

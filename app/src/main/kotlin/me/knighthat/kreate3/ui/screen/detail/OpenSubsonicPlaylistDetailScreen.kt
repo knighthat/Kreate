@@ -55,6 +55,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun OpenSubsonicPlaylistDetailScreen(
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicPlaylistDetailViewModel = koinViewModel(),
@@ -121,6 +122,7 @@ fun OpenSubsonicPlaylistDetailScreen(
                 state = state,
                 onRetry = viewModel::load,
                 onBack = onBack,
+                onEdit = onEdit,
                 onAction = rememberQueueActions {
                     (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
                 },
@@ -147,6 +149,7 @@ private fun OpenSubsonicPlaylistDetailContent(
     state: LiveState<OpenSubsonicPlaylistDetail>,
     onRetry: () -> Unit,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
@@ -193,6 +196,7 @@ private fun OpenSubsonicPlaylistDetailContent(
                 canEdit = playlist?.editable == true &&
                         (edit.mode != CoverEditMode.NONE || playlist.songs.isNotEmpty()),
                 onModeChange = actions.onModeChange,
+                onEdit = onEdit.takeIf { playlist?.editable == true },
                 onDelete = actions.onAskDelete,
                 canDelete = playlist?.editable == true,
                 busy = edit.busy,
@@ -251,6 +255,7 @@ private fun OpenSubsonicPlaylistDetailPreview() = PreviewTheme {
         ),
         onRetry = {},
         onBack = {},
+        onEdit = {},
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },

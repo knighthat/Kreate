@@ -180,6 +180,22 @@ ui/screen/
   OpenSubsonic share link on demand),
   `SourceToggle.kt` (bookmark/follow kept by a source: flips at once, sent in tap order on the app
   scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);
+  `EditItemScreen.kt`/`EditItemViewModel.kt` (routes `EditSong`/`EditAlbum`/`EditArtist` from the
+  song
+  menu and the ⋮ of the six album and artist pages: title/name, artists (one per line) and picture
+  as
+  the user's overrides of the shared values, "Use original" per field, Reset/Apply in the top bar,
+  leaving asks; a remote item not stored yet is fetched when the screen opens and stored, with the
+  override, only on Apply; `EditablePicture` is the pencil-over-picture shared with the playlist
+  screen),
+  `EditOnlinePlaylistScreen/ViewModel.kt` (route `EditOnlinePlaylist`, from the ⋮ of the YouTube and
+  OpenSubsonic playlist pages the user may change: name, description, visibility, sent to the
+  source on Apply, nothing stored on the device; the picture is shown, never changed),
+  `EditPlaylistScreen/ViewModel.kt` (route `EditPlaylist`, from the local playlist page's menu:
+  name,
+  pin and picture (device file copied to `CoverFiles.custom`; a pencil over the picture opens the
+  picker) kept in memory as a
+  `PlaylistDraft` until Apply; Reset; leaving with changes asks, `PlaylistLeaveDialog`),
   `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens
   have Bookmark, artist screens Follow: local columns, the server's star, YouTube's library save /
   subscription, or local columns while signed out of YouTube; the album screen of a `LOCAL`

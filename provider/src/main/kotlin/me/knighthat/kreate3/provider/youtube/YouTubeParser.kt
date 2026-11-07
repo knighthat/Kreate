@@ -563,6 +563,14 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
             editable = shelves(response).any {
                 it.path("musicEditablePlaylistDetailHeaderRenderer") != null
             },
+            privacy = shelves(response).firstNotNullOfOrNull {
+                it.path(
+                    "musicEditablePlaylistDetailHeaderRenderer",
+                    "editHeader",
+                    "musicPlaylistEditHeaderRenderer",
+                    "privacy",
+                ).asString
+            }?.let { name -> PlaylistPrivacy.entries.firstOrNull { it.name == name } },
         )
     }
 

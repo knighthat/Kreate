@@ -42,6 +42,10 @@
     <string name="error_playlist_delete">Couldn\'t delete the playlist</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">Couldn\'t save the changes: %1$s</string>
+    <string name="error_playlist_apply_changes">Couldn\'t save the changes</string>
+    <string name="error_edit_apply">Couldn\'t save the changes</string>
+    <string name="error_edit_load">Couldn\'t load the details to edit</string>
+    <string name="snackbar_changes_saved">Changes saved</string>
     <string name="error_playlist_changed_on_server">The playlist changed on the server, your changes weren\'t saved</string>
     <string name="error_queue_every_song">Couldn\'t get all songs</string>
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>

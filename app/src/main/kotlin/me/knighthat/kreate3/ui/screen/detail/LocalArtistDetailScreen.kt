@@ -64,6 +64,7 @@ fun LocalArtistDetailScreen(
     onOpenAlbum: (MediaItem) -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
@@ -94,6 +95,7 @@ fun LocalArtistDetailScreen(
             onToggleFollow = viewModel::toggleFollow,
             onOpenDetails = onOpenDetails,
             onOpenStatistics = onOpenStatistics,
+            onEdit = onEdit,
             modifier = modifier,
             contentPadding = contentPadding,
         )
@@ -122,6 +124,7 @@ private fun LocalArtistDetailContent(
     onToggleFollow: () -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -146,6 +149,7 @@ private fun LocalArtistDetailContent(
                 share = null,
                 onOpenDetails = name?.let { { onOpenDetails(it) } },
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
             )
         },
     ) {
@@ -205,5 +209,6 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }

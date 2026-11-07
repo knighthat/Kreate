@@ -64,6 +64,7 @@ import me.knighthat.kreate3.source.ArtistPictures
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.source.DeviceReactionsImpl
+import me.knighthat.kreate3.source.PickedCovers
 import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.source.SourceNetworkClient
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
@@ -199,6 +200,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
                     // Covers kept as files: downloaded ones and the user's own
                     single { CoverFiles(androidContext()) }
+                    single { PickedCovers(androidContext(), get(), get()) }
 
                     // Creates the database users of the profiles, and tells the database who is active
                     val isSetup = setupCompletedFile().exists()

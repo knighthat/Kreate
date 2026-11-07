@@ -429,7 +429,35 @@ class OpenSubsonicProvider internal constructor(
                 .mapNotNull { it.jsonObject.toSong(::coverUri) },
             editable = readonly?.not()
                 ?: (owner == null || owner.equals(settings.username(), ignoreCase = true)),
+            comment = (playlist["comment"] as? JsonPrimitive)?.contentOrNull.orEmpty(),
+            public = (playlist["public"] as? JsonPrimitive)?.booleanOrNull == true,
         )
+    }
+
+    /**
+     * Changes the name, comment and visibility of the playlist [playlistId], the ones that aren't
+     * `null`, in one request.
+     *
+     * @return `false` while the server is off or not set up, nothing is sent then
+     * @throws ServerException when the server can't be used or refuses, like for a playlist of
+     * another user
+     */
+    suspend fun updatePlaylistDetails(
+        playlistId: String,
+        name: String? = null,
+        comment: String? = null,
+        public: Boolean? = null,
+    ): Boolean {
+        serverUrl ?: return false
+
+        val changes = listOfNotNull(
+            name?.let { "name" to it },
+            comment?.let { "comment" to it },
+            public?.let { "public" to it.toString() },
+        )
+        if (changes.isNotEmpty())
+            call("updatePlaylist", "playlistId" to playlistId, *changes.toTypedArray())
+        return true
     }
 
     /**

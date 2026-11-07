@@ -64,6 +64,7 @@ private const val PREFETCH_DISTANCE = 10
 @Composable
 fun YouTubePlaylistDetailScreen(
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubePlaylistDetailViewModel = koinViewModel(),
@@ -133,6 +134,7 @@ fun YouTubePlaylistDetailScreen(
                 onLoadMore = viewModel::loadMore,
                 onRetry = viewModel::load,
                 onBack = onBack,
+                onEdit = onEdit,
                 onAction = rememberQueueActions { viewModel.songs.value },
                 onSongClick = rememberSongTap(null) { viewModel.songs.value },
                 share = viewModel::shareLink,
@@ -159,6 +161,7 @@ private fun YouTubePlaylistDetailContent(
     onLoadMore: () -> Unit,
     onRetry: () -> Unit,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
@@ -202,6 +205,7 @@ private fun YouTubePlaylistDetailContent(
                 canEdit = playlist?.editable == true &&
                         (edit.mode != CoverEditMode.NONE || songs.isNotEmpty()),
                 onModeChange = actions.onModeChange,
+                onEdit = onEdit.takeIf { playlist?.editable == true },
                 onDelete = actions.onAskDelete,
                 canDelete = playlist?.editable == true,
                 busy = edit.busy,
@@ -275,6 +279,7 @@ private fun YouTubePlaylistDetailPreview() = PreviewTheme {
         onLoadMore = {},
         onRetry = {},
         onBack = {},
+        onEdit = {},
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },

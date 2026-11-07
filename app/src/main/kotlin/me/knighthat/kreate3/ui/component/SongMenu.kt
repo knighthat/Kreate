@@ -99,6 +99,7 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.navigation.CreatePlaylist
+import me.knighthat.kreate3.ui.navigation.EditSong
 import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.SongDetails
@@ -561,6 +562,11 @@ private fun SongMenuActions(
     if (navigator != null)
         MenuRow(R.drawable.info, stringResource(R.string.menu_details)) {
             close { openRoute(item.detailsRoute()) }
+        }
+    val origin = item.origin
+    if (navigator != null && origin != null)
+        MenuRow(R.drawable.edit, stringResource(R.string.menu_edit)) {
+            close { openRoute(EditSong(item.mediaId, origin)) }
         }
 }
 

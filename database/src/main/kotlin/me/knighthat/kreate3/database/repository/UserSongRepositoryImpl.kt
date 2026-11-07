@@ -237,6 +237,9 @@ internal class UserSongRepositoryImpl(
         userSongDao.upsert(song.toEntity(userId, createdAt, now))
     }
 
+    override suspend fun own(songId: String): UserSong? =
+        userSongDao.get(scope.requireId(), songId)?.toModel()
+
     override suspend fun update(songId: String, transform: (UserSong) -> UserSong) {
         val userId = scope.requireId()
         database.inTransaction {

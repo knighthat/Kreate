@@ -156,6 +156,8 @@ data class YouTubeArtistPage(
  * [entries] are all of them
  * @property editable whether the signed in user may change or delete the playlist: YouTube gives
  * the page its editing header only to the owner
+ * @property privacy who can see the playlist, `null` when the page doesn't say, which it does only
+ * to the owner
  */
 data class YouTubePlaylistPage(
     val playlist: UserPlaylist,
@@ -165,6 +167,7 @@ data class YouTubePlaylistPage(
     val continuation: String?,
     val summary: String? = null,
     val editable: Boolean = false,
+    val privacy: PlaylistPrivacy? = null,
 ) {
 
     /** The songs of [entries]. */

@@ -78,6 +78,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun LocalPlaylistDetailScreen(
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
@@ -116,6 +117,7 @@ fun LocalPlaylistDetailScreen(
             mode = mode,
             arranged = arranged,
             onBack = onBack,
+            onEdit = onEdit,
             canRemove = playlist?.isMonthly == false,
             onDelete = {
                 val name = playlist?.name
@@ -169,6 +171,7 @@ fun LocalPlaylistDetailScreen(
  * [LocalPlaylistDetailViewModel.arranged]
  * @param onMoveSong moves a song to right after another one, to the start after `null`
  * @param onRemoveSong takes a song out
+ * @param onEdit opens the screen to change the playlist's name, picture and pin
  * @param canRemove whether songs can be taken out, not of a monthly playlist
  * @param onDelete deletes the playlist, once the user confirmed
  */
@@ -183,6 +186,7 @@ private fun LocalPlaylistDetailContent(
     mode: CoverEditMode,
     arranged: List<MediaItem>?,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     canRemove: Boolean,
     onDelete: () -> Unit,
     onAction: (QueueAction) -> Unit,
@@ -240,6 +244,7 @@ private fun LocalPlaylistDetailContent(
                 // Stays on while the last song is taken out, so it can be turned off
                 canEdit = mode != CoverEditMode.NONE || count > 0,
                 canRemove = canRemove,
+                onEdit = onEdit,
                 onDelete = { confirmDelete = true },
                 onModeChange = onModeChange,
             )
@@ -368,6 +373,7 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         mode = CoverEditMode.NONE,
         arranged = null,
         onBack = {},
+        onEdit = {},
         canRemove = true,
         onDelete = {},
         onAction = {},

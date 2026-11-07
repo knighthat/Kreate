@@ -77,6 +77,7 @@
     <string name="semantic_remove_like">Remove like</string>
     <string name="semantic_remove_songs">Remove songs</string>
     <string name="semantic_delete_playlist">Delete playlist</string>
+    <string name="semantic_edit_playlist">Edit playlist</string>
     <string name="semantic_restart_the_app">Restart the app</string>
     <string name="semantic_restart_the_player">Restart the player</string>
     <string name="semantic_resume_the_sleep_timer">Resume the sleep timer</string>

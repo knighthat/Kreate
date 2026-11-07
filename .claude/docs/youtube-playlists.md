@@ -19,3 +19,10 @@ Answers are nested and change often; check with a throwaway playlist before rely
   the ones that can be added to.
 - A new playlist shows in the app's Playlists tab after the tab is opened again (the tab fetches
   on each visit); its page header may keep an old track count until reopened.
+- Changing a playlist's name, description and privacy: `browse/edit_playlist` with
+  `ACTION_SET_PLAYLIST_NAME` (`playlistName`), `ACTION_SET_PLAYLIST_DESCRIPTION`
+  (`playlistDescription`) and `ACTION_SET_PLAYLIST_PRIVACY` (`playlistPrivacy`: `PUBLIC`,
+  `UNLISTED`, `PRIVATE`), the names taken from ytmusicapi. **Not tried against YouTube Music yet**
+  (`YouTubeProvider.updatePlaylist`). The owner's current privacy is read from the editing header
+  at `editHeader.musicPlaylistEditHeaderRenderer.privacy`, also untried; the edit screen copes
+  with it missing. No call sets a playlist's picture: YouTube Music builds it from the songs.

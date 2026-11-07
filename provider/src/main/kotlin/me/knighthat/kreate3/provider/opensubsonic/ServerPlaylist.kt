@@ -26,11 +26,15 @@ import me.knighthat.kreate3.database.repository.RemoteSong
  *
  * @property editable whether the user may change or delete it: the server says so, or else it
  * is the user's own. A playlist someone else shared is not.
+ * @property comment what the playlist is about, empty for none
+ * @property public whether every user of the server can see it
  */
 data class ServerPlaylist(
     val playlist: UserPlaylist,
     val songs: List<RemoteSong>,
     val editable: Boolean,
+    val comment: String = "",
+    val public: Boolean = false,
 )
 
 /**

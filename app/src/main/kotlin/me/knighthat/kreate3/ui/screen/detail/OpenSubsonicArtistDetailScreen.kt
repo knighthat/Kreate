@@ -66,6 +66,7 @@ fun OpenSubsonicArtistDetailScreen(
     onOpenSongs: (name: String?) -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
@@ -104,6 +105,7 @@ fun OpenSubsonicArtistDetailScreen(
                 onToggleFollow = viewModel.follow::toggle,
                 onOpenDetails = onOpenDetails,
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
                 modifier = modifier,
                 contentPadding = contentPadding,
             )
@@ -137,6 +139,7 @@ private fun OpenSubsonicArtistDetailContent(
     onToggleFollow: () -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -165,6 +168,7 @@ private fun OpenSubsonicArtistDetailContent(
                 share = if (share != null && artist != null) ({ share(artist.name) }) else null,
                 onOpenDetails = name?.let { { onOpenDetails(it) } },
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
             )
         },
     ) {
@@ -254,6 +258,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }
 
@@ -285,5 +290,6 @@ private fun OpenSubsonicArtistDetailLoadingPreview() = PreviewTheme {
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }

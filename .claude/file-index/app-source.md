@@ -12,10 +12,15 @@ source/ (app-side glue for sources)
   source has it now, to store it (`PlayedSongRecorder`, `SongStore`).
 - `CoverFiles.kt` — covers kept as files under `noBackupFilesDir`: `download_covers` (2 sizes,
   `downloaded(address, size)`, `sizedLike`) and `custom(profileId)` =
-  `profiles/<id>/custom_thumbnail`; `kindOf` → `CoverKind`
+  `profiles/<id>/custom_thumbnails` (`backupFiles`/`restore` for the zip backup; `newPlaylistCover`/
+  `isPlaylistCover`: pictures of playlists,
+  `playlist-<id>-<millis>.<ext>`); `kindOf` → `CoverKind`
   (NONE/DOWNLOADED/CUSTOM/OTHER); `Mapper` (Coil, 1440 → 512 file when drawn small);
   `forgetMissing` (app start, gone files off every user's songs). Koin single in
   `KreateApplication`.
+- `PickedCovers.kt` — `PickedCovers` (Koin single): copies a picture picked from the device into
+  `CoverFiles.custom` (`keep`), deletes a replaced one (`discard`); `ownerOf` names the files
+  (`playlist-<id>`, `song|album|artist-<hash of origin:id>`). Used by the edit screens.
 - `SongStore.kt` — `SongStore.store(songId, origin)` (Koin single): makes sure a song is in the
   `song` table before the user keeps something about it (playlist, reaction); one fetched live is
   fetched with `songDetails` and stored with `savePlayedSong` (added to the library).

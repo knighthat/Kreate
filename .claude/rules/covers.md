@@ -23,8 +23,13 @@ Sizes, cache keys and bitmaps: `.claude/docs/cover-cache.md`.
 - A user's own song cover (`user_song.thumbnail`) can be a file kept on the device
   (`CoverFiles`, both under `noBackupFilesDir`): `download_covers/<hash>-512.jpg` and `-1440.jpg`
   (rows point at the 1440 one, `CoverFiles.Mapper` draws the 512 one where `coverSize` says so) or
-  `profiles/<profile id>/custom_thumbnail/` for covers the user picked (goes with the profile).
-  `songThumbnailModels` tries a file cover first.
+  `profiles/<profile id>/custom_thumbnails/` for covers the user picked (goes with the profile; the
+  only file covers an exported zip backup holds, never the system's or the cloud's, see
+  `backup.md`).
+  `songThumbnailModels` tries a file cover first. The pictures picked in the edit screens
+  (playlists,
+  songs, albums, artists) are copied there by `PickedCovers`, named after their owner, and deleted
+  when replaced or cleared; `forgetMissing` only looks at songs'.
   A download never replaces a custom cover whose file exists. Taking a file cover away
   (`forgetThumbnail`) deletes rows that keep nothing else, else sets it `NULL`; covers whose file is
   gone are taken away at app start (`forgetMissing`), all by the maintainer's choice (2026-10-26).

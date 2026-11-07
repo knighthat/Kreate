@@ -69,6 +69,7 @@ fun YouTubeArtistDetailScreen(
     onOpenPlaylist: (String) -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeArtistDetailViewModel = koinViewModel(),
@@ -104,6 +105,7 @@ fun YouTubeArtistDetailScreen(
                 onToggleFollow = viewModel.follow::toggle,
                 onOpenDetails = onOpenDetails,
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
                 modifier = modifier,
                 contentPadding = contentPadding,
             )
@@ -137,6 +139,7 @@ private fun YouTubeArtistDetailContent(
     onToggleFollow: () -> Unit,
     onOpenDetails: (name: String) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -165,6 +168,7 @@ private fun YouTubeArtistDetailContent(
                 share = share,
                 onOpenDetails = name?.let { { onOpenDetails(it) } },
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
             )
         },
     ) {
@@ -243,6 +247,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }
 
@@ -268,5 +273,6 @@ private fun YouTubeArtistDetailLoadingPreview() = PreviewTheme {
         onToggleFollow = {},
         onOpenDetails = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }

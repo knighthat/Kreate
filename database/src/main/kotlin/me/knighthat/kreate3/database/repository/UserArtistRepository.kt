@@ -109,6 +109,12 @@ interface UserArtistRepository {
     fun find(artistId: String): Flow<UserArtistView?>
 
     /**
+     * What the active user keeps of their own about the artist, as stored: the values they changed, `null` for the others.
+     * `null` when the artist isn't in the library.
+     */
+    suspend fun own(artistId: String): UserArtist?
+
+    /**
      * Adds to the library, or replaces the entry. The [Artist] must be saved first.
      * Use [update] to change a few fields.
      */

@@ -50,6 +50,9 @@
     <string name="action_apply">Apply</string>
     <string name="action_apply_and_restart">Apply &amp; restart</string>
     <string name="action_reset">Reset</string>
+    <string name="action_choose_image">Choose image</string>
+    <string name="menu_edit">Edit</string>
+    <string name="action_use_original">Use original</string>
     <string name="action_clear">Clear</string>
     <string name="action_undislike">Undislike</string>
     <string name="action_unlike">Unlike</string>

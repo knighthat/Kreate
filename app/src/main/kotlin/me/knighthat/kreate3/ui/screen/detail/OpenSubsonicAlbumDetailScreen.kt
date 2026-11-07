@@ -50,6 +50,7 @@ fun OpenSubsonicAlbumDetailScreen(
     onBack: () -> Unit,
     onOpenArtist: (Route) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicAlbumDetailViewModel = koinViewModel(),
@@ -82,6 +83,7 @@ fun OpenSubsonicAlbumDetailScreen(
                 onToggleBookmark = viewModel.bookmark::toggle,
                 onOpenArtist = onOpenArtist,
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
                 modifier = modifier,
                 contentPadding = contentPadding,
             )
@@ -108,6 +110,7 @@ private fun OpenSubsonicAlbumDetailContent(
     onToggleBookmark: () -> Unit,
     onOpenArtist: (Route) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -147,6 +150,7 @@ private fun OpenSubsonicAlbumDetailContent(
                 share = if (share != null && album != null) ({ share(album.name) }) else null,
                 onOpenArtist = artist?.let { { onOpenArtist(it) } },
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
             )
         },
     ) {
@@ -188,5 +192,6 @@ private fun OpenSubsonicAlbumDetailPreview() = PreviewTheme {
         onToggleBookmark = {},
         onOpenArtist = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }

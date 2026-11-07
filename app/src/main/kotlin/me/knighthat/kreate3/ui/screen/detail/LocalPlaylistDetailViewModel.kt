@@ -31,6 +31,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -38,6 +39,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.source.PickedCovers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
@@ -54,6 +56,7 @@ class LocalPlaylistDetailViewModel(
     private val repository: PlaylistRepository,
     private val songRepository: UserSongRepository,
     private val scope: CoroutineScope,
+    private val pictures: PickedCovers,
 ) : ViewModel() {
 
     val playlistId: Long = checkNotNull(savedStateHandle[LocalPlaylist.ID]) {
@@ -159,7 +162,10 @@ class LocalPlaylistDetailViewModel(
     fun delete(onDone: (Boolean) -> Unit) {
         scope.launch {
             val deleted = try {
+                val picture = repository.find(playlistId).first()?.thumbnail
                 repository.delete(playlistId)
+                // A picture picked for the playlist has no other use
+                pictures.discard(PickedCovers.ownerOf(playlistId), picture, null)
                 true
             } catch (e: CancellationException) {
                 throw e

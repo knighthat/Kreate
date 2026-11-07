@@ -365,6 +365,7 @@ fun ArtistMenu(
     share: (suspend () -> Result<String>)?,
     onOpenDetails: (() -> Unit)?,
     onOpenStatistics: () -> Unit,
+    onEdit: (() -> Unit)? = null,
     kind: ShareKind = ShareKind.ARTIST,
 ) {
     val linkShare = rememberLinkShare(name, kind) {
@@ -419,6 +420,8 @@ fun ArtistMenu(
             ConfigEntry(R.drawable.insert_chart, stringResource(R.string.menu_statistics)) {
                 close(onOpenStatistics)
             }
+            if (onEdit != null)
+                ConfigEntry(R.drawable.edit, stringResource(R.string.menu_edit)) { close(onEdit) }
         },
     )
 }

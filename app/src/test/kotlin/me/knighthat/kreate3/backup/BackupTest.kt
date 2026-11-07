@@ -101,6 +101,16 @@ class BackupTest {
     }
 
     @Test
+    fun unpacksThePicturesUsersPicked() {
+        unpack(complete + ("profiles/default/custom_thumbnails/playlist-1-5.jpg" to "picture"))
+
+        assertEquals(
+            "picture",
+            File(target, "profiles/default/custom_thumbnails/playlist-1-5.jpg").readText()
+        )
+    }
+
+    @Test
     fun refusesPathsOutsideOfTheBackup() {
         val outside = File(target.parentFile, "outside.txt")
         assertRefused(complete + ("../outside.txt" to "x"))

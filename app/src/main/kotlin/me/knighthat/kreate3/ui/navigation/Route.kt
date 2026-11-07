@@ -313,6 +313,50 @@ data class LocalPlaylist(val id: Long) : Route {
     }
 }
 
+/** Changes the name, picture and pin of a playlist of this device, opened from its page. */
+@Serializable
+data class EditPlaylist(val id: Long) : Route {
+
+    override val arguments: Bundle get() = Bundle().apply { putLong(LocalPlaylist.ID, id) }
+}
+
+/**
+ * The screens that change what the user keeps about a song, an album or an artist: title (name),
+ * artists and picture. [id] is the item's id at its [origin]; a remote item that isn't stored yet
+ * is fetched from its source when the screen opens and stored once the changes are applied.
+ */
+@Serializable
+sealed interface EditItem : Route {
+    val id: String
+    val origin: Origin
+
+    override val arguments: Bundle
+        get() = Bundle().apply {
+            putString(EDIT_ITEM_ID, id)
+            putString(EDIT_ITEM_ORIGIN, origin.name)
+        }
+}
+
+/** The arguments of an [EditItem]: the item's id and its [Origin]'s name. */
+const val EDIT_ITEM_ID = "editItemId"
+const val EDIT_ITEM_ORIGIN = "editItemOrigin"
+
+@Serializable
+data class EditSong(override val id: String, override val origin: Origin) : EditItem
+
+@Serializable
+data class EditAlbum(override val id: String, override val origin: Origin) : EditItem
+
+@Serializable
+data class EditArtist(override val id: String, override val origin: Origin) : EditItem
+
+/**
+ * Changes the name, description and visibility of a playlist of YouTube Music or of the
+ * OpenSubsonic server that the user may change; sent to the source when applied.
+ */
+@Serializable
+data class EditOnlinePlaylist(override val id: String, override val origin: Origin) : EditItem
+
 /**
  * An album of the OpenSubsonic server, fetched when it opens and never stored. Its screen reads
  * the album id from the same argument as [LocalAlbum].

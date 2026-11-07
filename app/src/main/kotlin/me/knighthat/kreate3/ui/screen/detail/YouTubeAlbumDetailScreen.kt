@@ -58,6 +58,7 @@ fun YouTubeAlbumDetailScreen(
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     onOpenArtist: (Route) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
@@ -91,6 +92,7 @@ fun YouTubeAlbumDetailScreen(
                 onToggleBookmark = viewModel.bookmark::toggle,
                 onOpenArtist = onOpenArtist,
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
                 modifier = modifier,
                 contentPadding = contentPadding,
             )
@@ -119,6 +121,7 @@ private fun YouTubeAlbumDetailContent(
     onToggleBookmark: () -> Unit,
     onOpenArtist: (Route) -> Unit,
     onOpenStatistics: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -157,6 +160,7 @@ private fun YouTubeAlbumDetailContent(
                 share = share,
                 onOpenArtist = artist?.let { { onOpenArtist(it) } },
                 onOpenStatistics = onOpenStatistics,
+                onEdit = onEdit,
             )
         },
     ) {
@@ -209,5 +213,6 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         onToggleBookmark = {},
         onOpenArtist = {},
         onOpenStatistics = {},
+        onEdit = {},
     )
 }

@@ -295,26 +295,11 @@ private fun CreatePlaylistContent(
                     )
 
                 when (page) {
-                    Origin.YOUTUBE -> {
-                        Text(
-                            text = stringResource(R.string.setting_title_playlist_privacy),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
-                        PlaylistPrivacy.entries.forEach {
-                            ListItem(
-                                headlineContent = { Text(stringResource(it.labelRes)) },
-                                leadingContent = {
-                                    RadioButton(
-                                        selected = it == privacy,
-                                        onClick = null
-                                    )
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable(enabled = !creating) { privacy = it },
-                            )
-                        }
-                    }
+                    Origin.YOUTUBE -> PrivacyChoices(
+                        selected = privacy,
+                        enabled = !creating,
+                        onSelect = { privacy = it },
+                    )
 
                     Origin.OPEN_SUBSONIC -> SwitchRow(
                         title = stringResource(R.string.setting_title_public_playlist),
@@ -337,8 +322,30 @@ private fun CreatePlaylistContent(
     }
 }
 
+/** Who can see a YouTube playlist: a title and a radio button for each way. */
 @Composable
-private fun SwitchRow(
+internal fun PrivacyChoices(
+    selected: PlaylistPrivacy?,
+    enabled: Boolean,
+    onSelect: (PlaylistPrivacy) -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.setting_title_playlist_privacy),
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    PlaylistPrivacy.entries.forEach {
+        ListItem(
+            headlineContent = { Text(stringResource(it.labelRes)) },
+            leadingContent = { RadioButton(selected = it == selected, onClick = null) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            modifier = Modifier.clickable(enabled = enabled) { onSelect(it) },
+        )
+    }
+}
+
+@Composable
+internal fun SwitchRow(
     title: String,
     description: String,
     checked: Boolean,

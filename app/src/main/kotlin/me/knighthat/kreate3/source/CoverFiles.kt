@@ -33,7 +33,8 @@ import java.io.File
  * Covers kept as files on the device, which a user's song can have as its own
  * (`user_song.thumbnail`): the covers of downloaded songs, in [downloads], shared like the
  * downloads, and the ones a user picked, in their profile's folder ([custom]), which goes with the
- * profile. Both are left out of backups.
+ * profile. Both are left out of the system's and the cloud's backups; a backup the user exports
+ * has [custom] ([backupFiles]), the downloads are fetched again.
  *
  * A downloaded cover is kept in the two sizes of the image cache, [SMALL_COVER] and [LARGE_COVER];
  * songs point at the large one, [Mapper] draws the small one where it is enough.
@@ -52,6 +53,45 @@ class CoverFiles(context: Context) {
     /** The covers the user with [profileId] picked for their songs (a profile's id is its user's). */
     fun custom(profileId: String): File =
         File(Profile.directory(root, profileId), CUSTOM_DIRECTORY)
+
+    /**
+     * The files of [custom], of every profile, by their paths in a backup. The pictures a user
+     * picked can't be found again, unlike [downloads].
+     */
+    fun backupFiles(): Map<String, File> =
+        profiles?.listFiles().orEmpty().flatMap { profile ->
+            File(profile, CUSTOM_DIRECTORY).listFiles().orEmpty().filter(File::isFile)
+        }.associateBy { it.relativeTo(root).invariantSeparatorsPath }
+            .filterKeys(::isBackupPath)
+
+    /**
+     * Replaces the files of [custom], of every profile, with the ones in [source], laid out by
+     * their paths in a backup. A restore replaces everything, the covers of what was there are
+     * gone with it.
+     */
+    fun restore(source: File) {
+        profiles?.listFiles().orEmpty().forEach { File(it, CUSTOM_DIRECTORY).deleteRecursively() }
+        source.walkTopDown()
+            .filter(File::isFile)
+            .forEach { file ->
+                val path = file.relativeTo(source).invariantSeparatorsPath
+                if (isBackupPath(path)) file.copyTo(File(root, path), overwrite = true)
+            }
+    }
+
+    /**
+     * A new file in [custom] for a picture the user picked for what [owner] names, like
+     * `playlist-3`; only letters, digits, `_` and `-`. The name is never the one of an earlier
+     * picture, so a picture that is replaced doesn't show from the cache.
+     */
+    fun newPicked(profileId: String, owner: String, extension: String): File =
+        File(custom(profileId), "$owner-${System.currentTimeMillis()}.$extension")
+
+    /** Whether [cover] is a file [newPicked] made for [owner]. */
+    fun isPickedBy(profileId: String, owner: String, cover: Uri?): Boolean {
+        val file = cover?.file() ?: return false
+        return file.parentFile == custom(profileId) && file.name.startsWith("$owner-")
+    }
 
     /** What a song's own [cover] is, [CoverKind.NONE] for none. */
     fun kindOf(cover: Uri?): CoverKind {
@@ -108,14 +148,22 @@ class CoverFiles(context: Context) {
         }
     }
 
-    private companion object {
-        const val TAG = "CoverFiles"
+    companion object {
+        private const val TAG = "CoverFiles"
 
         /** In each profile's folder. */
-        const val CUSTOM_DIRECTORY = "custom_thumbnail"
+        private const val CUSTOM_DIRECTORY = "custom_thumbnails"
+
+        /** The path of a [custom] file in a backup: `profiles/<profile id>/custom_thumbnails/<name>`. */
+        private val BACKUP_PATH = Regex(
+            "profiles/[A-Za-z0-9_-]+/$CUSTOM_DIRECTORY/[A-Za-z0-9._-]+"
+        )
+
+        /** Whether [path] is a path [backupFiles] can return. */
+        fun isBackupPath(path: String): Boolean = BACKUP_PATH.matches(path)
 
         /** The kinds of covers this keeps the files of. */
-        val KEPT = setOf(CoverKind.DOWNLOADED, CoverKind.CUSTOM)
+        private val KEPT = setOf(CoverKind.DOWNLOADED, CoverKind.CUSTOM)
     }
 }
 

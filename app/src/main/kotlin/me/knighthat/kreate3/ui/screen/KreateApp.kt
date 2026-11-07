@@ -53,6 +53,7 @@ import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.download.SongDownloads
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.Notifier
@@ -91,6 +92,11 @@ import me.knighthat.kreate3.ui.navigation.DataSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
 import me.knighthat.kreate3.ui.navigation.DownloadQueue
 import me.knighthat.kreate3.ui.navigation.Downloaded
+import me.knighthat.kreate3.ui.navigation.EditAlbum
+import me.knighthat.kreate3.ui.navigation.EditArtist
+import me.knighthat.kreate3.ui.navigation.EditOnlinePlaylist
+import me.knighthat.kreate3.ui.navigation.EditPlaylist
+import me.knighthat.kreate3.ui.navigation.EditSong
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.History
@@ -147,6 +153,11 @@ import me.knighthat.kreate3.ui.screen.account.LegacyDownloadsScreen
 import me.knighthat.kreate3.ui.screen.account.LikedScreen
 import me.knighthat.kreate3.ui.screen.account.SongStatisticsScreen
 import me.knighthat.kreate3.ui.screen.account.StatisticsScreen
+import me.knighthat.kreate3.ui.screen.detail.EditAlbumScreen
+import me.knighthat.kreate3.ui.screen.detail.EditArtistScreen
+import me.knighthat.kreate3.ui.screen.detail.EditOnlinePlaylistScreen
+import me.knighthat.kreate3.ui.screen.detail.EditPlaylistScreen
+import me.knighthat.kreate3.ui.screen.detail.EditSongScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistButtons
@@ -609,6 +620,14 @@ fun KreateApp(
                                             onBack = topLevel::pop,
                                             onOpenArtist = topLevel::push,
                                             onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditAlbum(
+                                                        it.id,
+                                                        Origin.LOCAL
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -626,6 +645,14 @@ fun KreateApp(
                                                 )
                                             },
                                             onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditArtist(
+                                                        it.id,
+                                                        Origin.LOCAL
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -633,6 +660,48 @@ fun KreateApp(
                                     }
                                     entry<LocalPlaylist> {
                                         LocalPlaylistDetailScreen(
+                                            onBack = topLevel::pop,
+                                            onEdit = { topLevel.push(EditPlaylist(it.id)) },
+                                            modifier = edgeModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+
+                                    entry<EditSong> {
+                                        EditSongScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = edgeModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<EditAlbum> {
+                                        EditAlbumScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = edgeModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<EditArtist> {
+                                        EditArtistScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = edgeModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<EditOnlinePlaylist> {
+                                        EditOnlinePlaylistScreen(
+                                            onBack = topLevel::pop,
+                                            modifier = edgeModifier,
+                                            contentPadding = contentPadding,
+                                            viewModel = routeViewModel(it),
+                                        )
+                                    }
+                                    entry<EditPlaylist> {
+                                        EditPlaylistScreen(
                                             onBack = topLevel::pop,
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
@@ -646,6 +715,14 @@ fun KreateApp(
                                             onBack = topLevel::pop,
                                             onOpenArtist = topLevel::push,
                                             onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditAlbum(
+                                                        it.id,
+                                                        Origin.OPEN_SUBSONIC
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -666,6 +743,14 @@ fun KreateApp(
                                                 )
                                             },
                                             onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditArtist(
+                                                        it.id,
+                                                        Origin.OPEN_SUBSONIC
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -682,6 +767,14 @@ fun KreateApp(
                                     entry<OpenSubsonicPlaylist> {
                                         OpenSubsonicPlaylistDetailScreen(
                                             onBack = topLevel::pop,
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditOnlinePlaylist(
+                                                        it.id,
+                                                        Origin.OPEN_SUBSONIC
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -703,6 +796,14 @@ fun KreateApp(
                                             },
                                             onOpenArtist = topLevel::push,
                                             onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditAlbum(
+                                                        it.id,
+                                                        Origin.YOUTUBE
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -737,6 +838,14 @@ fun KreateApp(
                                                 )
                                             },
                                             onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditArtist(
+                                                        it.id,
+                                                        Origin.YOUTUBE
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),
@@ -756,6 +865,14 @@ fun KreateApp(
                                     entry<YouTubePlaylist> {
                                         YouTubePlaylistDetailScreen(
                                             onBack = topLevel::pop,
+                                            onEdit = {
+                                                topLevel.push(
+                                                    EditOnlinePlaylist(
+                                                        it.id,
+                                                        Origin.YOUTUBE
+                                                    )
+                                                )
+                                            },
                                             modifier = edgeModifier,
                                             contentPadding = contentPadding,
                                             viewModel = routeViewModel(it),

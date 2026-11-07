@@ -36,6 +36,7 @@
     <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
     <string name="dialog_title_unsaved_changes">Save the changes?</string>
     <string name="dialog_body_unsaved_changes">You changed this playlist but haven\'t saved it yet.</string>
+    <string name="dialog_body_unsaved_edits">You made changes but haven\'t saved them yet.</string>
     <string name="dialog_title_delete_playlist">Delete playlist?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">%1$s will be deleted. Its songs stay in your library.</string>

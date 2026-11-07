@@ -30,6 +30,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.preferences.PreferencesBackup
+import me.knighthat.kreate3.source.CoverFiles
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -73,7 +74,7 @@ class BackupException(
  * Secrets stay on the device and are never in a backup.
  *
  * Layout of the zip: `manifest.json`, `kreate.db`, then the preference files by their paths in
- * [PreferencesBackup].
+ * [PreferencesBackup], then the pictures users picked ([CoverFiles.backupFiles]).
  *
  * A restore takes two steps. [stage] checks the zip, unpacks it beside the app's data and backs up
  * what is there now to the cache folder. Then [applyPendingRestore] moves it in place on the next
@@ -101,6 +102,9 @@ class Backup(
 
                 zip.putFile(DATABASE_ENTRY, snapshot)
                 preferences.files().forEach { (path, file) -> zip.putFile(path, file) }
+                // Pictures the user picked, kept outside of the system's backups
+                CoverFiles(context).backupFiles()
+                    .forEach { (path, file) -> zip.putFile(path, file) }
             }
             Logger.i(tag = TAG) { "The backup was exported" }
         } catch (e: Exception) {
@@ -199,6 +203,7 @@ class Backup(
             try {
                 DatabaseBackup.restore(context, File(pending, DATABASE_ENTRY))
                 PreferencesBackup(context).restore(pending)
+                CoverFiles(context).restore(pending)
                 // Songs of the old app to download, a restore of anything else drops a list left
                 val downloads = File(context.noBackupFilesDir, LegacyDownloads.FILE_NAME)
                 downloads.delete()
@@ -249,7 +254,7 @@ class Backup(
                         val path = entry.name
                         if (path != MANIFEST_ENTRY && path != DATABASE_ENTRY && !preferences.isBackupPath(
                                 path
-                            )
+                            ) && !CoverFiles.isBackupPath(path)
                         )
                             throw BackupException(NOT_A_BACKUP, R.string.app_name)
 

@@ -25,6 +25,8 @@
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="artists">Artists</string>
     <!-- %1$s is any title or name the app shows between quotes (song, playlist, search text...). Use the quotation marks of your language -->
     <string name="quoted">\"%1$s\"</string>
     <string name="sleep_timer_to_end_of_song">Until the song ends</string>

@@ -115,6 +115,12 @@ interface UserAlbumRepository {
     fun find(albumId: String): Flow<UserAlbumView?>
 
     /**
+     * What the active user keeps of their own about the album, as stored: the values they changed, `null` for the others.
+     * `null` when the album isn't in the library.
+     */
+    suspend fun own(albumId: String): UserAlbum?
+
+    /**
      * Adds to the library, or replaces the entry. The [Album] must be saved first.
      * Use [update] to change a few fields.
      */
