@@ -13,6 +13,9 @@ New image sources follow the same two sizes (helpers in `app/.../source/CoverCac
 - **YouTube:** Google encodes server-side, no device re-encode: `=w…-h…-p-nu-l80-rj` (`-nu` never
   upscales; l80 ≈ −35 % vs l90). `HEADER_ARTWORK` is 1440 so the detail header and player share one
   file; above 320 px the song's own googleusercontent cover comes before the 720-high `hq720` frame.
+- **Served covers (`ArtworkProvider`):** a queued song's address loads the player's covers at 1440,
+  a cover Auto browses is asked at 512 whatever size its address was given at (`smallCover`). The
+  system downsizes the media notification's large icon by itself (126 px on the 420 dpi emulator).
 
 Measurements behind it: Navidrome originals are mostly 1200 px and its resize is JPEG q75; YTM
 album art originals ≈ 1400 px; local embedded art median 70 KB but up to 7 MB / 4300 px. A cold

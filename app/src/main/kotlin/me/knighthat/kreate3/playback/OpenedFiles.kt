@@ -41,6 +41,9 @@ import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
 
+/** Folder of the cache with the covers of the files opened, see [OpenedFiles]. */
+internal const val OPENED_COVER_FOLDER = "opened_covers"
+
 /**
  * The songs to play for audio files other apps open with the app ("Open with"). A file of the
  * device's library plays as that song. Any other file, or any file while the app can't read the
@@ -217,7 +220,7 @@ class OpenedFiles(
      * @return the address of the kept picture, `null` when it couldn't be written
      */
     private fun coverOf(uri: Uri, picture: ByteArray): Uri? = try {
-        val folder = File(context.cacheDir, COVER_FOLDER).apply { mkdirs() }
+        val folder = File(context.cacheDir, OPENED_COVER_FOLDER).apply { mkdirs() }
         val name = MessageDigest.getInstance("SHA-1")
             .digest(uri.toString().toByteArray())
             .joinToString("") { "%02x".format(it) }
@@ -247,8 +250,6 @@ class OpenedFiles(
         const val MEDIA_DOCUMENTS = "com.android.providers.media.documents"
         const val AUDIO_DOCUMENT = "audio:"
 
-        /** Folder of the cache with the covers of the files opened, see [coverOf]. */
-        const val COVER_FOLDER = "opened_covers"
         const val KEPT_COVERS = 20
     }
 }

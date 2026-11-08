@@ -19,16 +19,27 @@
 package me.knighthat.kreate3.auto
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.playback.OPENED_COVER_FOLDER
+import me.knighthat.kreate3.source.CoverFiles
+import me.knighthat.kreate3.source.LARGE_COVER
+import me.knighthat.kreate3.ui.component.EXTRA_ALBUM_ID
+import me.knighthat.kreate3.ui.component.EXTRA_ORIGIN
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class ServedArtworkTest {
@@ -41,10 +52,18 @@ class ServedArtworkTest {
         "content://media/external/audio/albumart/42",
     ).map { it.toUri() }
 
-    private fun song(cover: String?) = MediaItem.Builder()
-        .setMediaId("song")
-        .setMediaMetadata(MediaMetadata.Builder().setArtworkUri(cover?.toUri()).build())
-        .build()
+    private fun song(cover: String?, origin: Origin? = null, album: String? = null) =
+        MediaItem.Builder()
+            .setMediaId("song")
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setArtworkUri(cover?.toUri())
+                    .setExtras(
+                        bundleOf(EXTRA_ORIGIN to origin?.name, EXTRA_ALBUM_ID to album)
+                    )
+                    .build()
+            )
+            .build()
 
     @Test
     fun aServedCoverLeadsBackToTheOriginal() = covers.forEach { cover ->
@@ -71,10 +90,65 @@ class ServedArtworkTest {
     @Test
     fun queuedSongsCarryTheServedCover() {
         val queued = song(covers.first().toString()).withServedArtwork(context)
-        assertEquals(context.autoArtworkUri(covers.first()), queued.mediaMetadata.artworkUri)
+        val served = checkNotNull(queued.mediaMetadata.artworkUri)
+        assertEquals("content", served.scheme)
+        assertEquals("song", served.getQueryParameter("song"))
+        assertEquals(covers.first(), served.coverSource())
         assertSame(queued, queued.withServedArtwork(context))
 
         val bare = song(null)
         assertSame(bare, bare.withServedArtwork(context))
+    }
+
+    @Test
+    fun aQueuedSongSaysWhereItsCoversAre() {
+        val served = song(covers.first().toString(), Origin.YOUTUBE, "album")
+            .withServedArtwork(context).mediaMetadata.artworkUri
+
+        assertEquals("YOUTUBE", served?.getQueryParameter("origin"))
+        assertEquals("album", served?.getQueryParameter("album"))
+    }
+
+    @Test
+    fun aDeviceSongWithoutACoverCanStillHaveOneInItsFile() {
+        val local = MediaItem.Builder()
+            .setMediaId("42")
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
+                    .setExtras(bundleOf(EXTRA_ORIGIN to Origin.LOCAL.name))
+                    .build()
+            )
+            .build()
+        val served = checkNotNull(local.withServedArtwork(context).mediaMetadata.artworkUri)
+
+        assertEquals("42", served.getQueryParameter("song"))
+        assertNull(served.coverSource())
+    }
+
+    @Test
+    fun onlyCoverFilesAreServed() {
+        val files = CoverFiles(context)
+        fun file(file: File) = Uri.fromFile(file)
+
+        assertTrue(context.isServedSource(file(files.downloaded("abc", LARGE_COVER))))
+        assertTrue(context.isServedSource(file(File(files.custom("me"), "song-1.jpg"))))
+        assertTrue(
+            context.isServedSource(file(File(context.cacheDir, "$OPENED_COVER_FOLDER/abc.jpg")))
+        )
+        covers.forEach { assertTrue(context.isServedSource(it)) }
+
+        assertFalse(context.isServedSource(file(context.getDatabasePath("kreate.db"))))
+        assertFalse(
+            context.isServedSource(
+                file(File(files.downloads, "../../databases/kreate.db"))
+            )
+        )
+        assertFalse(context.isServedSource("ftp://example/cover.jpg".toUri()))
+        assertFalse(
+            context.isServedSource(
+                "content://${context.packageName}.artwork/cover?source=x".toUri()
+            )
+        )
     }
 }

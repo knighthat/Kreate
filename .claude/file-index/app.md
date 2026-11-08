@@ -180,13 +180,16 @@ auto/ (Android Auto, browsed through `PlaybackService`)
   `MediaStore.EXTRA_MEDIA_*` (focus narrows the kinds). `anything()`: liked song listened longest →
   song listened longest → random library song, + radio. `voiceSearchOrigins` decodes the prefs.
 - `ArtworkProvider.kt` — non-exported `ContentProvider` (`<applicationId>.artwork`) serving covers
-  as JPEG through the app's Coil loader (`SMALL_COVER`, http/https/content only);
-  `Context.autoArtworkUri` (`content://<pkg>.artwork/cover?source=…`, idempotent),
-  `Context.grantArtwork(package)` (prefix read grant to the browser), `MediaItem.withServedArtwork`
-  (queued songs, applied by `PlaybackService.queued` and `PersistentQueue`'s restore, so Auto's
-  player, the notification and the lock screen load covers here), `Uri.coverSource()` (unwrap,
-  used by `thumbnailModel`/`songThumbnailModels`), `Context.smallCoverJpeg` (same load as bytes,
-  for the resumption card's `artworkData`). Manifest also declares Media3's `MediaButtonReceiver`.
+  as JPEG through the app's Coil loader (http/https/content and the player's cover files,
+  `isServedSource`); `Context.autoArtworkUri` (`content://<pkg>.artwork/cover?source=…`, idempotent;
+  Auto's browse items, `smallCover` at `SMALL_COVER`), `Context.grantArtwork(package)` (prefix read
+  grant to the browser), `MediaItem.withServedArtwork` (queued songs, address also has
+  `song`/`origin`/`album`: the player's `songThumbnailModels` at `HEADER_ARTWORK`; applied by
+  `PlaybackService.queued` and `PersistentQueue`'s restore, so Auto's player, the notification and
+  the lock screen load covers here), `Uri.coverSource()` (unwrap, `null` for a device song queued
+  without a cover; used by `thumbnailModel`/`songThumbnailModels`), `Context.smallCoverJpeg`
+  (`smallCover` as bytes, for the resumption card's `artworkData`). Manifest also declares Media3's
+  `MediaButtonReceiver`.
   Manifest: service actions `MediaLibraryService` + `MediaBrowserService`,
   `com.google.android.gms.car.application` → `res/xml/automotive_app_desc.xml`; `KreateActivity`
   takes `MEDIA_PLAY_FROM_SEARCH` and starts `PlaybackService` with `VOICE_SEARCH_ACTION`.

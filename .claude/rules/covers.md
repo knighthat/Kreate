@@ -17,6 +17,9 @@ Sizes, cache keys and bitmaps: `.claude/docs/cover-cache.md`.
 - Song `MediaItem`s always carry `artworkUri`, even in lists whose rows hide covers
   (`showThumbnail = false`): the same items go into the queue, the notification and the saved
   queue, which show only that address.
+- The media controls show what the fullscreen player shows: a queued song's `ArtworkProvider`
+  address loads `songThumbnailModels` at `HEADER_ARTWORK`. Auto's browse items (`autoArtworkUri`)
+  load 512 (`smallCover`). Maintainer's choice, 2026-11-08.
 - Queued songs carry their cover as an `ArtworkProvider` address (`withServedArtwork`), because
   Android Auto's player reads only `content://` covers. App code reading a song's `artworkUri`
   goes through `thumbnailModel`/`songThumbnailModels`, or `coverSource()`, to load the original.

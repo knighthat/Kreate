@@ -396,8 +396,9 @@ class DownloadNotifications(
 
     /** The cover of the song of [download], `null` when it has none or it can't be loaded. */
     private suspend fun coverOf(download: Download): Bitmap? {
-        val cover = download.request.songItem?.mediaMetadata?.artworkUri ?: return null
-        return withTimeoutOrNull(COVER_WAIT) { context.smallCover(cover.coverSource()) }
+        val cover = download.request.songItem?.mediaMetadata?.artworkUri?.coverSource()
+            ?: return null
+        return withTimeoutOrNull(COVER_WAIT) { context.smallCover(cover) }
     }
 
     /** Has [PlaybackService] do [action] with the song downloaded as [id]. */

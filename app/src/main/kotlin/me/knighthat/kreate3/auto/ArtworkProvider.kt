@@ -28,22 +28,39 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import co.touchlab.kermit.Logger
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
+import coil3.size.Precision
 import coil3.toBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.playback.OPENED_COVER_FOLDER
+import me.knighthat.kreate3.provider.Providers
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.CoverFiles
+import me.knighthat.kreate3.source.CoverKind
+import me.knighthat.kreate3.source.LARGE_COVER
 import me.knighthat.kreate3.source.SMALL_COVER
+import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
+import me.knighthat.kreate3.ui.component.EXTRA_ALBUM_ID
+import me.knighthat.kreate3.ui.component.EXTRA_ORIGIN
+import me.knighthat.kreate3.ui.component.localSongId
+import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.ui.component.songThumbnailModels
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.context.GlobalContext
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -52,10 +69,22 @@ private const val TAG = "ArtworkProvider"
 /** Query parameter holding the address of the cover, see [autoArtworkUri]. */
 private const val SOURCE = "source"
 
+/**
+ * Query parameter holding the id of a queued song, see [withServedArtwork]. An address with it
+ * loads what the player shows for the song, one without it the small cover of a list.
+ */
+private const val SONG = "song"
+
+/** Query parameter holding the origin of a queued song, see [SONG]. */
+private const val ORIGIN = "origin"
+
+/** Query parameter holding the album of a queued song, see [SONG]. */
+private const val ALBUM = "album"
+
 /** Path of every cover address, see [autoArtworkUri]. */
 private const val COVER_PATH = "cover"
 
-/** Quality of the covers handed to Auto, they are drawn small. */
+/** Quality of the covers handed out, they are encoded again on their way out. */
 private const val QUALITY = 85
 
 private const val AUTHORITY_SUFFIX = ".artwork"
@@ -68,8 +97,9 @@ private val Context.artworkAuthority: String get() = "$packageName$AUTHORITY_SUF
  * Auto can't read. They are loaded with the app's image loader, so the gates and proxies of the
  * sources apply, as do its caches.
  *
- * The queue's songs carry these addresses too ([withServedArtwork]), so the media notification
- * and the lock screen load their covers here as well.
+ * What Auto browses is served small ([smallCover]). The queue's songs carry addresses of their
+ * own ([withServedArtwork]), so the media notification, the lock screen and Auto's player load
+ * here what the player of the app shows, at its size.
  *
  * Not exported: [grantArtwork] lets the app that browses the library read it.
  */
@@ -80,11 +110,16 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor {
         val context = checkNotNull(context)
         val source = uri.getQueryParameter(SOURCE)?.toUri()
-            ?.takeIf { it.scheme in LOADED_SCHEMES && it.authority != context.artworkAuthority }
-            ?: throw FileNotFoundException("$uri has no cover")
+        if (source != null && !context.isServedSource(source))
+            throw FileNotFoundException("$uri has no cover")
+        val song = uri.getQueryParameter(SONG)
         // Called on a binder thread, which waits for the answer anyway
-        val bitmap = runBlocking { context.smallCover(source) }
-            ?: throw FileNotFoundException("Couldn't load $source")
+        val bitmap = runBlocking {
+            if (song != null)
+                playerCover(context, uri, song, source)
+            else
+                source?.let { context.smallCover(it) }
+        } ?: throw FileNotFoundException("Couldn't load $uri")
 
         val (read, write) = ParcelFileDescriptor.createPipe()
         // A pipe holds little, the cover is written while Auto reads the other end
@@ -122,27 +157,77 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
         selectionArgs: Array<out String>?,
     ): Int = 0
 
-    private companion object {
-
-        /** Covers come from these, the app's other files are never handed out. */
-        val LOADED_SCHEMES = setOf("http", "https", ContentResolver.SCHEME_CONTENT)
+    /**
+     * The first cover that loads of the ones the player tries for the queued [song], at the
+     * player's size, no larger than the picture is.
+     *
+     * @param address the address it was asked with, see [withServedArtwork]
+     * @param cover the cover the song was queued with
+     */
+    private suspend fun playerCover(
+        context: Context,
+        address: Uri,
+        song: String,
+        cover: Uri?,
+    ): Bitmap? {
+        val metadata = MediaMetadata.Builder()
+            .setArtworkUri(cover)
+            .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
+            .setExtras(
+                bundleOf(
+                    EXTRA_ORIGIN to address.getQueryParameter(ORIGIN),
+                    EXTRA_ALBUM_ID to address.getQueryParameter(ALBUM),
+                )
+            )
+            .build()
+        val item = MediaItem.Builder().setMediaId(song).setMediaMetadata(metadata).build()
+        return songThumbnailModels(item, get<Providers>(), HEADER_ARTWORK)
+            .firstNotNullOfOrNull { context.cover(it, LARGE_COVER, Precision.INEXACT) }
     }
 }
 
 /**
- * The cover at [source], drawn small, loaded like [ArtworkProvider] does; `null` when it can't
- * be loaded.
+ * Whether [ArtworkProvider] may load the cover at [source]: from the web, from what other apps
+ * share, or a cover file the player shows. The app's other files are never handed out.
  */
-internal suspend fun Context.smallCover(source: Uri): Bitmap? = cover(source, SMALL_COVER)
+internal fun Context.isServedSource(source: Uri): Boolean = when (source.scheme) {
+    "http", "https" -> true
+    ContentResolver.SCHEME_CONTENT -> source.authority != artworkAuthority
+    ContentResolver.SCHEME_FILE ->
+        CoverFiles(this).kindOf(source).let { it == CoverKind.DOWNLOADED || it == CoverKind.CUSTOM }
+                || source.path?.let(::File)?.parentFile == File(cacheDir, OPENED_COVER_FOLDER)
+
+    else -> false
+}
+
+/**
+ * The cover at [source], drawn small, loaded like [ArtworkProvider] does; `null` when it can't
+ * be loaded. A YouTube cover is asked at that size, whatever size its address was given at.
+ */
+internal suspend fun Context.smallCover(source: Uri): Bitmap? {
+    val sized = GlobalContext.get().get<YouTubeProvider>()
+        .artworkUri(source.toString(), SMALL_COVER)
+        ?: source
+    return cover(sized, SMALL_COVER)
+        ?: if (sized.toString() != source.toString()) cover(source, SMALL_COVER) else null
+}
 
 /**
  * The cover at [source], drawn at most [size] wide and high, as a bitmap whose pixels can be
  * read; `null` when it can't be loaded.
+ *
+ * @param source what the image loader takes, an address or a song's local cover
+ * @param precision [Precision.INEXACT] to leave a smaller picture at its size
  */
-internal suspend fun Context.cover(source: Uri, size: Int): Bitmap? {
+internal suspend fun Context.cover(
+    source: Any,
+    size: Int,
+    precision: Precision = Precision.EXACT,
+): Bitmap? {
     val request = ImageRequest.Builder(this)
         .data(source)
         .size(size)
+        .precision(precision)
         // Compressed afterwards, a hardware bitmap can't be read
         .allowHardware(false)
         .build()
@@ -170,34 +255,47 @@ internal suspend fun Context.smallCoverJpeg(source: Uri): ByteArray? {
 internal fun Context.autoArtworkUri(cover: Uri?): Uri? = when {
     cover == null || cover.isServedCover -> cover
     cover.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE -> cover
-    else -> Uri.Builder()
+    else -> coverAddress().appendQueryParameter(SOURCE, cover.toString()).build()
+}
+
+private fun Context.coverAddress(): Uri.Builder =
+    Uri.Builder()
         .scheme(ContentResolver.SCHEME_CONTENT)
         .authority(artworkAuthority)
         .appendPath(COVER_PATH)
-        .appendQueryParameter(SOURCE, cover.toString())
-        .build()
-}
 
 /**
  * The song with its cover read through [ArtworkProvider], for the player's queue: Auto's player
  * only shows the playing song's cover from a `content://` address, and the queue's items are the
- * ones it shows. The app reads the cover itself, see [coverSource].
+ * ones it shows. The address says which song it is, for the provider to load what the player of
+ * the app shows ([songThumbnailModels]), so the media controls show that too. A song of this
+ * device has one without a cover as well, the picture can be inside its file. The app reads the
+ * cover itself, see [coverSource].
  */
 internal fun MediaItem.withServedArtwork(context: Context): MediaItem {
     val cover = mediaMetadata.artworkUri
-    val served = context.autoArtworkUri(cover)
-    if (served == cover) return this
+    if (cover?.isServedCover == true || cover?.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE)
+        return this
+    if (cover == null && localSongId == null) return this
+
+    val served = context.coverAddress()
+    cover?.let { served.appendQueryParameter(SOURCE, it.toString()) }
+    served.appendQueryParameter(SONG, mediaId)
+    origin?.let { served.appendQueryParameter(ORIGIN, it.name) }
+    mediaMetadata.extras?.getString(EXTRA_ALBUM_ID)
+        ?.let { served.appendQueryParameter(ALBUM, it) }
     return buildUpon()
-        .setMediaMetadata(mediaMetadata.buildUpon().setArtworkUri(served).build())
+        .setMediaMetadata(mediaMetadata.buildUpon().setArtworkUri(served.build()).build())
         .build()
 }
 
 /**
  * The cover an address of [ArtworkProvider] stands for, the address itself for any other. The
- * app loads the original at the size it draws, not the provider's small copy.
+ * app loads the original at the size it draws, not the provider's copy. `null` for the address
+ * of a song of this device that came without a cover, see [withServedArtwork].
  */
-fun Uri.coverSource(): Uri =
-    if (isServedCover) getQueryParameter(SOURCE)?.toUri() ?: this else this
+fun Uri.coverSource(): Uri? =
+    if (isServedCover) getQueryParameter(SOURCE)?.toUri() else this
 
 // Told apart without a Context, the authority is the package's followed by this
 private val Uri.isServedCover: Boolean
