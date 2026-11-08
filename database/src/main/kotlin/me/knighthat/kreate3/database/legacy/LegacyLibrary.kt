@@ -34,6 +34,7 @@ class LegacyImportException(message: String, cause: Throwable? = null) : Excepti
  * @property title may start with `modified:`, the old app's mark for a title the user typed
  * @property artists text shown for the artists, same mark
  * @property likedAt time of the like, `-1` for a dislike, `null` for neither
+ * @property totalPlaytime how long it was played in all, in milliseconds, `0` for never
  */
 internal data class LegacySong(
     val id: String,
@@ -42,6 +43,7 @@ internal data class LegacySong(
     val duration: String?,
     val thumbnail: String?,
     val likedAt: Long?,
+    val totalPlaytime: Long,
     val isExplicit: Boolean,
     val isLocal: Boolean,
 )
@@ -182,8 +184,8 @@ internal fun SQLiteConnection.readLegacyLibrary(): LegacyLibrary {
         songs = rows(
             "songs",
             listOf(
-                "id", "title", "artists", "duration", "thumbnail_url", "liked_at", "is_explicit",
-                "is_local"
+                "id", "title", "artists", "duration", "thumbnail_url", "liked_at", "total_playtime",
+                "is_explicit", "is_local"
             ),
         ).mapNotNull {
             LegacySong(
@@ -193,6 +195,7 @@ internal fun SQLiteConnection.readLegacyLibrary(): LegacyLibrary {
                 duration = it.text("duration"),
                 thumbnail = it.text("thumbnail_url"),
                 likedAt = it.long("liked_at"),
+                totalPlaytime = it.long("total_playtime") ?: 0,
                 isExplicit = it.flag("is_explicit"),
                 isLocal = it.flag("is_local"),
             )

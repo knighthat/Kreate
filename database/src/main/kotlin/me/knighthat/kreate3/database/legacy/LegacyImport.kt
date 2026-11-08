@@ -65,14 +65,17 @@ object LegacyImport {
      * Writes a new database to [target], replacing the file, with [profiles]. A database that
      * can't be read stops the import and leaves no file.
      *
+     * @param downloaded ids of the songs the old app had downloaded, for every profile
+     *
      * @throws LegacyImportException when a database of [profiles] is not one of the old app
      */
     suspend fun build(
         context: Context,
         profiles: List<LegacyProfile>,
-        target: File
+        target: File,
+        downloaded: Set<String> = emptySet(),
     ): LegacyImportResult =
-        build(context, profiles, target, BundledSQLiteDriver(), Clock.System)
+        build(context, profiles, target, BundledSQLiteDriver(), Clock.System, downloaded)
 
     internal suspend fun build(
         context: Context,
@@ -80,6 +83,7 @@ object LegacyImport {
         target: File,
         driver: SQLiteDriver,
         clock: Clock,
+        downloaded: Set<String> = emptySet(),
     ): LegacyImportResult = withContext(Dispatchers.IO) {
         require(profiles.map { it.id }.toSet().size == profiles.size) { "Two profiles share an id" }
 
@@ -108,7 +112,7 @@ object LegacyImport {
                 } catch (e: Exception) {
                     throw LegacyImportException("A database can't be read", e)
                 }
-                val mapped = mapLegacyLibrary(profile.id, profile.name, library, now)
+                val mapped = mapLegacyLibrary(profile.id, profile.name, library, now, downloaded)
 
                 // A song, album or artist of an earlier profile stays as it was stored
                 val albums = mapped.albums.filter { seenAlbums.add(it.id) }

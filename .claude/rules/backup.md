@@ -56,6 +56,9 @@ paths:
 - Old data is read by column name, not by version. Left out on purpose: device songs, albums and
   artists (the scan finds them; albums and artists by a numeric id, their `youtube` flag is
   unreliable), the saved queue (no order), lyrics (no source), downloads (the files can't be moved).
-  Playlists become local. `modified:` texts become the user's overrides.
+  Playlists become local. `modified:` texts become the user's overrides. A song gets a `user_song`
+  row only when it has a `modified:` title, artists or thumbnail, a `liked_at`, a
+  `total_playtime` above 0, or is on `downloaded.json` (every profile with the song keeps it);
+  the rest are only in `song`.
 - The bundled SQLite driver has no host library: the `:app` test covers the archive only, the
   database build is tested in `:database` with the framework driver.

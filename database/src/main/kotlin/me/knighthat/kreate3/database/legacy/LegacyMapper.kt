@@ -100,12 +100,15 @@ internal class MappedProfile(
  *   their ids mean nothing here. Everything pointing at them goes too. Songs say so with
  *   `is_local`; albums and artists by an id of digits only, as their `youtube` flag can't be
  *   trusted.
- * - Everything else was YouTube. Every song is in the user's library, like a song that played.
+ * - Everything else was YouTube. A song is in the user's library only when the user touched it:
+ *   a typed title, artists or thumbnail, a like or dislike, some play time, or a download (the
+ *   old app's list is one for all profiles, so every profile with the song keeps it). The
+ *   others are kept for playlists, history and formats, without a row of the user's.
  * - Texts marked `modified:` were typed by the user. They are the user's own values here and
  *   the shared value too, as the original is not known.
  * - `liked_at` stays as it was, a `-1` is a dislike. Albums and artists keep `bookmarked_at`.
  * - The old text for a song's artists is kept as the user's own only when the user typed it or
- *   the song has no artist rows to show.
+ *   the song has no artist rows to show, and only on a song in the user's library.
  * - Playlists become local playlists, the link to YouTube is dropped. One left without a name is
  *   called `Playlist-` and its place in the old list, from 1.
  * - The saved queue and the lyrics are not imported: the queue has no order here, and the lyrics
@@ -116,6 +119,7 @@ internal fun mapLegacyLibrary(
     userName: String,
     library: LegacyLibrary,
     now: Instant,
+    downloaded: Set<String> = emptySet(),
 ): MappedProfile {
     // The old `youtube` flag of artists and albums is 0 on nearly all of them, even for channel
     // ids (`UC…`) and album ids (`MPRE…`). Device ones have the numeric ids of the media index
@@ -213,6 +217,10 @@ internal fun mapLegacyLibrary(
             createdAt = now,
             updatedAt = now,
         )
+        val isTouched = title.isModified || authors.isModified || thumbnail.isModified
+                || row.likedAt != null || row.totalPlaytime > 0 || row.id in downloaded
+        if (!isTouched) continue
+
         userSongs += UserSongEntity(
             userId = userId,
             songId = row.id,

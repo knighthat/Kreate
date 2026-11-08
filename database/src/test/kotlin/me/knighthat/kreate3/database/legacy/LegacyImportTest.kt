@@ -58,15 +58,17 @@ internal class LegacyImportTest {
         return file
     }
 
-    private fun import(vararg profiles: LegacyProfile) = runBlocking {
-        LegacyImport.build(
-            RuntimeEnvironment.getApplication(),
-            profiles.toList(),
-            target,
-            driver,
-            clock
-        )
-    }
+    private fun import(vararg profiles: LegacyProfile, downloaded: Set<String> = emptySet()) =
+        runBlocking {
+            LegacyImport.build(
+                RuntimeEnvironment.getApplication(),
+                profiles.toList(),
+                target,
+                driver,
+                clock,
+                downloaded,
+            )
+        }
 
     /** Rows of the new database, every value as text. */
     private fun rows(sql: String): List<List<String?>> =
@@ -90,16 +92,19 @@ internal class LegacyImportTest {
                   ('liked', 'Liked', 'A', '3:25', 'http://t/1', 5000, 1000, 1, 0),
                   ('hated', 'Hated', 'A', '215', NULL, -1, 0, 0, 0),
                   ('typed', 'modified:My title', 'modified:My artist', NULL, NULL, NULL, 0, 0, 0),
-                  ('lonely', 'Lonely', 'Typed text', NULL, NULL, NULL, 0, 0, 0),
+                  ('lonely', 'Lonely', 'Typed text', NULL, NULL, NULL, 500, 0, 0),
+                  ('untouched', 'Untouched', 'Old text', NULL, NULL, NULL, 0, 0, 0),
+                  ('cover', 'Cover', NULL, NULL, 'modified:http://mine', NULL, 0, 0, 0),
+                  ('saved', 'Saved', NULL, NULL, NULL, NULL, 0, 0, 0),
                   ('device', 'On device', NULL, NULL, NULL, 9, 0, 0, 1)
                 """.trimIndent()
             )
             execSQL("INSERT INTO artists VALUES ('ar', 'Artist', NULL, 100, 7000, 1), ('42', 'Local', NULL, NULL, NULL, 0), ('UCflagless', 'Flag unset', NULL, NULL, NULL, 0)")
             execSQL("INSERT INTO albums VALUES ('al', 'Album', NULL, '2019', 'Artist', 'http://a', 200, NULL, 1)")
-            execSQL("INSERT INTO song_artist_map VALUES ('liked', 'ar'), ('hated', 'ar'), ('typed', 'ar'), ('device', '42')")
+            execSQL("INSERT INTO song_artist_map VALUES ('liked', 'ar'), ('hated', 'ar'), ('typed', 'ar'), ('untouched', 'ar'), ('device', '42')")
             execSQL("INSERT INTO song_album_map VALUES ('liked', 'al', 3)")
             execSQL("INSERT INTO playlists VALUES ('modified:Mix', 'PLabcdefghijkl', 1, 1, 4, 1, 0)")
-            execSQL("INSERT INTO song_playlist_map VALUES ('hated', 4, 2, NULL), ('liked', 4, 0, NULL), ('device', 4, 1, NULL)")
+            execSQL("INSERT INTO song_playlist_map VALUES ('hated', 4, 2, NULL), ('liked', 4, 0, NULL), ('device', 4, 1, NULL), ('untouched', 4, 3, NULL)")
             execSQL("INSERT INTO formats VALUES ('liked', 140, 'audio/mp4', 128000, 5000000, 1, 3.5), ('typed', NULL, 'audio/mp4', NULL, NULL, NULL, NULL)")
             execSQL("INSERT INTO playback_history VALUES ('liked', 1000000, 90000, 1), ('device', 2000000, 1000, 2)")
             execSQL("INSERT INTO search_history VALUES ('first', 1), ('second', 2)")
@@ -107,35 +112,43 @@ internal class LegacyImportTest {
             execSQL("INSERT INTO lyrics VALUES ('liked', 'plain', NULL)")
         }
 
-        val result = import(LegacyProfile("default", "Default", file))
+        val result =
+            import(LegacyProfile("default", "Default", file), downloaded = setOf("saved", "absent"))
 
         assertEquals(1, result.users)
-        assertEquals(4, result.songs)
+        assertEquals(7, result.songs)
         assertEquals(1, result.playlists)
         assertEquals(listOf(listOf("default", "Default")), rows("SELECT id, name FROM user"))
 
         // Songs: device songs are left out, a length is whole seconds, `false` is unknown
         assertEquals(
             listOf(
+                listOf("cover", "Cover", null, null, null, "YOUTUBE"),
                 listOf("hated", "Hated", "215", null, null, "YOUTUBE"),
                 listOf("liked", "Liked", "205", "1", "al", "YOUTUBE"),
                 listOf("lonely", "Lonely", null, null, null, "YOUTUBE"),
+                listOf("saved", "Saved", null, null, null, "YOUTUBE"),
                 listOf("typed", "My title", null, null, null, "YOUTUBE"),
+                listOf("untouched", "Untouched", null, null, null, "YOUTUBE"),
             ),
             rows("SELECT id, name, duration, is_explicit, album_id, origin FROM song ORDER BY id"),
         )
         assertEquals("3", rows("SELECT album_position FROM song WHERE id = 'liked'")[0][0])
 
-        // The user's rows: likes and dislikes as they were, typed texts as overrides
+        // The user's rows: likes and dislikes as they were, typed texts as overrides. Only songs the
+        // user touched (typed text, a like or dislike, play time) or downloaded get one
         assertEquals(
             listOf(
-                listOf("hated", "-1", null, null),
-                listOf("liked", "5000", null, null),
-                // No artist row for it: the old text is all there is
-                listOf("lonely", null, null, """["Typed text"]"""),
-                listOf("typed", null, "My title", """["My artist"]"""),
+                listOf("cover", null, null, null, "http://mine"),
+                listOf("hated", "-1", null, null, null),
+                listOf("liked", "5000", null, null, null),
+                // Played, no artist row for it: the old text is all there is
+                listOf("lonely", null, null, """["Typed text"]""", null),
+                // Downloaded: no artist row either
+                listOf("saved", null, null, null, null),
+                listOf("typed", null, "My title", """["My artist"]""", null),
             ),
-            rows("SELECT song_id, liked_at, name, artists FROM user_song ORDER BY song_id"),
+            rows("SELECT song_id, liked_at, name, artists, thumbnail FROM user_song ORDER BY song_id"),
         )
 
         // The `youtube` flag is not what tells a device artist, its numeric id is
@@ -154,7 +167,7 @@ internal class LegacyImportTest {
         // Not bookmarked, not typed: no row of the user's
         assertEquals(0, rows("SELECT * FROM user_album").size)
         assertEquals(
-            listOf("hated", "liked", "typed"),
+            listOf("hated", "liked", "typed", "untouched"),
             rows("SELECT song_id FROM song_artist_map ORDER BY song_id").map { it[0] },
         )
 
@@ -164,7 +177,7 @@ internal class LegacyImportTest {
             rows("SELECT name, origin, is_pinned, is_monthly FROM user_playlist"),
         )
         assertEquals(
-            listOf(listOf("liked", "0"), listOf("hated", "2")),
+            listOf(listOf("liked", "0"), listOf("hated", "2"), listOf("untouched", "3")),
             rows("SELECT song_id, position FROM song_playlist_map ORDER BY position"),
         )
 
@@ -207,7 +220,6 @@ internal class LegacyImportTest {
         assertEquals(
             listOf(
                 listOf("default", "same", "10"),
-                listOf("u2", "other", null),
                 listOf("u2", "same", "-1"),
             ),
             rows("SELECT user_id, song_id, liked_at FROM user_song ORDER BY user_id, song_id"),

@@ -160,14 +160,21 @@ class LegacyBackup(
                         database = File(work, it.database),
                     )
                 }
+                // Songs on this list keep their place in the library, to be offered again
+                val downloaded = readDownloads(File(work, DOWNLOADS_ENTRY))
                 try {
-                    LegacyImport.build(context, profiles, File(target, DATABASE_ENTRY))
+                    LegacyImport.build(
+                        context,
+                        profiles,
+                        File(target, DATABASE_ENTRY),
+                        downloaded.toSet()
+                    )
                 } catch (e: LegacyImportException) {
                     Logger.w(e, TAG) { "A database of the archive can't be read" }
                     throw BackupException(R.string.error_backup_damaged)
                 }
                 preferences.writeProfileList(target, profiles.map { it.id })
-                keepDownloads(File(work, DOWNLOADS_ENTRY), File(target, LegacyDownloads.FILE_NAME))
+                keepDownloads(downloaded, File(target, LegacyDownloads.FILE_NAME))
                 Logger.i(tag = TAG) { "Imported ${profiles.size} profile(s) of the old app" }
             } finally {
                 work.deleteRecursively()
@@ -186,14 +193,15 @@ class LegacyBackup(
         private val DATABASE_PATH = Regex("profiles/[0-9]+/data\\.db")
         private val JSON = Json { ignoreUnknownKeys = true }
 
+        /** The ids of `downloaded.json`, none when it is missing or can't be read. */
+        private fun readDownloads(source: File): List<String> =
+            source.takeIf(File::isFile)?.let { parseLegacyDownloadIds(it.readText()) }.orEmpty()
+
         /**
-         * Keeps the ids of `downloaded.json` for the user to decide on after the restore, see
-         * [LegacyDownloads]. A list that can't be read or holds no id is not kept, downloads are
-         * optional.
+         * Keeps [ids] for the user to decide on after the restore, see [LegacyDownloads]. An
+         * empty list is not kept, downloads are optional.
          */
-        private fun keepDownloads(source: File, target: File) {
-            val ids = source.takeIf(File::isFile)?.let { parseLegacyDownloadIds(it.readText()) }
-                .orEmpty()
+        private fun keepDownloads(ids: List<String>, target: File) {
             if (ids.isEmpty()) return
             target.writeText(Json.encodeToString(ids))
         }
