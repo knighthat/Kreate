@@ -372,6 +372,24 @@ fun SortOrderButton(newestFirst: Boolean, onClick: () -> Unit, modifier: Modifie
         modifier,
     )
 
+/**
+ * A playlist's songs in its order or from its end, a tap turns them around. The arrows of
+ * [SortOrderButton], in words of its own: a playlist's order can be anything once it's rearranged.
+ */
+@Composable
+fun PlaylistOrderButton(
+    reversed: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) = IconAction(
+    if (reversed) R.drawable.arrow_downward else R.drawable.arrow_upward,
+    stringResource(if (reversed) R.string.semantic_reversed_order else R.string.semantic_playlist_order),
+    onClick,
+    modifier,
+    enabled,
+)
+
 /** Takes back the dislike of every song shown. */
 @Composable
 fun UndislikeAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

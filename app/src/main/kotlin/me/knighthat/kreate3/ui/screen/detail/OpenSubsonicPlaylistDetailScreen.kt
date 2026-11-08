@@ -36,6 +36,8 @@ import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -65,6 +67,13 @@ fun OpenSubsonicPlaylistDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
     val edit = viewModel.edit.collectState()
+    val reversedSetting by Preferences.PLAYLIST_REVERSED.collectAsStateWithLifecycle()
+    // Edits are made on the playlist's own order
+    val reversed = reversedSetting && !edit.editing
+    val shownSongs: () -> List<MediaItem> = {
+        val songs = (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        if (reversed) songs.asReversed() else songs
+    }
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
     val deleteFailed = stringResource(R.string.error_playlist_delete)
@@ -128,12 +137,10 @@ fun OpenSubsonicPlaylistDetailScreen(
                 onRetry = viewModel::load,
                 onBack = onBack,
                 onEdit = onEdit,
-                onAction = rememberQueueActions {
-                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-                },
-                onSongClick = rememberSongTap(null) {
-                    (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-                },
+                onAction = rememberQueueActions(shownSongs),
+                onSongClick = rememberSongTap(null, shownSongs),
+                reversed = reversed,
+                onToggleOrder = { Preferences.PLAYLIST_REVERSED.update { !it } },
                 share = if (canShare) viewModel::shareLink else null,
                 edit = edit,
                 actions = actions,
@@ -145,6 +152,8 @@ fun OpenSubsonicPlaylistDetailScreen(
 }
 
 /**
+ * @param reversed whether the songs are listed from the playlist's end
+ * @param onToggleOrder turns them around
  * @param share gives a link to the playlist, `null` while the user may not share
  * @param edit where moving and taking out songs stands
  * @param actions what the user can do about it
@@ -157,6 +166,8 @@ private fun OpenSubsonicPlaylistDetailContent(
     onEdit: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
+    reversed: Boolean,
+    onToggleOrder: () -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     edit: PlaylistEditState,
     actions: PlaylistEditActions,
@@ -177,6 +188,9 @@ private fun OpenSubsonicPlaylistDetailContent(
     val songCovers = remember(playlist?.songs, providers) {
         playlist?.songs.orEmpty().songCovers(providers)
     }
+    val shown = remember(playlist?.songs, reversed) {
+        playlist?.songs.orEmpty().let { if (reversed) it.asReversed() else it }
+    }
 
     PlaylistDetailScaffold(
         name = playlist?.name.orEmpty(),
@@ -196,6 +210,8 @@ private fun OpenSubsonicPlaylistDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,
+        reversed = reversed,
+        onToggleOrder = onToggleOrder.takeIf { shown.isNotEmpty() && !edit.editing },
         menu = { onDismiss ->
             PlaylistMenu(
                 name = playlist?.name,
@@ -222,7 +238,7 @@ private fun OpenSubsonicPlaylistDetailContent(
             with(editing) { rows(onSongClick) }
             if (edit.arranging?.isEmpty() == true) item(key = "empty") { EmptyPlaylist() }
         } else {
-            items(playlist.songs, key = { it.mediaId }) {
+            items(shown, key = { it.mediaId }) {
                 SongItem(it, onClick = { onSongClick(it) })
             }
             if (playlist.songs.isEmpty())
@@ -269,6 +285,8 @@ private fun OpenSubsonicPlaylistDetailPreview() = PreviewTheme {
         onEdit = {},
         onAction = {},
         onSongClick = {},
+        reversed = false,
+        onToggleOrder = {},
         share = { Result.success("") },
         edit = PlaylistEditState(),
         actions = PlaylistEditActions(),

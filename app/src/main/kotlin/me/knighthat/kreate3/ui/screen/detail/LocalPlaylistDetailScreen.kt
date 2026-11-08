@@ -54,6 +54,7 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.undoMessage
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverEditOverlay
@@ -88,6 +89,7 @@ fun LocalPlaylistDetailScreen(
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val mode by viewModel.editMode.collectAsStateWithLifecycle()
     val arranged by viewModel.arranged.collectAsStateWithLifecycle()
+    val reversed by viewModel.reversed.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
     val moveFailed = stringResource(R.string.error_move_song)
@@ -95,15 +97,19 @@ fun LocalPlaylistDetailScreen(
     val deleteFailed = stringResource(R.string.error_playlist_delete)
 
     val songs = viewModel.songs.collectAsLazyPagingItems()
+    val providers = koinInject<Providers>()
     // Counted again whenever the songs change, its pages may not hold them all
-    var totals by remember { mutableStateOf<Pair<Int, Long>?>(null) }
+    var overview by remember { mutableStateOf<PlaylistOverview?>(null) }
     LaunchedEffect(songs.loadState.refresh) {
-        if (songs.loadState.refresh is LoadState.NotLoading) totals = viewModel.totals()
+        if (songs.loadState.refresh is LoadState.NotLoading)
+            overview = viewModel.overview(providers)
     }
     val cover = playlist?.thumbnail
     val loaded = songs.itemSnapshotList.items
-    val providers = koinInject<Providers>()
-    val songCovers = remember(loaded, providers) { loaded.songCovers(providers) }
+    // The header stays the same whichever way the songs run: the pages start at the wrong end
+    val songCovers = remember(loaded, providers, reversed, overview) {
+        if (reversed) overview?.covers.orEmpty() else loaded.songCovers(providers)
+    }
     val coverModels = remember(cover, songCovers) {
         listOfNotNull(thumbnailModel(cover, null)).ifEmpty { songCovers.take(1) }
     }
@@ -113,14 +119,16 @@ fun LocalPlaylistDetailScreen(
             name = playlist?.name,
             thumbnail = playlist?.thumbnail,
             songCovers = songCovers,
-            summary = totals?.takeIf { (count, _) -> count > 0 }
-                ?.let { (count, length) ->
-                    listOfNotNull(resources.songCount(count), resources.totalLength(length))
+            summary = overview?.takeIf { it.count > 0 }
+                ?.let {
+                    listOfNotNull(resources.songCount(it.count), resources.totalLength(it.length))
                 }.orEmpty(),
             origin = playlist?.origin,
             songs = songs,
             mode = mode,
             arranged = arranged,
+            reversed = reversed,
+            onToggleOrder = { Preferences.PLAYLIST_REVERSED.update { !it } },
             onBack = onBack,
             onEdit = onEdit,
             canRemove = playlist?.isMonthly == false,
@@ -174,6 +182,8 @@ fun LocalPlaylistDetailScreen(
 /**
  * @param arranged every song in the playlist's order while they are moved, see
  * [LocalPlaylistDetailViewModel.arranged]
+ * @param reversed whether [songs] run from the playlist's end
+ * @param onToggleOrder turns them around
  * @param onMoveSong moves a song to right after another one, to the start after `null`
  * @param onRemoveSong takes a song out
  * @param onEdit opens the screen to change the playlist's name, picture and pin
@@ -190,6 +200,8 @@ private fun LocalPlaylistDetailContent(
     songs: LazyPagingItems<MediaItem>,
     mode: CoverEditMode,
     arranged: List<MediaItem>?,
+    reversed: Boolean,
+    onToggleOrder: () -> Unit,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     canRemove: Boolean,
@@ -238,6 +250,8 @@ private fun LocalPlaylistDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,
+        reversed = reversed,
+        onToggleOrder = onToggleOrder.takeIf { count > 0 && mode == CoverEditMode.NONE },
         menu = { onDismiss ->
             PlaylistMenu(
                 name = name,
@@ -377,6 +391,8 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         mode = CoverEditMode.NONE,
         arranged = null,
+        reversed = false,
+        onToggleOrder = {},
         onBack = {},
         onEdit = {},
         canRemove = true,

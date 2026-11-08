@@ -141,7 +141,9 @@ ui/screen/
   `PlaylistDetail.kt` (`PlaylistDetailScaffold`: the playlist's picture, else a 2 × 2 grid of its
   song covers (`songCovers`, `CoverGrid`), the first alone with fewer, a playlist icon with none,
   framed on a blurred copy that fades into the page; origin badge, name, owner (YouTube author),
-  count · length (YouTube's own "35 tracks • 1 hour" from the page), two buttons picked in the
+  count · length (YouTube's own "35 tracks • 1 hour" from the page), a `PlaylistOrderButton` before
+  ⋮ flipping the songs (`PLAYLIST_REVERSED`; local and OpenSubsonic, not while editing, the header
+  keeps the playlist's start), two buttons picked in the
   General settings (`LocalPlaylistButtons`, default Play + Shuffle; Share, Play next, Add to queue
   too); bar
   see-through, then the blurred cover under a scrim with name + count · length once the name scrolls

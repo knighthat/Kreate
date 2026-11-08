@@ -9,7 +9,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
-  PlayPause/SeeMore/Config/SortOrder (newest/oldest first)/UndislikeAll/DeleteAllDownloads
+  PlayPause/SeeMore/Config/SortOrder (newest/oldest first)
+  /PlaylistOrder/UndislikeAll/DeleteAllDownloads
   buttons, `QueueActionButton` (the one of PlayAll/Shuffle/PlayNext/AddToQueue a `QueueAction`
   names, album/artist page bars), `FilterIconButton` (a filter as its icon alone, origin chips while
   Icon only),

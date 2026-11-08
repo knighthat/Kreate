@@ -112,6 +112,13 @@ object Preferences : KoinComponent {
     val PLAYLIST_SECOND_BUTTON by lazy { enum("playlist_second_button", PlaylistButton.SHUFFLE) }
 
     /**
+     * Pages of playlists list their songs from the playlist's end, set by the button beside ⋮ in
+     * their bars and read by the local and OpenSubsonic playlist screens; YouTube's come in parts
+     * from the start and stay in order.
+     */
+    val PLAYLIST_REVERSED by lazy { boolean("playlist_reversed", false) }
+
+    /**
      * Sizes of files and storage show in units of 1024 (1024 MiB make 1 GiB); off, in units of
      * 1000 (1000 MB make 1 GB). Read by `fileSize` and the size dialog of the data settings; set
      * in the UI settings.

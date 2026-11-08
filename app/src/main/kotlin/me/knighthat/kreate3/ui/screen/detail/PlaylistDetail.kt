@@ -111,6 +111,7 @@ import me.knighthat.kreate3.ui.component.LabeledIconToggle
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MoreSheetButton
 import me.knighthat.kreate3.ui.component.OriginBadge
+import me.knighthat.kreate3.ui.component.PlaylistOrderButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
@@ -160,6 +161,8 @@ private val PLACEHOLDER_ICON_SIZE = 72.dp
  * @param share gives a link to the playlist, `null` turns the Share button off
  * @param canShare `false` hides Share, for a playlist that has nothing to share
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
+ * @param reversed whether the songs run from the playlist's end, for the sort order button
+ * @param onToggleOrder turns the songs around, `null` turns the button off
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -178,6 +181,8 @@ fun PlaylistDetailScaffold(
     contentPadding: PaddingValues = PaddingValues(),
     listState: LazyListState = rememberLazyListState(),
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
+    reversed: Boolean = false,
+    onToggleOrder: (() -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
@@ -257,6 +262,8 @@ fun PlaylistDetailScaffold(
                 collapsed = collapsed,
                 onBack = onBack,
                 onMore = if (menu != null) ({ menuOpen = true }) else null,
+                reversed = reversed,
+                onToggleOrder = onToggleOrder,
             )
         }
     }
@@ -444,6 +451,8 @@ private fun FramedTopBar(
     collapsed: Boolean,
     onBack: () -> Unit,
     onMore: (() -> Unit)?,
+    reversed: Boolean,
+    onToggleOrder: (() -> Unit)?,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     val shown by animateFloatAsState(if (collapsed) 1f else 0f, label = "playlist bar")
 
@@ -477,7 +486,14 @@ private fun FramedTopBar(
                 }
             },
             navigationIcon = { BackButton(onBack) },
-            actions = { onMore?.let { MoreSheetButton(it) } },
+            actions = {
+                PlaylistOrderButton(
+                    reversed = reversed,
+                    onClick = { onToggleOrder?.invoke() },
+                    enabled = onToggleOrder != null,
+                )
+                onMore?.let { MoreSheetButton(it) }
+            },
             // Light on the shade over the header, then on the scrim
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,

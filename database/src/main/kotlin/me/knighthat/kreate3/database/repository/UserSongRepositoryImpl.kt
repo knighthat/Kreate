@@ -99,17 +99,20 @@ internal class UserSongRepositoryImpl(
         listed(order.toOrderBy(), filter = OF_ARTIST) { it.bindText(2, artistId) }
 
     // The playlist's songs and their order are in song_playlist_map, the view doesn't read it
-    override fun ofPlaylist(playlistId: Long, order: SortOrder<UserSongSort>?) =
+    override fun ofPlaylist(playlistId: Long, order: SortOrder<UserSongSort>?, reversed: Boolean) =
         paged(
-            order?.toOrderBy() ?: PLAYLIST_ORDER,
+            order?.toOrderBy() ?: playlistOrder(reversed),
             filter = OF_PLAYLIST,
             tables = arrayOf("user_song_view", "song_playlist_map"),
         ) { it.bindLong(2, playlistId) }
 
-    override suspend fun listOfPlaylist(playlistId: Long, order: SortOrder<UserSongSort>?) =
-        listed(order?.toOrderBy() ?: PLAYLIST_ORDER, filter = OF_PLAYLIST) {
-            it.bindLong(2, playlistId)
-        }
+    override suspend fun listOfPlaylist(
+        playlistId: Long,
+        order: SortOrder<UserSongSort>?,
+        reversed: Boolean,
+    ) = listed(order?.toOrderBy() ?: playlistOrder(reversed), filter = OF_PLAYLIST) {
+        it.bindLong(2, playlistId)
+    }
 
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> userSongDao.origins(userId).map { it.toSet() } }
@@ -440,6 +443,15 @@ internal class UserSongRepositoryImpl(
                 ORDER BY (SELECT position FROM song_playlist_map m
                 WHERE m.playlist_id = ?2 AND m.song_id = user_song_view.song_id), song_id
             """
+
+        const val PLAYLIST_ORDER_REVERSED =
+            """
+                ORDER BY (SELECT position FROM song_playlist_map m
+                WHERE m.playlist_id = ?2 AND m.song_id = user_song_view.song_id) DESC, song_id DESC
+            """
+
+        fun playlistOrder(reversed: Boolean) =
+            if (reversed) PLAYLIST_ORDER_REVERSED else PLAYLIST_ORDER
 
         fun SortOrder<UserSongSort>.toOrderBy() = toOrderBy("song_id")
     }

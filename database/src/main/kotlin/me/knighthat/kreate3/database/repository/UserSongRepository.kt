@@ -114,16 +114,20 @@ interface UserSongRepository {
     /**
      * Songs of the library that are in the playlist, a page at a time, in the playlist's order
      * unless [order] says otherwise.
+     *
+     * @param reversed the playlist's order from its end, for no [order]
      */
     fun ofPlaylist(
         playlistId: Long,
         order: SortOrder<UserSongSort>? = null,
+        reversed: Boolean = false,
     ): Flow<PagingData<UserSongView>>
 
     /** Every song of [ofPlaylist] right now, all at once, in the same order. */
     suspend fun listOfPlaylist(
         playlistId: Long,
         order: SortOrder<UserSongSort>? = null,
+        reversed: Boolean = false,
     ): List<UserSongView>
 
     /**

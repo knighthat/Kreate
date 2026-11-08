@@ -59,7 +59,9 @@ charts: `.claude/docs/charts.md`.
 - Artist, album and playlist pages open theirs (`ArtistMenu`, `AlbumMenu`, `PlaylistMenu`) from a ⋮
   `MoreSheetButton`; its less used actions are `ConfigEntry` rows (maintainer, 2026-11-01). Album
   and artist bars also have one `QueueActionButton` before it, its action picked in the General
-  settings (maintainer, 2026-11-02); nothing else goes in those bars.
+  settings (maintainer, 2026-11-02); nothing else goes in those bars. Playlist bars have a
+  `PlaylistOrderButton` before it (`Preferences.PLAYLIST_REVERSED`, one value for every playlist;
+  maintainer, 2026-11-08), off while editing and on YouTube, whose songs come in parts.
 - Filters live in the screen's view model: kept while the screen is in the back stack (A > B > C,
   back to B keeps them), off when it is opened again. Never reset them from a `LaunchedEffect`, it
   also runs on coming back from a page and on rotation.

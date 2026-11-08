@@ -420,6 +420,14 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertEquals(listOf("c", "b", "a"), songs.listOfPlaylist(playlistId).map { it.songId })
         assertEquals(
             listOf("a", "b", "c"),
+            songs.ofPlaylist(playlistId, reversed = true).asList().map { it.songId },
+        )
+        assertEquals(
+            listOf("a", "b", "c"),
+            songs.listOfPlaylist(playlistId, reversed = true).map { it.songId },
+        )
+        assertEquals(
+            listOf("a", "b", "c"),
             songs.listOfPlaylist(playlistId, SortOrder(UserSongSort.NAME)).map { it.songId },
         )
     }

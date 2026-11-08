@@ -67,6 +67,8 @@
     <string name="semantic_profile">Profile</string>
     <string name="semantic_newest_first">Newest first</string>
     <string name="semantic_oldest_first">Oldest first</string>
+    <string name="semantic_playlist_order">Playlist order</string>
+    <string name="semantic_reversed_order">Reversed order</string>
     <string name="semantic_remove_bookmark">Remove bookmark</string>
     <string name="semantic_remove_dislike">Remove dislike</string>
     <string name="semantic_undislike_all">Undislike all</string>

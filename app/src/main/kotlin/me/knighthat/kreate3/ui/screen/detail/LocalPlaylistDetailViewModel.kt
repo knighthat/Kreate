@@ -27,11 +27,14 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -39,6 +42,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.PickedCovers
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.toMediaItem
@@ -48,9 +53,18 @@ import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 private const val TAG = "LocalPlaylistDetail"
 
 /**
+ * What the header of a playlist's page says about its songs.
+ *
+ * @property length how long they are together, in milliseconds
+ * @property covers the covers of its first songs, see [songCovers]
+ */
+data class PlaylistOverview(val count: Int, val length: Long, val covers: List<Any>)
+
+/**
  * The playlist whose id is in the saved state, `null` while it loads or when it doesn't exist, and its songs.
  * Its songs can be moved and taken out, see [edit].
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class LocalPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: PlaylistRepository,
@@ -66,14 +80,23 @@ class LocalPlaylistDetailViewModel(
     val playlist = repository.find(playlistId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val songs = songRepository.ofPlaylist(playlistId)
-        .toMediaItems()
-        .cachedIn(viewModelScope)
-
     private val _editMode = MutableStateFlow(CoverEditMode.NONE)
 
     /** What the covers of [songs] do, see [edit]. */
     val editMode = _editMode.asStateFlow()
+
+    /**
+     * Whether [songs] run from the playlist's end, as [Preferences.PLAYLIST_REVERSED] says. Never
+     * while [editMode] is on, edits are made on the playlist's own order.
+     */
+    val reversed = combine(Preferences.PLAYLIST_REVERSED.state, _editMode) { reversed, mode ->
+        reversed && mode == CoverEditMode.NONE
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, Preferences.PLAYLIST_REVERSED.value)
+
+    val songs = reversed
+        .flatMapLatest { songRepository.ofPlaylist(playlistId, reversed = it) }
+        .toMediaItems()
+        .cachedIn(viewModelScope)
 
     private val _arranged = MutableStateFlow<List<MediaItem>?>(null)
 
@@ -90,15 +113,26 @@ class LocalPlaylistDetailViewModel(
     private val moves = Mutex()
 
     /** Every song of [songs] right now, in its order, for the quick actions. */
-    suspend fun allSongs(): List<MediaItem> =
-        // Every song of a large library takes long to turn into items, never on the main thread
-        withContext(Dispatchers.Default) {
-            songRepository.listOfPlaylist(playlistId).mapNotNull { it.toMediaItem() }
-        }
+    suspend fun allSongs(): List<MediaItem> = listed(reversed.value)
 
-    /** How many songs [songs] has right now and how long they are together, in milliseconds. */
-    suspend fun totals(): Pair<Int, Long> =
-        allSongs().let { songs -> songs.size to songs.sumOf { it.mediaMetadata.durationMs ?: 0 } }
+    /** What the header says about the songs right now, whichever way [songs] run. */
+    suspend fun overview(providers: Providers): PlaylistOverview {
+        val songs = listed(reversed = false)
+        return withContext(Dispatchers.Default) {
+            PlaylistOverview(
+                count = songs.size,
+                length = songs.sumOf { it.mediaMetadata.durationMs ?: 0 },
+                covers = songs.songCovers(providers),
+            )
+        }
+    }
+
+    // Every song of a large library takes long to turn into items, never on the main thread
+    private suspend fun listed(reversed: Boolean): List<MediaItem> =
+        withContext(Dispatchers.Default) {
+            songRepository.listOfPlaylist(playlistId, reversed = reversed)
+                .mapNotNull { it.toMediaItem() }
+        }
 
     /** Switches [editMode] to [mode], loading [arranged] for [CoverEditMode.REORDER]. */
     fun edit(mode: CoverEditMode) {
@@ -110,7 +144,7 @@ class LocalPlaylistDetailViewModel(
     }
 
     private fun arrange() {
-        arranging = viewModelScope.launch { _arranged.value = allSongs() }
+        arranging = viewModelScope.launch { _arranged.value = listed(reversed = false) }
     }
 
     /**
