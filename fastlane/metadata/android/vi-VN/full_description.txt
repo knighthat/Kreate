@@ -1,0 +1,22 @@
+<p>
+  Kreate là trình phát nhạc đa nền tảng, hỗ trợ các trang như YouTube Music, máy chủ trữ nhạc hỗ trự OpenSubsonicAPI (Navidome, v.v.), và trên hết, nhạc trên điện thoại.
+</p>
+
+<b>Các chức năng có sẵn:</b>
+<ul>
+  <li>YouTube Music, máy chủ OpenSubsonicAPI và nhạc nội bộ trong cùng một thư viện</li>
+  <li>Tải nhạc để nghe khi ngoại tuyền; tự động lưu nhạc đã nghe</li>
+  <li>Đồng bộ nhạc và lời, gần giống karaoke</li>
+  <li>Cân bằng âm thanh</li>
+  <li>Lịch sử nghe nhạc, lập bảng thống kê</li>
+  <li>Hỗ trợ thích/ghét với đồng bộ hai chiều</li>
+  <li>Android Auto</li>
+  <li>Hẹn giờ ngưng hoặc tắt trình phát</li>
+  <li>Hỗ trợ đa hồ sơ</li>
+  <li>Sao lưu và phục hồi</li>
+  <li>Và còn nhiều thứ nữa</li>
+</ul>
+
+<p>
+  Kreate không có hợp tác, được tài trợ bởi, hoặc có liên quan gì đến Google LLC hoặc các cá nhân/cá thể có liên quan khác.
+</p>

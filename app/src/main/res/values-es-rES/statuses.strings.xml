@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Single-word statuses that are not tied to one setting (off, on, ...). -->
+<resources>
+    <string name="status_off">Apagado</string>
+    <string name="status_system">Sistema</string>
+    <string name="status_online">En línea</string>
+    <string name="status_checking">Comprobando…</string>
+    <string name="status_signed_in">Sesión iniciada</string>
+    <string name="status_unlimited">Ilimitado</string>
+    <string name="status_not_set">No establecida</string>
+    <string name="optional">Opcional</string>
+    <!-- %1$s is a counted time period, e.g. "3 days" or "1 hour", from the plurals day, week, month and year. English word order: the period comes first, then "ago" -->
+    <string name="status_ago">Hace %1$s</string>
+    <string name="status_granted">Concedido</string>
+    <string name="status_unknown_artist">Artista desconocido</string>
+    <string name="status_no_playlists_yet">Aún no hay listas de reproducción</string>
+    <string name="status_no_playlists_to_add_to">No hay listas a las que puedas añadir</string>
+    <string name="status_couldnt_load_playlists">No se pudieron cargar las listas</string>
+    <string name="status_playlist_empty">Esta lista de reproducción no tiene canciones</string>
+</resources>

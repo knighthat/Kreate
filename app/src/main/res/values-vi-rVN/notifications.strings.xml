@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Notification channels, titles and subtitles. -->
+<resources>
+    <string name="notification_playback_title_channel">Vấn đề với trình phát</string>
+    <string name="notification_playback_subtitle_channel">Bài hát không thể phát</string>
+    <string name="notification_other_title_channel">Khác</string>
+    <string name="notification_other_subtitle_channel">Thông báo lẻ, không có tính lặp lại</string>
+    <string name="notification_local_scan_title_channel">Nhạc trên hệ thống</string>
+    <string name="notification_local_scan_subtitle_channel">Số bài hát tìm được và quá trình phân tích độ ồn của mỗi bài hát</string>
+    <string name="notification_sleep_timer_title_channel">Hẹn giờ tắt</string>
+    <string name="notification_sleep_timer_subtitle_channel">Hiển thị thời gian còn lại trước khi tắt trình phát</string>
+    <string name="notification_local_scan_title_scanning">Tìm kiếm nhạc trên hệ thống</string>
+    <string name="notification_local_scan_title_scanned">Quét hoàn tất</string>
+    <!-- %1$s is a counted plural, e.g. "12 songs". Found on the device by a scan for local music -->
+    <string name="notification_local_scan_subtitle_scanned">Tìm được %1$s</string>
+    <string name="notification_local_scan_title_measuring">Phân tích tiếng ồn</string>
+    <!-- %1$d is the number of songs processed so far, %2$d the total, both whole numbers, shown as a fraction, e.g. 3/10 -->
+    <string name="notification_local_scan_subtitle_progress">%1$d / %2$d</string>
+    <string name="notification_local_scan_title_measured">Phân tích hoàn tất</string>
+    <!-- %1$d is the number of songs whose loudness was measured, %2$d the total, both whole numbers. "Measured" = the loudness (volume level) of the song was analyzed -->
+    <string name="notification_local_scan_subtitle_measured">%1$d / %2$d bài hát đã được phân tích</string>
+    <!-- Whole numbers. %1$d = songs measured, %2$d = total songs, %3$d = failures listed in the notification (shown as child notifications), %4$d = all failures. Measured = the loudness of the song was analyzed -->
+    <string name="notification_local_scan_subtitle_failures_listed">%1$d / %2$d, %3$d trong số %4$d thất bại</string>
+    <!-- %1$s is the internal id of a song (text/number, not translated), used as its name when the song has no title -->
+    <string name="notification_local_scan_title_song">Bài hát %1$s</string>
+    <string name="notification_sleep_timer_title_running">Hẹn giờ tắt</string>
+    <string name="notification_sleep_timer_title_finished">Hẹn giờ hoàn tất</string>
+    <string name="notification_sleep_timer_subtitle_on_hold">Đang chờ</string>
+    <string name="notification_sleep_timer_subtitle_until_song_ends">Đến cuối bài hát</string>
+    <!-- %1$s is a clock time of the device, e.g. 22:30. The sleep timer paused the music at that time -->
+    <string name="notification_sleep_timer_subtitle_paused_at">Nhạc dừng ở %1$s</string>
+    <string name="notification_other_title_resuming">Tiếp tục nhạc</string>
+    <string name="notification_other_title_starting">Bắt đầu nghe nhạc</string>
+    <string name="notification_downloads_title_channel">Tải xuống</string>
+    <string name="notification_downloads_subtitle_channel">Thông báo về nhạc đang được tải, đã tải, và các lỗi trong quá trình tải</string>
+    <string name="notification_downloads_title_downloading">Đang tải xuống</string>
+    <string name="notification_downloads_title_downloaded">Đã tải xuống</string>
+    <string name="notification_downloads_title_failed">Tải xuống thất bại</string>
+    <string name="notification_downloads_subtitle_paused">Đã tạm dừng</string>
+</resources>

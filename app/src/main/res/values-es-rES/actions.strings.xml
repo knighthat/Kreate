@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Button texts and menu items. -->
+<resources>
+    <string name="action_close">Cerrar</string>
+    <string name="action_open_website">Abrir página web</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_save_changes">Guardar cambios</string>
+    <string name="action_discard_changes">Descartar cambios</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_ok">OK</string>
+    <string name="action_skip">Saltar</string>
+    <string name="action_forget">Olvidar</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_update">Actualizar</string>
+    <string name="action_sign_out">Cerrar sesión</string>
+    <string name="action_pick_backup">Elegir copia de seguridad</string>
+    <string name="action_trust_new_certificate">Confiar en nuevo certificado</string>
+    <string name="action_not_now">No ahora</string>
+    <string name="action_accept">Aceptar</string>
+    <string name="action_deny">Rechazar</string>
+    <string name="action_search">Buscar</string>
+    <string name="action_create">Crear</string>
+    <string name="action_try_again">Inténtalo de nuevo</string>
+    <string name="action_retry">Volver a intentar</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_reload">Recargar</string>
+    <string name="action_account_switch">Cambiar</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_add">Añadir</string>
+    <string name="action_less">Menos</string>
+    <string name="action_more">Más</string>
+    <string name="action_restart">Reiniciar</string>
+    <string name="action_apply">Aplicar</string>
+    <string name="action_apply_and_restart">Aplicar &amp; reiniciar</string>
+    <string name="action_reset">Restablecer</string>
+    <string name="action_clear">Restablecer</string>
+    <string name="action_undislike">Quitar el no me gusta</string>
+    <string name="action_unlike">Quitar me gusta</string>
+    <string name="action_grant">Permitir</string>
+    <string name="action_go_back">Volver</string>
+    <string name="action_next">Siguiente</string>
+    <string name="action_stop">Parar</string>
+    <string name="action_download">Descargar</string>
+    <string name="action_move_to_downloads">Mover a descargas</string>
+    <string name="action_remove_from_cache">Eliminar del caché</string>
+    <string name="action_play">Reproducir</string>
+    <string name="action_shuffle">Aleatorio</string>
+    <string name="action_play_next">Siguiente</string>
+    <string name="action_queue">Cola</string>
+    <string name="action_pause">Pausa</string>
+    <string name="action_resume">Reanudar</string>
+    <string name="menu_dislike">No me gusta</string>
+    <string name="menu_like">Me gusta</string>
+    <string name="menu_share">Compartir</string>
+    <string name="menu_download">Descargar</string>
+    <string name="menu_cached">En caché</string>
+    <string name="menu_downloading">Descargando</string>
+    <string name="menu_downloaded">Descargado</string>
+    <string name="menu_paused">En pausa</string>
+    <string name="menu_play_next">Reproducir siguiente</string>
+    <string name="menu_add_to_queue">Añadir a la cola</string>
+    <string name="menu_add_to_playlist">Añadir a lista de reproducción</string>
+    <string name="menu_start_radio">Iniciar radio</string>
+    <string name="menu_details">Detalles</string>
+    <string name="menu_play">Reproducir</string>
+    <string name="menu_follow">Seguir</string>
+    <string name="menu_bookmark">Favorito</string>
+    <string name="menu_statistics">Estadísticas</string>
+    <string name="menu_go_to_album">Ir al álbum</string>
+    <string name="menu_title_artists">Artistas</string>
+    <string name="menu_title_add_to_playlist">Añadir a lista de reproducción</string>
+    <string name="menu_remove_from_playlist">Eliminar de la lista de reproducción</string>
+    <string name="menu_delete_from_history">Eliminar del historial</string>
+    <string name="menu_play_all">Reproducir todo</string>
+    <string name="menu_shuffle">Aleatorio</string>
+    <string name="menu_clear_history">Borrar historial</string>
+    <string name="menu_open_random">Abrir aleatorio</string>
+    <string name="menu_play_random">Reproducir aleatorio</string>
+    <string name="menu_create_playlist">Nueva lista de reproducción</string>
+    <string name="menu_show_disliked">Mostrar no me gusta</string>
+    <string name="menu_cached_only">Solo en caché</string>
+    <string name="menu_downloaded_only">Solo descargadas</string>
+    <string name="menu_bookmarked_only">Solo favoritas</string>
+    <string name="menu_followed_only">Solo seguidos</string>
+    <string name="menu_monthly_only">Solo mensual</string>
+    <string name="menu_delete_all">Borrar todo</string>
+    <string name="menu_undislike_all">Quitar los \'no me gusta\'</string>
+    <string name="menu_unlike_all">Quitar los me gusta</string>
+    <string name="menu_off">Apagado</string>
+    <string name="menu_end_of_song">Fin de la canción</string>
+    <string name="action_copy">Copiar</string>
+    <string name="action_export">Exportar</string>
+    <string name="action_download_all">Descargar todo</string>
+    <string name="action_select">Seleccionar</string>
+    <string name="action_clear_all">Borrar todo</string>
+    <string name="action_select_all">Seleccionar todo</string>
+</resources>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Icon descriptions for accessibility and the entries of overflow menus. -->
+<resources>
+    <string name="semantic_most_listened">Más escuchado</string>
+    <string name="semantic_add_to_queue">Añadir a la cola</string>
+    <string name="semantic_back">Atrás</string>
+    <string name="semantic_bookmark">Favorito</string>
+    <string name="semantic_change_source">Cambiar fuente</string>
+    <string name="semantic_clear_the_queue">Borrar cola</string>
+    <string name="semantic_config">Configuración</string>
+    <string name="semantic_copy_the_lyrics">Copiar la letra</string>
+    <string name="semantic_create_playlist">Crear lista de reproducción</string>
+    <string name="semantic_dislike">No me gusta</string>
+    <string name="semantic_disliked">No me gusta</string>
+    <string name="semantic_show_text">Mostrar texto</string>
+    <string name="semantic_hide_text">Esconder texto</string>
+    <string name="semantic_drag_to_move">Arrastrar para mover</string>
+    <string name="semantic_equalizer">Ecualizador</string>
+    <string name="semantic_explicit">Explícito</string>
+    <string name="semantic_downloaded">Descargado</string>
+    <string name="semantic_cached">En caché</string>
+    <string name="semantic_follow">Seguir</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
+    <string name="semantic_from_opensubsonic">Desde el servidor de %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
+    <string name="semantic_from_youtube">De %1$s</string>
+    <string name="semantic_go_to_the_song_playing">Ir a la canción que está sonando</string>
+    <string name="semantic_larger">Más grande</string>
+    <string name="semantic_select_source">Elegir fuente</string>
+    <string name="semantic_repeat_off">Repetición desactivada</string>
+    <string name="semantic_repeat_one">Repetir una</string>
+    <string name="semantic_repeat_all">Repetir todas</string>
+    <string name="semantic_remove_time">Eliminar tiempo</string>
+    <string name="semantic_add_time">Añadir tiempo</string>
+    <string name="semantic_stop_the_sleep_timer">Detener el temporizador de apagado</string>
+    <string name="semantic_lock_the_order">Fijar orden</string>
+    <string name="semantic_unlock_to_move_songs">Desbloquea para mover canciones</string>
+    <string name="semantic_reorder">Reordenar</string>
+    <string name="semantic_like">Me gusta</string>
+    <string name="semantic_more">Más</string>
+    <string name="semantic_skip_next">Siguiente</string>
+    <string name="semantic_on_this_device">En el dispositivo</string>
+    <string name="semantic_open_one_at_random">Abrir una al azar</string>
+    <string name="semantic_pause">Pausa</string>
+    <string name="semantic_pause_the_sleep_timer">Pausar el temporizador de apagado</string>
+    <string name="semantic_play">Reproducir</string>
+    <string name="semantic_play_all">Reproducir todo</string>
+    <string name="semantic_play_next">Reproducir siguiente</string>
+    <string name="semantic_previous">Anterior</string>
+    <string name="semantic_profile">Perfil</string>
+    <string name="semantic_newest_first">Más reciente primero</string>
+    <string name="semantic_oldest_first">Más antiguo primero</string>
+    <string name="semantic_remove_bookmark">Eliminar favorito</string>
+    <string name="semantic_remove_dislike">Quitar no me gusta</string>
+    <string name="semantic_undislike_all">No me gusta ninguna</string>
+    <string name="semantic_delete_all_downloads">Borrar todas las descargas</string>
+    <string name="semantic_cancel_download">Cancelar descarga</string>
+    <string name="semantic_remove_from_the_playlist">Eliminar de la lista de reproducción</string>
+    <string name="semantic_remove_from_the_queue">Eliminar de la cola</string>
+    <string name="semantic_remove_like">Quitar me gusta</string>
+    <string name="semantic_remove_songs">Eliminar canciones</string>
+    <string name="semantic_delete_playlist">Eliminar lista de reproducción</string>
+    <string name="semantic_restart_the_app">Reiniciar aplicación</string>
+    <string name="semantic_restart_the_player">Reiniciar reproductor</string>
+    <string name="semantic_resume_the_sleep_timer">Reanudar el temporizador de apagado</string>
+    <string name="semantic_search">Buscar</string>
+    <string name="semantic_search_the_lyrics_with_other_words">Busca la letra con otras palabras</string>
+    <string name="semantic_see_more">Ver más</string>
+    <string name="semantic_set">Establecer</string>
+    <string name="semantic_settings">Ajustes</string>
+    <string name="semantic_share">Compartir</string>
+    <string name="semantic_shown">Visible</string>
+    <string name="semantic_shuffle">Aleatorio</string>
+    <string name="semantic_shuffle_off">Sin reproducción aleatoria</string>
+    <string name="semantic_shuffle_on">Reproducción aleatoria</string>
+    <string name="semantic_sleep_timer">Temporizador de apagado</string>
+    <string name="semantic_smaller">Más pequeño</string>
+    <string name="semantic_stop_removing_songs">Dejar de eliminar canciones</string>
+    <string name="semantic_text_size">Tamaño del texto</string>
+    <string name="semantic_timing_of_the_lyrics">Sincronización de la letra</string>
+    <string name="semantic_unfollow">Dejar de seguir</string>
+    <string name="semantic_app_crashed">Kreate se detuvo</string>
+    <string name="semantic_selected">Selección</string>
+</resources>

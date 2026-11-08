@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Texts that appear only in the setup wizard. -->
+<resources>
+    <string name="wizard_dear_user">Querido/a usuario/a</string>
+    <string name="wizard_intro">Unos pasos rápidos y ya puedes escuchar. Esto es lo que puede hacer:</string>
+    <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
+    <string name="wizard_permissions_entry">Controla lo que %1$s puede y no puede ver o hacer.</string>
+    <string name="wizard_import_entry">Trae datos existentes desde otro dispositivo o copia de seguridad.</string>
+    <string name="wizard_profile_entry">Personaliza la aplicación a tu gusto.</string>
+    <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
+    <string name="wizard_permissions_intro">%1$s necesita tu permiso para lo siguiente. Puedes omitir cualquiera y permitirlo más tarde.</string>
+    <string name="wizard_music">Música</string>
+    <string name="wizard_music_description">Lee los archivos de audio almacenados en el dispositivo para construir tu biblioteca</string>
+    <string name="wizard_notifications">Notificaciones</string>
+    <string name="wizard_notifications_description">Permite que la aplicación te informe de lo que está pasando en ella</string>
+    <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
+    <string name="wizard_import_intro">¿Tienes una copia de seguridad de %1$s? Elígela para traer tus perfiles, ajustes y biblioteca. Puedes saltar este paso.</string>
+    <string name="wizard_reading_the_backup">Leyendo la copia de seguridad…</string>
+    <string name="wizard_backup_ready">Copia de seguridad lista</string>
+    <string name="wizard_backup_ready_description">Se restaura cuando acabes de configurar, toca para elegir otra</string>
+    <string name="wizard_restore_a_backup">Restaurar una copia de seguridad</string>
+    <string name="wizard_restore_a_backup_description">Elige una copia de seguridad hecha en versiones anteriores</string>
+    <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
+    <string name="wizard_profile_intro">Deja el nombre vacío para mantener %1$s. Puedes cambiar todo esto luego.</string>
+    <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
+    <string name="wizard_distributed_under">Distribuido bajo la %1$s.</string>
+    <string name="wizard_get_started">Empezar</string>
+    <string name="wizard_start_listening">Empieza a escuchar</string>
+</resources>

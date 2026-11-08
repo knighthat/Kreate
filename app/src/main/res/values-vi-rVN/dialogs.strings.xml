@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Dialog titles and bodies. -->
+<resources>
+    <string name="dialog_title_certificate_changed">Chứng chỉ đã bị thay đổi</string>
+    <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
+    <string name="dialog_body_certificate_changed">%1$s cung cấp chứng chỉ khác với cái bạn đã tin. Nếu không phải cố ý, có người đang mạo danh máy chủ.</string>
+    <string name="dialog_title_trust_certificate">Tin chứng chỉ?</string>
+    <!-- %1$s is the host name or address of the user's own server. Self-signed = a security certificate the server made itself, not checked by anyone else -->
+    <string name="dialog_body_trust_certificate">%1$s trình chứng chỉ không chính thống. Chỉ tin nếu bạn là người cài đặt máy chủ này.</string>
+    <string name="dialog_title_choose_a_channel">Chọn kênh</string>
+    <string name="dialog_title_clear_the_queue">Xóa danh sách phát?</string>
+    <string name="dialog_body_clear_the_queue_1">Xóa mọi thứ trừ bài nhạc đang phát.</string>
+    <string name="dialog_body_clear_the_queue_2">Xóa bài đang phát</string>
+    <string name="dialog_body_clear_the_queue_3">Cái này sẽ ngưng trình phát và đóng trình phát toàn màn hình</string>
+    <string name="dialog_title_forget_certificate">Quên chứng chỉ?</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome (proper noun, shown with a possessive 's); "you" is the user, gender unknown. Certificate = the server's security certificate -->
+    <string name="dialog_body_forget_certificate">Hỏi lần tới trước khi tin chứng chỉ từ %1$s.</string>
+    <string name="dialog_title_reset_the_order">Hoàn vị trí về ban đầu?</string>
+    <string name="dialog_body_reset_the_order">Vị trí sẽ được khôi phục lại theo album chỉ định.</string>
+    <string name="dialog_title_unsaved_changes">Lưu thay đổi?</string>
+    <string name="dialog_body_unsaved_changes">Mọi thay đổi chưa được lưu.</string>
+    <string name="dialog_title_delete_playlist">Xóa danh sách này?</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="dialog_body_delete_playlist">Xóa danh sách nhạc %1$s. Nhạc vẫn sẽ được trên máy.</string>
+    <string name="dialog_title_restart_the_app">Khởi động lại ứng dụng?</string>
+    <string name="dialog_body_restart_the_app">Mọi thứ sẽ được khỏi động lại để áp dụng cài đặt.</string>
+    <string name="dialog_title_restart_the_player">Khỏi động lại trình phát?</string>
+    <string name="dialog_body_restart_the_player_1">Trình phát sẽ tạm ngưng và tiếp lại trong vài giây với cài đặt mới.</string>
+    <string name="dialog_body_restart_the_player_2">Hẹn giờ ngủ cũng sẽ bị hủy.</string>
+    <string name="dialog_title_cached_song">Đã có sẵn trên bộ đệm</string>
+    <string name="dialog_body_cached_song_move">Nhạc sẽ được chuyển vào bộ nhớ chính cho tới khi bị xóa bởi tất cả người dùng.</string>
+    <string name="dialog_body_cached_song_worse_1">Bài nhạc này sẽ được tại lại vì bản lưu này kém chất lượng hơn.</string>
+    <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
+    <string name="dialog_body_cached_song_worse_2">Chất lượng đang có: %1$s\nChất lượng sẽ tải: %2$s</string>
+    <string name="dialog_title_delete_download">Xoá tải xuống?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
+    <string name="dialog_body_delete_download">%1$s sẽ bị xóa khỏi hệ thống. Nhạc vẫn có thể được nghe sau này.</string>
+    <string name="dialog_title_stop_download">Ngừng tải xuống?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
+    <string name="dialog_body_stop_download">%1$s sẽ không được tải.</string>
+    <string name="dialog_title_restore_a_backup">Khôi phục từ bản sao lưu?</string>
+    <string name="dialog_body_restore_a_backup">Tất cả hồ sơ, cài đặt và thư viện sẽ thay thế nhưng gì đang có, sau đó ứng dụng sẽ khởi động lại. Mật khẩu và đăng nhập đang có vẫn sẽ được giữ nguyên.</string>
+    <string name="dialog_title_clear_history">Xóa tất cả lịch sử?</string>
+    <string name="dialog_body_clear_history">Nhạc đã nghe trên hồ sơ này sẽ bị xóa sạch.</string>
+    <string name="dialog_body_clear_history_shown">Chỉ xóa các bài hát đang hiển thị. Phần còn lại được giữ nguyên.</string>
+    <string name="dialog_title_undislike_all">Bỏ ghét tất cả?</string>
+    <string name="dialog_body_undislike_all">Bỏ ghét tất cả bài nhạc.</string>
+    <string name="dialog_body_undislike_all_shown">Chỉ bỏ ghét các bài hát đang hiển thị. Phần còn lại được giữ nguyên.</string>
+    <string name="dialog_title_unlike_all">Bỏ thích tất cả?</string>
+    <string name="dialog_body_unlike_all">Mọi bài hát được yêu thích sẽ không còn nữa.</string>
+    <string name="dialog_body_unlike_all_shown">Chỉ bỏ ghét các bài hát đang hiển thị. Phần còn lại được giữ nguyên.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
+    <string name="dialog_body_unlike_all_ytm">Nhạc đã thích trên %1$s cũng sẽ bị nếu đang đăng nhập và đồng bộ thích đang bật.</string>
+    <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
+    <string name="dialog_body_unlike_all_opensubsonic">Nhạc đã thích trên %1$s cũng sẽ bị nếu đang đăng nhập và đồng bộ thích đang bật.</string>
+    <string name="dialog_title_delete_all_downloads">Xóa mọi bản tải xuống?</string>
+    <string name="dialog_body_delete_all_downloads">Tất cả bài nhạc tải xuống trong hồ sơ này sẽ bị xóa.</string>
+    <string name="dialog_body_delete_all_downloads_shown">Chỉ xóa bản tải xuống hiển thị, mọi bản khác sẽ được giữ lại.</string>
+    <string name="dialog_title_clear_image_cache">Xóa hình trên bộ đệm?</string>
+    <string name="dialog_body_clear_image_cache_1">Hình ảnh được lưu tạm thời trên máy sẽ bị xóa, hình đó sẽ được tải xuống lần xem tới.</string>
+    <string name="dialog_body_clear_image_cache_2">Xóa hình lưu trên RAM</string>
+    <string name="dialog_title_clear_song_cache">Xóa nhạc trên bộ đệm?</string>
+    <string name="dialog_body_clear_song_cache">Nhạc lưu trên bộ đệm từ lần nghe trước sẽ bị xóa, áp dụng cho tất cả hồ sơ. Chỉ giữ nhạc đã tải.</string>
+    <string name="dialog_title_delete_every_download">Xóa tất cả nhạc đã tải xuống?</string>
+    <string name="dialog_body_delete_every_download">Mọi bài nhạc được tải xuống từ trước đến giờ sẽ bị xóa, áp dụng cho tất cả hồ sơ.</string>
+    <string name="dialog_title_shrink_cache">Dung lượng nhỏ hơn cần thiết</string>
+    <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
+    <string name="dialog_body_shrink_cache">Đang lưu trữ %1$s, nhiều hơn %2$s. Nếu áp dụng, phần dư thừa sẽ bị xóa vĩnh viễn.</string>
+    <string name="dialog_title_turn_off">Tắt?</string>
+    <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
+    <string name="dialog_body_turn_off_cache">Đang lưu trữ %1$s. Nếu áp dụng, tất cả sẽ bị xóa.</string>
+    <!-- %1$s is the space the downloaded songs take, a file size with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_turn_off_downloads">Đang lưu trữ %1$s. Nếu áp dụng, tất cả sẽ bị xóa.</string>
+    <!-- %1$s is the space the downloaded songs take, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_shrink_downloads">Đang lưu trữ %1$s, nhiều hơn %2$s. Nếu áp dụng, phần dư thừa sẽ bị xóa vĩnh viễn.</string>
+    <string name="dialog_title_search_lyrics">Tìm kiếm lời bài hát</string>
+    <string name="dialog_title_find_recording">Tìm nhạc</string>
+    <string name="dialog_body_find_recording_no_matches">Không tìm thấy bài nhạc nào</string>
+    <string name="dialog_title_find_artist">Tìm nghệ sĩ</string>
+    <string name="dialog_body_find_artist_no_matches">Không tìm thấy nghệ sĩ nào</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out_of_youtube">Đăng xuất khỏi %1$s?</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out_of_opensubsonic">Đăng xuất khỏi %1$s?</string>
+    <string name="dialog_body_sign_out_of_opensubsonic">Tên đăng nhập, mật khẩu và mã API sẽ bị xóa. Đăng nhập lại bất cứ lúc nào.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
+    <string name="dialog_body_sign_out_of_youtube">Ngưng đồng bộ thư viện trên %1$s, nhạc đã thích sẽ được giữ nguyên trên máy. Đăng nhập lại bất cứ lúc nào.</string>
+    <string name="dialog_title_old_app_downloads">Các bản tải trước từ phiên bản trước</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
+    <string name="dialog_body_old_app_downloads">Tìm thấy %1$s từ thư viện trước. Tải những bài này cho phiên bản này?</string>
+</resources>
