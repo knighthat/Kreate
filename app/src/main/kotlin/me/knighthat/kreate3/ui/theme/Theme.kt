@@ -29,10 +29,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontFamily
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
@@ -355,12 +357,14 @@ private fun ColorScheme.pitchBlack(contrastLevel: ContrastLevel): ColorScheme {
 /**
  * @param colorSeed color used as primary by [ThemeMode.THUMBNAIL], [Color.Unspecified] means no seed
  * yet and the static scheme is used. It is runtime-only, never store it.
+ * @param fontFamily the font of every text style, the bundled Inter unless the user picked one
  */
 @Composable
 fun KreateTheme(
     themeMode: ThemeMode,
     contrastLevel: ContrastLevel,
     colorSeed: Color,
+    fontFamily: FontFamily = interFontFamily,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (themeMode) {
@@ -394,7 +398,7 @@ fun KreateTheme(
     CompositionLocalProvider(LocalChartColors provides chartColors(darkTheme)) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = AppTypography,
+            typography = remember(fontFamily) { appTypography(fontFamily) },
             content = content
         )
     }

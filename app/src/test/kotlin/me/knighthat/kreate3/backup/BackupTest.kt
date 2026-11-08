@@ -111,6 +111,16 @@ class BackupTest {
     }
 
     @Test
+    fun unpacksTheFontsUsersPicked() {
+        unpack(complete + ("profiles/default/fonts/app-1730990000000.font" to "font"))
+
+        assertEquals(
+            "font",
+            File(target, "profiles/default/fonts/app-1730990000000.font").readText()
+        )
+    }
+
+    @Test
     fun refusesPathsOutsideOfTheBackup() {
         val outside = File(target.parentFile, "outside.txt")
         assertRefused(complete + ("../outside.txt" to "x"))

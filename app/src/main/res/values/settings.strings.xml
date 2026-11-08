@@ -36,6 +36,7 @@
     <string name="setting_title_region">Region</string>
     <string name="setting_header_layout">Layout</string>
     <string name="setting_header_launcher">Launcher</string>
+    <string name="setting_header_font">Font</string>
     <string name="setting_header_requests">Requests</string>
     <string name="setting_header_sources">Sources</string>
     <string name="setting_header_queue">Queue</string>
@@ -138,6 +139,10 @@
     <string name="setting_title_playlist_initial">Playlist initial</string>
     <string name="setting_description_playlist_initial">Playlists without covers show the first letter of their name instead of an icon</string>
     <string name="setting_title_app_icon">App icon</string>
+    <string name="setting_title_app_font">App font</string>
+    <string name="setting_title_lyrics_font">Lyrics font</string>
+    <!-- %1$s is the name of a font (never translated); the row opens a file picker to change it -->
+    <string name="setting_description_font">%1$s. Tap to change font</string>
 
     <!-- network -->
     <string name="setting_title_connect_timeout">Connect timeout</string>

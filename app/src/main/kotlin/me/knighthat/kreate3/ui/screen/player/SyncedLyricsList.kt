@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.lyrics.LyricsLine
 import me.knighthat.kreate3.lyrics.SyncedLyrics
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.ui.theme.forLyrics
 
 /** Opacity of the lines, and the words of a line, that aren't being sung. */
 private const val IDLE_ALPHA = .45f
@@ -179,10 +180,10 @@ private fun LyricsLineText(
 
     Text(
         text = text,
-        style = if (line.background)
+        style = (if (line.background)
             MaterialTheme.typography.titleMedium
         else
-            MaterialTheme.typography.headlineSmall,
+            MaterialTheme.typography.headlineSmall).forLyrics(),
         fontWeight = FontWeight.SemiBold,
         color = color,
         onTextLayout = { layout = it },

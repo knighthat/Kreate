@@ -65,6 +65,9 @@
     <string name="error_voice_search_no_match">Couldn\'t find %1$s</string>
     <string name="error_open_file">Couldn\'t open this file</string>
     <string name="error_open_link">Couldn\'t open this link</string>
+    <string name="error_font_wrong_type">Pick a .ttf or .otf file</string>
+    <string name="error_read_font">Couldn\'t read %1$s as a font</string>
+    <string name="error_save_font">Couldn\'t save the font %1$s</string>
     <string name="error_songs_not_playable">These songs can\'t be played</string>
     <string name="error_song_not_playable">This song can\'t be played</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->

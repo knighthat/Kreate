@@ -237,6 +237,43 @@ fun SwitchPageSetting(
 private val SWITCH_DIVIDER_HEIGHT = 32.dp
 
 /**
+ * A [SwitchPageSetting] with a text button in place of the switch: a tap on the texts calls
+ * [onClick], the button past the divider calls [onAction]. Both are left out while [showAction] is
+ * not.
+ */
+@Composable
+fun ButtonSetting(
+    title: String,
+    summary: String,
+    onClick: () -> Unit,
+    action: String,
+    onAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    showAction: Boolean = true,
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Min),
+) {
+    SettingsItem(
+        title = title,
+        summary = summary,
+        onClick = onClick,
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+    )
+    if (showAction) {
+        VerticalDivider(Modifier.height(SWITCH_DIVIDER_HEIGHT))
+        TextButton(
+            onClick = onAction,
+            modifier = Modifier.padding(horizontal = 8.dp),
+        ) { Text(action) }
+    }
+}
+
+/**
  * What a settings row says under its title, cut to two lines. A note after a line break (who may
  * change it, …) gets two lines of its own.
  */

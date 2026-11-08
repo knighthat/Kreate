@@ -29,6 +29,7 @@ import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.download.LegacyDownloads
+import me.knighthat.kreate3.font.FontFiles
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import me.knighthat.kreate3.preferences.StagedOpenSubsonic
 import me.knighthat.kreate3.source.CoverFiles
@@ -75,7 +76,8 @@ class BackupException(
  * Secrets stay on the device and are never in a backup.
  *
  * Layout of the zip: `manifest.json`, `kreate.db`, then the preference files by their paths in
- * [PreferencesBackup], then the pictures users picked ([CoverFiles.backupFiles]).
+ * [PreferencesBackup], then the pictures users picked ([CoverFiles.backupFiles]) and their fonts
+ * ([FontFiles.backupFiles]).
  *
  * A restore takes two steps. [stage] checks the zip, unpacks it beside the app's data and backs up
  * what is there now to the cache folder. Then [applyPendingRestore] moves it in place on the next
@@ -105,6 +107,9 @@ class Backup(
                 preferences.files().forEach { (path, file) -> zip.putFile(path, file) }
                 // Pictures the user picked, kept outside of the system's backups
                 CoverFiles(context).backupFiles()
+                    .forEach { (path, file) -> zip.putFile(path, file) }
+                // The fonts users picked, kept outside of the system's backups too
+                FontFiles(context).backupFiles()
                     .forEach { (path, file) -> zip.putFile(path, file) }
             }
             Logger.i(tag = TAG) { "The backup was exported" }
@@ -218,6 +223,7 @@ class Backup(
                 DatabaseBackup.restore(context, File(pending, DATABASE_ENTRY))
                 PreferencesBackup(context).restore(pending)
                 CoverFiles(context).restore(pending)
+                FontFiles(context).restore(pending)
                 // Songs of the old app to download, a restore of anything else drops a list left
                 val downloads = File(context.noBackupFilesDir, LegacyDownloads.FILE_NAME)
                 downloads.delete()
@@ -268,7 +274,7 @@ class Backup(
                         val path = entry.name
                         if (path != MANIFEST_ENTRY && path != DATABASE_ENTRY && !preferences.isBackupPath(
                                 path
-                            ) && !CoverFiles.isBackupPath(path)
+                            ) && !CoverFiles.isBackupPath(path) && !FontFiles.isBackupPath(path)
                         )
                             throw BackupException(NOT_A_BACKUP, R.string.app_name)
 

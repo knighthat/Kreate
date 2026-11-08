@@ -284,7 +284,15 @@ ui/screen/
     `ui/UiSettingsScreen.kt` (theme, contrast; language + "Translate this language" and
     "Request new language" rows (both open the Crowdin project; translate hidden while System or
     English is picked); Layout: icon only, playlist
-    initial, binary units; app icon),
+    initial, binary units; Font: `FontSettings`; app icon),
+    `ui/FontSettings.kt` (App font / Lyrics font rows, `ButtonSetting`, Reset shown only once a
+    font is kept: tap → file picker (.ttf/.otf by name) → `FontFiles.stage` →
+    `FontPreview` route for an answer → Save keeps it (`FontFiles.keep`, preference set), Back
+    drops it; lyrics show the app's font name while they have none),
+    `ui/FontPreviewScreen.kt` (`FontPreviewScreen(key)`: sample text per script group in the staged
+    font, pager with the full player's tab bar along the bottom, tabs Latin (accents), CJK, RTL,
+    Thai, Indic, each named by a glyph; regular and bold sentences, Latin also italic and a
+    paragraph; Save in the top bar answers the `StagedFont`),
     `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
     `OpenSubsonicServer`, nothing asked there), `network/youtube/` (`YouTubeSettingsScreen.kt`

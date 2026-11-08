@@ -65,6 +65,11 @@ Root
   other case), `artist` lookup (area, life span and places, aliases, genres, ISNIs, url links); one
   request a second across callers, named User-Agent.
 - `ViewModelModule.kt` — Koin: every `viewModel { }` declaration. Add new ViewModels here.
+- font/ — `FontFiles.kt` (Koin single; `SavedFont` = the `<id>:<name>` a font preference stores,
+  `FontSlot` APP/LYRICS; fonts picked by the user in `noBackupFilesDir/profiles/<id>/fonts/
+  <slot>-<id>.font`: `stage` (copy + check), `keep`, `forget`, `backupFiles`/`restore`/
+  `isBackupPath` for the zip), `Sfnt.kt` (reads a font's table directory: is it a font, is it
+  variable).
 - backup/`Backup.kt` — zip export (`manifest.json`, `kreate.db` via VACUUM INTO, preference files;
   no secrets), `stage` (validate + unpack to `noBackupFilesDir/restore`, export current state to
   `cacheDir/rollback.zip`), `applyPendingRestore` (called in `KreateApplication.onCreate` before

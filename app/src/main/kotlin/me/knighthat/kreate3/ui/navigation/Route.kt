@@ -606,3 +606,10 @@ enum class Tab(
         fun of(route: Route?): Tab? = entries.firstOrNull { it.route == route }
     }
 }
+
+/**
+ * A font the user picked, shown in sample text for an answer (Save keeps it), opened by
+ * [rememberRouteResult] under [key]; the file itself never goes on the back stack.
+ */
+@Serializable
+data class FontPreview(val key: String) : Route

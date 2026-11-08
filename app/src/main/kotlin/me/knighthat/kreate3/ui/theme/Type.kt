@@ -27,7 +27,8 @@ import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import me.knighthat.kreate3.R
 
-private val weights = listOf(
+/** The weights a variable font is asked for. */
+internal val weights = listOf(
     FontWeight.Thin,
     FontWeight.ExtraLight,
     FontWeight.Light,
@@ -51,28 +52,27 @@ val interFontFamily = FontFamily(
     }
 )
 
-val bodyFontFamily = interFontFamily
-
-val displayFontFamily = interFontFamily
+/** The name of [interFontFamily], shown where the font is named. */
+const val INTER_NAME = "Inter"
 
 // Default Material 3 typography values
 val baseline = Typography()
 
-val AppTypography = Typography(
-    displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
-    displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),
-    displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
-    headlineLarge = baseline.headlineLarge.copy(fontFamily = displayFontFamily),
-    headlineMedium = baseline.headlineMedium.copy(fontFamily = displayFontFamily),
-    headlineSmall = baseline.headlineSmall.copy(fontFamily = displayFontFamily),
-    titleLarge = baseline.titleLarge.copy(fontFamily = displayFontFamily),
-    titleMedium = baseline.titleMedium.copy(fontFamily = displayFontFamily),
-    titleSmall = baseline.titleSmall.copy(fontFamily = displayFontFamily),
-    bodyLarge = baseline.bodyLarge.copy(fontFamily = bodyFontFamily),
-    bodyMedium = baseline.bodyMedium.copy(fontFamily = bodyFontFamily),
-    bodySmall = baseline.bodySmall.copy(fontFamily = bodyFontFamily),
-    labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
-    labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
-    labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
+/** Material 3's text styles, all set in [family]. */
+fun appTypography(family: FontFamily) = Typography(
+    displayLarge = baseline.displayLarge.copy(fontFamily = family),
+    displayMedium = baseline.displayMedium.copy(fontFamily = family),
+    displaySmall = baseline.displaySmall.copy(fontFamily = family),
+    headlineLarge = baseline.headlineLarge.copy(fontFamily = family),
+    headlineMedium = baseline.headlineMedium.copy(fontFamily = family),
+    headlineSmall = baseline.headlineSmall.copy(fontFamily = family),
+    titleLarge = baseline.titleLarge.copy(fontFamily = family),
+    titleMedium = baseline.titleMedium.copy(fontFamily = family),
+    titleSmall = baseline.titleSmall.copy(fontFamily = family),
+    bodyLarge = baseline.bodyLarge.copy(fontFamily = family),
+    bodyMedium = baseline.bodyMedium.copy(fontFamily = family),
+    bodySmall = baseline.bodySmall.copy(fontFamily = family),
+    labelLarge = baseline.labelLarge.copy(fontFamily = family),
+    labelMedium = baseline.labelMedium.copy(fontFamily = family),
+    labelSmall = baseline.labelSmall.copy(fontFamily = family),
 )
-

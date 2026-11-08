@@ -53,6 +53,7 @@ import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.download.SongDownloads
+import me.knighthat.kreate3.font.FontSlot
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
@@ -99,6 +100,7 @@ import me.knighthat.kreate3.ui.navigation.EditOnlinePlaylist
 import me.knighthat.kreate3.ui.navigation.EditPlaylist
 import me.knighthat.kreate3.ui.navigation.EditSong
 import me.knighthat.kreate3.ui.navigation.ExitConfirmation
+import me.knighthat.kreate3.ui.navigation.FontPreview
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.History
 import me.knighthat.kreate3.ui.navigation.LegacyDownloadsSelect
@@ -200,8 +202,13 @@ import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSettingsSc
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.player.PlayerSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.player.VoiceSearchSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.ui.FontPreviewScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.UiSettingsScreen
 import me.knighthat.kreate3.ui.theme.KreateTheme
+import me.knighthat.kreate3.ui.theme.LocalLyricsFont
+import me.knighthat.kreate3.ui.theme.fontFamilyOf
+import me.knighthat.kreate3.ui.theme.interFontFamily
+import me.knighthat.kreate3.ui.theme.rememberInstalledFont
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
@@ -217,7 +224,7 @@ private val Route.hasMiniPlayer: Boolean
         OpenSubsonicSettings, OpenSubsonicSignIn, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
-        is SearchResults, is ProxyEditor, is CreatePlaylist -> false
+        is SearchResults, is ProxyEditor, is FontPreview, is CreatePlaylist -> false
         else -> true
     }
 
@@ -249,6 +256,11 @@ fun KreateApp(
     val firstButton by Preferences.PLAYLIST_FIRST_BUTTON.collectAsStateWithLifecycle()
     val secondButton by Preferences.PLAYLIST_SECOND_BUTTON.collectAsStateWithLifecycle()
     val songStorage by koinInject<SongDownloads>().songs.collectFlowAsState()
+    val appFont = rememberInstalledFont(FontSlot.APP)
+    val lyricsFont = rememberInstalledFont(FontSlot.LYRICS)
+    val appFontFamily =
+        remember(appFont) { appFont?.let { fontFamilyOf(it.file) } ?: interFontFamily }
+    val lyricsFontFamily = remember(lyricsFont) { lyricsFont?.let { fontFamilyOf(it.file) } }
 
     val topLevel = rememberTopLevelBackStack()
     val playback = koinInject<PlaybackController>()
@@ -301,6 +313,7 @@ fun KreateApp(
         themeMode = themeMode,
         contrastLevel = contrastLevel,
         colorSeed = seed,
+        fontFamily = appFontFamily,
     ) {
         if (offered.isNotEmpty() && currentRoute != LegacyDownloadsSelect)
             LegacyDownloadsDialog(
@@ -319,6 +332,7 @@ fun KreateApp(
                     else PlaylistButton.entries.first { it != firstButton }),
             LocalSongStorage provides songStorage,
             LocalNotifier provides notifier,
+            LocalLyricsFont provides lyricsFontFamily,
             LocalMessageHost provides messages,
             LocalNavigator provides navigator,
             LocalSongMenuHost provides songMenu,
@@ -590,6 +604,7 @@ fun KreateApp(
                                     }
                                     entry<VoiceSearchSettings> { VoiceSearchSettingsScreen(topLevel::pop) }
                                     entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
+                                    entry<FontPreview> { FontPreviewScreen(it.key, topLevel::pop) }
                                     entry<NetworkSettings> {
                                         NetworkSettingsScreen(
                                             onBack = topLevel::pop,

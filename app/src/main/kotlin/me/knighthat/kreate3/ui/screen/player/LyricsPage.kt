@@ -90,6 +90,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.screen.detail.itemName
+import me.knighthat.kreate3.ui.theme.forLyrics
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
 import kotlin.time.Duration.Companion.milliseconds
@@ -415,7 +416,7 @@ private fun LyricsPageContent(
                 ) {
                     Text(
                         text = drawn.text,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleLarge.forLyrics(),
                         fontWeight = FontWeight.SemiBold,
                     )
                     Spacer(Modifier.height(24.dp))

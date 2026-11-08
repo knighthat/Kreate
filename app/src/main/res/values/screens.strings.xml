@@ -35,6 +35,7 @@
     <string name="screen_title_data">Data</string>
     <string name="screen_title_player">Player</string>
     <string name="screen_title_ui">UI</string>
+    <string name="screen_title_font_preview">Font preview</string>
     <string name="screen_title_network">Network</string>
     <string name="screen_title_backup">Backup</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->

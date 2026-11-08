@@ -11,7 +11,9 @@ paths:
 - Contents: `manifest.json`, `kreate.db`, global prefs, `profiles/<id>/preferences.preferences_pb`,
   and the pictures users picked, `profiles/<id>/custom_thumbnails/<file>` (`CoverFiles.backupFiles`;
   they live in `noBackupFilesDir`, so only this zip carries them, never the system's or the cloud's
-  backup). A restore replaces them with the zip's. Never secrets. An older app refuses a zip with
+  backup) and the fonts users picked, `profiles/<id>/fonts/<app|lyrics>-<id>.font`
+  (`FontFiles.backupFiles`, same rules). A restore replaces them with the zip's. Never secrets. An
+  older app refuses a zip with
   them as "not a backup" (unknown paths are refused).
 - Restore never overwrites in place: it's staged under `noBackupFilesDir/restore` and applied on
   the next start; current data is first exported to `cacheDir/rollback.zip`, which is staged

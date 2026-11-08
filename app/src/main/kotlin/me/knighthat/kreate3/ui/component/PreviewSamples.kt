@@ -69,7 +69,7 @@ annotation class ComponentPreviews
 /** The app's theme, light or dark like the preview's system. */
 @Composable
 fun PreviewTheme(content: @Composable () -> Unit) =
-    KreateTheme(ThemeMode.AUTOMATIC, ContrastLevel.NORMAL, Color.Unspecified, content)
+    KreateTheme(ThemeMode.AUTOMATIC, ContrastLevel.NORMAL, Color.Unspecified, content = content)
 
 /**
  * An item that shows [title] and [subtitle], from [origin] when it is given.

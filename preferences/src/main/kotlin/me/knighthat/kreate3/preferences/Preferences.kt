@@ -125,6 +125,19 @@ object Preferences : KoinComponent {
     val LANGUAGE by lazy { string("language", "") }
 
     /**
+     * The font picked for the app's texts in this profile, as `<id>:<name>` (`SavedFont` in
+     * `:app`) with the file it names kept in the profile's `fonts` folder; empty is the bundled
+     * Inter. Read by `KreateApp` for the theme, set in the UI settings, the file goes in backups.
+     */
+    val APP_FONT by lazy { string("app_font", "") }
+
+    /**
+     * The font picked for lyrics, in the same form as [APP_FONT]; empty follows [APP_FONT]. Read by
+     * `KreateApp` for the lyrics pages, set in the UI settings.
+     */
+    val LYRICS_FONT by lazy { string("lyrics_font", "") }
+
+    /**
      * Whether the device's music is scanned, at start-up and every [LOCAL_SCAN_INTERVAL]. Off
      * stops the scans; read by the app's scan scheduling and `LocalMusicWorker`, set in the
      * General settings. Needs the permission to read audio, see `hasAudioPermission`.

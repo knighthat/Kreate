@@ -83,6 +83,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         // The global scope, a restart for it outlives this screen
         onLanguageChange = { AppLanguage.select(context, scope, it) },
         onOpenCrowdin = { openLink(CROWDIN_PROJECT_URL) },
+        fontSettings = { FontSettings() },
         onBack = onBack,
         modifier = modifier,
     )
@@ -101,6 +102,7 @@ private fun UiSettingsContent(
     languages: List<Locale?>,
     onLanguageChange: (Locale?) -> Unit,
     onOpenCrowdin: () -> Unit,
+    fontSettings: @Composable () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -165,6 +167,8 @@ private fun UiSettingsContent(
             summary = binarySizesSummary(binarySizes),
         )
 
+        fontSettings()
+
         SettingsSection(stringResource(R.string.setting_header_launcher))
         ChoiceSetting(
             title = stringResource(R.string.setting_title_app_icon),
@@ -191,6 +195,16 @@ private fun UiSettingsPreview() = PreviewTheme {
         languages = listOf(null, Locale.ENGLISH, Locale.forLanguageTag("vi")),
         onLanguageChange = {},
         onOpenCrowdin = {},
+        fontSettings = {
+            FontSettings(
+                appName = "Roboto Mono",
+                appCustom = true,
+                lyricsName = "Roboto Mono",
+                lyricsCustom = false,
+                onPick = {},
+                onReset = {},
+            )
+        },
         onBack = {},
     )
 }

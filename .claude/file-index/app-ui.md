@@ -179,5 +179,8 @@ palette per light/dark, `MaterialTheme.chartColors`, `Color.onChart()`), `Thumbn
 `CoverTheme.kt` (`CoverTheme(models)`: an album, artist or playlist page seeds its own colors from
 its cover
 while the theme is Thumbnail and the player is empty; `seedContrast` in `Theme.kt`),
-`Type.kt` (Inter typography),
+`Type.kt` (Inter, `appTypography(family)`),
+`Fonts.kt` (`rememberInstalledFont(slot)`, `fontFamilyOf(file)` (all weights when the font is
+variable),
+`LocalLyricsFont` + `forLyrics()` applied by the lyrics pages),
 `KreateThemePreview.kt`.

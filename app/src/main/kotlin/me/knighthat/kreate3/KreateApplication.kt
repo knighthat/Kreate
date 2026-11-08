@@ -42,6 +42,7 @@ import me.knighthat.kreate3.backup.LegacyBackup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
 import me.knighthat.kreate3.download.downloadModule
+import me.knighthat.kreate3.font.FontFiles
 import me.knighthat.kreate3.logging.AppLog
 import me.knighthat.kreate3.logging.CrashHandler
 import me.knighthat.kreate3.logging.KermitCoilLogger
@@ -201,6 +202,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     // Covers kept as files: downloaded ones and the user's own
                     single { CoverFiles(androidContext()) }
                     single { PickedCovers(androidContext(), get(), get()) }
+                    // Fonts the user picked
+                    single { FontFiles(androidContext()) }
 
                     // Creates the database users of the profiles, and tells the database who is active
                     val isSetup = setupCompletedFile().exists()
