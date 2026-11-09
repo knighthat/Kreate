@@ -37,6 +37,9 @@
   saying which rules, docs or file index parts were updated: they ship in the same commit and the
   diff shows them. Point out files that probably shouldn't be staged (e.g. `.idea/*` touched by
   Studio) and new files to add.
+- **Merging translations:** the merge of a `*_l10n` branch has the message
+  `update translations (YYYY/MM/DD)`, with the placeholders replaced by the merge date, e.g.
+  `update translations (2026/11/08)`.
 - **CLAUDE.md stays lean:** only durable, approved rules; no descriptions of what exists. Details
   go in `.claude/rules/` (by path) or `.claude/docs/`.
 - **Rules stay lean too:** one topic per rule, with the narrowest `paths` that still cover it; split
