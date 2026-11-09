@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <plurals name="time">
+        <item quantity="one">%1$d volta</item>
+        <item quantity="other">%1$d volte</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minuti</item>
+    </plurals>
+    <plurals name="second">
+        <item quantity="one">%1$d secondo</item>
+        <item quantity="other">%1$d secondi</item>
+    </plurals>
+    <plurals name="play">
+        <item quantity="one">%1$d riproduzione</item>
+        <item quantity="other">%1$d riproduzioni</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="one">%1$d canzone</item>
+        <item quantity="other">%1$d canzoni</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">%1$d ora</item>
+        <item quantity="other">%1$d ore</item>
+    </plurals>
+    <plurals name="listen">
+        <item quantity="one">%1$d ascolto</item>
+        <item quantity="other">%1$d ascolti</item>
+    </plurals>
+    <plurals name="unit_second">
+        <item quantity="one">secondo</item>
+        <item quantity="other">secondi</item>
+    </plurals>
+    <plurals name="unit_time">
+        <item quantity="one">volta</item>
+        <item quantity="other">volte</item>
+    </plurals>
+    <plurals name="unit_minute">
+        <item quantity="one">minuto</item>
+        <item quantity="other">minuti</item>
+    </plurals>
+    <plurals name="unit_hour">
+        <item quantity="one">ora</item>
+        <item quantity="other">ore</item>
+    </plurals>
+    <plurals name="unit_song">
+        <item quantity="one">canzone</item>
+        <item quantity="other">canzoni</item>
+    </plurals>
+    <plurals name="unit_album">
+        <item quantity="one">album</item>
+        <item quantity="other">album</item>
+    </plurals>
+    <plurals name="unit_artist">
+        <item quantity="one">artista</item>
+        <item quantity="other">artisti</item>
+    </plurals>
+    <plurals name="unit_file">
+        <item quantity="one">file</item>
+        <item quantity="other">file</item>
+    </plurals>
+    <plurals name="unit_playlist">
+        <item quantity="one">playlist</item>
+        <item quantity="other">playlist</item>
+    </plurals>
+    <plurals name="menu_go_to_artist">
+        <item quantity="one">vai all\'artista</item>
+        <item quantity="other">vai agli artisti</item>
+    </plurals>
+    <plurals name="day">
+        <item quantity="one">%1$d giorno</item>
+        <item quantity="other">%1$d giorni</item>
+    </plurals>
+    <plurals name="week">
+        <item quantity="one">%1$d settimana</item>
+        <item quantity="other">%1$d settimane</item>
+    </plurals>
+    <plurals name="month">
+        <item quantity="one">%1$d mese</item>
+        <item quantity="other">%1$d mesi</item>
+    </plurals>
+    <plurals name="year">
+        <item quantity="one">%1$d anno</item>
+        <item quantity="other">%1$d anni</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="one">%1$d file</item>
+        <item quantity="other">%1$d file</item>
+    </plurals>
+</resources>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Screen titles and texts, tab labels and the headings of groups in lists and sheets. -->
+<resources>
+    <string name="screen_title_songs">Nhạc</string>
+    <string name="screen_title_albums">Album</string>
+    <string name="screen_title_artists">Nghệ sĩ</string>
+    <string name="screen_title_playlists">Danh sách phát</string>
+    <string name="screen_title_search">Tìm kiếm</string>
+    <!-- %1$s is an artist name (the user's library data, not declined). Screen title listing the songs of that artist -->
+    <string name="screen_title_songs_by">Nhạc của %1$s</string>
+    <string name="screen_title_welcome">Giới thiệu</string>
+    <string name="screen_title_permissions">Các quyền truy cập</string>
+    <string name="screen_title_import">Khôi phục dữ liệu</string>
+    <string name="screen_title_basic_settings">Cài đặt cơ bản</string>
+    <string name="screen_title_terms_of_service">Điều khoản sử dụng</string>
+    <string name="screen_title_settings">Cài đặt</string>
+    <string name="screen_title_general">Tổng quan</string>
+    <string name="screen_title_data">Dữ liệu</string>
+    <string name="screen_title_player">Trình phát</string>
+    <string name="screen_title_ui">Giao diện</string>
+    <string name="screen_title_network">Mạng</string>
+    <string name="screen_title_backup">Sao lưu</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
+    <string name="screen_title_sign_in_to_youtube">Đăng nhập vào %1$s</string>
+    <string name="screen_title_sign_in">Đăng nhập</string>
+    <string name="screen_title_account">Tài khoản</string>
+    <string name="screen_title_history">Lịch sử phát</string>
+    <string name="screen_title_statistics">Số liệu thống kê</string>
+    <string name="screen_title_song_details">Chi tiết</string>
+    <string name="screen_title_artist_details">Chi tiết</string>
+    <string name="screen_title_liked">Đã Thích</string>
+    <string name="screen_title_disliked">Nhạc bị ghét</string>
+    <string name="screen_title_downloaded">Đã tải về</string>
+    <string name="screen_title_download_queue">Hàng chờ tải xuống</string>
+    <string name="screen_title_switch_profile">Đổi hồ sơ</string>
+    <string name="screen_title_about">Giới thiệu</string>
+    <string name="screen_title_open_source_licenses">Giấy phép mã nguồn mở</string>
+    <string name="screen_title_voice_search">Tìm kiếm bằng giọng nói</string>
+    <string name="screen_title_proxy">Proxy</string>
+    <string name="tab_songs">Nhạc</string>
+    <string name="tab_albums">Album</string>
+    <string name="tab_artists">Nghệ sĩ</string>
+    <string name="tab_playlists">Danh sách phát</string>
+    <string name="tab_lyrics">Lời bài hát</string>
+    <string name="tab_player">Trình phát</string>
+    <string name="tab_queue">Danh sách nhạc</string>
+    <string name="section_header_top_songs">Nghe nhiều nhất</string>
+    <string name="section_header_top_albums">Xem nhiều nhất</string>
+    <string name="section_header_top_artists">Theo dõi nhiều nhất</string>
+    <string name="section_header_releases">Các bản phát hành</string>
+    <string name="section_header_links">Liên kết</string>
+    <!-- %1$d is a whole number. "Disc" is a physical disc (CD) of a multi-disc album, not a music player -->
+    <string name="section_header_disc">Đĩa %1$d</string>
+    <string name="section_header_listening_by_source">Lượt nghe xếp theo nguồn</string>
+    <string name="section_header_listening_over_time">Lượt nghe xếp theo thời gian</string>
+    <string name="section_header_listening_by_hour">Xếp theo số giờ mỗi ngày</string>
+    <string name="section_header_listening_by_weekday">Xếp theo số ngày mỗi tuần</string>
+    <string name="section_header_source">Nguồn</string>
+    <string name="section_header_look_for">Tìm kiếm</string>
+    <string name="section_header_suggested_searches">Gợi ý</string>
+    <string name="section_header_recent_searches">Tìm kiếm gần đây</string>
+    <string name="section_header_searches">Các tìm kiếm</string>
+    <string name="section_header_today">Hôm nay</string>
+    <string name="section_header_yesterday">Hôm qua</string>
+    <string name="section_header_date_range">Phạm vi ngày</string>
+    <string name="section_header_in_progress">Đang thực thi</string>
+    <string name="screen_search_hint_library">Tìm kiếm trong thư viện</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_youtube">Tìm kiếm: %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_opensubsonic">Tìm %1$s</string>
+    <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
+    <string name="screen_voice_search_hint_phrase">Phát … trên %1$s</string>
+    <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
+    <string name="screen_voice_search_hint_order">%1$s để tìm trong ứng dụng. Kéo/Thả để di chuyển thứ tự tìm, tắt để bỏ qua nguồn.</string>
+    <string name="screen_search_status_no_history">Gợi ý sẽ được hiển thị ở đây</string>
+    <!-- %1$s is what the user typed, in quotes (the user's own text). Search suggestions -->
+    <string name="screen_search_status_no_suggestions">Không có gợi ý cho %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for songs -->
+    <string name="screen_search_results_status_none_songs">Không tìm được nhạc với từ khóa %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for albums -->
+    <string name="screen_search_results_status_none_albums">Không tìm được album với từ khóa %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for artists -->
+    <string name="screen_search_results_status_none_artists">Không tìm được nghệ sĩ với từ khóa %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for playlists -->
+    <string name="screen_search_results_status_none_playlists">Không tìm được danh sách nhạc với từ khóa %1$s</string>
+    <string name="screen_youtube_more_status_nothing_here">Ở đây không có gì cả</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Lyrics = the words of the song -->
+    <string name="screen_lyrics_status_missing">Không tìm thấy lời cho bài %1$s</string>
+    <!-- %1$s is the name of a lyrics provider, e.g. LRCLIB (proper noun); %2$s is a song title in quotes, or "this song" when unknown. Lyrics = the words of the song -->
+    <string name="screen_lyrics_status_unavailable">%1$s không có lời cho bài %2$s.</string>
+    <!-- %1$s is the name of the lyrics provider that supplied the lyrics (proper noun, don't decline it), shown as a credit -->
+    <string name="screen_lyrics_status_from">Nguồn: %1$s</string>
+    <string name="screen_open_source_licenses_hint_search">Tìm thư viện</string>
+    <!-- %1$s is what the user typed in the search field, in quotes (the user's own text). "Library" is a software library, not a place with books -->
+    <string name="screen_open_source_licenses_status_no_match">Không có thư viện nào khớp với từ khóa %1$s</string>
+    <!-- %1$s is a small icon character standing for the Change source button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_lyrics_hint_change_source">Dùng nút đổi nguồn (%1$s) để tìm từ nguồn khác.</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is a song title in quotes, or "this song" when unknown -->
+    <string name="screen_song_details_status_not_found">Không tìm được thông tin nào cho bài %1$s.</string>
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_song_details_hint_search">Dùng nút tìm (%1$s) để tìm bằng từ khóa khác.</string>
+    <string name="screen_song_details_hint_not_kept">Bài này chưa nghe bao giờ nên thông tin sẽ không được lưu</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an artist name in quotes, or "this artist" when unknown -->
+    <string name="screen_artist_details_status_not_found">Không tìm được thông tin về nghệ sĩ %1$s.</string>
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_artist_details_hint_search">Dùng nút tìm (%1$s) để tìm bằng từ khóa khác.</string>
+    <string name="screen_profiles_hint_search_or_add">Tìm hoặc thêm hồ sơ</string>
+    <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
+    <string name="screen_profiles_status_active_since">Được sử dụng từ %1$s</string>
+    <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
+    <string name="screen_profiles_status_last_seen">Lần cuối dùng: %1$s</string>
+    <string name="screen_history_status_nothing_played">Không có gì trong lịch sử nghe</string>
+    <string name="screen_history_status_no_matches">Không có ghi nhận nào khớp với điều kiện trên</string>
+    <string name="screen_history_status_paused">Lịch sử nghe đã bị tạm ngưng</string>
+    <string name="screen_liked_status_nothing_liked">Chưa thích bài nào</string>
+    <string name="screen_liked_status_no_matches">Không có bài nào khớp với điều kiện trên</string>
+    <string name="screen_disliked_status_nothing_disliked">Chưa ghét bài nào</string>
+    <string name="screen_disliked_status_no_matches">Không có bài nào khớp với điều kiện trên</string>
+    <string name="screen_downloaded_status_nothing_downloaded">Chưa tải bài nhạc nào</string>
+    <string name="screen_downloaded_status_no_matches">Không có bài nào khớp với điều kiện trên</string>
+    <string name="status_downloads_waiting_for_wifi">Đang chờ WiFi</string>
+    <string name="status_downloads_waiting_for_battery">Tạm ngưng vì pin yếu</string>
+    <!-- %1$s is the downloaded part of a file and %2$s the whole file, both file sizes, e.g. "1.2 MB of 4 MB" -->
+    <string name="status_download_progress">%1$s / %2$s</string>
+    <string name="status_download_next_in_line">Kế tiếp</string>
+    <string name="status_download_in_line_2">Thừ 2 trong bảng kế tiếp</string>
+    <string name="status_download_in_line_3">Thừ 3 trong bảng kế tiếp</string>
+    <string name="status_download_in_line_4">Thừ 4 trong bảng kế tiếp</string>
+    <string name="status_download_in_line_5">Thừ 5 trong bảng kế tiếp</string>
+    <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
+    <string name="status_download_paused_at">Tạm dừng ở mức %1$s</string>
+    <string name="screen_download_queue_status_nothing">Không có gì đang tải xuống</string>
+    <string name="screen_statistics_status_nothing_played">Không đủ dữ liệu</string>
+    <string name="screen_statistics_status_nothing_this_month">Không đủ dữ liệu cho tháng này</string>
+    <string name="screen_player_status_timer_on_hold_song_end">Đang giữ, cho đến hết bài</string>
+    <string name="screen_player_status_timer_song_end">Dùng khi nhạc kết thúc</string>
+    <!-- %1$s is the time left, e.g. 4:32. The sleep timer is on hold (not counting down) because the music is paused; "left" = remaining -->
+    <string name="screen_player_status_timer_on_hold">Đang giữ, còn %1$s nữa</string>
+    <!-- %1$s is the time left, e.g. 4:32. "Pauses" is a verb: the sleep timer will pause the music after that time -->
+    <string name="screen_player_status_timer_running">Sẽ dừng trong %1$s</string>
+    <string name="screen_crash_hint">Đã xảy ra lỗi. Tạo báo cáo mới kèm log để được hỗ trợ.</string>
+    <string name="screen_crash_status_no_log">Không thể đọc được báo cáo.</string>
+    <string name="screen_title_new_playlist">Tạo danh sách nhạc mới</string>
+    <string name="screen_title_old_app_downloads">Nhạc tải trên phiên bản cũ</string>
+    <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
+    <string name="screen_old_app_downloads_status_loading">Đang lấy thông tin nhạc… %1$d / %2$d</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it) -->
+    <string name="screen_old_app_downloads_status_failed">Không có thông tin về phần nhạc còn lại từ %1$s.</string>
+    <string name="screen_old_app_downloads_status_nothing_found">Không thể tìm thông tin cho tất cả các bài nhạc.</string>
+</resources>

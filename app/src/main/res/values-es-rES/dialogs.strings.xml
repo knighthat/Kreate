@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Dialog titles and bodies. -->
+<resources>
+    <string name="dialog_title_certificate_changed">El certificado cambió</string>
+    <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
+    <string name="dialog_body_certificate_changed">%1$s tiene un certificado de autofirma diferente del que tú confiaste. Si no lo reemplazaste tú alguien puede estar fingiendo ser tu servidor.</string>
+    <string name="dialog_title_trust_certificate">¿Confiar en este certificado?</string>
+    <!-- %1$s is the host name or address of the user's own server. Self-signed = a security certificate the server made itself, not checked by anyone else -->
+    <string name="dialog_body_trust_certificate">%1$s presenta un certificado autofirmado. Confía en él solo si tú configuraste este servidor.</string>
+    <string name="dialog_title_choose_a_channel">Seleccionar canal</string>
+    <string name="dialog_title_clear_the_queue">¿Borrar cola?</string>
+    <string name="dialog_body_clear_the_queue_1">Todas las canciones menos la que está sonando se quitan de la cola.</string>
+    <string name="dialog_body_clear_the_queue_2">Eliminar la canción que está sonando</string>
+    <string name="dialog_body_clear_the_queue_3">Esto detendrá y cerrará el reproductor de pantalla completa</string>
+    <string name="dialog_title_forget_certificate">¿Olvidar certificado?</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome (proper noun, shown with a possessive 's); "you" is the user, gender unknown. Certificate = the server's security certificate -->
+    <string name="dialog_body_forget_certificate">Se te volverá a preguntar antes de que se confíe en el certificado de %1$s.</string>
+    <string name="dialog_title_reset_the_order">¿Reiniciar el orden?</string>
+    <string name="dialog_body_reset_the_order">Las canciones vuelven al orden que tienen en el álbum.</string>
+    <string name="dialog_title_unsaved_changes">¿Guardar cambios?</string>
+    <string name="dialog_body_unsaved_changes">Has cambiado esta lista pero aún no la has guardado.</string>
+    <string name="dialog_title_delete_playlist">¿Eliminar lista de reproducción?</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="dialog_body_delete_playlist">Se eliminará %1$s. Sus canciones seguirán en tu biblioteca.</string>
+    <string name="dialog_title_restart_the_app">¿Reiniciar la aplicación?</string>
+    <string name="dialog_body_restart_the_app">La reproducción se detiene y la aplicación se abre de nuevo, se aplican los ajustes que necesitan reinicio.</string>
+    <string name="dialog_title_restart_the_player">¿Reiniciar reproductor?</string>
+    <string name="dialog_body_restart_the_player_1">La reproducción se detiene un momento, luego continúa donde estaba con los nuevos ajustes.</string>
+    <string name="dialog_body_restart_the_player_2">El temporizador de apagado está encendido, se detiene con el reproductor.</string>
+    <string name="dialog_title_cached_song">Canción en caché</string>
+    <string name="dialog_body_cached_song_move">Se moverá a tus descargas y permanecerá en este dispositivo hasta que la elimines.</string>
+    <string name="dialog_body_cached_song_worse_1">La copia en caché es de peor calidad que la seleccionada, así que la canción se descargará de nuevo.</string>
+    <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
+    <string name="dialog_body_cached_song_worse_2">En caché: %1$s\nDescargas: %2$s</string>
+    <string name="dialog_title_delete_download">¿Borrar descarga?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
+    <string name="dialog_body_delete_download">Se borrará %1$s de este dispositivo. Todavía se puede escuchar.</string>
+    <string name="dialog_title_stop_download">¿Detener la descarga?</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
+    <string name="dialog_body_stop_download">%1$s no se descargará.</string>
+    <string name="dialog_title_restore_a_backup">¿Restaurar una copia de seguridad?</string>
+    <string name="dialog_body_restore_a_backup">Cada perfil, ajuste y la biblioteca se reemplazan por los de la copia de seguridad, y la aplicación se reinicia. Las contraseñas y los inicios de sesión de los perfiles que ya están en este dispositivo se guardan.</string>
+    <string name="dialog_title_clear_history">¿Borrar historial?</string>
+    <string name="dialog_body_clear_history">Todas las canciones que reprodujo este perfil se borran de su historial.</string>
+    <string name="dialog_body_clear_history_shown">Solo se eliminarán las reproducciones que coincidan con tus filtros. El resto del historial se queda.</string>
+    <string name="dialog_title_undislike_all">¿Quitar los \'no me gusta\'?</string>
+    <string name="dialog_body_undislike_all">Todas las canciones que no le gustan a este perfil vuelven a aparecer en las listas.</string>
+    <string name="dialog_body_undislike_all_shown">Solo volverán a aparecer en tus listas las canciones que coincidan con tus filtros. El resto siguen ocultas.</string>
+    <string name="dialog_title_unlike_all">¿Quitar los me gusta?</string>
+    <string name="dialog_body_unlike_all">Se eliminan todos los me gusta a canciones en este perfil.</string>
+    <string name="dialog_body_unlike_all_shown">Solo se eliminan los me gusta a las canciones que coincidan con tus filtros. Las demás lo mantienen.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
+    <string name="dialog_body_unlike_all_ytm">También se quita el me gusta de las canciones de %1$s mientras la sesión esté iniciada y la sincronización de me gustas activada.</string>
+    <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
+    <string name="dialog_body_unlike_all_opensubsonic">También se quita el me gusta de las canciones en %1$s si está activada la sincronización de me gustas.</string>
+    <string name="dialog_title_delete_all_downloads">¿Borrar todas las descargas?</string>
+    <string name="dialog_body_delete_all_downloads">Todas las canciones que este perfil ha descargado se eliminan del dispositivo. Todavía se pueden escuchar.</string>
+    <string name="dialog_body_delete_all_downloads_shown">Las canciones descargadas que se muestran se eliminarán de este dispositivo, las demás se quedan. Todavía se pueden escuchar.</string>
+    <string name="dialog_title_clear_image_cache">¿Borrar el caché de imágenes?</string>
+    <string name="dialog_body_clear_image_cache_1">Todas las imágenes guardadas en este dispositivo se eliminan, se cargan de nuevo cuando se muestran.</string>
+    <string name="dialog_body_clear_image_cache_2">Borrar también las imágenes guardadas en memoria</string>
+    <string name="dialog_title_clear_song_cache">¿Borrar el caché de canciones?</string>
+    <string name="dialog_body_clear_song_cache">Todas las canciones escuchadas en este dispositivo se eliminan de cada perfil. Las descargas NO se borran.</string>
+    <string name="dialog_title_delete_every_download">¿Borrar las descargas de todos los perfiles?</string>
+    <string name="dialog_body_delete_every_download">Todas las canciones descargadas se eliminan de cada perfil de este dispositivo. Todavía se pueden escuchar.</string>
+    <string name="dialog_title_shrink_cache">Más pequeño que lo que está almacenado</string>
+    <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
+    <string name="dialog_body_shrink_cache">%1$s están guardados, más de %2$s. Una vez que la aplicación se reinicie, lo que no entre se borrará, empezando por lo que se usó hace más tiempo.</string>
+    <string name="dialog_title_turn_off">¿Desactivarlo?</string>
+    <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
+    <string name="dialog_body_turn_off_cache">%1$s están guardados. Una vez que la aplicación se reinicie, todo se elimina y no se guarda nada nuevo.</string>
+    <!-- %1$s is the space the downloaded songs take, a file size with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_turn_off_downloads">Las descargas usan %1$s. Ninguna se elimina, pero ninguna canción nueva se puede descargar.</string>
+    <!-- %1$s is the space the downloaded songs take, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_shrink_downloads">Las descargas usan %1$s, más de %2$s. Ninguna se elimina, pero las nuevas descargas son rechazadas hasta que haya espacio.</string>
+    <string name="dialog_title_search_lyrics">Buscar letra</string>
+    <string name="dialog_title_find_recording">Buscar la grabación</string>
+    <string name="dialog_body_find_recording_no_matches">No se encontraron grabaciones</string>
+    <string name="dialog_title_find_artist">Encontrar el artista</string>
+    <string name="dialog_body_find_artist_no_matches">No se han encontrado artistas</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out_of_youtube">¿Cerrar sesión en %1$s?</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out_of_opensubsonic">¿Cerrar sesión en %1$s?</string>
+    <string name="dialog_body_sign_out_of_opensubsonic">El nombre de usuario, la contraseña y la clave API guardados se eliminan. Puedes iniciar sesión de nuevo cuando quieras.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
+    <string name="dialog_body_sign_out_of_youtube">Tu biblioteca de %1$s deja de aparecer aquí, las canciones que te gustaron se quedan. Puedes iniciar sesión de nuevo cuando quieras.</string>
+    <string name="dialog_title_old_app_downloads">Descargas de la aplicación antigua</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
+    <string name="dialog_body_old_app_downloads">Se han encontrado %1$s de tu biblioteca descargadas en la aplicación antigua. ¿Descargar de nuevo?</string>
+</resources>

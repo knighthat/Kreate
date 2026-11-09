@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Screen titles and texts, tab labels and the headings of groups in lists and sheets. -->
+<resources>
+    <string name="screen_title_songs">Canciones</string>
+    <string name="screen_title_albums">Álbumes</string>
+    <string name="screen_title_artists">Artistas</string>
+    <string name="screen_title_playlists">Listas de reproducción</string>
+    <string name="screen_title_search">Buscar</string>
+    <!-- %1$s is an artist name (the user's library data, not declined). Screen title listing the songs of that artist -->
+    <string name="screen_title_songs_by">Canciones de %1$s</string>
+    <string name="screen_title_welcome">Te damos la bienvenida</string>
+    <string name="screen_title_permissions">Permisos</string>
+    <string name="screen_title_import">Importar</string>
+    <string name="screen_title_basic_settings">Ajustes básicos</string>
+    <string name="screen_title_terms_of_service">Términos de servicio</string>
+    <string name="screen_title_settings">Ajustes</string>
+    <string name="screen_title_general">General</string>
+    <string name="screen_title_data">Datos</string>
+    <string name="screen_title_player">Reproductor</string>
+    <string name="screen_title_ui">Interfaz</string>
+    <string name="screen_title_network">Red</string>
+    <string name="screen_title_backup">Copia de seguridad</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
+    <string name="screen_title_sign_in_to_youtube">Inicia sesión en %1$s</string>
+    <string name="screen_title_sign_in">Inicio de sesión</string>
+    <string name="screen_title_account">Cuenta</string>
+    <string name="screen_title_history">Historial</string>
+    <string name="screen_title_statistics">Estadísticas</string>
+    <string name="screen_title_song_details">Detalles</string>
+    <string name="screen_title_artist_details">Detalles</string>
+    <string name="screen_title_liked">Me gusta</string>
+    <string name="screen_title_disliked">No me gusta</string>
+    <string name="screen_title_downloaded">Descargas</string>
+    <string name="screen_title_download_queue">Cola de descargas</string>
+    <string name="screen_title_switch_profile">Cambiar perfil</string>
+    <string name="screen_title_about">Acerca de</string>
+    <string name="screen_title_open_source_licenses">Licencias de código abierto</string>
+    <string name="screen_title_voice_search">Búsqueda por voz</string>
+    <string name="screen_title_proxy">Proxy</string>
+    <string name="tab_songs">Canciones</string>
+    <string name="tab_albums">Álbumes</string>
+    <string name="tab_artists">Artistas</string>
+    <string name="tab_playlists">Listas de reproducción</string>
+    <string name="tab_lyrics">Letra</string>
+    <string name="tab_player">Reproductor</string>
+    <string name="tab_queue">Cola</string>
+    <string name="section_header_top_songs">Top canciones</string>
+    <string name="section_header_top_albums">Top de álbumes</string>
+    <string name="section_header_top_artists">Top de artistas</string>
+    <string name="section_header_releases">Lanzamientos</string>
+    <string name="section_header_links">Enlaces</string>
+    <!-- %1$d is a whole number. "Disc" is a physical disc (CD) of a multi-disc album, not a music player -->
+    <string name="section_header_disc">Disco %1$d</string>
+    <string name="section_header_listening_by_source">Escucha por fuente</string>
+    <string name="section_header_listening_over_time">Escucha a lo largo del tiempo</string>
+    <string name="section_header_listening_by_hour">Por hora del día</string>
+    <string name="section_header_listening_by_weekday">Por día de la semana</string>
+    <string name="section_header_source">Fuente</string>
+    <string name="section_header_look_for">Buscar</string>
+    <string name="section_header_suggested_searches">Búsquedas sugeridas</string>
+    <string name="section_header_recent_searches">Búsquedas recientes</string>
+    <string name="section_header_searches">Búsquedas</string>
+    <string name="section_header_today">Hoy</string>
+    <string name="section_header_yesterday">Ayer</string>
+    <string name="section_header_date_range">Rango de fechas</string>
+    <string name="section_header_in_progress">En progreso</string>
+    <string name="screen_search_hint_library">Buscar en tu biblioteca</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_youtube">Buscar en %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_opensubsonic">Buscar en %1$s</string>
+    <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
+    <string name="screen_voice_search_hint_phrase">Reproduce … en %1$s</string>
+    <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
+    <string name="screen_voice_search_hint_order">%1$s busca en estas empezando por arriba hasta que se encuentra coincidencia. Arrastra para cambiar el orden, desactiva una para saltarla.</string>
+    <string name="screen_search_status_no_history">Tus búsquedas aparecerán aquí</string>
+    <!-- %1$s is what the user typed, in quotes (the user's own text). Search suggestions -->
+    <string name="screen_search_status_no_suggestions">No hay sugerencias para %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for songs -->
+    <string name="screen_search_results_status_none_songs">No se encontraron canciones para %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for albums -->
+    <string name="screen_search_results_status_none_albums">No se encontraron álbumes para %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for artists -->
+    <string name="screen_search_results_status_none_artists">No se encontraron artistas para %1$s</string>
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for playlists -->
+    <string name="screen_search_results_status_none_playlists">No se encontraron listas para %1$s</string>
+    <string name="screen_youtube_more_status_nothing_here">No hay nada aquí</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Lyrics = the words of the song -->
+    <string name="screen_lyrics_status_missing">No hay letra para %1$s</string>
+    <!-- %1$s is the name of a lyrics provider, e.g. LRCLIB (proper noun); %2$s is a song title in quotes, or "this song" when unknown. Lyrics = the words of the song -->
+    <string name="screen_lyrics_status_unavailable">%1$s no tiene letra para %2$s.</string>
+    <!-- %1$s is the name of the lyrics provider that supplied the lyrics (proper noun, don't decline it), shown as a credit -->
+    <string name="screen_lyrics_status_from">De %1$s</string>
+    <string name="screen_open_source_licenses_hint_search">Buscar bibliotecas</string>
+    <!-- %1$s is what the user typed in the search field, in quotes (the user's own text). "Library" is a software library, not a place with books -->
+    <string name="screen_open_source_licenses_status_no_match">Ninguna biblioteca coincide con %1$s</string>
+    <!-- %1$s is a small icon character standing for the Change source button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_lyrics_hint_change_source">Presiona Cambiar fuente (%1$s) abajo para elegir otra.</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is a song title in quotes, or "this song" when unknown -->
+    <string name="screen_song_details_status_not_found">%1$s no tiene coincidencia con %2$s.</string>
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_song_details_hint_search">Presiona Buscar (%1$s) para buscar con otras palabras.</string>
+    <string name="screen_song_details_hint_not_kept">No está en tu biblioteca, por lo que esta coincidencia no se guarda</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an artist name in quotes, or "this artist" when unknown -->
+    <string name="screen_artist_details_status_not_found">%1$s no tiene coincidencia con %2$s.</string>
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <string name="screen_artist_details_hint_search">Pulsa Buscar (%1$s) para buscar con otro nombre.</string>
+    <string name="screen_profiles_hint_search_or_add">Buscar o añadir perfil</string>
+    <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
+    <string name="screen_profiles_status_active_since">Activo desde %1$s</string>
+    <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
+    <string name="screen_profiles_status_last_seen">Visto por última vez %1$s</string>
+    <string name="screen_history_status_nothing_played">Todavía no has reproducido nada</string>
+    <string name="screen_history_status_no_matches">Ninguna reproducción coincide con los filtros</string>
+    <string name="screen_history_status_paused">Historial pausado, no se añaden nuevas reproducciones</string>
+    <string name="screen_liked_status_nothing_liked">No hay canciones con me gusta</string>
+    <string name="screen_liked_status_no_matches">No hay canciones con me gusta que coincidan con los filtros</string>
+    <string name="screen_disliked_status_nothing_disliked">No hay canciones con no me gusta</string>
+    <string name="screen_disliked_status_no_matches">No hay canciones con no me gusta que coincidan con los filtros</string>
+    <string name="screen_downloaded_status_nothing_downloaded">No hay canciones descargadas</string>
+    <string name="screen_downloaded_status_no_matches">No hay canciones descargadas que coincidan con los filtros</string>
+    <string name="status_downloads_waiting_for_wifi">Esperando conexión Wi-Fi</string>
+    <string name="status_downloads_waiting_for_battery">Esperando, la batería está baja</string>
+    <!-- %1$s is the downloaded part of a file and %2$s the whole file, both file sizes, e.g. "1.2 MB of 4 MB" -->
+    <string name="status_download_progress">%1$s de %2$s</string>
+    <string name="status_download_next_in_line">Siguiente en espera</string>
+    <string name="status_download_in_line_2">2ª en espera</string>
+    <string name="status_download_in_line_3">3ª en espera</string>
+    <string name="status_download_in_line_4">4ª en espera</string>
+    <string name="status_download_in_line_5">5ª en espera</string>
+    <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
+    <string name="status_download_paused_at">Pausada al %1$s</string>
+    <string name="screen_download_queue_status_nothing">No se está descargando nada</string>
+    <string name="screen_statistics_status_nothing_played">Todavía no has reproducido nada</string>
+    <string name="screen_statistics_status_nothing_this_month">No has reproducido nada este mes</string>
+    <string name="screen_player_status_timer_on_hold_song_end">En espera, hasta que la canción termine</string>
+    <string name="screen_player_status_timer_song_end">Se pausa al acabar la canción</string>
+    <!-- %1$s is the time left, e.g. 4:32. The sleep timer is on hold (not counting down) because the music is paused; "left" = remaining -->
+    <string name="screen_player_status_timer_on_hold">En espera, quedan %1$s</string>
+    <!-- %1$s is the time left, e.g. 4:32. "Pauses" is a verb: the sleep timer will pause the music after that time -->
+    <string name="screen_player_status_timer_running">Se pausa en %1$s</string>
+    <string name="screen_crash_hint">Algo salió mal. Comparte el registro de abajo cuando lo reportes.</string>
+    <string name="screen_crash_status_no_log">No se pudo leer el registro de errores.</string>
+    <string name="screen_title_new_playlist">Nueva lista de reproducción</string>
+    <string name="screen_title_old_app_downloads">Descargas antiguas</string>
+    <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
+    <string name="screen_old_app_downloads_status_loading">Cargando canciones… %1$d de %2$d</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it) -->
+    <string name="screen_old_app_downloads_status_failed">No se pudieron cargar las demás canciones de %1$s.</string>
+    <string name="screen_old_app_downloads_status_nothing_found">Ya no se puede encontrar ninguna canción.</string>
+</resources>

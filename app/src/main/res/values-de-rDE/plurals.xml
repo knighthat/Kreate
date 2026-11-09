@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <plurals name="time">
+        <item quantity="one">%1$d-mal</item>
+        <item quantity="other">%1$d-mal</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">%1$d Minute</item>
+        <item quantity="other">%1$d Minuten</item>
+    </plurals>
+    <plurals name="second">
+        <item quantity="one">%1$d Sekunde</item>
+        <item quantity="other">%1$d Sekunden</item>
+    </plurals>
+    <plurals name="play">
+        <item quantity="one">%1$d Wiedergabe</item>
+        <item quantity="other">%1$d Wiedergaben</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="one">%1$d Song</item>
+        <item quantity="other">%1$d Songs</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">%1$d Stunde</item>
+        <item quantity="other">%1$d Stunden</item>
+    </plurals>
+    <plurals name="listen">
+        <item quantity="one">%1$d-mal angehört</item>
+        <item quantity="other">%1$d-mal angehört</item>
+    </plurals>
+    <plurals name="unit_second">
+        <item quantity="one">Sekunde</item>
+        <item quantity="other">Sekunden</item>
+    </plurals>
+    <plurals name="unit_time">
+        <item quantity="one">mal</item>
+        <item quantity="other">mal</item>
+    </plurals>
+    <plurals name="unit_minute">
+        <item quantity="one">Minute</item>
+        <item quantity="other">Minuten</item>
+    </plurals>
+    <plurals name="unit_hour">
+        <item quantity="one">Stunde</item>
+        <item quantity="other">Stunden</item>
+    </plurals>
+    <plurals name="unit_song">
+        <item quantity="one">Song</item>
+        <item quantity="other">Songs</item>
+    </plurals>
+    <plurals name="unit_album">
+        <item quantity="one">Album</item>
+        <item quantity="other">Alben</item>
+    </plurals>
+    <plurals name="unit_artist">
+        <item quantity="one">Interpret</item>
+        <item quantity="other">Interpreten</item>
+    </plurals>
+    <plurals name="unit_file">
+        <item quantity="one">Datei</item>
+        <item quantity="other">Dateien</item>
+    </plurals>
+    <plurals name="unit_playlist">
+        <item quantity="one">Playlist</item>
+        <item quantity="other">Playlists</item>
+    </plurals>
+    <plurals name="menu_go_to_artist">
+        <item quantity="one">Den Interpreten ansehen</item>
+        <item quantity="other">Die Interpreten ansehen</item>
+    </plurals>
+    <plurals name="day">
+        <item quantity="one">%1$d Tag</item>
+        <item quantity="other">%1$d Tagen</item>
+    </plurals>
+    <plurals name="week">
+        <item quantity="one">%1$d Woche</item>
+        <item quantity="other">%1$d Wochen</item>
+    </plurals>
+    <plurals name="month">
+        <item quantity="one">%1$d Monat</item>
+        <item quantity="other">%1$d Monaten</item>
+    </plurals>
+    <plurals name="year">
+        <item quantity="one">%1$d Jahr</item>
+        <item quantity="other">%1$d Jahren</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="one">%1$d Datei</item>
+        <item quantity="other">%1$d Dateien</item>
+    </plurals>
+</resources>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Icon descriptions for accessibility and the entries of overflow menus. -->
+<resources>
+    <string name="semantic_most_listened">Được nghe nhiều nhất</string>
+    <string name="semantic_add_to_queue">Thêm vào danh sách phát</string>
+    <string name="semantic_back">Quay lại</string>
+    <string name="semantic_bookmark">Đánh dấu</string>
+    <string name="semantic_change_source">Thay đổi nguồn</string>
+    <string name="semantic_clear_the_queue">Xóa danh sách phát</string>
+    <string name="semantic_config">Tùy chỉnh</string>
+    <string name="semantic_copy_the_lyrics">Sao chép lời</string>
+    <string name="semantic_create_playlist">Tạo Danh sách nhạc mới</string>
+    <string name="semantic_dislike">Thêm vào danh sách ghét</string>
+    <string name="semantic_disliked">Đã ghét nhạc</string>
+    <string name="semantic_show_text">Hiện chữ</string>
+    <string name="semantic_hide_text">Ẩn chữ</string>
+    <string name="semantic_drag_to_move">Kéo để di chuyển</string>
+    <string name="semantic_equalizer">Bộ chỉnh âm</string>
+    <string name="semantic_explicit">Nội dung không phù hợp với mọi lứa tuổi</string>
+    <string name="semantic_downloaded">Đã tải về</string>
+    <string name="semantic_cached">Đã lưu vào bộ đệm</string>
+    <string name="semantic_follow">Theo dõi</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
+    <string name="semantic_from_opensubsonic">Từ máy chủ %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
+    <string name="semantic_from_youtube">Từ %1$s</string>
+    <string name="semantic_go_to_the_song_playing">Đi tới nhạc đang phát</string>
+    <string name="semantic_larger">Lớn hơn</string>
+    <string name="semantic_select_source">Chọn nguồn</string>
+    <string name="semantic_repeat_off">Tắt lặp lại</string>
+    <string name="semantic_repeat_one">Lặp lại bài này</string>
+    <string name="semantic_repeat_all">Lặp lại tất cả</string>
+    <string name="semantic_remove_time">Giảm thời gian</string>
+    <string name="semantic_add_time">Tăng thời gian</string>
+    <string name="semantic_stop_the_sleep_timer">Ngừng hẹn giờ ngủ</string>
+    <string name="semantic_lock_the_order">Khóa thứ tự</string>
+    <string name="semantic_unlock_to_move_songs">Mở khóa dể di chuyển</string>
+    <string name="semantic_reorder">Sắp xếp lại</string>
+    <string name="semantic_like">Thích</string>
+    <string name="semantic_more">Xem thêm</string>
+    <string name="semantic_skip_next">Bài kế tiếp</string>
+    <string name="semantic_on_this_device">Trên thiết bị này</string>
+    <string name="semantic_open_one_at_random">Mở ngẫu nhiên</string>
+    <string name="semantic_pause">Tạm dừng</string>
+    <string name="semantic_pause_the_sleep_timer">Ngừng hẹn giờ ngủ</string>
+    <string name="semantic_play">Phát</string>
+    <string name="semantic_play_all">Phát tất cả</string>
+    <string name="semantic_play_next">Phát bài tiếp theo</string>
+    <string name="semantic_previous">Về trước</string>
+    <string name="semantic_profile">Hồ sơ</string>
+    <string name="semantic_newest_first">Mới nhất trước</string>
+    <string name="semantic_oldest_first">Cũ nhất trước</string>
+    <string name="semantic_remove_bookmark">Xoá dấu trang</string>
+    <string name="semantic_remove_dislike">Bỏ ghét</string>
+    <string name="semantic_undislike_all">Bỏ ghét tất cả</string>
+    <string name="semantic_delete_all_downloads">Xóa mọi bản tải xuống</string>
+    <string name="semantic_cancel_download">Hủy tải xuống</string>
+    <string name="semantic_remove_from_the_playlist">Xóa khỏi danh sách nhạc này</string>
+    <string name="semantic_remove_from_the_queue">Xóa khỏi danh sách phát này</string>
+    <string name="semantic_remove_like">Bỏ thích</string>
+    <string name="semantic_remove_songs">Xoá các bài hát</string>
+    <string name="semantic_delete_playlist">Xóa danh sách này</string>
+    <string name="semantic_restart_the_app">Khởi động lại ứng dụng</string>
+    <string name="semantic_restart_the_player">Khỏi động lại trình phát</string>
+    <string name="semantic_resume_the_sleep_timer">Tiếp tục hẹn giờ ngủ</string>
+    <string name="semantic_search">Tìm</string>
+    <string name="semantic_search_the_lyrics_with_other_words">Tìm lời nhạc bằng tên khác</string>
+    <string name="semantic_see_more">Xem thêm</string>
+    <string name="semantic_set">Đặt</string>
+    <string name="semantic_settings">Mở cài đặt</string>
+    <string name="semantic_share">Chia sẻ</string>
+    <string name="semantic_shown">Hiển thị</string>
+    <string name="semantic_shuffle">Phát ngẫu nhiên</string>
+    <string name="semantic_shuffle_off">Phát ngẫu nhiên: Tắt</string>
+    <string name="semantic_shuffle_on">Phát ngẫu nhiên: Bật</string>
+    <string name="semantic_sleep_timer">Hẹn giờ tắt</string>
+    <string name="semantic_smaller">Nhỏ hơn</string>
+    <string name="semantic_stop_removing_songs">Tắt chế độ xóa</string>
+    <string name="semantic_text_size">Cỡ chữ</string>
+    <string name="semantic_timing_of_the_lyrics">Đồng bộ lời và nhạc</string>
+    <string name="semantic_unfollow">Ngưng theo dõi</string>
+    <string name="semantic_app_crashed">Kreate đã ngừng hoạt động</string>
+    <string name="semantic_selected">Đã chọn</string>
+</resources>

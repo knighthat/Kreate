@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <plurals name="time">
+        <item quantity="one">%1$d vez</item>
+        <item quantity="other">%1$d veces</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutos</item>
+    </plurals>
+    <plurals name="second">
+        <item quantity="one">%1$d segundo</item>
+        <item quantity="other">%1$d segundos</item>
+    </plurals>
+    <plurals name="play">
+        <item quantity="one">%1$d reproducción</item>
+        <item quantity="other">%1$d reproducciones</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="one">%1$d canción</item>
+        <item quantity="other">%1$d canciones</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">%1$d hora</item>
+        <item quantity="other">%1$d horas</item>
+    </plurals>
+    <plurals name="listen">
+        <item quantity="one">%1$d escucha</item>
+        <item quantity="other">%1$d escuchas</item>
+    </plurals>
+    <plurals name="unit_second">
+        <item quantity="one">segundo</item>
+        <item quantity="other">segundos</item>
+    </plurals>
+    <plurals name="unit_time">
+        <item quantity="one">vez</item>
+        <item quantity="other">veces</item>
+    </plurals>
+    <plurals name="unit_minute">
+        <item quantity="one">minuto</item>
+        <item quantity="other">minutos</item>
+    </plurals>
+    <plurals name="unit_hour">
+        <item quantity="one">hora</item>
+        <item quantity="other">horas</item>
+    </plurals>
+    <plurals name="unit_song">
+        <item quantity="one">canción</item>
+        <item quantity="other">canciones</item>
+    </plurals>
+    <plurals name="unit_album">
+        <item quantity="one">álbum</item>
+        <item quantity="other">álbumes</item>
+    </plurals>
+    <plurals name="unit_artist">
+        <item quantity="one">artista</item>
+        <item quantity="other">artistas</item>
+    </plurals>
+    <plurals name="unit_file">
+        <item quantity="one">archivo</item>
+        <item quantity="other">archivos</item>
+    </plurals>
+    <plurals name="unit_playlist">
+        <item quantity="one">lista de reproducción</item>
+        <item quantity="other">listas de reproducción</item>
+    </plurals>
+    <plurals name="menu_go_to_artist">
+        <item quantity="one">ir a artista</item>
+        <item quantity="other">ir a artistas</item>
+    </plurals>
+    <plurals name="day">
+        <item quantity="one">%1$d día</item>
+        <item quantity="other">%1$d días</item>
+    </plurals>
+    <plurals name="week">
+        <item quantity="one">%1$d semana</item>
+        <item quantity="other">%1$d semanas</item>
+    </plurals>
+    <plurals name="month">
+        <item quantity="one">%1$d mes</item>
+        <item quantity="other">%1$d meses</item>
+    </plurals>
+    <plurals name="year">
+        <item quantity="one">%1$d año</item>
+        <item quantity="other">%1$d años</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="one">%1$d archivo</item>
+        <item quantity="other">%1$d archivos</item>
+    </plurals>
+</resources>

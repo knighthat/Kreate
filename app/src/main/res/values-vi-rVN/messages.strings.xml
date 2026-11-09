@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Errors shown to the user and snackbar messages. -->
+<resources>
+    <string name="error_playback_file_missing">không tồn tại</string>
+    <string name="error_playback_permission_denied">không thể truy cập</string>
+    <string name="error_playback_no_connection">không có kết nối</string>
+    <string name="error_playback_server_refused">máy chủ từ chối kết nối</string>
+    <string name="error_playback_file_damaged">dữ liệu bị lỗi</string>
+    <string name="error_playback_format_unsupported">định dạng không được hỗ trợ</string>
+    <string name="error_playback_decoding_failed">giải mã thất bại</string>
+    <string name="error_playback_source_off">nguồn không khả dụng</string>
+    <string name="error_playback_not_playable">không có gì để nghe</string>
+    <string name="error_playback_too_slow">mất quá nhiều thời gian để tải</string>
+    <string name="error_playback_unknown">lỗi không xác định</string>
+    <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
+    <string name="error_backup_not_a_backup">Không phải bản sao lưu của %1$s</string>
+    <string name="error_backup_newer_version">Bản sao lưu này được tạo trên phiên bản mới hơn, cập nhật ứng dụng để khôi phục</string>
+    <string name="error_backup_damaged">Bảo sao lưu này đã bị lỗi</string>
+    <string name="error_player_not_ready">Trình phát chưa sẵn sàng</string>
+    <string name="error_no_equalizer">Không tìm thấy bộ chỉnh âm</string>
+    <string name="error_no_browser">Ứng dụng không thể mở link</string>
+    <string name="error_album_reset_order">Không thể khôi phục vị trí</string>
+    <string name="error_move_song">Không thể di chuyển vị trí</string>
+    <string name="error_playlist_remove_song">Không thể xóa nhạc</string>
+    <string name="error_playlist_delete">Không thể xóa danh sách nhạc</string>
+    <!-- %1$s is why the server refused, or couldn't be reached -->
+    <string name="error_playlist_save_changes">Không thể lưu thay đổi: %1$s</string>
+    <string name="error_playlist_changed_on_server">Máy chủ đã thay đổi danh sách nhạc, thay đổi này sẽ không được lưu</string>
+    <string name="error_queue_every_song">Không thể thêm nhạc vào danh sách phát</string>
+    <string name="error_lyrics_load">Không thể tải lời bài hát</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
+    <string name="error_unreachable">Không thể truy cập %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song -->
+    <string name="error_song_details">Không thể tải dữ liệu từ %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the artist -->
+    <string name="error_artist_details">Không thể tải dữ liệu từ %1$s</string>
+    <string name="error_loudness_failed">Phân tích độ ồn thất bại</string>
+    <string name="error_nothing_to_play">Không có gì để nghe</string>
+    <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
+    <string name="error_voice_search_no_match">Không thể tìm %1$s</string>
+    <string name="error_open_file">Không thể phát bài này</string>
+    <string name="error_open_link">Không thể mở liên kết này</string>
+    <string name="error_songs_not_playable">Các bài nhạc không nghe được</string>
+    <string name="error_song_not_playable">Bài này không nghe được</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
+    <string name="error_share_unsupported_song">%1$s không hỗ trợ chia sẽ %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the song's title isn't known; "this song" is the song the user tried to share -->
+    <string name="error_share_unsupported_song_unnamed">%1$s không hỗ trợ chia sẽ bài này</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no way to share a link to a album -->
+    <string name="error_share_unsupported_album">%1$s không hỗ trợ chia sẽ %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user tried to share -->
+    <string name="error_share_unsupported_album_unnamed">%1$s không hỗ trợ chia sẽ album này</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no way to share a link to a artist -->
+    <string name="error_share_unsupported_artist">%1$s không hỗ trợ chia sẽ %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user tried to share -->
+    <string name="error_share_unsupported_artist_unnamed">%1$s không hỗ trợ chia sẽ nghệ sĩ này</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no way to share a link to a playlist -->
+    <string name="error_share_unsupported_playlist">%1$s không hỗ trợ chia sẽ %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user tried to share -->
+    <string name="error_share_unsupported_playlist_unnamed">%1$s không hỗ trợ chia sẽ danh sách này</string>
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined). "Share" = send a link to the song to another app -->
+    <string name="error_cant_share_song">Không thể chia sẽ %1$s</string>
+    <string name="error_cant_share_song_unnamed">Không thể chia sẽ bài này</string>
+    <!-- %1$s is the title of a album in quotes (the user's own text, not declined). "Share" = send a link to the album to another app -->
+    <string name="error_cant_share_album">Không thể chia sẽ %1$s</string>
+    <string name="error_cant_share_album_unnamed">Không thể chia sẽ album này</string>
+    <!-- %1$s is the title of a artist in quotes (the user's own text, not declined). "Share" = send a link to the artist to another app -->
+    <string name="error_cant_share_artist">Không thể chia sẽ %1$s</string>
+    <string name="error_cant_share_artist_unnamed">Không thể chia sẽ nghệ sĩ này</string>
+    <!-- %1$s is the title of a playlist in quotes (the user's own text, not declined). "Share" = send a link to the playlist to another app -->
+    <string name="error_cant_share_playlist">Không thể chia sẽ %1$s</string>
+    <string name="error_cant_share_playlist_unnamed">Không thể chia sẽ danh sách này</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server (e.g. Navidrome) or a music source, proper noun. Can't be reached over the network, so no share link could be made -->
+    <string name="error_share_unreachable">Không thể truy cập vào %1$s để chia sẽ</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Search" is a verb (look for songs, albums...) -->
+    <string name="error_cant_search">Không thể tìm %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the reason the source gave, text that is not translated -->
+    <string name="error_source_refused">%1$s đã từ chối với lý do %2$s</string>
+    <!-- %1$d is the status code (a number) the server answered with, e.g. 403. Shown only when the server sent no message of its own -->
+    <string name="error_server_code">lỗi %1$d</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
+    <string name="error_server_unreachable">Không thể truy cập %1$s: %2$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="error_server_certificate_untrusted">Chứng chỉ của %1$s chưa được tin</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Certificate = the server's security certificate -->
+    <string name="error_server_certificate_changed">Chứng chỉ %1$s đã thay đổi, kiểm tra lại ở cài đặt %2$s</string>
+    <string name="error_download_failed">Không thể tải xuống</string>
+    <string name="error_download_not_saved">Tải thất bại</string>
+    <string name="error_downloads_full">Kho đầy, xóa bớt hoặc nâng định mức trong cài đặt</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no such album -->
+    <string name="error_source_not_found_album">%1$s không có album tên %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user opened -->
+    <string name="error_source_not_found_album_unnamed">%1$s không có album này</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no such artist -->
+    <string name="error_source_not_found_artist">%1$s không có nghệ sĩ tên %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user opened -->
+    <string name="error_source_not_found_artist_unnamed">%1$s không có nghệ sĩ này</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no such playlist -->
+    <string name="error_source_not_found_playlist">%1$s không có danh sách nhạc tên %2$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user opened -->
+    <string name="error_source_not_found_playlist_unnamed">%1$s không có danh sách nhạc này</string>
+    <!-- %1$s is an album title in quotes, or "this album" when unknown. "Bookmark" is a verb: save the album to the user's library on the source -->
+    <string name="error_bookmark_album">Không thể đánh dấu %1$s</string>
+    <!-- %1$s is an album title in quotes, or "this album" when unknown. Removes the album saved with a bookmark from the user's library on the source -->
+    <string name="error_remove_bookmark">Bỏ đánh dấu %1$s thất bại</string>
+    <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Follow" = subscribe to the artist on the source -->
+    <string name="error_follow_artist">Không thể theo dõi %1$s</string>
+    <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Unfollow" = cancel the subscription to the artist on the source -->
+    <string name="error_unfollow_artist">Bỏ theo dõi %1$s thất bại</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
+    <string name="error_like_song">Không thể thích %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
+    <string name="error_remove_like">Bỏ thích %1$s thất bại</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
+    <string name="error_dislike_song">Không thể ghét %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-down reaction given to the song -->
+    <string name="error_remove_dislike">Bỏ ghét %1$s thất bại</string>
+    <!-- %1$s is the item that was changed, in quotes (e.g. a song title) or "this song"/"this album" when unknown; %2$s is the reason, a lowercase fragment from the error_reason_* strings. "Sync" = send the change to the source. "Change reverted" = the change in the app was undone -->
+    <string name="error_sync_failed">Không thể đồng bộ %1$s vì %2$s. Hoàn tác thay đổi.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "reach" = connect over the network -->
+    <string name="error_reason_unreachable">không thể truy cập %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "refused" = rejected the request -->
+    <string name="error_reason_refused">%1$s đã từ chối yêu cầu</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "you" is the user, gender unknown -->
+    <string name="error_reason_signed_out">đã đăng xuất ra khỏi %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
+    <string name="error_reason_certificate_changed">chứng chỉ từ %1$s đã thay đổi</string>
+    <string name="error_reason_unknown">đã xảy ra sự cố</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
+    <string name="error_server_not_configured">Đăng nhập vào %1$s ở trong %2$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
+    <string name="error_server_unexpected">Phản hồi từ %1$s không hợp lệ</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "This" is the content the user tried to open (a list, an album...) -->
+    <string name="error_server_load">Không thể tải dữ liệu từ %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. The user switched the server off in settings -->
+    <string name="error_server_off">%1$s đã bị tắt, bật lại ở trong %2$s</string>
+    <string name="error_file_unavailable">kho đầy hoặc không khả dụng</string>
+    <string name="error_file_damaged">tệp bị lỗi</string>
+    <string name="error_file_unknown">lỗi không xác định</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
+    <string name="snackbar_cant_play">Không thể phát %1$s với lý do %2$s</string>
+    <string name="snackbar_old_app_downloads_confirm">Dùng nút quay lại bên tiêu đề để chốt</string>
+    <string name="snackbar_this_song">bài này</string>
+    <string name="snackbar_this_album">album này</string>
+    <string name="snackbar_this_artist">nghệ sĩ này</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Settings = the user's preferences; "defaults" = the original values -->
+    <string name="snackbar_couldnt_load_settings">Không thể đọc cài đặt %1$s, dùng mặc định</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Settings = the user's preferences; "change undone" = the change was reverted -->
+    <string name="snackbar_couldnt_save_settings">Không thể lưu cài đặt %1$s, hoàn tác thay đổi</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Credentials = saved logins; "sign in" is a verb (imperative) -->
+    <string name="snackbar_couldnt_load_credentials">Không thể đọc thông tin đăng nhập của %1$s, đăng nhập lại lần nữa</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Credentials = saved logins -->
+    <string name="snackbar_couldnt_save_credentials">Không thể lưu thông tin đăng nhập của %1$s</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles -->
+    <string name="snackbar_couldnt_load_global_settings">Không thể đọc cài đặt: %1$s, dùng hồ sơ mặc định và các giá trị mặc định khác</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles; "change undone" = the change was reverted -->
+    <string name="snackbar_couldnt_save_global_settings">Không thể lưu cài đặt: %1$s, hoàn tác thay đổi</string>
+    <string name="snackbar_nothing_to_pick_albums">Không có album để chọn</string>
+    <string name="snackbar_nothing_to_pick_artists">Không có nghệ sĩ để chọn</string>
+    <string name="snackbar_nothing_to_pick_playlists">Không có danh sách để chọn</string>
+    <string name="snackbar_album_order_reset">Đã đặt về vị trí ban đầu</string>
+    <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
+    <!-- %1$s is the song's quoted title, or how many songs -->
+    <string name="snackbar_removed_from_playlist">Đã gỡ %1$s ra khỏi danh sách</string>
+    <string name="snackbar_playlist_deleted">Đã xóa %1$s</string>
+    <string name="snackbar_playlist_changes_saved">Đã lưu thay đổi</string>
+    <string name="snackbar_removed_from_dislike">Đã bỏ ghét</string>
+    <string name="snackbar_removed_from_like">Đã bỏ ghét</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
+    <string name="snackbar_disliked">Đã ghét %1$s</string>
+    <string name="snackbar_removed_from_queue">Xóa khỏi danh sách phát này</string>
+    <string name="snackbar_queue_cleared">Đã xóa danh sách phát</string>
+    <string name="snackbar_playback_stopped">Trình phát đã ngừng</string>
+    <string name="snackbar_removed_from_history">Đã xóa khỏi lịch sử</string>
+    <string name="snackbar_history_cleared">Lịch sử nghe đã được dọn sạch</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
+    <string name="snackbar_removed_from_dislike_count">Đã bỏ ghét %1$s</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <string name="snackbar_removed_from_dislike_some_failed">Đã bỏ ghét %1$s, bị lỗi %2$d</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-up reaction was taken back from those songs -->
+    <string name="snackbar_removed_from_like_count">Đã bỏ thích %1$s</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-up reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <string name="snackbar_removed_from_like_some_failed">Đã bỏ thích %1$s, bị lỗi %2$d</string>
+    <string name="snackbar_this_playlist">danh sách này</string>
+    <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "The queue" is the list of songs to be played next -->
+    <string name="snackbar_added_to_queue">Đã thêm %1$s vào danh sách phát</string>
+    <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
+    <string name="snackbar_will_play_next">%1$s sẽ được phát kế tiếp</string>
+    <string name="snackbar_lyrics_copied">Đã sao chép lời</string>
+    <string name="snackbar_turn_shuffle_off">Tắt phát ngẫu nhiên để thay đổi thứ tự</string>
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
+    <string name="snackbar_added_to_playlist">Đã thêm bài hát vào danh sách %1$s</string>
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song is already in it -->
+    <string name="snackbar_already_in_playlist">Bài nãy đã có trong danh sách %1$s</string>
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song couldn't be added to it -->
+    <string name="snackbar_couldnt_add_to_playlist">Không thể thêm bài này vào %1$s</string>
+    <string name="snackbar_exit_swipe">Quẹt lần nữa để thoát</string>
+    <string name="snackbar_exit_press">Nhấn lần nữa để thoát</string>
+    <string name="snackbar_log_copied">Đã sao chép log</string>
+    <string name="snackbar_log_saved">Đã lưu log</string>
+    <string name="snackbar_log_save_failed">Không thể lưu log</string>
+    <string name="snackbar_log_empty">Log bị trống</string>
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="snackbar_playlist_created">Đã tạo %1$s</string>
+    <!-- %1$s is the name of the playlist, in quotes. The playlist exists, only its description and who can see it were not saved -->
+    <string name="snackbar_playlist_options_not_saved">Đã tạo %1$s, nhưng mô tả và chế độ công khai chưa được đặt</string>
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="error_create_playlist">Không thể tạo %1$s</string>
+    <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
+    <string name="snackbar_old_app_downloads_started">Đang tải %1$s từ phiên bản trước</string>
+</resources>
