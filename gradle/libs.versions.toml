@@ -27,7 +27,7 @@ serialization = "1.11.0"
 material-kolor = "5.0.1"
 material3 = "1.4.0"
 coil = "3.6.3"
-okhttp = "5.5.0"
+okhttp = "5.5.1"
 ktor = "3.6.0"
 # A JitPack tag, bumped by hand
 innertubex = "v0.9.1"
