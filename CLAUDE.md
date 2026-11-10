@@ -18,7 +18,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 
 - Package/namespace is `me.knighthat.kreate3`; minSdk 24, compileSdk/targetSdk 37, Java 21
   source/target.
-- Release builds are minified and resource-shrunk by R8; obfuscation is off (`-dontobfuscate`).
+- Release builds are minified and resource-shrunk by R8; obfuscation is off
+  (`proguard-dontobfuscate.pro`) in every flavor but `patreon`.
 - Enum values use SCREAMING_SNAKE_CASE (`NORMAL`, `AUTOMATIC_DYNAMIC`), not PascalCase.
 - In a class or object, declare properties before functions.
 - An `if` with an `else` puts each branch body on its own line, indented under its `if`/`else`

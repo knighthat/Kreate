@@ -98,11 +98,14 @@ android {
         create("github") {
             dimension = "platform"
             isDefault = true
+            proguardFiles("proguard-dontobfuscate.pro")
         }
         // F-Droid standards: no telemetry, no proprietary libraries (see verifyFossDependencies)
         create("foss") {
             dimension = "platform"
+            proguardFiles("proguard-dontobfuscate.pro")
         }
+        // Obfuscated, the release pipeline ships R8's mapping with the APKs to read stack traces
         create("patreon") {
             dimension = "platform"
         }

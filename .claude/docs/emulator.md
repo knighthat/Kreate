@@ -109,9 +109,11 @@ paths with hardware bitmaps off.
   `apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android`,
   then `adb install -r`.
 - `apkanalyzer` may be missing: use `unzip -v`, `dexdump` and `aapt2` from
-  `$sdk.dir/build-tools/<latest>/`. Classes keep their names (`-dontobfuscate`), so grouping dexdump
-  class sizes by package gives code size per library.
-- R8 reports in `app/build/outputs/mapping/release/`: `seeds.txt`, `usage.txt`, `configuration.txt`
+  `$sdk.dir/build-tools/<latest>/`. Classes keep their names (`-dontobfuscate`) outside `patreon`,
+  so grouping
+  dexdump class sizes by package of a `github` build gives code size per library.
+- R8 reports in `app/build/outputs/mapping/<variant>/`, with `mapping.txt`: `seeds.txt`,
+  `usage.txt`, `configuration.txt`
   (merged rules tagged by library), `resources.txt`.
 - To try build changes without touching the repo, `rsync` the project (minus `build`, `.gradle`,
   `.git`, `.kotlin`) to a scratch dir and build there.

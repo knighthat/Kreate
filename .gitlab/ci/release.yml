@@ -1,5 +1,5 @@
 # Releases a version tag (v*, other tags start none of these jobs), one job after the other:
-#   build        the Patreon APKs (universal + the four ABIs, signed)
+#   build        the Patreon APKs (universal + the four ABIs, signed) and R8's mapping
 #   release      the GitLab release with them attached
 #   github-sync  the tag and its branch pushed to GitHub
 # Each job starts only when the one before it succeeded, so a failed build creates no release and
@@ -11,6 +11,12 @@
 # package registry (Deploy > Package registry, package "kreate", version = the tag without "v")
 # and linked from the release, which keeps them past the expiry of job artifacts. GitHub gets the
 # source only, no APKs.
+#
+# Patreon builds are obfuscated, so their stack traces need R8's mapping to be read back
+# (`retrace mapping.txt trace.txt`, from the SDK's cmdline-tools). Every APK is built from the same
+# code, so the five mappings should be the same file and the release gets one, mapping.txt.gz.
+# Should they ever differ, it gets one per APK instead (kreate-<abi>-mapping.txt.gz) so none is
+# ever paired with the wrong APK.
 #
 # The jobs run on GitLab's shared Linux runners (Docker, 2 vCPU, 8 GB, a fresh VM every job; the
 # free plan has 400 compute minutes a month). build starts from a plain JDK 21 image and fetches the
@@ -82,8 +88,22 @@ build:
       for apk in app/build/outputs/apk/patreon*/release/kreate-*.apk; do
         cp "$apk" "dist/$(basename "$apk")"
       done
+    - |
+      MAPPINGS=$(ls app/build/outputs/mapping/patreon*Release/mapping.txt)
+      test "$(echo "$MAPPINGS" | wc -l)" = 5
+      FIRST=$(echo "$MAPPINGS" | head -n 1)
+      if echo "$MAPPINGS" | xargs -n 1 cmp -s "$FIRST"; then
+        gzip -9c "$FIRST" > dist/mapping.txt.gz
+      else
+        echo "The mappings differ between APKs, keeping one per APK"
+        for m in $MAPPINGS; do
+          variant=$(basename "$(dirname "$m")")
+          abi=$(echo "${variant#patreon}" | sed 's/Release$//' | tr '[:upper:]' '[:lower:]')
+          gzip -9c "$m" > "dist/kreate-$abi-mapping.txt.gz"
+        done
+      fi
     - ls -l dist
-    - test "$(ls dist | wc -l)" = 5
+    - test "$(ls dist/*.apk | wc -l)" = 5
   after_script:
     - rm -f .ignore.d/keystores/production.jks
   artifacts:
@@ -105,7 +125,7 @@ release:
     - |
       STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" "$PROJECT/releases/$TAG_URI")
       if [ "$STATUS" = 200 ]; then
-        echo "$CI_COMMIT_TAG already has a release, adding the APKs to it"
+        echo "$CI_COMMIT_TAG already has a release, adding the APKs and the mapping to it"
       else
         NOTES=$(git tag -l --format='%(contents)' "$CI_COMMIT_TAG")
         jq -n --arg tag "$CI_COMMIT_TAG" --arg desc "$NOTES" \
@@ -114,11 +134,12 @@ release:
           --data @/tmp/release.json "$PROJECT/releases"
       fi
     - |
-      for apk in dist/*.apk; do
-        name=$(basename "$apk")
+      for file in dist/*; do
+        name=$(basename "$file")
         url="$PROJECT/packages/generic/kreate/$VERSION/$name"
-        curl --fail-with-body -s -H "$AUTH" --upload-file "$apk" "$url"
-        jq -n --arg name "$name" --arg url "$url" '{name: $name, url: $url, link_type: "package"}' > /tmp/link.json
+        curl --fail-with-body -s -H "$AUTH" --upload-file "$file" "$url"
+        case "$name" in *.apk) type=package ;; *) type=other ;; esac
+        jq -n --arg name "$name" --arg url "$url" --arg type "$type" '{name: $name, url: $url, link_type: $type}' > /tmp/link.json
         curl --fail-with-body -s -X POST -H "$AUTH" -H 'Content-Type: application/json' \
           --data @/tmp/link.json "$PROJECT/releases/$TAG_URI/assets/links"
       done

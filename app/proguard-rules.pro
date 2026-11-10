@@ -1,5 +1,4 @@
-# Shrink and optimize only, class and member names stay readable
--dontobfuscate
+# Names are obfuscated only in patreon builds, the other flavors add proguard-dontobfuscate.pro
 
 # Let R8 widen visibility so it can inline and merge more aggressively
 -allowaccessmodification
