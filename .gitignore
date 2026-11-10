@@ -17,4 +17,9 @@ captures/
 .claude/settings.local.json
 .claude/worktrees
 
+# Nekros/ACT
+.actrc
+.secrets
+.vars
+
 .ignore.d/
