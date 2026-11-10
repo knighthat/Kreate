@@ -8,8 +8,10 @@ paths:
 
 What stays a literal: `ui.md`.
 
-Only English (`values/`) is in the repo. Translations come from Crowdin (`crowdin.yml`) and are
-merged into `values-*/` before each release; never add or edit a translation folder here.
+Only the English source files (`values/*.xml`) are edited here. Translations come from Crowdin
+(`crowdin.yml`) and are merged into `values-*/` from the `*_l10n` branches; never touch a
+`values-*/` file, not even when a key is removed, renamed or merged: Crowdin follows the source at
+its next sync.
 
 ## Files
 

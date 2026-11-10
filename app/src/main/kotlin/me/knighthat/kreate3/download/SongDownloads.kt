@@ -316,7 +316,7 @@ class SongDownloads(
         }
         scope.launch(Dispatchers.Main) {
             Preferences.DOWNLOAD_RETRY_COUNT.state.collect {
-                manager.minRetryCount = it.coerceAtLeast(0)
+                manager.minRetryCount = it.coerceIn(0, 10)
             }
         }
         scope.launch(Dispatchers.Main) {

@@ -453,11 +453,11 @@ object Preferences : KoinComponent {
     val DOWNLOAD_PARALLEL_COUNT by lazy { int("download_parallel_count", 2) }
 
     /**
-     * Times a download that keeps failing is tried again before it counts as failed, Media3's
-     * default 5. A try that gets further counts from zero again. `SongDownloads` applies it to the
-     * downloader as it changes.
+     * Times a download that keeps failing is tried again before it counts as failed, 0 for never.
+     * A try that gets further counts from zero again. `SongDownloads` applies it to the downloader
+     * as it changes.
      */
-    val DOWNLOAD_RETRY_COUNT by lazy { int("download_retry_count", 5) }
+    val DOWNLOAD_RETRY_COUNT by lazy { int("download_retry_count", 2) }
 
     /**
      * Whether downloads wait for Wi-Fi, or another network that isn't metered, a cached song

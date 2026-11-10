@@ -239,18 +239,15 @@ private fun PlayerSettingsContent(
             summary = stringResource(R.string.setting_description_keep_the_queue),
         )
         if (queuePersisted)
-            NumberSetting(
+            SecondSetting(
                 title = stringResource(R.string.setting_title_save_interval),
-                value = queueSaveInterval.toLong(),
-                min = 1,
-                max = 5 * 60,
-                onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
-                note = {
-                    stringResource(
-                        R.string.setting_description_save_interval,
-                        pluralStringResource(R.plurals.second, it.toInt(), it)
-                    )
-                },
+                value = queueSaveInterval,
+                range = 1..5 * 60,
+                summary = stringResource(
+                    R.string.setting_description_save_interval,
+                    pluralStringResource(R.plurals.second, queueSaveInterval, queueSaveInterval)
+                ),
+                onSelect = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it) },
             )
         val resources = LocalResources.current
         // Always a line under these titles, so the row keeps its height as the value changes

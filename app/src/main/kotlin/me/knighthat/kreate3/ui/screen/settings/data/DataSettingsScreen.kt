@@ -63,8 +63,8 @@ import me.knighthat.kreate3.ui.component.StopSlider
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
+import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
-import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.PercentSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -295,31 +295,34 @@ private fun DataSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_header_downloads))
-        NumberSetting(
+        CountSetting(
             title = stringResource(R.string.setting_title_parallel_downloads),
-            value = parallelDownloads.toLong(),
-            min = 1,
-            max = 6,
-            onSave = { Preferences.DOWNLOAD_PARALLEL_COUNT.update(it.toInt()) },
-            note = {
-                stringResource(
-                    R.string.setting_description_parallel_downloads,
-                    pluralStringResource(R.plurals.song, it.toInt(), it),
-                )
-            },
+            value = parallelDownloads,
+            range = 1..6,
+            unit = { pluralStringResource(R.plurals.unit_song, it) },
+            onSelect = { Preferences.DOWNLOAD_PARALLEL_COUNT.update(it) },
+            summary = stringResource(
+                R.string.setting_description_parallel_downloads,
+                pluralStringResource(R.plurals.song, parallelDownloads, parallelDownloads),
+            ),
+            leadingIcon = { SliderIcon(R.drawable.insert_drive_file) },
+            trailingIcon = { SliderIcon(R.drawable.insert_drive_file_stack) },
         )
-        NumberSetting(
+        CountSetting(
             title = stringResource(R.string.setting_title_download_retries),
-            value = downloadRetries.toLong(),
-            min = 0,
-            max = 20,
-            onSave = { Preferences.DOWNLOAD_RETRY_COUNT.update(it.toInt()) },
-            note = {
+            value = downloadRetries,
+            range = 0..10,
+            unit = { pluralStringResource(R.plurals.unit_time, it) },
+            onSelect = { Preferences.DOWNLOAD_RETRY_COUNT.update(it) },
+            summary = if (downloadRetries == 0)
+                stringResource(R.string.setting_description_download_retries_off)
+            else
                 stringResource(
                     R.string.setting_description_download_retries,
-                    pluralStringResource(R.plurals.time, it.toInt(), it),
-                )
-            },
+                    pluralStringResource(R.plurals.time, downloadRetries, downloadRetries),
+                ),
+            leadingIcon = { SliderIcon(R.drawable.replay, R.drawable.remove) },
+            trailingIcon = { SliderIcon(R.drawable.replay, R.drawable.add) },
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_download_wifi_only),
@@ -668,7 +671,7 @@ private fun DataSettingsSample(defaultProfile: Boolean) {
         songCacheSize = Long.MAX_VALUE,
         songDownloadsSize = 4 * GIB,
         parallelDownloads = 2,
-        downloadRetries = 5,
+        downloadRetries = 2,
         downloadWifiOnly = false,
         downloadOnLowBattery = true,
         downloadLyrics = false,

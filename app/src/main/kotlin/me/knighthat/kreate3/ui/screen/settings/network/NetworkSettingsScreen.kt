@@ -36,6 +36,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeAccountState
 import me.knighthat.kreate3.provider.youtube.YouTubeAccountStore
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SliderIcon
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
@@ -57,7 +58,7 @@ private fun YouTubeAccountState.summary(): String = when (this) {
     YouTubeAccountState.Checking -> stringResource(R.string.status_checking)
     is YouTubeAccountState.SignedIn ->
         stringResource(
-            R.string.setting_description_configure_youtube_status_signed_in_as,
+            R.string.setting_description_sign_in_status_signed_in_as,
             account.name
         )
 
@@ -211,6 +212,8 @@ private fun NetworkSettingsContent(
             unit = { pluralStringResource(R.plurals.unit_time, it) },
             summary = stringResource(R.string.setting_description_retries),
             onSelect = { Preferences.NETWORK_MAX_RETRIES.update(it) },
+            leadingIcon = { SliderIcon(R.drawable.replay, R.drawable.remove) },
+            trailingIcon = { SliderIcon(R.drawable.replay, R.drawable.add) },
         )
 
         proxy()
