@@ -2,8 +2,9 @@
 # renovate.json), once after each release and on demand. Renovate always works on the default
 # branch, whatever ref starts the pipeline.
 #
-# Runs when a tag is created (the same moment as github-sync) and from Build > Pipelines > New
-# pipeline with the variable RENOVATE_RUN set to true.
+# Runs after a version tag (v*) is released, once release.yml's release job succeeded (a failed build
+# or release skips it), and from Build > Pipelines > New pipeline with the variable RENOVATE_RUN set
+# to true, where it starts right away.
 #
 # Needs the CI/CD variable RENOVATE_TOKEN (masked; a project or personal access token with the api
 # and write_repository scopes). GITHUB_COM_TOKEN (masked; a GitHub token without scopes) is
@@ -20,8 +21,13 @@ renovate:
     RENOVATE_ONBOARDING: "false"
     RENOVATE_REQUIRE_CONFIG: required
     LOG_LEVEL: info
+  # optional: the manual run has no release job to wait for
+  needs:
+    - job: release
+      artifacts: false
+      optional: true
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG =~ /^v/
     - if: $CI_PIPELINE_SOURCE == "web" && $RENOVATE_RUN == "true"
   script:
     - renovate
