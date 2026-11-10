@@ -99,15 +99,18 @@ android {
             dimension = "platform"
             isDefault = true
             proguardFiles("proguard-dontobfuscate.pro")
+            versionNameSuffix = "+$name"
         }
         // F-Droid standards: no telemetry, no proprietary libraries (see verifyFossDependencies)
         create("foss") {
             dimension = "platform"
             proguardFiles("proguard-dontobfuscate.pro")
+            versionNameSuffix = "+$name"
         }
         // Obfuscated, the release pipeline ships R8's mapping with the APKs to read stack traces
         create("patreon") {
             dimension = "platform"
+            versionNameSuffix = "+$name"
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
