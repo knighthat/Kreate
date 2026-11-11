@@ -148,7 +148,7 @@ private fun HomeArtistsContent(
                 actions = { close ->
                     LabeledIconButton(
                         R.drawable.casino,
-                        stringResource(R.string.menu_open_random),
+                        stringResource(R.string.menu_shortcut_open_random),
                         enabled = artists.itemCount > 0 || live.isNotEmpty(),
                     ) { close(onRandom) }
                 },

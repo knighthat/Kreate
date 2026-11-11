@@ -502,19 +502,21 @@ private fun HistorySheet(
                         onClick = onClick
                     )
 
-                Action(R.drawable.play_arrow, R.string.menu_play_all) {
+                Action(R.drawable.play_arrow, R.string.menu_shortcut_play_all) {
                     close { onQueue(QueueAction.PLAY) }
                 }
-                Action(R.drawable.queue_play_next, R.string.menu_play_next) {
+                Action(R.drawable.queue_play_next, R.string.menu_shortcut_play_next) {
                     close { onQueue(QueueAction.PLAY_NEXT) }
                 }
-                Action(R.drawable.playlist_add, R.string.menu_add_to_queue) {
+                Action(R.drawable.playlist_add, R.string.menu_shortcut_add_to_queue) {
                     close { onQueue(QueueAction.ENQUEUE) }
                 }
-                Action(R.drawable.shuffle, R.string.menu_shuffle) {
+                Action(R.drawable.shuffle, R.string.menu_shortcut_shuffle) {
                     close { onQueue(QueueAction.SHUFFLE) }
                 }
-                Action(R.drawable.delete, R.string.menu_clear_history) { close(onClearHistory) }
+                Action(R.drawable.delete, R.string.menu_shortcut_clear_history) {
+                    close(onClearHistory)
+                }
             }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

@@ -149,16 +149,22 @@ private fun SongsSheet(
 ) = ConfigSheet(
     onDismiss = onDismiss,
     actions = { close ->
-        LabeledIconButton(R.drawable.play_arrow, stringResource(R.string.menu_play_all)) {
+        LabeledIconButton(R.drawable.play_arrow, stringResource(R.string.menu_shortcut_play_all)) {
             close { onAction(QueueAction.PLAY) }
         }
-        LabeledIconButton(R.drawable.shuffle, stringResource(R.string.menu_shuffle)) {
+        LabeledIconButton(R.drawable.shuffle, stringResource(R.string.menu_shortcut_shuffle)) {
             close { onAction(QueueAction.SHUFFLE) }
         }
-        LabeledIconButton(R.drawable.queue_play_next, stringResource(R.string.menu_play_next)) {
+        LabeledIconButton(
+            R.drawable.queue_play_next,
+            stringResource(R.string.menu_shortcut_play_next),
+        ) {
             close { onAction(QueueAction.PLAY_NEXT) }
         }
-        LabeledIconButton(R.drawable.playlist_add, stringResource(R.string.menu_add_to_queue)) {
+        LabeledIconButton(
+            R.drawable.playlist_add,
+            stringResource(R.string.menu_shortcut_add_to_queue),
+        ) {
             close { onAction(QueueAction.ENQUEUE) }
         }
     },

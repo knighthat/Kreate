@@ -271,13 +271,13 @@ private fun DownloadedSheet(
                 close { onQueue(action) }
             }
 
-        Queue(R.drawable.play_arrow, R.string.menu_play_all, QueueAction.PLAY)
-        Queue(R.drawable.shuffle, R.string.menu_shuffle, QueueAction.SHUFFLE)
-        Queue(R.drawable.queue_play_next, R.string.menu_play_next, QueueAction.PLAY_NEXT)
-        Queue(R.drawable.playlist_add, R.string.menu_add_to_queue, QueueAction.ENQUEUE)
+        Queue(R.drawable.play_arrow, R.string.menu_shortcut_play_all, QueueAction.PLAY)
+        Queue(R.drawable.shuffle, R.string.menu_shortcut_shuffle, QueueAction.SHUFFLE)
+        Queue(R.drawable.queue_play_next, R.string.menu_shortcut_play_next, QueueAction.PLAY_NEXT)
+        Queue(R.drawable.playlist_add, R.string.menu_shortcut_add_to_queue, QueueAction.ENQUEUE)
         LabeledIconButton(
             R.drawable.delete,
-            stringResource(R.string.menu_delete_all),
+            stringResource(R.string.menu_shortcut_delete_all),
             enabled = hasSongs,
         ) { close(onDeleteAll) }
     },

@@ -228,7 +228,7 @@ private fun DislikedContent(
             actions = { close ->
                 LabeledIconButton(
                     R.drawable.thumb_down_outline,
-                    stringResource(R.string.menu_undislike_all),
+                    stringResource(R.string.menu_shortcut_undislike_all),
                     enabled = !empty,
                 ) { close { confirmUndislike = true } }
             },

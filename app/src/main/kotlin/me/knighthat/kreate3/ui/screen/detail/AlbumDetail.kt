@@ -610,7 +610,7 @@ fun AlbumMenu(
         actions = { close ->
             LabeledIconButton(
                 icon = R.drawable.play_arrow,
-                label = stringResource(R.string.menu_play),
+                label = stringResource(R.string.menu_shortcut_play),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.PLAY) } }
             LabeledIconToggle(
@@ -618,12 +618,12 @@ fun AlbumMenu(
                 enabled = isBookmarked != null,
                 setIcon = R.drawable.bookmark_filled,
                 unsetIcon = R.drawable.bookmark_outline,
-                label = stringResource(R.string.menu_bookmark),
+                label = stringResource(R.string.menu_shortcut_bookmark),
                 onClick = onToggleBookmark,
             )
             LabeledIconButton(
                 icon = R.drawable.share,
-                label = stringResource(R.string.menu_share),
+                label = stringResource(R.string.menu_shortcut_share),
                 enabled = share != null && linkShare.enabled,
                 loading = linkShare.sharing,
                 // A link of the server can take a moment, the sheet stays until it is there

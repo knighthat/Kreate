@@ -571,12 +571,12 @@ fun PlaylistMenu(
         actions = { close ->
             LabeledIconButton(
                 icon = R.drawable.queue_play_next,
-                label = stringResource(R.string.menu_play_next),
+                label = stringResource(R.string.menu_shortcut_play_next),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.PLAY_NEXT) } }
             LabeledIconButton(
                 icon = R.drawable.playlist_add,
-                label = stringResource(R.string.menu_add_to_queue),
+                label = stringResource(R.string.menu_shortcut_add_to_queue),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
             if (isSaved != null)
@@ -585,13 +585,13 @@ fun PlaylistMenu(
                     enabled = true,
                     setIcon = R.drawable.bookmark_filled,
                     unsetIcon = R.drawable.bookmark_outline,
-                    label = stringResource(R.string.menu_add_to_library),
+                    label = stringResource(R.string.menu_shortcut_add_to_library),
                     onClick = onToggleSaved,
                 )
             if (canShare)
                 LabeledIconButton(
                     icon = R.drawable.share,
-                    label = stringResource(R.string.menu_share),
+                    label = stringResource(R.string.menu_shortcut_share),
                     enabled = share != null && linkShare.enabled,
                     loading = linkShare.sharing,
                     // A link of the server can take a moment, the sheet stays until it is there

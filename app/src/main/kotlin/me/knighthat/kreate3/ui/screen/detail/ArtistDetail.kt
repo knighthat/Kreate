@@ -377,7 +377,7 @@ fun ArtistMenu(
         actions = { close ->
             LabeledIconButton(
                 icon = R.drawable.play_arrow,
-                label = stringResource(R.string.menu_play),
+                label = stringResource(R.string.menu_shortcut_play),
                 enabled = onAction != null,
             ) { close { onAction?.invoke(QueueAction.PLAY) } }
             LabeledIconToggle(
@@ -385,12 +385,12 @@ fun ArtistMenu(
                 enabled = isFollowed != null,
                 setIcon = R.drawable.how_to_reg,
                 unsetIcon = R.drawable.person_add,
-                label = stringResource(R.string.menu_follow),
+                label = stringResource(R.string.menu_shortcut_follow),
                 onClick = onToggleFollow,
             )
             LabeledIconButton(
                 icon = R.drawable.share,
-                label = stringResource(R.string.menu_share),
+                label = stringResource(R.string.menu_shortcut_share),
                 enabled = share != null && linkShare.enabled,
                 loading = linkShare.sharing,
                 // A link of the server can take a moment, the sheet stays until it is there

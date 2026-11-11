@@ -605,7 +605,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_down,
             unsetIcon = R.drawable.thumb_down_outline,
-            label = stringResource(R.string.menu_dislike),
+            label = stringResource(R.string.menu_shortcut_dislike),
             // Its message has an Undo the sheet would cover
             onClick = { close(reaction.toggleDislike) },
         )
@@ -614,12 +614,12 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_up,
             unsetIcon = R.drawable.thumb_up_outline,
-            label = stringResource(R.string.menu_like),
+            label = stringResource(R.string.menu_shortcut_like),
             onClick = reaction.toggleLike,
         )
         LabeledIconButton(
             icon = R.drawable.share,
-            label = stringResource(R.string.menu_share),
+            label = stringResource(R.string.menu_shortcut_share),
             enabled = share.enabled,
             loading = share.sharing,
             // A link of the server can take a moment, the sheet stays until it is there
@@ -1026,7 +1026,7 @@ private fun SongMenuPreview() = PreviewTheme {
                     enabled = true,
                     setIcon = R.drawable.thumb_down,
                     unsetIcon = R.drawable.thumb_down_outline,
-                    label = stringResource(R.string.menu_dislike),
+                    label = stringResource(R.string.menu_shortcut_dislike),
                     onClick = {},
                 )
                 LabeledIconToggle(
@@ -1034,12 +1034,12 @@ private fun SongMenuPreview() = PreviewTheme {
                     enabled = true,
                     setIcon = R.drawable.thumb_up,
                     unsetIcon = R.drawable.thumb_up_outline,
-                    label = stringResource(R.string.menu_like),
+                    label = stringResource(R.string.menu_shortcut_like),
                     onClick = {},
                 )
                 LabeledIconButton(
                     icon = R.drawable.share,
-                    label = stringResource(R.string.menu_share),
+                    label = stringResource(R.string.menu_shortcut_share),
                     enabled = false,
                     onClick = {},
                 )
@@ -1079,7 +1079,7 @@ private fun SongMenuIconOnlyPreview() = PreviewTheme {
                     enabled = true,
                     setIcon = R.drawable.thumb_down,
                     unsetIcon = R.drawable.thumb_down_outline,
-                    label = stringResource(R.string.menu_dislike),
+                    label = stringResource(R.string.menu_shortcut_dislike),
                     onClick = {},
                 )
                 LabeledIconToggle(
@@ -1087,12 +1087,12 @@ private fun SongMenuIconOnlyPreview() = PreviewTheme {
                     enabled = true,
                     setIcon = R.drawable.thumb_up,
                     unsetIcon = R.drawable.thumb_up_outline,
-                    label = stringResource(R.string.menu_like),
+                    label = stringResource(R.string.menu_shortcut_like),
                     onClick = {},
                 )
                 LabeledIconButton(
                     icon = R.drawable.share,
-                    label = stringResource(R.string.menu_share),
+                    label = stringResource(R.string.menu_shortcut_share),
                     onClick = {},
                 )
                 LabeledIconButton(

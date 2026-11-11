@@ -170,11 +170,11 @@ internal val SongStorage?.icon: Int
 @get:StringRes
 internal val SongStorage?.labelRes: Int
     get() = when (this) {
-        null -> R.string.menu_download
-        SongStorage.CACHED -> R.string.menu_cached
-        SongStorage.DOWNLOADING -> R.string.menu_downloading
-        SongStorage.PAUSED -> R.string.menu_paused
-        SongStorage.DOWNLOADED -> R.string.menu_downloaded
+        null -> R.string.menu_shortcut_download
+        SongStorage.CACHED -> R.string.menu_shortcut_cached
+        SongStorage.DOWNLOADING -> R.string.menu_shortcut_downloading
+        SongStorage.PAUSED -> R.string.menu_shortcut_paused
+        SongStorage.DOWNLOADED -> R.string.menu_shortcut_downloaded
     }
 
 /** What [this] quality means for the songs of [origin]. */

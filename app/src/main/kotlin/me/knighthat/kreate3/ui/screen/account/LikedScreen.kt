@@ -219,7 +219,7 @@ private fun LikedContent(
             actions = { close ->
                 LabeledIconButton(
                     R.drawable.thumb_up_outline,
-                    stringResource(R.string.menu_unlike_all),
+                    stringResource(R.string.menu_shortcut_unlike_all),
                     enabled = !empty,
                 ) { close { confirmUnlike = true } }
             },

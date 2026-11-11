@@ -154,12 +154,12 @@ private fun HomeAlbumsContent(
                 actions = { close ->
                     LabeledIconButton(
                         R.drawable.casino,
-                        stringResource(R.string.menu_open_random),
+                        stringResource(R.string.menu_shortcut_open_random),
                         enabled = any,
                     ) { close(onRandom) }
                     LabeledIconButton(
                         R.drawable.play_arrow,
-                        stringResource(R.string.menu_play_random),
+                        stringResource(R.string.menu_shortcut_play_random),
                         enabled = any,
                     ) { close(onPlayRandom) }
                 },

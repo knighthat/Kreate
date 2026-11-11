@@ -351,20 +351,20 @@ internal fun CollectionMenuContent(
     ) {
         LabeledIconButton(
             icon = R.drawable.play_arrow,
-            label = stringResource(R.string.menu_play),
+            label = stringResource(R.string.menu_shortcut_play),
             loading = waiting == QueueAction.PLAY,
             enabled = waiting == null,
         ) { queue(QueueAction.PLAY) }
         LabeledIconButton(
             icon = R.drawable.shuffle,
-            label = stringResource(R.string.menu_shuffle),
+            label = stringResource(R.string.menu_shortcut_shuffle),
             loading = waiting == QueueAction.SHUFFLE,
             enabled = waiting == null,
         ) { queue(QueueAction.SHUFFLE) }
         if (shares)
             LabeledIconButton(
                 icon = R.drawable.share,
-                label = stringResource(R.string.menu_share),
+                label = stringResource(R.string.menu_shortcut_share),
                 enabled = share.enabled && (origin != Origin.OPEN_SUBSONIC || serverShares),
                 loading = share.sharing,
                 // A link of the server can take a moment, the sheet stays until it is there
