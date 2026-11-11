@@ -563,12 +563,12 @@ private fun SearchContent(
                     placeholder = when (origin) {
                         Origin.LOCAL -> stringResource(R.string.screen_search_hint_library)
                         Origin.YOUTUBE -> stringResource(
-                            R.string.screen_search_hint_youtube,
+                            R.string.screen_search_hint_source,
                             stringResource(R.string.source_ytm)
                         )
 
                         Origin.OPEN_SUBSONIC ->
-                            stringResource(R.string.screen_search_hint_opensubsonic, server)
+                            stringResource(R.string.screen_search_hint_source, server)
                     },
                     onTextChange = onTextChange,
                     onSearch = { onSearch(text) },

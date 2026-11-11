@@ -255,7 +255,7 @@ private fun YouTubeSettingsContent(
                     title = {
                         Text(
                             stringResource(
-                                R.string.dialog_title_sign_out_of_youtube,
+                                R.string.dialog_title_sign_out,
                                 stringResource(R.string.source_ytm)
                             )
                         )

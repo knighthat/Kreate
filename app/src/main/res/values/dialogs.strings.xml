@@ -96,10 +96,8 @@
     <string name="dialog_body_find_recording_no_matches">No recordings found</string>
     <string name="dialog_title_find_artist">Find the artist</string>
     <string name="dialog_body_find_artist_no_matches">No artists found</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_opensubsonic">Sign out of %1$s?</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out">Sign out of %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">The saved username, password and API key are removed. You can sign in again any time.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
     <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>

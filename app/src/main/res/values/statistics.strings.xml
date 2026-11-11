@@ -39,22 +39,15 @@
     <string name="statistics_storage_lyrics">Lyrics</string>
     <string name="statistics_storage_other">Other apps and system</string>
     <string name="statistics_song_listens">Times completed</string>
-    <string name="statistics_song_plays">Plays</string>
-    <string name="statistics_song_time_listened">Time listened</string>
+    <string name="statistics_plays">Plays</string>
+    <string name="statistics_time_listened">Time listened</string>
     <string name="statistics_song_first_discovered">First discovered</string>
-    <string name="statistics_song_last_played">Last played</string>
+    <string name="statistics_last_played">Last played</string>
     <string name="statistics_album_listens">Times completed</string>
-    <string name="statistics_album_plays">Plays</string>
-    <string name="statistics_album_time_listened">Time listened</string>
-    <string name="statistics_album_songs_played">Songs played</string>
+    <string name="statistics_songs_played">Songs played</string>
     <string name="statistics_album_first_discovered">First discovered</string>
-    <string name="statistics_album_last_played">Last played</string>
     <string name="statistics_artist_listens">Times completed</string>
-    <string name="statistics_artist_plays">Plays</string>
-    <string name="statistics_artist_time_listened">Time listened</string>
-    <string name="statistics_artist_songs_played">Songs played</string>
     <string name="statistics_artist_first_discovered">First discovered</string>
-    <string name="statistics_artist_last_played">Last played</string>
 
     <string name="details_length">Length</string>
     <string name="details_first_released">First released</string>

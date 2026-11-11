@@ -942,7 +942,7 @@ private fun ShowPreferenceFailures(notifier: Notifier) {
                 when (failure.reason) {
                     PreferenceFailure.Reason.STORAGE -> R.string.error_file_unavailable
                     PreferenceFailure.Reason.DAMAGED -> R.string.error_file_damaged
-                    PreferenceFailure.Reason.UNKNOWN -> R.string.error_file_unknown
+                    PreferenceFailure.Reason.UNKNOWN -> R.string.error_unknown
                 }
             )
             val message = when (failure.store) {

@@ -182,15 +182,15 @@ private fun GroupNumbers(group: StatisticsGroup, state: GroupStatisticsState) {
         listOf(
             stringResource(if (album) R.string.statistics_album_listens else R.string.statistics_artist_listens) to
                     "${state.listens}",
-            stringResource(if (album) R.string.statistics_album_plays else R.string.statistics_artist_plays) to
+            stringResource(R.string.statistics_plays) to
                     "${state.plays}",
-            stringResource(if (album) R.string.statistics_album_time_listened else R.string.statistics_artist_time_listened) to
+            stringResource(R.string.statistics_time_listened) to
                     resources.timeSpent(state.timeSpent),
-            stringResource(if (album) R.string.statistics_album_songs_played else R.string.statistics_artist_songs_played) to
+            stringResource(R.string.statistics_songs_played) to
                     "${state.songsPlayed}",
             stringResource(if (album) R.string.statistics_album_first_discovered else R.string.statistics_artist_first_discovered) to
                     context.playDate(state.firstPlayed),
-            stringResource(if (album) R.string.statistics_album_last_played else R.string.statistics_artist_last_played) to
+            stringResource(R.string.statistics_last_played) to
                     context.playDate(state.lastPlayed),
         )
     )

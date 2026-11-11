@@ -425,7 +425,7 @@ internal fun CollectionMenuContent(
                             0 -> notifier.post(
                                 Message(
                                     resources.getString(
-                                        R.string.error_album_artist_not_found,
+                                        R.string.error_artist_not_found,
                                         name
                                     )
                                 )

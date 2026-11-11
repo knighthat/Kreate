@@ -45,7 +45,7 @@ import kotlin.time.Duration
 /** "Nothing played yet" in the middle of the list. */
 internal fun LazyListScope.nothingPlayed() = item(key = "empty") {
     Text(
-        stringResource(R.string.screen_statistics_status_nothing_played),
+        stringResource(R.string.status_nothing_played),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier

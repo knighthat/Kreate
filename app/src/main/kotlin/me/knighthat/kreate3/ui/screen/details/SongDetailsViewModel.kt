@@ -179,7 +179,7 @@ class SongDetailsViewModel(
         return if (e is IOException)
             context.getString(R.string.error_unreachable, musicBrainz)
         else
-            context.getString(R.string.error_song_details, musicBrainz)
+            context.getString(R.string.error_details, musicBrainz)
     }
 
     private companion object {

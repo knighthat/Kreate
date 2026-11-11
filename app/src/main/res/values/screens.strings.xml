@@ -44,9 +44,7 @@
     <string name="screen_title_account">Account</string>
     <string name="screen_title_history">History</string>
     <string name="screen_title_statistics">Statistics</string>
-    <string name="screen_title_song_details">Details</string>
-    <string name="screen_title_artist_details">Details</string>
-    <string name="screen_title_album_details">Details</string>
+    <string name="screen_title_details">Details</string>
     <string name="screen_title_liked">Liked</string>
     <string name="screen_title_disliked">Disliked</string>
     <string name="screen_title_downloaded">Downloaded</string>
@@ -87,10 +85,8 @@
     <string name="section_header_in_progress">In progress</string>
 
     <string name="screen_search_hint_library">Search your library</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_youtube">Search %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_opensubsonic">Search %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_source">Search %1$s</string>
     <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
     <string name="screen_voice_search_hint_phrase">Play … on %1$s</string>
     <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
@@ -134,7 +130,6 @@
     <string name="screen_profiles_status_active_since">Active since %1$s</string>
     <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
     <string name="screen_profiles_status_last_seen">Last seen %1$s</string>
-    <string name="screen_history_status_nothing_played">Nothing played yet</string>
     <string name="screen_history_status_no_matches">No plays match the filters</string>
     <string name="screen_history_status_paused">History is paused, new plays aren\'t added</string>
     <string name="screen_liked_status_nothing_liked">No liked songs</string>
@@ -155,7 +150,6 @@
     <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
     <string name="status_download_paused_at">Paused at %1$s</string>
     <string name="screen_download_queue_status_nothing">Nothing is being downloaded</string>
-    <string name="screen_statistics_status_nothing_played">Nothing played yet</string>
     <string name="screen_statistics_status_nothing_this_month">Nothing played this month</string>
     <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>
     <string name="screen_player_status_timer_song_end">Pauses when the song ends</string>

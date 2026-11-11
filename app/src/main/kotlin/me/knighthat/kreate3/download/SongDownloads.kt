@@ -735,7 +735,7 @@ private fun Exception.failureRes(): Int? =
     generateSequence<Throwable>(this) { it.cause }
         .firstNotNullOfOrNull { (it as? DataSourceException)?.reason }
         ?.let(::playbackReasonRes)
-        ?.takeIf { it != R.string.error_playback_unknown }
+        ?.takeIf { it != R.string.error_unknown }
 
 /** The song as a download keeps it, without its address, which the player adds. */
 @OptIn(UnstableApi::class)

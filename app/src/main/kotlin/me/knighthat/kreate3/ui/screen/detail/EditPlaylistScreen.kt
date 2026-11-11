@@ -81,10 +81,10 @@ fun EditPlaylistScreen(
     val apply = { afterwards: () -> Unit ->
         viewModel.apply { stored ->
             if (stored) {
-                notifier.post(resources.getString(R.string.snackbar_playlist_changes_saved))
+                notifier.post(resources.getString(R.string.snackbar_changes_saved))
                 afterwards()
             } else {
-                notifier.post(resources.getString(R.string.error_playlist_apply_changes))
+                notifier.post(resources.getString(R.string.error_edit_apply))
             }
         }
     }

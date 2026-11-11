@@ -145,12 +145,12 @@ private fun CheckState.credentialsSummary(server: String): String? = when (this)
 
         is ServerCheck.UntrustedCertificate ->
             stringResource(
-                R.string.setting_description_sign_in_status_certificate_untrusted,
+                R.string.setting_description_status_certificate_untrusted,
                 server
             )
 
         is ServerCheck.CertificateChanged ->
-            stringResource(R.string.setting_description_sign_in_status_certificate_changed, server)
+            stringResource(R.string.setting_description_status_certificate_changed, server)
 
         ServerCheck.NotSubsonic -> stringResource(
             R.string.setting_description_server_status_not_opensubsonic,
@@ -178,7 +178,7 @@ private fun CheckState.signInSummary(
     !credentialsSet && serverSet ->
         stringResource(R.string.setting_description_sign_in_status_start_syncing)
 
-    !credentialsSet -> stringResource(R.string.setting_description_sign_in_status_not_signed_in)
+    !credentialsSet -> stringResource(R.string.setting_description_status_not_signed_in)
     this is CheckState.Done && result is ServerCheck.Success -> when (auth) {
         OpenSubsonicAuth.PASSWORD ->
             stringResource(R.string.setting_description_sign_in_status_signed_in_as, username)

@@ -120,10 +120,11 @@ private fun SongNumbers(state: SongStatisticsState) {
     NumberLines(
         listOf(
             stringResource(R.string.statistics_song_listens) to "${state.listens}",
-            stringResource(R.string.statistics_song_plays) to "${state.plays}",
-            stringResource(R.string.statistics_song_time_listened) to resources.timeSpent(state.timeSpent),
+            stringResource(R.string.statistics_plays) to "${state.plays}",
+            stringResource(R.string.statistics_time_listened) to
+                    resources.timeSpent(state.timeSpent),
             stringResource(R.string.statistics_song_first_discovered) to context.playDate(state.firstPlayed),
-            stringResource(R.string.statistics_song_last_played) to context.playDate(state.lastPlayed),
+            stringResource(R.string.statistics_last_played) to context.playDate(state.lastPlayed),
         )
     )
 }

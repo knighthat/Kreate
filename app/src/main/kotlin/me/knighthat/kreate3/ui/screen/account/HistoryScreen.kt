@@ -271,7 +271,7 @@ private fun HistoryContent(
                                 if (filtered)
                                     R.string.screen_history_status_no_matches
                                 else
-                                    R.string.screen_history_status_nothing_played
+                                    R.string.status_nothing_played
                             ),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

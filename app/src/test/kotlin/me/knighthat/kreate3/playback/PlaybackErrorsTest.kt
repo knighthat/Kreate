@@ -80,6 +80,6 @@ class PlaybackErrorsTest {
     @Test
     fun songWithoutTitleAndUnknownErrorStillSaySomething() {
         val unknown = error(PlaybackException.ERROR_CODE_UNSPECIFIED)
-        assertEquals(R.string.error_playback_unknown, unknown.reasonRes())
+        assertEquals(R.string.error_unknown, unknown.reasonRes())
     }
 }

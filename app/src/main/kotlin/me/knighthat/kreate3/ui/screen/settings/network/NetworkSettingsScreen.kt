@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 /** Who is signed in, for the row that opens the YouTube page. */
 @Composable
 private fun YouTubeAccountState.summary(): String = when (this) {
-    YouTubeAccountState.SignedOut -> stringResource(R.string.setting_description_configure_youtube_status_not_signed_in)
+    YouTubeAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
     YouTubeAccountState.Checking -> stringResource(R.string.status_checking)
     is YouTubeAccountState.SignedIn ->
         stringResource(
@@ -94,12 +94,12 @@ private fun CheckState.serverName(server: String): String = when (this) {
         )
 
         is ServerCheck.UntrustedCertificate -> stringResource(
-            R.string.setting_description_configure_opensubsonic_status_certificate_untrusted,
+            R.string.setting_description_status_certificate_untrusted,
             server
         )
 
         is ServerCheck.CertificateChanged -> stringResource(
-            R.string.setting_description_configure_opensubsonic_status_certificate_changed,
+            R.string.setting_description_status_certificate_changed,
             server
         )
 

@@ -157,7 +157,7 @@ internal fun OpenSubsonicSignInContent(
             title = {
                 Text(
                     stringResource(
-                        R.string.dialog_title_sign_out_of_opensubsonic,
+                        R.string.dialog_title_sign_out,
                         server
                     )
                 )

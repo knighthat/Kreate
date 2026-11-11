@@ -64,7 +64,6 @@
     <string name="action_move_to_downloads">Move to downloads</string>
     <string name="action_remove_from_cache">Remove from cache</string>
     <string name="action_play">Play</string>
-    <string name="action_shuffle">Shuffle</string>
     <string name="action_play_next">Next</string>
     <string name="action_queue">Queue</string>
     <string name="action_pause">Pause</string>

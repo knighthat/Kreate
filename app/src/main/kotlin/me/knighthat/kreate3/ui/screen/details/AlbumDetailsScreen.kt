@@ -89,7 +89,7 @@ private fun AlbumDetailsContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) = DetailScaffold(
-    title = title.ifBlank { stringResource(R.string.screen_title_album_details) },
+    title = title.ifBlank { stringResource(R.string.screen_title_details) },
     onBack = onBack,
     modifier = modifier,
     contentPadding = contentPadding,

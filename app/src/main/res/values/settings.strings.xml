@@ -313,16 +313,16 @@
     <string name="setting_description_allow_self_signed_certificate_status_changed">Certificate changed. Tap to approve</string>
     <!-- "Sign in" is the name of a settings row; the address is entered there -->
     <string name="setting_description_server_status_no_server">No server address, add it in Sign in</string>
-    <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
+    <string name="setting_description_status_not_signed_in">Not signed in</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
     <string name="setting_description_configure_youtube_status_signed_out">%1$s signed you out</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">No server set</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
     <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
+    <string name="setting_description_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_configure_opensubsonic_status_certificate_changed">%1$s\'s certificate changed</string>
+    <string name="setting_description_status_certificate_changed">%1$s\'s certificate changed</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Not an %1$s server</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
@@ -345,11 +345,6 @@
     <string name="setting_description_sign_in_status_invalid_api_key">Invalid API key</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
     <string name="setting_description_sign_in_status_refused">%1$s refused to sign in (%2$d)</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_sign_in_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_sign_in_status_certificate_changed">%1$s\'s certificate changed</string>
-    <string name="setting_description_sign_in_status_not_signed_in">Not signed in</string>
     <string name="setting_description_sign_in_status_start_syncing">Sign in to start syncing</string>
     <!-- %1$s is the user's account name on YouTube Music or their username on an OpenSubsonic server (a person's name or handle, gender unknown, not translated) -->
     <string name="setting_description_sign_in_status_signed_in_as">Signed in as %1$s</string>

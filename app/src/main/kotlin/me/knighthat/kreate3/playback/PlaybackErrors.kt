@@ -86,5 +86,5 @@ fun playbackReasonRes(errorCode: Int): Int = when (errorCode) {
 
     ERROR_CODE_NOT_PLAYABLE -> R.string.error_playback_not_playable
 
-    else -> R.string.error_playback_unknown
+    else -> R.string.error_unknown
 }

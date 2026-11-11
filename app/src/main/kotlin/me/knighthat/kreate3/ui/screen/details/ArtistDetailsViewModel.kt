@@ -155,7 +155,7 @@ class ArtistDetailsViewModel(
         return if (e is IOException)
             context.getString(R.string.error_unreachable, musicBrainz)
         else
-            context.getString(R.string.error_artist_details, musicBrainz)
+            context.getString(R.string.error_details, musicBrainz)
     }
 
     private companion object {

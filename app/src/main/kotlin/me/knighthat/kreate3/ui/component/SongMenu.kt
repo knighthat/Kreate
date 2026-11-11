@@ -741,7 +741,7 @@ private fun SongMenuActions(
                     notifier.post(
                         Message(
                             resources.getString(
-                                R.string.error_song_artist_not_found,
+                                R.string.error_artist_not_found,
                                 resources.itemName(item.songTitle(), R.string.snackbar_this_song)
                             )
                         )

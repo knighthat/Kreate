@@ -119,7 +119,7 @@ class OpenSubsonicPlaylistDetailViewModel(
                 onDone(
                     result == SaveResult.Saved,
                     when (result) {
-                        SaveResult.Saved -> context.getString(R.string.snackbar_playlist_changes_saved)
+                        SaveResult.Saved -> context.getString(R.string.snackbar_changes_saved)
                         SaveResult.Changed ->
                             context.getString(R.string.error_playlist_changed_on_server)
 

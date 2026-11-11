@@ -28,7 +28,7 @@
     <string name="error_playback_source_off">source unavailable</string>
     <string name="error_playback_not_playable">nothing to play</string>
     <string name="error_playback_too_slow">took too long to load</string>
-    <string name="error_playback_unknown">unknown error</string>
+    <string name="error_unknown">unknown error</string>
     <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
     <string name="error_backup_not_a_backup">Not a %1$s backup</string>
     <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
@@ -42,7 +42,6 @@
     <string name="error_playlist_delete">Couldn\'t delete the playlist</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">Couldn\'t save the changes: %1$s</string>
-    <string name="error_playlist_apply_changes">Couldn\'t save the changes</string>
     <string name="error_edit_apply">Couldn\'t save the changes</string>
     <string name="error_edit_load">Couldn\'t load the details to edit</string>
     <string name="snackbar_changes_saved">Changes saved</string>
@@ -51,12 +50,8 @@
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <string name="error_unreachable">Can\'t reach %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song -->
-    <string name="error_song_details">Couldn\'t get details from %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the artist -->
-    <string name="error_artist_details">Couldn\'t get details from %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the album -->
-    <string name="error_album_details">Couldn\'t get details from %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
+    <string name="error_details">Couldn\'t get details from %1$s</string>
     <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
     <string name="error_collection_songs">Couldn\'t get the songs of %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
@@ -141,10 +136,8 @@
     <string name="error_song_lookup">Couldn\'t load the details of %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
     <string name="error_song_album_not_found">Couldn\'t find the album of %1$s</string>
-    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
-    <string name="error_song_artist_not_found">Couldn\'t find the artist of %1$s</string>
-    <!-- %1$s is an album title in quotes, or "this album" when the title isn\'t known -->
-    <string name="error_album_artist_not_found">Couldn\'t find the artist of %1$s</string>
+    <!-- %1$s is a song or album title in quotes, or "this song" / "this album" when the title isn't known -->
+    <string name="error_artist_not_found">Couldn\'t find the artist of %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
     <string name="error_remove_like">Couldn\'t remove the like from %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
@@ -172,7 +165,6 @@
     <string name="error_server_off">%1$s is turned off, turn it on in %2$s settings</string>
     <string name="error_file_unavailable">storage is full or unavailable</string>
     <string name="error_file_damaged">the file was damaged</string>
-    <string name="error_file_unknown">unknown error</string>
 
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
     <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
@@ -200,7 +192,6 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Removed %1$s from playlist</string>
     <string name="snackbar_playlist_deleted">Deleted %1$s</string>
-    <string name="snackbar_playlist_changes_saved">Changes saved</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
     <string name="snackbar_removed_from_like">Removed from likes</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
