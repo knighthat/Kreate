@@ -15,7 +15,12 @@ playback/
   `PLAYBACK_STALL_SECONDS` while playWhenReady (stall → `player.stop()`), follows
   `PLAYBACK_FAILURE_ACTION`: retry once per song (`prepare()`, reset on transition), skip to the
   next (at most `MAX_SKIPS_IN_A_ROW` 3 until one plays), or stay idle; posts the reason unless it
-  retries.
+  retries. With retry on, an `ERROR_CODE_UNAVAILABLE` failure runs `check` first (cancelled on
+  transition): plays after all → retry, replaced → `replaceMediaItem` + `prepare()`, gone → skip or
+  stop with the reason.
+- `ReplacedSongs.kt` — `SongCheck` (`Playable`/`Replaced`/`Gone`) and
+  `YouTubeProvider.checkUnavailable(item, queued)`: `isPlayable`, then `replacementOf` from the
+  item's title, artist ids and length; the replacement is only queued, never stored.
 - `PlaybackService.kt` — `MediaLibraryService`, owns the player + notification; `SessionCallback`
   adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
   (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
@@ -139,7 +144,8 @@ playback/
 - `PlayerBuild.kt` — the settings a player is made with (`keepPlayed`), `now()` / `changes`.
 - `CarriedQueue.kt` — a player's queue, shuffled order, song + position, repeat, prepared and
   playWhenReady, applied to the next player in `createSession` before `PersistentQueue` restores.
-- `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`;
+- `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`; `SongLoadErrorPolicy`
+  (no Media3 load retries for `ERROR_CODE_UNAVAILABLE`, so it reaches `PlaybackRecovery`);
   `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`,
   `SongLoadControl` (back buffer from the `PlayerBuild` parameter of the player factory).
 - `SongLoadControl.kt` — `DefaultLoadControl` buffering by time: min = max = 60 s ceiling, the

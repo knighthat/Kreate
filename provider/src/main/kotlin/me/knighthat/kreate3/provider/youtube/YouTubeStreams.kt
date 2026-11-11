@@ -93,7 +93,8 @@ internal class YouTubeStreams(
      * gets, maybe after a refusal. The other qualities are asked in it as [login] says, without
      * telling the library anything about Premium.
      * @return `null` when the song can't be played
-     * @throws YouTubeException when YouTube can't be reached or the library failed
+     * @throws YouTubeException when YouTube can't be reached or the library failed, or with
+     * [YouTubeException.unavailable] when YouTube says the video is unavailable
      */
     suspend fun stream(
         videoId: String,
@@ -107,21 +108,38 @@ internal class YouTubeStreams(
         val inSession = premium || (login == PlaybackLogin.ALWAYS && signedIn)
         val retryInSession = login == PlaybackLogin.ON_FAILURE && signedIn && !inSession
 
-        suspend fun find(audioQuality: AudioQuality): YouTubeStream? {
+        suspend fun find(audioQuality: AudioQuality): Extraction {
             val first = extract(videoId, refused, audioQuality, inSession, premium, cookies)
-            if (first.stream != null || !first.ageRestricted || !retryInSession) return first.stream
+            if (first.stream != null || !first.ageRestricted || !retryInSession) return first
             Logger.d(tag = TAG) { "$videoId is age-restricted, asking again in the session" }
-            return extract(videoId, refused, audioQuality, true, false, cookies).stream
+            return extract(videoId, refused, audioQuality, true, false, cookies)
         }
 
-        val stream = find(quality.audioQuality)
+        val found = find(quality.audioQuality)
+        // The song itself is gone, another quality has nothing either
+        if (found.unavailable) {
+            throw YouTubeException("YouTube says $videoId is unavailable", unavailable = true)
+        }
         // Nearly every video has the MP4 audio of 128 kbps, the best is played without it
-        if (stream == null && quality == StreamQuality.MEDIUM) return find(AudioQuality.HIGH)
-        return stream
+        if (found.stream == null && quality == StreamQuality.MEDIUM) {
+            return find(AudioQuality.HIGH).stream
+        }
+        return found.stream
     }
 
-    /** What [extract] found, with whether YouTube wants the viewer's age confirmed if not. */
-    private class Extraction(val stream: YouTubeStream?, val ageRestricted: Boolean = false)
+    /** What [extract] found, with why there is nothing when the library said. */
+    private class Extraction(
+        val stream: YouTubeStream?,
+        val reason: StreamResolveException.Reason? = null,
+    ) {
+        /** YouTube wants the viewer's age confirmed. */
+        val ageRestricted: Boolean
+            get() = reason == StreamResolveException.Reason.AGE_RESTRICTED
+
+        /** YouTube says the video is unavailable, like one taken down or published again. */
+        val unavailable: Boolean
+            get() = stream == null && reason == StreamResolveException.Reason.UNAVAILABLE
+    }
 
     private suspend fun extract(
         videoId: String,
@@ -153,7 +171,7 @@ internal class YouTubeStreams(
             ) { "No stream for $videoId, reason ${e.reason}, left out ${refused.size} clients" }
             if (e.reason == StreamResolveException.Reason.NETWORK)
                 throw YouTubeException("Couldn't reach YouTube", cause = e)
-            return Extraction(null, e.reason == StreamResolveException.Reason.AGE_RESTRICTED)
+            return Extraction(null, e.reason)
         } catch (e: InnerTubeHttpException) {
             Logger.w(
                 e,

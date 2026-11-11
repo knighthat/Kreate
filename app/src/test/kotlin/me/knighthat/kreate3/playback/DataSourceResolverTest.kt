@@ -427,5 +427,8 @@ class DataSourceResolverTest {
 
         answer = { throw YouTubeException("YouTube answered 429", status = 429) }
         assertEquals(PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS, failure(Origin.YOUTUBE, "v1"))
+
+        answer = { throw YouTubeException("YouTube says v1 is unavailable", unavailable = true) }
+        assertEquals(ERROR_CODE_UNAVAILABLE, failure(Origin.YOUTUBE, "v1"))
     }
 }

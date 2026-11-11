@@ -37,6 +37,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Collections
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 class YouTubeProviderTest {
 
@@ -294,6 +295,131 @@ class YouTubeProviderTest {
         assertEquals("Instant Crush (feat. Julian Casablancas)", song.song.name)
         assertEquals("khnokW3Mw24", requests.single().json().string("videoId"))
         assertNull(provider.songDetails("not-in-the-queue"))
+    }
+
+    @Test
+    fun aSongTheQueueMarksUnplayableDoesNotPlay() = runBlocking {
+        // An answer with azxk0-7Zjhk, published again as bM0x19DYsmA, and bM0x19DYsmA
+        val provider = provider { endpoint, _ ->
+            if (endpoint == "music/get_queue") fixture("queue_unplayable") else fixture("empty")
+        }
+
+        assertEquals(false, provider.isPlayable("azxk0-7Zjhk"))
+        assertEquals(true, provider.isPlayable("bM0x19DYsmA"))
+        assertEquals(false, provider.isPlayable("not-in-the-answer"))
+        assertEquals(
+            listOf("azxk0-7Zjhk"),
+            requests.first().json()["videoIds"].asArray?.map { it.asString })
+    }
+
+    @Test
+    fun aSongYouTubeDoesNotKnowDoesNotPlay() = runBlocking {
+        assertEquals(false, provider(status = HttpStatusCode.NotFound).isPlayable("x"))
+        assertEquals(false, provider(status = HttpStatusCode.InternalServerError).isPlayable("x"))
+    }
+
+    @Test
+    fun anotherFailureOfTheQueueThrows() {
+        val provider = provider(status = HttpStatusCode.TooManyRequests)
+
+        assertThrows(YouTubeException::class.java) {
+            runBlocking { provider.isPlayable("x") }
+        }
+    }
+
+    private val fripSide = listOf("UC-w4BhQFLWGj2WcOe6qFx8Q")
+
+    // BLACKFOX hekAwcwLXc4 4:25, BLACKFOX (Version 2022) oKFhG1vSzA8 4:26, two others of fripSide
+    private fun replacements() = provider { endpoint, _ ->
+        if (endpoint == "search") fixture("search_replacement") else fixture("empty")
+    }
+
+    @Test
+    fun theSameTitleIsTheReplacementBeforeOneHoldingIt() = runBlocking {
+        val provider = replacements()
+
+        val found = provider.replacementOf(
+            "Xquk9xxVcpE", "BLACKFOX", "fripSide", fripSide, (4 * 60 + 26).seconds,
+        )
+
+        assertEquals("hekAwcwLXc4", found?.song?.song?.id)
+        val search = requests.single().json()
+        assertEquals("BLACKFOX fripSide", search.string("query"))
+        assertEquals(YouTubeSearchFilter.SONGS.params, search.string("params"))
+    }
+
+    @Test
+    fun aTitleHoldingTheOldOneIsAReplacement() = runBlocking {
+        // The old song is the exact one, it isn't its own replacement
+        val found = replacements().replacementOf(
+            "hekAwcwLXc4", "BLACKFOX", "fripSide", fripSide, (4 * 60 + 25).seconds,
+        )
+
+        assertEquals("oKFhG1vSzA8", found?.song?.song?.id)
+    }
+
+    @Test
+    fun aReplacementHasTheLengthAndArtistOfTheOldSong() = runBlocking {
+        val provider = replacements()
+
+        assertNull(
+            provider.replacementOf("x", "BLACKFOX", "fripSide", fripSide, (4 * 60 + 29).seconds)
+        )
+        assertNull(
+            provider.replacementOf(
+                "x",
+                "BLACKFOX",
+                "fripSide",
+                listOf("UCx"),
+                (4 * 60 + 25).seconds
+            )
+        )
+        // Words of the title, not letters of a word
+        assertNull(
+            provider.replacementOf("x", "BLACK", "fripSide", fripSide, (4 * 60 + 25).seconds)
+        )
+    }
+
+    @Test
+    fun titlesAreComparedFolded() = runBlocking {
+        val provider = replacements()
+
+        // "BLACKFOX (Version 2022)" before "BLACKFOX", which only holds it the other way round
+        assertEquals(
+            "oKFhG1vSzA8",
+            provider.replacementOf(
+                "x", "blackfox -version 2022-", "fripSide", fripSide, (4 * 60 + 26).seconds,
+            )?.song?.song?.id,
+        )
+        // The same folded goes before one holding it, whatever the length
+        assertEquals(
+            "hekAwcwLXc4",
+            provider.replacementOf("x", "Blackfox", "fripSide", fripSide, (4 * 60 + 26).seconds)
+                ?.song?.song?.id,
+        )
+        // Full-width letters are the plain ones
+        assertEquals(
+            "hekAwcwLXc4",
+            provider.replacementOf("x", "ＢＬＡＣＫＦＯＸ", "fripSide", fripSide, (4 * 60 + 25).seconds)
+                ?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun hyphensAreLeftOutOfTheSearch() = runBlocking {
+        replacements().replacementOf(
+            "uiGlDitA-i4", "LEVEL5 -judgelight-", "Sayaka Sasaki", listOf("UCx"), 283.seconds,
+        )
+
+        assertEquals("LEVEL5  judgelight  Sayaka Sasaki", requests.single().json().string("query"))
+    }
+
+    @Test
+    fun aSongWithoutArtistIdsIsNotSearched() = runBlocking {
+        val provider = replacements()
+
+        assertNull(provider.replacementOf("x", "BLACKFOX", "fripSide", emptyList(), 265.seconds))
+        assertTrue(requests.isEmpty())
     }
 
     @Test

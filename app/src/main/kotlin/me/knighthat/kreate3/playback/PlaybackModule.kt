@@ -24,9 +24,12 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSourceException
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
+import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -161,6 +164,23 @@ private const val LOADING_CHECK_INTERVAL_BYTES = 128 * 1024
 private fun songMediaSourceFactory(songs: DataSource.Factory): MediaSource.Factory =
     ProgressiveMediaSource.Factory(songs)
         .setContinueLoadingCheckIntervalBytes(LOADING_CHECK_INTERVAL_BYTES)
+        .setLoadErrorHandlingPolicy(SongLoadErrorPolicy)
+
+/**
+ * Media3's retries, except for a song its source says is unavailable
+ * ([ERROR_CODE_UNAVAILABLE]): loading it again gets the same answer, each try asking every
+ * YouTube client, until [PlaybackRecovery]'s stall limit stops it as too slow. It fails at once
+ * instead, so [PlaybackRecovery] sees why.
+ */
+@OptIn(UnstableApi::class)
+private object SongLoadErrorPolicy : DefaultLoadErrorHandlingPolicy() {
+
+    override fun getRetryDelayMsFor(loadErrorInfo: LoadErrorHandlingPolicy.LoadErrorInfo): Long {
+        val unavailable = generateSequence<Throwable>(loadErrorInfo.exception) { it.cause }
+            .any { it is DataSourceException && it.reason == ERROR_CODE_UNAVAILABLE }
+        return if (unavailable) C.TIME_UNSET else super.getRetryDelayMsFor(loadErrorInfo)
+    }
+}
 
 /** Loads [seconds] of the next song ahead, nothing when it isn't positive. */
 internal fun preloadConfiguration(seconds: Int): ExoPlayer.PreloadConfiguration =

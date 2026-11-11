@@ -75,6 +75,10 @@ class PlaybackErrorsTest {
             R.string.error_playback_not_playable,
             error(ERROR_CODE_NOT_PLAYABLE).reasonRes()
         )
+        assertEquals(
+            R.string.error_playback_not_playable,
+            error(ERROR_CODE_UNAVAILABLE).reasonRes()
+        )
     }
 
     @Test

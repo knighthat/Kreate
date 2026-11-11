@@ -30,6 +30,13 @@ const val ERROR_CODE_SOURCE_OFF = PlaybackException.CUSTOM_ERROR_CODE_BASE + 1
 /** The song's source has nothing to play for it, like a video YouTube doesn't stream. */
 const val ERROR_CODE_NOT_PLAYABLE = PlaybackException.CUSTOM_ERROR_CODE_BASE + 2
 
+/**
+ * The song's source says it is unavailable, like a YouTube song taken down or published again
+ * under another id. Told like [ERROR_CODE_NOT_PLAYABLE], `PlaybackRecovery` looks for the song
+ * published in its place before trying again.
+ */
+const val ERROR_CODE_UNAVAILABLE = PlaybackException.CUSTOM_ERROR_CODE_BASE + 3
+
 /** The title of this song, `null` when it has none to show. */
 fun MediaItem?.songTitle(): String? =
     this?.mediaMetadata?.title?.toString()?.takeIf { it.isNotBlank() }
@@ -84,7 +91,8 @@ fun playbackReasonRes(errorCode: Int): Int = when (errorCode) {
 
     ERROR_CODE_SOURCE_OFF -> R.string.error_playback_source_off
 
-    ERROR_CODE_NOT_PLAYABLE -> R.string.error_playback_not_playable
+    ERROR_CODE_NOT_PLAYABLE,
+    ERROR_CODE_UNAVAILABLE -> R.string.error_playback_not_playable
 
     else -> R.string.error_unknown
 }

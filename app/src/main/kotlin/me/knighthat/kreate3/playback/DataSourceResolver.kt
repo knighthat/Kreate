@@ -396,6 +396,8 @@ class DataSourceResolver internal constructor(
         }
 
     private fun YouTubeException.errorCode(): Int = when {
+        unavailable -> ERROR_CODE_UNAVAILABLE
+
         status != null -> PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS
         generateSequence<Throwable>(this) { it.cause }.any { it is IOException } ->
             PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED

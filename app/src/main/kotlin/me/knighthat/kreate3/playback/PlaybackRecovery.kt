@@ -23,6 +23,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -49,6 +50,12 @@ private const val MAX_SKIPS_IN_A_ROW = 3
  * limit on a slow network. The user is told why each song that
  * isn't tried again failed, through [notifier], whether a screen is open or not.
  *
+ * A song its source says is unavailable ([ERROR_CODE_UNAVAILABLE]) is asked about with [check]
+ * when the setting tries songs again, instead of being tried again at once: one that plays after
+ * all is tried again, one published in its place by YouTube takes its spot in the queue and
+ * plays, and one gone for good fails like a song tried again would, skipped or stopped on as the
+ * setting says.
+ *
  * Use it on the main thread, [scope] has to run there. Call [release] with the player.
  */
 class PlaybackRecovery(
@@ -56,9 +63,13 @@ class PlaybackRecovery(
     private val notifier: Notifier,
     private val context: Context,
     private val scope: CoroutineScope,
+    private val check: suspend (MediaItem) -> SongCheck,
 ) : Player.Listener {
 
     private var stallWatch: Job? = null
+
+    /** [check] of the song that failed, cancelled when another song plays. */
+    private var checking: Job? = null
 
     /** The song tried again, it isn't tried a second time until another one plays. */
     private var retried: String? = null
@@ -75,10 +86,15 @@ class PlaybackRecovery(
     override fun onPlayerError(error: PlaybackException) {
         val item = player.currentMediaItem
         Logger.w(error, TAG) { "Couldn't play ${item?.mediaId}" }
-        recover(error.userMessage(context, item))
+        recover(
+            error.userMessage(context, item),
+            unavailable = error.errorCode == ERROR_CODE_UNAVAILABLE,
+        )
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        checking?.cancel()
+        checking = null
         // Also when the same song starts over, repeating it
         retried = null
         // Another song or queue the user picked starts the count over, as a song that played does
@@ -112,6 +128,8 @@ class PlaybackRecovery(
         player.removeListener(this)
         stallWatch?.cancel()
         stallWatch = null
+        checking?.cancel()
+        checking = null
     }
 
     /**
@@ -152,17 +170,77 @@ class PlaybackRecovery(
         }
     }
 
-    /** Tries the song again or plays the next one, with the player idle after a failure. */
-    private fun recover(message: String) {
+    /**
+     * Tries the song again or plays the next one, with the player idle after a failure.
+     *
+     * @param unavailable whether its source says the song is unavailable, it is [check]ed
+     * before it is tried again
+     */
+    private fun recover(message: String, unavailable: Boolean = false) {
         val action = Preferences.PLAYBACK_FAILURE_ACTION.value
-        val songId = player.currentMediaItem?.mediaId
+        val item = player.currentMediaItem
+        val songId = item?.mediaId
 
         if (action.retries && songId != null && songId != retried) {
             retried = songId
-            Logger.i(tag = TAG) { "Trying $songId again" }
-            player.prepare()
+            if (unavailable) {
+                lookUp(item, message)
+            } else {
+                Logger.i(tag = TAG) { "Trying $songId again" }
+                player.prepare()
+            }
             return
         }
+        giveUp(message)
+    }
+
+    /**
+     * Asks whether [item], which failed as unavailable, plays after all or was published again,
+     * and acts on the answer. A check that fails, like without a network, tries the song again.
+     */
+    private fun lookUp(item: MediaItem, message: String) {
+        val songId = item.mediaId
+        Logger.i(tag = TAG) { "$songId is unavailable, checking whether it was published again" }
+        checking?.cancel()
+        checking = scope.launch {
+            val found = try {
+                check(item)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.w(e, TAG) { "Couldn't check $songId, trying it again" }
+                SongCheck.Playable
+            }
+            checking = null
+            // Played again or moved on meanwhile, the player has its own song to play
+            if (player.currentMediaItem?.mediaId != songId || player.playerError == null) {
+                return@launch
+            }
+
+            when (found) {
+                SongCheck.Playable -> {
+                    Logger.i(tag = TAG) { "Trying $songId again" }
+                    player.prepare()
+                }
+
+                is SongCheck.Replaced -> {
+                    Logger.i(tag = TAG) { "$songId was published again as ${found.item.mediaId}" }
+                    player.replaceMediaItem(player.currentMediaItemIndex, found.item)
+                    player.prepare()
+                }
+
+                SongCheck.Gone -> {
+                    Logger.i(tag = TAG) { "$songId is gone from YouTube" }
+                    giveUp(message)
+                }
+            }
+        }
+    }
+
+    /** Plays the next song or stays on this one, as the setting says, and tells why it failed. */
+    private fun giveUp(message: String) {
+        val action = Preferences.PLAYBACK_FAILURE_ACTION.value
+        val songId = player.currentMediaItem?.mediaId
 
         if (action.skips && skipsInARow < MAX_SKIPS_IN_A_ROW && player.hasNextMediaItem()) {
             skipsInARow++
