@@ -61,5 +61,6 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,
   `updateDownloaders`),
   `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
-  `RemoteItem`; liked-song sync from servers). Helpers: `Mappers.kt` (entity↔model),
+  `RemoteItem`; liked-song sync from servers; `replaceSong` moves an old id's rows to the song
+  published in its place, `SongReplacement`). Helpers: `Mappers.kt` (entity↔model),
   `OriginFilter.kt` (SQL WHERE by origins), `SearchPattern.kt` (escaped LIKE).

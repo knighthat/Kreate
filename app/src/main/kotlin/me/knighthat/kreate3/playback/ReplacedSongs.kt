@@ -20,6 +20,9 @@ package me.knighthat.kreate3.playback
 
 import androidx.media3.common.MediaItem
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CancellationException
+import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.SongReplacement
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.youtube.toMediaItem
@@ -48,14 +51,18 @@ sealed interface SongCheck {
  * title, artists and length of [item]. A song without a title, a length or artist ids can't be
  * matched and is [SongCheck.Gone]. Songs of other origins are [SongCheck.Playable].
  *
- * Nothing is stored: the song published in place is only queued.
+ * A replacement found takes what the library keeps of [item] with [store] before it is queued
+ * (see `RemoteCatalogRepository.replaceSong`, a downloaded song is left as it is). A failure to
+ * store it is logged and the replacement still plays.
  *
  * @param queued [item]'s replacement as the player queues it, `null` when it can't be
+ * @param store moves what is kept of the song with the first id to the replacement
  * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
  */
 suspend fun YouTubeProvider.checkUnavailable(
     item: MediaItem,
     queued: (MediaItem) -> MediaItem?,
+    store: suspend (String, RemoteSong) -> SongReplacement,
 ): SongCheck {
     if (item.origin != Origin.YOUTUBE) return SongCheck.Playable
     if (isPlayable(item.mediaId)) return SongCheck.Playable
@@ -78,6 +85,22 @@ suspend fun YouTubeProvider.checkUnavailable(
         artistIds = artistIds,
         duration = duration,
     ) ?: return SongCheck.Gone
+    val newId = found.song.song.id
+    try {
+        val stored = store(item.mediaId, found.song)
+        Logger.i(tag = TAG) {
+            when (stored) {
+                SongReplacement.MOVED -> "What was kept of ${item.mediaId} is $newId's now"
+                SongReplacement.DOWNLOADED -> "${item.mediaId} is downloaded, it stays as it is"
+                SongReplacement.NOT_STORED -> "${item.mediaId} isn't stored, nothing to move to $newId"
+            }
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Logger.w(e, TAG) { "Couldn't move what was kept of ${item.mediaId} to $newId" }
+    }
+
     val replacement = queued(found.toMediaItem(this))
     if (replacement == null) {
         Logger.w(tag = TAG) { "${found.song.song.id} can't be queued in place of ${item.mediaId}" }

@@ -48,6 +48,18 @@ data class RemoteSong(
     val starredAt: Instant?,
 )
 
+/** What [RemoteCatalogRepository.replaceSong] did. */
+enum class SongReplacement {
+    /** Everything kept of the old song is the new one's now. */
+    MOVED,
+
+    /** A user has the old song downloaded, nothing changed. */
+    DOWNLOADED,
+
+    /** The old song isn't stored, nothing changed. */
+    NOT_STORED,
+}
+
 /**
  * Keeps the songs a server lists as liked, and the songs the user played, in the shared catalog
  * and the active user's library. Nothing else of a server's library is stored, items of other
@@ -104,4 +116,24 @@ interface RemoteCatalogRepository {
      * @return whether the catalog has the song
      */
     suspend fun addToLibrary(songId: String): Boolean
+
+    /**
+     * Moves what is kept of the song [oldId] to [song], the song its source published in its
+     * place (YouTube publishes songs again under another id, the old one stops playing): every
+     * user's library row with its reaction and their own name, artists, cover and MusicBrainz id,
+     * the song's places in playlists, its plays, its entries in saved queues and its lyrics. Then
+     * the old song is deleted, with what belongs to its file (formats and gain) and the users'
+     * album order, which was of its album.
+     *
+     * [song] is stored with the source's values, its album and artists like [savePlayedSong].
+     * Where it already has a row of its own, the row's values win and the old one only fills what
+     * it lacks: a name, a reaction, the earlier date added. A playlist already holding [song], or
+     * lyrics of a source it already has, keep their own.
+     *
+     * Nothing changes while any user has [oldId] downloaded: the file plays without its source.
+     *
+     * @throws IllegalArgumentException when [song] or what it points at is from the device or
+     * from another origin than [oldId]
+     */
+    suspend fun replaceSong(oldId: String, song: RemoteSong): SongReplacement
 }

@@ -49,8 +49,11 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
   rest, `PersistentQueueDao.details`; the first play, reaction, playlist add or download adds the
   song to the library from that row, `RemoteCatalogRepository.addToLibrary`),
   or when it starts downloading (`DownloadedSongStore`, the maintainer's call: offline needs it);
-  sync never adds one. A planned Import button will store a remote item only on an explicit user
-  action.
+  sync never adds one. A song YouTube published again under another id takes the stored old
+  one's place once a match confirms it (`RemoteCatalogRepository.replaceSong`: library rows,
+  playlist places, plays, saved queue, lyrics move, formats and album order stay with the old
+  row, which is deleted); a downloaded old song is never touched (maintainer, 2026-11-11). A
+  planned Import button will store a remote item only on an explicit user action.
 - Artists stored from the songs crediting them have no picture: credits carry only an id and a name.
   `ArtistPictures.fillMissing` asks the artist's source (`Provider.artist`) once per run and stores
   the picture, never over one already set; device artists have no source. Only Statistics calls it

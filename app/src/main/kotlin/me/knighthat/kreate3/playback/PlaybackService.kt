@@ -67,6 +67,7 @@ import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.auto.grantArtwork
 import me.knighthat.kreate3.auto.smallCoverJpeg
 import me.knighthat.kreate3.auto.withServedArtwork
+import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.DownloadedSongAction
@@ -169,8 +170,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             scope = scope,
         )
         val youTube = get<YouTubeProvider>()
+        val catalog = get<RemoteCatalogRepository>()
         recovery = PlaybackRecovery(player, get(), this, scope) { item ->
-            youTube.checkUnavailable(item) { it.queued() }
+            youTube.checkUnavailable(item, { it.queued() }, catalog::replaceSong)
         }
         PlaybackHistoryRecorder(player, get(), writeScope)
         persistentQueue = PersistentQueue(

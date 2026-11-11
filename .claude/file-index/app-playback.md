@@ -20,7 +20,8 @@ playback/
   stop with the reason.
 - `ReplacedSongs.kt` — `SongCheck` (`Playable`/`Replaced`/`Gone`) and
   `YouTubeProvider.checkUnavailable(item, queued)`: `isPlayable`, then `replacementOf` from the
-  item's title, artist ids and length; the replacement is only queued, never stored.
+  item's title, artist ids and length; then `store` (`RemoteCatalogRepository.replaceSong`) moves
+  what the library keeps of the old id to it before it's queued.
 - `PlaybackService.kt` — `MediaLibraryService`, owns the player + notification; `SessionCallback`
   adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
   (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
