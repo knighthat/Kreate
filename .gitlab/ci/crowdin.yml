@@ -5,8 +5,10 @@
 #           in fastlane/metadata/android/en-US/) sends the sources listed in crowdin.yml to Crowdin.
 # download: pulls the translations of the branch the pipeline starts from (BRANCH) into BRANCH_l10n,
 #           without a merge request: one commit on top of BRANCH. BRANCH_l10n is Crowdin's alone: every
-#           run force-pushes it, replacing what it held. The runner's copy of the repository is only
-#           where that commit is made, it's gone after the job.
+#           run force-pushes it, replacing what it held. The translation files are deleted before the
+#           download, so the commit holds everything Crowdin exports, as if none had existed: texts,
+#           files and languages Crowdin no longer has go away too. The runner's copy of the repository
+#           is only where that commit is made, it's gone after the job.
 #
 # Both name the Crowdin branch after the git branch. A scheduled pipeline always starts from the
 # default branch; pick another one in Build > Pipelines > New pipeline, together with the variable
@@ -56,8 +58,14 @@ download:
     - git remote set-url --push origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
     # BRANCH_l10n belongs to Crowdin: it is rebuilt from BRANCH every run, whatever it held before
     - git checkout -B "${BRANCH}_l10n"
-    - crowdin download --no-progress -b "$BRANCH"
+    # Every translation comes fresh from Crowdin: the files crowdin.yml writes go first, English
+    # (values/, en-US/) and the other resources in values-*/ (values-night/) stay
+    - find app/src/main/res -path 'app/src/main/res/values-*/*' \( -name '*.strings.xml' -o -name plurals.xml \) -delete
+    - find fastlane/metadata/android -mindepth 2 -maxdepth 2 ! -path '*/en-US/*' \( -name full_description.txt -o -name short_description.txt \) -delete
+    # A file that isn't fully translated comes down too, with its translated texts only, whatever
+    # the project settings say: without it Crowdin left those files out and the step above deleted them
+    - crowdin download --no-progress --no-skip-untranslated-files -b "$BRANCH"
     - git add -A
-    # Without new translations the branch is simply BRANCH again
+    # When Crowdin's export matches what BRANCH holds, the branch is simply BRANCH again
     - git diff --cached --quiet || git commit -m "update translations from crowdin"
     - git push --force origin "${BRANCH}_l10n"
