@@ -150,6 +150,9 @@ android {
         compose = true
         buildConfig = true
     }
+    // Translations come from Crowdin partly done, Android shows the English text in place of a
+    // missing one
+    lint.warning += "MissingTranslation"
     // The system's per-app language settings list the same translations (needs res/resources.properties)
     androidResources.generateLocaleConfig = true
     packaging.resources.excludes += listOf(
