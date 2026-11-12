@@ -31,30 +31,23 @@
     <!-- %1$s is the used space and %2$s the total space of the device's storage, both file sizes with unit, e.g. "64 GB of 128 GB used" -->
     <string name="statistics_storage_device_used">Đã dùng %1$s / %2$s</string>
     <!-- %1$s is the name of this app, Kreate; %2$s is a file size with unit, e.g. 1.2 GB. The storage the app occupies -->
-    <string name="statistics_storage_app_uses">Đã dùng %1$s / %2$s</string>
-    <string name="statistics_storage_image_cache">Hình đã xem</string>
+    <string name="statistics_storage_app_uses">%1$s đã dùng %2$s</string>
+    <string name="statistics_storage_image_cache">Ảnh bìa đã xem</string>
     <string name="statistics_storage_song_cache">Nhạc đã nghe</string>
     <string name="statistics_storage_song_downloads">Nhạc đã tải</string>
-    <string name="statistics_storage_download_covers">Ảnh bìa</string>
+    <string name="statistics_storage_download_covers">Ảnh bìa đã tải</string>
     <string name="statistics_storage_lyrics">Lời nhạc</string>
     <string name="statistics_storage_other">Hệ thống và các ứng dụng khác</string>
     <string name="statistics_song_listens">Số lần hoàn tất bài hát</string>
-    <string name="statistics_song_plays">Số lần phát</string>
-    <string name="statistics_song_time_listened">Tổng thời gian nghe</string>
+    <string name="statistics_plays">Số lần nghe</string>
+    <string name="statistics_time_listened">Tổng thời gian nghe</string>
     <string name="statistics_song_first_discovered">Lần nghe đầu tiên</string>
-    <string name="statistics_song_last_played">Lần nghe cuối</string>
+    <string name="statistics_last_played">Lần nghe cuối</string>
     <string name="statistics_album_listens">Tổng số lần nghe hết album</string>
-    <string name="statistics_album_plays">Số lần nghe</string>
-    <string name="statistics_album_time_listened">Tổng thời gian nghe</string>
-    <string name="statistics_album_songs_played">Số bài hát đã nghe</string>
+    <string name="statistics_songs_played">Số bài đã nghe</string>
     <string name="statistics_album_first_discovered">Làn nghe</string>
-    <string name="statistics_album_last_played">Lần nghe đầu tiên</string>
     <string name="statistics_artist_listens">Lần nghe cuối</string>
-    <string name="statistics_artist_plays">Số lần nghe</string>
-    <string name="statistics_artist_time_listened">Tổng thời gian nghe</string>
-    <string name="statistics_artist_songs_played">Số bài hát đã nghe</string>
     <string name="statistics_artist_first_discovered">Lần nghe đầu tiên</string>
-    <string name="statistics_artist_last_played">Lần nghe cuối</string>
     <string name="details_length">Thời lượng</string>
     <string name="details_first_released">Ngày ra mắt</string>
     <string name="details_isrc">Mã định danh quốc tế</string>

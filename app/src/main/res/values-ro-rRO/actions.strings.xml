@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Button texts and menu items. -->
+<resources>
+    <string name="action_close">Închide</string>
+    <string name="action_open_website">Deschide website</string>
+    <string name="action_save">Salvează</string>
+    <string name="action_cancel">Anulează</string>
+    <string name="action_ok">OK</string>
+    <string name="action_skip">Sari</string>
+    <string name="action_forget">Uită</string>
+    <string name="action_sign_in">Autentifică-te</string>
+    <string name="action_update">Actualizează</string>
+    <string name="action_sign_out">Deconectează-te</string>
+    <string name="action_pick_backup">Alege copie de rezervă</string>
+    <string name="action_trust_new_certificate">Încredințează un certificat nou</string>
+    <string name="action_not_now">Nu acum</string>
+    <string name="action_search">Caută</string>
+    <string name="action_create">Creează</string>
+    <string name="action_try_again">Încearcă din nou</string>
+    <string name="action_retry">Reîncercați</string>
+    <string name="action_undo">Anulează</string>
+    <string name="action_reload">Reîncarcă</string>
+    <string name="action_account_switch">Comutați</string>
+    <string name="action_delete">Șterge</string>
+    <string name="action_add">Adaugă</string>
+    <string name="action_less">Mai puține</string>
+    <string name="action_more">Mai multe</string>
+    <string name="action_restart">Repornește</string>
+    <string name="action_apply">Aplică</string>
+    <string name="action_apply_and_restart">Aplică &amp; repornește</string>
+    <string name="action_reset">Resetează</string>
+    <string name="action_clear">Șterge</string>
+    <string name="action_undislike">Undislike</string>
+    <string name="action_grant">Acordă</string>
+    <string name="action_go_back">Înapoi</string>
+    <string name="action_next">Următorul</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_download">Descarcă</string>
+    <string name="action_move_to_downloads">Mută la descărcări</string>
+    <string name="action_remove_from_cache">Șterge din cache</string>
+    <string name="action_play">Redă</string>
+    <string name="action_play_next">Următorul</string>
+    <string name="action_queue">Coadă</string>
+    <string name="action_pause">Pauză</string>
+    <string name="action_resume">Reia</string>
+    <string name="menu_play_next">Ascultă după</string>
+    <string name="menu_add_to_queue">Adaugă la coadă</string>
+    <string name="menu_add_to_playlist">Adaugă la playlist</string>
+    <string name="menu_start_radio">Pornește radioul</string>
+    <string name="menu_details">Detalii</string>
+    <string name="menu_statistics">Statistici</string>
+    <string name="menu_go_to_album">Accesează albumul</string>
+    <string name="menu_title_artists">Artiști</string>
+    <string name="menu_title_add_to_playlist">Adaugă la playlist</string>
+    <string name="menu_remove_from_playlist">Elimină din playlist</string>
+    <string name="menu_delete_from_history">Șterge din istoric</string>
+    <string name="menu_shuffle">Amestecă</string>
+    <string name="menu_cached_only">Doar cache</string>
+    <string name="menu_downloaded_only">Doar descărcate</string>
+    <string name="menu_bookmarked_only">Doar marcate</string>
+    <string name="menu_followed_only">Doar urmăriți</string>
+    <string name="menu_monthly_only">Doar lunar</string>
+    <string name="menu_off">Dezactivat</string>
+    <string name="menu_end_of_song">Sfârșitul melodiei</string>
+</resources>

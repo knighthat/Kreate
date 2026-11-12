@@ -36,6 +36,7 @@
     <string name="setting_title_region">Khu vực</string>
     <string name="setting_header_layout">Bố trí</string>
     <string name="setting_header_launcher">Khởi động</string>
+    <string name="setting_header_font">Phông chữ</string>
     <string name="setting_header_requests">Yêu cầu</string>
     <string name="setting_header_sources">Nguồn</string>
     <string name="setting_header_queue">Hàng đợi</string>
@@ -54,13 +55,13 @@
     <string name="setting_header_server_library">Thư viện trên máy chủ</string>
     <!-- what each page is about -->
     <string name="setting_description_general">Điều chỉnh cách ứng dụng hoạt động</string>
-    <string name="setting_description_data">Bộ đệm và bộ nhớ dài hạn</string>
-    <string name="setting_description_player">Điều chỉnh trình phát</string>
-    <string name="setting_description_ui">Giao diện, ngôn ngữ úng dụng</string>
+    <string name="setting_description_data">Bộ nhớ ngắn hạn và dài hạn</string>
+    <string name="setting_description_player">Cài đặt trình phát, tải trước nhạc, cân bằng âm thanh, v.v.</string>
+    <string name="setting_description_ui">Tùy chình chù đề ngôn ngữ, và bố cục của ứng dụng</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of a music source, e.g. YouTube Music (proper noun) -->
-    <string name="setting_description_network">Mạng, kết nối tới %1$s, đăng nhập vào tài khoản %2$s</string>
-    <string name="setting_description_backup">Lưu và khôi phục cài đặt và thư viện</string>
-    <string name="setting_description_about">Chi tiết về ứng dụng, giấy phép, và thư viện mã nguồn mỡ</string>
+    <string name="setting_description_network">Cài đặt thời gian chờ, đăng nhập vào %1$s và %2$s</string>
+    <string name="setting_description_backup">Lưu/Khôi phục cài đặt và thư viện</string>
+    <string name="setting_description_about">Chi tiết về ứng dụng, thư viện, và giấy phép mã nguồn mỡ</string>
     <!-- About -->
     <string name="setting_title_version">Phiên bản</string>
     <string name="setting_title_license">Giấy phép</string>
@@ -75,11 +76,11 @@
     <string name="setting_description_between">Cho phép từ %1$d đến %2$d</string>
     <!-- data -->
     <string name="setting_title_disk_cache">Trữ hình ảnh</string>
-    <string name="setting_description_disk_cache">Lưu ảnh bìa đã xem tạm thời trên máy. Áp dụng sau khi khỏi động lại</string>
+    <string name="setting_description_disk_cache">Lưu ảnh bìa đã xem tạm thời trên máy</string>
     <string name="setting_title_song_cache">Trữ nhạc</string>
-    <string name="setting_description_song_cache">Lưu nhạc đã nghe tạm thời trên máy. Áp dụng sau khi khỏi động lại</string>
+    <string name="setting_description_song_cache">Lưu nhạc đã nghe tạm thời trên máy</string>
     <string name="setting_title_song_downloads">Lưu nhạc dài hạn</string>
-    <string name="setting_description_song_downloads">Lưu nhạc vào máy, nhạc không thể bị xóa tự động bỏi hệ thống. Áp dụng sau khi khỏi động lại</string>
+    <string name="setting_description_song_downloads">Lưu nhạc vào máy, nhạc không thể bị xóa tự động bỏi hệ thống</string>
     <string name="setting_title_size_in_mib">Dung lượng MiB</string>
     <string name="setting_title_size_in_mb">Dung lượng MB</string>
     <string name="setting_title_binary_sizes">Đơn vị nhị phân</string>
@@ -90,7 +91,7 @@
     <!-- Under the switch that scans the device's music files -->
     <string name="setting_description_local_scan">Tìm nhạc đang có sẵn trên máy</string>
     <!-- Under the switch while the permission to read music and audio is denied -->
-    <string name="setting_description_local_scan_no_permission">Nhấn để cho phép %1$s xem các tệp âm thanh</string>
+    <string name="setting_description_local_scan_no_permission">Nhấn để cho phép %1$s đọc nhạc trên hệ thống</string>
     <string name="setting_title_local_loudness">Phân tích độ ồn</string>
     <!-- Under the switch that measures how loud the device's songs are -->
     <string name="setting_description_local_loudness">Dùng để cân bằng âm thanh, nếu bật</string>
@@ -99,18 +100,20 @@
     <string name="setting_description_scan_interval">Tìm nhạc trên hệ thống mỗi %1$s</string>
     <string name="setting_title_parallel_downloads">Tải cùng lúc</string>
     <!-- %1$s is a counted plural of songs, e.g. "2 songs". "Download" is a verb here (the songs are downloaded), "the others" are the other songs in the queue -->
-    <string name="setting_description_parallel_downloads">Chạy %1$s bản tải xuống cùng lúc, mọi thứ khác sẽ chờ tới lược</string>
+    <string name="setting_description_parallel_downloads">Tải %1$s cùng lúc, mọi bài khác sẽ được xếp vào hàng chờ</string>
     <string name="setting_title_download_retries">Thử lại</string>
     <!-- %1$s is a counted plural of times, e.g. "3 times". How often a failing download is attempted again -->
     <string name="setting_description_download_retries">Nếu thất bại, sẻ thử lại %1$s trước khi bỏ cuộc</string>
+    <!-- Shown instead of setting_description_download_retries when the download retries are set to 0 -->
+    <string name="setting_description_download_retries_off">Không thử lại nếu thất bại</string>
     <string name="setting_title_download_wifi_only">Tải bằng Wi-Fi</string>
-    <string name="setting_description_download_wifi_only">Chỉ tải khi đang dùng mạng Wi-Fi</string>
+    <string name="setting_description_download_wifi_only">Chỉ tải khi đang dùng Wi-Fi</string>
     <string name="setting_title_download_on_low_battery">Tải khi pin thấp</string>
     <string name="setting_description_download_on_low_battery_on">Phiên tải xuống sẽ tiếp tục ở bất kỳ mức độ pin</string>
     <string name="setting_description_download_on_low_battery_off">Mọi tải xuống sẽ tạm dừng khi pin yếu</string>
     <string name="setting_title_download_lyrics">Tải lời bài hát</string>
     <string name="setting_description_download_lyrics">Khi nhạc tải xong, tải thêm lời bài hát</string>
-    <string name="setting_title_memory_cache">Lưu hình vào bộ nhớ tạm</string>
+    <string name="setting_title_memory_cache">Lưu hình trên RAM</string>
     <string name="setting_description_memory_cache">Hình lưu trên đây load nhanh hơn</string>
     <string name="setting_title_exit_on_back">Đóng ứng dụng</string>
     <string name="setting_description_exit_on_back_on">Dùng nút quay lại ở trang đầu sẽ đóng ứng dụng</string>
@@ -129,10 +132,14 @@
     <string name="setting_title_icon_only">Chỉ hiện nút</string>
     <string name="setting_description_icon_only">Ẩn tên của các nút</string>
     <string name="setting_title_playlist_initial">Lấy chữ cài đầu làm ảnh bìa</string>
-    <string name="setting_description_playlist_initial">Khi danh sách phát không có ảnh bìa, chữ cái đầu tiên của tên sẽ được dùng để làm ảnh bìa</string>
+    <string name="setting_description_playlist_initial">Khi danh sách nhạc không có ảnh bìa, chữ cái đầu tiên của tên sẽ được dùng</string>
     <string name="setting_title_app_icon">Biểu tượng</string>
+    <string name="setting_title_app_font">Phông chữ ứng dụng</string>
+    <string name="setting_title_lyrics_font">Phông chữ lời</string>
+    <!-- %1$s is the name of a font (never translated); the row opens a file picker to change it -->
+    <string name="setting_description_font">Đang dùng %1$s. Nhấn để chọn phông khác</string>
     <!-- network -->
-    <string name="setting_title_connect_timeout">Hạn thời gian kết nối</string>
+    <string name="setting_title_connect_timeout">Chờ kết nối</string>
     <string name="setting_description_connect_timeout">Thời gian chờ phản hồi trước khi bỏ cuộc</string>
     <string name="setting_title_read_timeout">Hạn thời gian đọc</string>
     <string name="setting_description_read_timeout">Chờ nếu kết nối không ổn định</string>
@@ -201,9 +208,9 @@
     <string name="setting_description_give_up_loading_after">Chờ %1$s trước khi quyết định</string>
     <string name="setting_description_give_up_loading_after_off">Chờ cho đến khi yêu cầu hết hạn</string>
     <string name="setting_title_even_out_loudness">Cân bằng âm thanh</string>
-    <string name="setting_description_even_out_loudness">Độ ồn của các bài nhạc sẽ được tiền chỉnh</string>
+    <string name="setting_description_even_out_loudness">Âm lượng của bài hát sẽ được tiền chỉnh cho gần bằng nhau</string>
     <string name="setting_description_target_loudness_status_disabled">Cân bằng âm thanh đã bị tắt</string>
-    <string name="setting_title_target_loudness">Độ ồn chỉ định</string>
+    <string name="setting_title_target_loudness">Độ ồn</string>
     <string name="setting_title_load_ahead">Tải trước đoạn kế tiếp</string>
     <!-- %1$s is a duration, e.g. "30 seconds". How far ahead of the playback position the song is loaded (downloaded into memory) -->
     <string name="setting_description_load_ahead">Tải trước %1$s khi đang phát</string>
@@ -290,18 +297,16 @@
     <string name="setting_description_allow_self_signed_certificate_status_changed">Chứng chỉ đã thay đổi. Nhấn đế xem thay đổi</string>
     <!-- "Sign in" is the name of a settings row; the address is entered there -->
     <string name="setting_description_server_status_no_server">Chưa thêm máy chủ, vào Đăng nhập để thêm</string>
-    <string name="setting_description_configure_youtube_status_not_signed_in">Chưa đăng nhập</string>
-    <!-- %1$s is the user's account name on YouTube Music (a person's name or handle, gender unknown, not translated) -->
-    <string name="setting_description_configure_youtube_status_signed_in_as">Đã đăng nhập với tên %1$s</string>
+    <string name="setting_description_status_not_signed_in">Chưa đăng nhập</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
     <string name="setting_description_configure_youtube_status_signed_out">%1$s đã vô hiệu hóa phiên này</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">Chưa nhập máy chủ</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
     <string name="setting_description_configure_opensubsonic_status_unreachable">Không thể truy cập %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_configure_opensubsonic_status_certificate_untrusted">Chứng chỉ từ %1$s chưa được tin</string>
+    <string name="setting_description_status_certificate_untrusted">Chứng chỉ của %1$s chưa được tin</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_configure_opensubsonic_status_certificate_changed">Chứng chỉ của %1$s đã thay đổi</string>
+    <string name="setting_description_status_certificate_changed">Chứng chỉ của %1$s đã thay đổi</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Không phải máy chủ %1$s</string>
     <string name="setting_description_account_status_session_ended">Phiên bản đã kết thúc, nhấn để đăng nhập lại</string>
@@ -324,14 +329,9 @@
     <string name="setting_description_sign_in_status_invalid_api_key">Mã API không hợp lệ</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
     <string name="setting_description_sign_in_status_refused">%1$s từ chối đăng nhập (%2$d)</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_sign_in_status_certificate_untrusted">Chứng chỉ từ %1$s chưa được tin</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_sign_in_status_certificate_changed">Chứng chỉ từ %1$s đã thay đổi</string>
-    <string name="setting_description_sign_in_status_not_signed_in">Chưa đăng nhập</string>
     <string name="setting_description_sign_in_status_start_syncing">Đăng nhập để bắt đầu đồng bộ</string>
-    <!-- %1$s is the user's account name (username) on their OpenSubsonic server (a person's name or handle, gender unknown, not translated) -->
-    <string name="setting_description_sign_in_status_signed_in_as">Đã đăng nhập với tên %1$s</string>
+    <!-- %1$s is the user's account name on YouTube Music or their username on an OpenSubsonic server (a person's name or handle, gender unknown, not translated) -->
+    <string name="setting_description_sign_in_status_signed_in_as">Đăng nhập với tên %1$s</string>
     <string name="setting_description_sign_in_status_signed_in_with_api_key">Đăng nhập bằng mã API</string>
     <string name="setting_description_sign_in_status_waiting_for_server">Đang chờ máy chủ xác nhận thông tin đăng nhập</string>
     <string name="setting_description_restore_status_reading">Đang đọc…</string>

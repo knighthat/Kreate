@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Display names of enum values. -->
+<resources>
+    <string name="constant_theme_mode_automatic">System</string>
+    <string name="constant_theme_mode_automatic_dynamic">Hintergrundbild</string>
+    <string name="constant_theme_mode_light">Hell</string>
+    <string name="constant_history_range_today">Heute</string>
+    <string name="constant_history_range_last_7_days">Letzte 7 Tage</string>
+    <string name="constant_history_range_last_30_days">Letzte 30 Tage</string>
+    <string name="constant_history_range_this_year">Dieses Jahr</string>
+    <string name="constant_theme_mode_dark">Dunkel</string>
+    <string name="constant_theme_mode_pitch_black">Tiefschwarz</string>
+    <string name="constant_theme_mode_thumbnail">Vorschaubild</string>
+    <string name="constant_contrast_level_normal">Normal</string>
+    <string name="constant_contrast_level_medium">Mittel</string>
+    <string name="constant_contrast_level_high">Hoch</string>
+    <string name="constant_app_icon_black">Schwarz</string>
+    <string name="constant_app_icon_gradient">Farbverlauf</string>
+    <string name="constant_release_type_album">Album</string>
+    <string name="constant_release_type_ep">EP</string>
+    <string name="constant_release_type_single">Single</string>
+    <string name="constant_sync_mode_off">Aus</string>
+    <string name="constant_sync_mode_liked">Nur die, die ich mag</string>
+    <string name="constant_sync_mode_all">Alle</string>
+    <string name="constant_opensubsonic_auth_password">Passwort</string>
+    <string name="constant_opensubsonic_auth_api_key">API-Key</string>
+    <string name="constant_auto_tap_action_play_from_start">Von Anfang an abspielen</string>
+    <string name="constant_auto_tap_action_play_randomly">In zufälliger Reihenfolge abspielen</string>
+    <string name="constant_playlist_button_share">Teilen</string>
+    <string name="constant_playback_failure_action_skip">Zum nächsten Song springen</string>
+    <string name="constant_playback_failure_action_retry_then_skip">Erneut versuchen, dann überspringen</string>
+    <string name="constant_playback_login_never">Niemals</string>
+    <string name="constant_playback_login_always">Immer</string>
+    <string name="constant_stream_quality_ytm_low">Niedrig, ungefähr 48 kbps</string>
+    <string name="constant_stream_quality_ytm_medium">Mittel, ungefähr 128 kbps</string>
+    <string name="constant_stream_quality_ytm_high">Hoch, ungefähr 160 kbps</string>
+    <string name="constant_stream_quality_ytm_original">Original, 256 kbps mit Premium, sonst Hoch</string>
+    <string name="constant_stream_quality_opensubsonic_low">Niedrig, bis 64 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_medium">Mittel, bis 128 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_high">Hoch, bis zu 320 kbps, verlustfreie Songs werden konvertiert</string>
+    <string name="constant_stream_quality_opensubsonic_original">Original, die Datei so, wie sie ist</string>
+    <string name="constant_stream_quality_low">Niedrig</string>
+    <string name="constant_stream_quality_medium">Mittel</string>
+    <string name="constant_stream_quality_high">Hoch</string>
+    <string name="constant_stream_quality_original">Original</string>
+    <string name="constant_download_stage_downloading">Wird heruntergeladen</string>
+    <string name="constant_download_stage_queued">Eingereiht</string>
+    <string name="constant_download_stage_paused">Pausiert</string>
+    <string name="constant_download_stage_failed">Fehlgeschlagen</string>
+    <string name="constant_lyrics_sync_word">Wort für Wort</string>
+    <string name="constant_lyrics_sync_line">Zeile für Zeile</string>
+    <string name="constant_log_level_verbose">Ausführlich</string>
+    <string name="constant_log_level_debug">Debug</string>
+    <string name="constant_log_level_info">Info</string>
+    <string name="constant_log_level_warning">Warnungen</string>
+    <string name="constant_log_level_error">Fehler</string>
+    <string name="constant_playlist_privacy_public">Öffentlich</string>
+    <string name="constant_playlist_privacy_unlisted">Jeder, der über diesen Link verfügt</string>
+    <string name="constant_playlist_privacy_private">Privat</string>
+</resources>

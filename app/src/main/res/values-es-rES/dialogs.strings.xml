@@ -32,10 +32,11 @@
     <string name="dialog_title_forget_certificate">¿Olvidar certificado?</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome (proper noun, shown with a possessive 's); "you" is the user, gender unknown. Certificate = the server's security certificate -->
     <string name="dialog_body_forget_certificate">Se te volverá a preguntar antes de que se confíe en el certificado de %1$s.</string>
-    <string name="dialog_title_reset_the_order">¿Reiniciar el orden?</string>
+    <string name="dialog_title_reset_the_order">¿Restablecer orden?</string>
     <string name="dialog_body_reset_the_order">Las canciones vuelven al orden que tienen en el álbum.</string>
     <string name="dialog_title_unsaved_changes">¿Guardar cambios?</string>
     <string name="dialog_body_unsaved_changes">Has cambiado esta lista pero aún no la has guardado.</string>
+    <string name="dialog_body_unsaved_edits">Has hecho cambios pero aún no los has guardado.</string>
     <string name="dialog_title_delete_playlist">¿Eliminar lista de reproducción?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">Se eliminará %1$s. Sus canciones seguirán en tu biblioteca.</string>
@@ -95,10 +96,8 @@
     <string name="dialog_body_find_recording_no_matches">No se encontraron grabaciones</string>
     <string name="dialog_title_find_artist">Encontrar el artista</string>
     <string name="dialog_body_find_artist_no_matches">No se han encontrado artistas</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_youtube">¿Cerrar sesión en %1$s?</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_opensubsonic">¿Cerrar sesión en %1$s?</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out">¿Cerrar sesión en %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">El nombre de usuario, la contraseña y la clave API guardados se eliminan. Puedes iniciar sesión de nuevo cuando quieras.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
     <string name="dialog_body_sign_out_of_youtube">Tu biblioteca de %1$s deja de aparecer aquí, las canciones que te gustaron se quedan. Puedes iniciar sesión de nuevo cuando quieras.</string>

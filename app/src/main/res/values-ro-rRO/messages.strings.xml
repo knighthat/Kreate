@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Errors shown to the user and snackbar messages. -->
+<resources>
+    <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
+    <!-- %1$s is why the server refused, or couldn't be reached -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
+    <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the song's title isn't known; "this song" is the song the user tried to share -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no way to share a link to a album -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user tried to share -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no way to share a link to a artist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user tried to share -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no way to share a link to a playlist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user tried to share -->
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined). "Share" = send a link to the song to another app -->
+    <!-- %1$s is the title of a album in quotes (the user's own text, not declined). "Share" = send a link to the album to another app -->
+    <!-- %1$s is the title of a artist in quotes (the user's own text, not declined). "Share" = send a link to the artist to another app -->
+    <!-- %1$s is the title of a playlist in quotes (the user's own text, not declined). "Share" = send a link to the playlist to another app -->
+    <!-- %1$s is the name of the user's OpenSubsonic server (e.g. Navidrome) or a music source, proper noun. Can't be reached over the network, so no share link could be made -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Search" is a verb (look for songs, albums...) -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the reason the source gave, text that is not translated -->
+    <!-- %1$d is the status code (a number) the server answered with, e.g. 403. Shown only when the server sent no message of its own -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Certificate = the server's security certificate -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no such album -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user opened -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no such artist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user opened -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no such playlist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user opened -->
+    <!-- %1$s is an album title in quotes, or "this album" when unknown. "Bookmark" is a verb: save the album to the user's library on the source -->
+    <!-- %1$s is an album title in quotes, or "this album" when unknown. Removes the album saved with a bookmark from the user's library on the source -->
+    <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Follow" = subscribe to the artist on the source -->
+    <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Unfollow" = cancel the subscription to the artist on the source -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Shown when its album or artist can't be fetched to open their page -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
+    <!-- %1$s is a song or album title in quotes, or "this song" / "this album" when the title isn't known -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-down reaction given to the song -->
+    <!-- %1$s is the item that was changed, in quotes (e.g. a song title) or "this song"/"this album" when unknown; %2$s is the reason, a lowercase fragment from the error_reason_* strings. "Sync" = send the change to the source. "Change reverted" = the change in the app was undone -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "reach" = connect over the network -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "refused" = rejected the request -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "you" is the user, gender unknown -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "This" is the content the user tried to open (a list, an album...) -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. The user switched the server off in settings -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Settings = the user's preferences; "defaults" = the original values -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Settings = the user's preferences; "change undone" = the change was reverted -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Credentials = saved logins; "sign in" is a verb (imperative) -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Credentials = saved logins -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles; "change undone" = the change was reverted -->
+    <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
+    <!-- %1$s is the song's quoted title, or how many songs -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
+    <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
+    <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-up reaction was taken back from those songs -->
+    <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-up reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "The queue" is the list of songs to be played next -->
+    <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song is already in it -->
+    <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song couldn't be added to it -->
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <!-- %1$s is the name of the playlist, in quotes. The playlist exists, only its description and who can see it were not saved -->
+    <!-- %1$s is the name of the playlist, in quotes -->
+    <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
+</resources>

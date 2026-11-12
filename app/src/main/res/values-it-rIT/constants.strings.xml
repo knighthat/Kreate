@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Display names of enum values. -->
+<resources>
+    <string name="constant_theme_mode_automatic">Da sistema</string>
+    <string name="constant_theme_mode_automatic_dynamic">Sfondo</string>
+    <string name="constant_theme_mode_light">Chiaro</string>
+    <string name="constant_history_range_all_time">Da sempre</string>
+    <string name="constant_history_range_today">Oggi</string>
+    <string name="constant_history_range_last_7_days">Ultimi 7 giorni</string>
+    <string name="constant_history_range_last_30_days">Ultimi 30 giorni</string>
+    <string name="constant_history_range_this_year">Quest\'anno</string>
+    <string name="constant_statistics_period_all_time">Da sempre</string>
+    <string name="constant_statistics_period_this_month">Questo mese</string>
+    <string name="constant_theme_mode_light_dynamic">Chiaro dinamico</string>
+    <string name="constant_theme_mode_dark">Scuro</string>
+    <string name="constant_theme_mode_dark_dynamic">Scuro dinamico</string>
+    <string name="constant_theme_mode_pitch_black">Nero puro</string>
+    <string name="constant_contrast_level_normal">Normale</string>
+    <string name="constant_contrast_level_medium">Medio</string>
+    <string name="constant_contrast_level_high">Alto</string>
+    <string name="constant_app_icon_black">Nera</string>
+    <string name="constant_app_icon_gradient">Sfumata</string>
+    <string name="constant_release_type_album">Album</string>
+    <string name="constant_release_type_ep">EP</string>
+    <string name="constant_release_type_single">Singolo</string>
+    <string name="constant_sync_mode_off">Disattivato</string>
+    <string name="constant_sync_mode_liked">Solo apprezzati</string>
+    <string name="constant_sync_mode_all">Tutti</string>
+    <string name="constant_opensubsonic_auth_password">Password</string>
+    <string name="constant_opensubsonic_auth_api_key">Chiave API</string>
+    <string name="constant_auto_tap_action_open">Mostra le canzoni</string>
+    <string name="constant_auto_tap_action_play_from_start">Riproduci dall\'inizio</string>
+    <string name="constant_auto_tap_action_play_randomly">Riproduci casualmente</string>
+    <string name="constant_queue_action_play">Riproduci</string>
+    <string name="constant_queue_action_shuffle">Casuale</string>
+    <string name="constant_queue_action_enqueue">Aggiungi alla coda</string>
+    <string name="constant_queue_action_play_next">Riproduci successivo</string>
+    <string name="constant_playlist_button_play">Riproduci</string>
+    <string name="constant_playlist_button_shuffle">Casuale</string>
+    <string name="constant_playlist_button_play_next">Riproduci successivo</string>
+    <string name="constant_playlist_button_enqueue">Aggiungi alla coda</string>
+    <string name="constant_playlist_button_share">Condividi</string>
+    <string name="constant_playback_failure_action_skip">Passa al brano successivo</string>
+    <string name="constant_playback_login_always">Sempre</string>
+    <string name="constant_stream_quality_ytm_low">Basso, intorno ai 48 kbps</string>
+    <string name="constant_stream_quality_ytm_medium">Medio, intorno ai 128 kbps</string>
+    <string name="constant_playlist_privacy_public">Pubblica</string>
+    <string name="constant_playlist_privacy_unlisted">Chiunque abbia il link</string>
+    <string name="constant_playlist_privacy_private">Privata</string>
+</resources>

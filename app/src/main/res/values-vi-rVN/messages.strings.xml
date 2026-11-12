@@ -28,7 +28,7 @@
     <string name="error_playback_source_off">nguồn không khả dụng</string>
     <string name="error_playback_not_playable">không có gì để nghe</string>
     <string name="error_playback_too_slow">mất quá nhiều thời gian để tải</string>
-    <string name="error_playback_unknown">lỗi không xác định</string>
+    <string name="error_unknown">lỗi không xác định</string>
     <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
     <string name="error_backup_not_a_backup">Không phải bản sao lưu của %1$s</string>
     <string name="error_backup_newer_version">Bản sao lưu này được tạo trên phiên bản mới hơn, cập nhật ứng dụng để khôi phục</string>
@@ -42,21 +42,27 @@
     <string name="error_playlist_delete">Không thể xóa danh sách nhạc</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">Không thể lưu thay đổi: %1$s</string>
+    <string name="error_edit_apply">Không thể lưu thay đổi</string>
+    <string name="error_edit_load">Không thể tải thông tin để chỉnh sửa</string>
+    <string name="snackbar_changes_saved">Đã lưu thay đổi</string>
     <string name="error_playlist_changed_on_server">Máy chủ đã thay đổi danh sách nhạc, thay đổi này sẽ không được lưu</string>
     <string name="error_queue_every_song">Không thể thêm nhạc vào danh sách phát</string>
     <string name="error_lyrics_load">Không thể tải lời bài hát</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <string name="error_unreachable">Không thể truy cập %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song -->
-    <string name="error_song_details">Không thể tải dữ liệu từ %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the artist -->
-    <string name="error_artist_details">Không thể tải dữ liệu từ %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
+    <string name="error_details">Không thể tải thông tin từ %1$s</string>
+    <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <string name="error_collection_songs">Không thể tìm nhạc từ %1$s</string>
     <string name="error_loudness_failed">Phân tích độ ồn thất bại</string>
     <string name="error_nothing_to_play">Không có gì để nghe</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
     <string name="error_voice_search_no_match">Không thể tìm %1$s</string>
     <string name="error_open_file">Không thể phát bài này</string>
     <string name="error_open_link">Không thể mở liên kết này</string>
+    <string name="error_font_wrong_type">Chọn tệp .ttf hoặc .otf</string>
+    <string name="error_read_font">Không thể đọc tệp %1$s</string>
+    <string name="error_save_font">Không thể lưu phông chữ %1$s</string>
     <string name="error_songs_not_playable">Các bài nhạc không nghe được</string>
     <string name="error_song_not_playable">Bài này không nghe được</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
@@ -126,6 +132,12 @@
     <string name="error_unfollow_artist">Bỏ theo dõi %1$s thất bại</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
     <string name="error_like_song">Không thể thích %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Shown when its album or artist can't be fetched to open their page -->
+    <string name="error_song_lookup">Không thể tải thông tin từ %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
+    <string name="error_song_album_not_found">Không thể tìm album %1$s</string>
+    <!-- %1$s is a song or album title in quotes, or "this song" / "this album" when the title isn't known -->
+    <string name="error_artist_not_found">Không thể tìm nghệ sĩ của %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
     <string name="error_remove_like">Bỏ thích %1$s thất bại</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
@@ -153,7 +165,6 @@
     <string name="error_server_off">%1$s đã bị tắt, bật lại ở trong %2$s</string>
     <string name="error_file_unavailable">kho đầy hoặc không khả dụng</string>
     <string name="error_file_damaged">tệp bị lỗi</string>
-    <string name="error_file_unknown">lỗi không xác định</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
     <string name="snackbar_cant_play">Không thể phát %1$s với lý do %2$s</string>
     <string name="snackbar_old_app_downloads_confirm">Dùng nút quay lại bên tiêu đề để chốt</string>
@@ -180,7 +191,6 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Đã gỡ %1$s ra khỏi danh sách</string>
     <string name="snackbar_playlist_deleted">Đã xóa %1$s</string>
-    <string name="snackbar_playlist_changes_saved">Đã lưu thay đổi</string>
     <string name="snackbar_removed_from_dislike">Đã bỏ ghét</string>
     <string name="snackbar_removed_from_like">Đã bỏ ghét</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->

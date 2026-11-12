@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Button texts and menu items. -->
+<resources>
+    <string name="action_close">Chiudi</string>
+    <string name="action_open_website">Apri sito web</string>
+    <string name="action_save">Salva</string>
+    <string name="action_save_changes">Salva modifiche</string>
+    <string name="action_discard_changes">Annulla modifiche</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="action_ok">OK</string>
+    <string name="action_skip">Salta</string>
+    <string name="action_sign_in">Accedi</string>
+    <string name="action_update">Aggiorna</string>
+    <string name="action_sign_out">Esci</string>
+    <string name="action_pick_backup">Scegli backup</string>
+    <string name="action_not_now">Non ora</string>
+    <string name="action_accept">Accetta</string>
+    <string name="action_deny">Rifiuta</string>
+    <string name="action_search">Cerca</string>
+    <string name="action_create">Crea</string>
+    <string name="action_try_again">Prova di nuovo</string>
+    <string name="action_retry">Riprova</string>
+    <string name="action_undo">Annulla</string>
+    <string name="action_reload">Ricarica</string>
+    <string name="action_account_switch">Cambia</string>
+    <string name="action_delete">Elimina</string>
+    <string name="action_add">Aggiungi</string>
+    <string name="action_less">Di meno</string>
+    <string name="action_more">Di più</string>
+    <string name="action_restart">Riavvia</string>
+    <string name="action_apply">Applica</string>
+    <string name="action_apply_and_restart">Applica e riavvia</string>
+    <string name="action_reset">Ripristina</string>
+    <string name="action_clear">Pulisci</string>
+    <string name="action_grant">Concedi</string>
+    <string name="action_go_back">Indietro</string>
+    <string name="action_next">Avanti</string>
+    <string name="action_stop">Interrompi</string>
+    <string name="action_download">Scarica</string>
+    <string name="action_move_to_downloads">Sposta in download</string>
+    <string name="action_remove_from_cache">Rimuovi dalla cache</string>
+    <string name="action_play">Riproduci</string>
+    <string name="action_play_next">Riproduci successivo</string>
+    <string name="action_queue">Coda</string>
+    <string name="action_pause">Pausa</string>
+    <string name="action_resume">Riprendi</string>
+    <string name="menu_play_next">Riproduci successivo</string>
+    <string name="menu_add_to_queue">Aggiungi alla coda</string>
+    <string name="menu_add_to_playlist">Aggiungi alla playlist</string>
+    <string name="menu_start_radio">Avvia radio</string>
+    <string name="menu_details">Dettagli</string>
+    <string name="menu_statistics">Statistiche</string>
+    <string name="menu_go_to_album">Vai all\'album</string>
+    <string name="menu_title_artists">Artisti</string>
+    <string name="menu_title_add_to_playlist">Aggiungi alla playlist</string>
+    <string name="menu_remove_from_playlist">Rimuovi dalla playlist</string>
+    <string name="menu_delete_from_history">Elimina dalla cronologia</string>
+    <string name="menu_shuffle">Casuale</string>
+    <string name="menu_show_disliked">Mostra \"non mi piace\"</string>
+    <string name="menu_cached_only">Solo in cache</string>
+    <string name="menu_downloaded_only">Solo scaricati</string>
+    <string name="menu_bookmarked_only">Solo preferiti</string>
+    <string name="menu_followed_only">Solo seguiti</string>
+    <string name="menu_monthly_only">Solo mensili</string>
+    <string name="menu_off">Disattivato</string>
+    <string name="menu_end_of_song">Fine del brano</string>
+    <string name="action_copy">Copia</string>
+    <string name="action_export">Esporta</string>
+</resources>

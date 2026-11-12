@@ -67,6 +67,8 @@
     <string name="semantic_profile">Hồ sơ</string>
     <string name="semantic_newest_first">Mới nhất trước</string>
     <string name="semantic_oldest_first">Cũ nhất trước</string>
+    <string name="semantic_playlist_order">Thứ tự danh sách nhạc</string>
+    <string name="semantic_reversed_order">Thứ tự ngược</string>
     <string name="semantic_remove_bookmark">Xoá dấu trang</string>
     <string name="semantic_remove_dislike">Bỏ ghét</string>
     <string name="semantic_undislike_all">Bỏ ghét tất cả</string>
@@ -77,6 +79,7 @@
     <string name="semantic_remove_like">Bỏ thích</string>
     <string name="semantic_remove_songs">Xoá các bài hát</string>
     <string name="semantic_delete_playlist">Xóa danh sách này</string>
+    <string name="semantic_edit_playlist">Chỉnh sửa danh sách nhạc</string>
     <string name="semantic_restart_the_app">Khởi động lại ứng dụng</string>
     <string name="semantic_restart_the_player">Khỏi động lại trình phát</string>
     <string name="semantic_resume_the_sleep_timer">Tiếp tục hẹn giờ ngủ</string>

@@ -22,6 +22,7 @@
     <string name="wizard_intro">Alcuni rapidi passaggi e sarai pronto ad ascoltare. Ecco quali:</string>
     <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
     <string name="wizard_permissions_entry">Controlla ciò che %1$s può o non può fare e vedere.</string>
+    <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
     <string name="wizard_import_entry">Importa dati esistenti da un altro dispositivo o un backup.</string>
     <string name="wizard_profile_entry">Personalizza l\'app a tuo piacimento.</string>
     <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
@@ -39,6 +40,7 @@
     <string name="wizard_restore_a_backup_description">Scegli un backup effettuato nelle versioni precedenti di Kreate</string>
     <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
     <string name="wizard_profile_intro">Lascia vuoto il nome per mantenere %1$s. Puoi comunque cambiare tutto più tardi.</string>
+    <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->
     <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
     <string name="wizard_distributed_under">Distribuito sotto %1$s.</string>
     <string name="wizard_get_started">Inizia</string>

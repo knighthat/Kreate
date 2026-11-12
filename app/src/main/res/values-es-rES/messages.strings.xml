@@ -28,7 +28,7 @@
     <string name="error_playback_source_off">fuente no disponible</string>
     <string name="error_playback_not_playable">nada que reproducir</string>
     <string name="error_playback_too_slow">tardó demasiado en cargar</string>
-    <string name="error_playback_unknown">error desconocido</string>
+    <string name="error_unknown">error desconocido</string>
     <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
     <string name="error_backup_not_a_backup">No es una copia de seguridad de %1$s</string>
     <string name="error_backup_newer_version">La copia de seguridad es de una versión más reciente, actualiza la aplicación</string>
@@ -42,21 +42,27 @@
     <string name="error_playlist_delete">No se pudo eliminar la lista de reproducción</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">No se pudieron guardar los cambios: %1$s</string>
+    <string name="error_edit_apply">No se pudieron guardar los cambios</string>
+    <string name="error_edit_load">No se pudieron cargar los detalles a editar</string>
+    <string name="snackbar_changes_saved">Cambios guardados</string>
     <string name="error_playlist_changed_on_server">La lista de reproducción cambió en el servidor, tus cambios no se guardaron</string>
     <string name="error_queue_every_song">No se pudieron obtener todas las canciones</string>
     <string name="error_lyrics_load">No se pudo cargar la letra</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <string name="error_unreachable">No se puede acceder a %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song -->
-    <string name="error_song_details">No se pudo obtener detalles de %1$s</string>
-    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the artist -->
-    <string name="error_artist_details">No se pudo obtener detalles desde %1$s</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
+    <string name="error_details">No se pudo obtener detalles desde %1$s</string>
+    <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <string name="error_collection_songs">No se pudo obtener las canciones de %1$s</string>
     <string name="error_loudness_failed">Fallo en la medición de volumen</string>
     <string name="error_nothing_to_play">Nada que reproducir</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
     <string name="error_voice_search_no_match">No se pudo encontrar %1$s</string>
     <string name="error_open_file">No se pudo abrir este archivo</string>
     <string name="error_open_link">No se pudo abrir este enlace</string>
+    <string name="error_font_wrong_type">Elige un archivo .ttf o .otf</string>
+    <string name="error_read_font">No se pudo leer %1$s como tipografía</string>
+    <string name="error_save_font">No se pudo guardar la tipografía %1$s</string>
     <string name="error_songs_not_playable">Estas canciones no se pueden reproducir</string>
     <string name="error_song_not_playable">Esta canción no se puede reproducir</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
@@ -126,6 +132,12 @@
     <string name="error_unfollow_artist">No se pudo dejar de seguir a %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
     <string name="error_like_song">No se pudo dar me gusta a %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Shown when its album or artist can't be fetched to open their page -->
+    <string name="error_song_lookup">No se pudieron cargar los detalles de %1$s</string>
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
+    <string name="error_song_album_not_found">No se pudo encontrar el álbum de %1$s</string>
+    <!-- %1$s is a song or album title in quotes, or "this song" / "this album" when the title isn't known -->
+    <string name="error_artist_not_found">No se pudo encontrar el artista de %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
     <string name="error_remove_like">No se pudo quitar me gusta a %1$s</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Dislike" is a verb: the thumbs-down reaction -->
@@ -153,7 +165,6 @@
     <string name="error_server_off">%1$s está desactivado, actívalo en los ajustes de %2$s</string>
     <string name="error_file_unavailable">almacenamiento completo o no disponible</string>
     <string name="error_file_damaged">archivo dañado</string>
-    <string name="error_file_unknown">error desconocido</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known; %2$s is the reason, a short text, e.g. "file doesn't exist" -->
     <string name="snackbar_cant_play">No se pudo reproducir %1$s: %2$s</string>
     <string name="snackbar_old_app_downloads_confirm">Toca la flecha de retroceso para confirmar tu selección</string>
@@ -180,7 +191,6 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Se eliminó %1$s de la lista</string>
     <string name="snackbar_playlist_deleted">Se eliminó %1$s</string>
-    <string name="snackbar_playlist_changes_saved">Cambios guardados</string>
     <string name="snackbar_removed_from_dislike">Eliminada de no me gusta</string>
     <string name="snackbar_removed_from_like">Se quitó el me gusta</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->

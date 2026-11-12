@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Screen titles and texts, tab labels and the headings of groups in lists and sheets. -->
+<resources>
+    <string name="screen_title_songs">Songs</string>
+    <string name="screen_title_albums">Alben</string>
+    <string name="screen_title_artists">Interpreten</string>
+    <string name="screen_title_playlists">Playlists</string>
+    <string name="screen_title_search">Suche</string>
+    <!-- %1$s is an artist name (the user's library data, not declined). Screen title listing the songs of that artist -->
+    <string name="screen_title_songs_by">Songs von %1$s</string>
+    <string name="screen_title_welcome">Willkommen</string>
+    <string name="screen_title_permissions">Berechtigungen</string>
+    <string name="screen_title_import">Importieren</string>
+    <string name="screen_title_basic_settings">Grundlegende Einstellungen</string>
+    <string name="screen_title_terms_of_service">Nutzungsbedingungen</string>
+    <string name="screen_title_settings">Einstellungen</string>
+    <string name="screen_title_general">Allgemein</string>
+    <string name="screen_title_data">Daten</string>
+    <string name="screen_title_ui">Benutzeroberfläche</string>
+    <string name="screen_title_network">Netzwerk</string>
+    <string name="screen_title_backup">Backup</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
+    <string name="screen_title_sign_in">Anmelden</string>
+    <string name="screen_title_account">Account</string>
+    <string name="screen_title_history">Verlauf</string>
+    <string name="screen_title_statistics">Statistiken</string>
+    <string name="screen_title_disliked">Mag ich nicht</string>
+    <string name="screen_title_downloaded">Heruntergeladen</string>
+    <string name="screen_title_download_queue">Download-Warteschlange</string>
+    <string name="screen_title_switch_profile">Profil wechseln</string>
+    <string name="screen_title_about">Info</string>
+    <string name="screen_title_open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="screen_title_voice_search">Sprachsuche</string>
+    <string name="tab_songs">Songs</string>
+    <string name="tab_albums">Alben</string>
+    <string name="tab_artists">Interpreten</string>
+    <string name="tab_playlists">Playlists</string>
+    <string name="tab_queue">Queue</string>
+    <!-- %1$d is a whole number. "Disc" is a physical disc (CD) of a multi-disc album, not a music player -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
+    <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
+    <!-- %1$s is what the user typed, in quotes (the user's own text). Search suggestions -->
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for songs -->
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for albums -->
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for artists -->
+    <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for playlists -->
+    <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Lyrics = the words of the song -->
+    <!-- %1$s is the name of a lyrics provider, e.g. LRCLIB (proper noun); %2$s is a song title in quotes, or "this song" when unknown. Lyrics = the words of the song -->
+    <!-- %1$s is the name of the lyrics provider that supplied the lyrics (proper noun, don't decline it), shown as a credit -->
+    <!-- %1$s is what the user typed in the search field, in quotes (the user's own text). "Library" is a software library, not a place with books -->
+    <!-- %1$s is a small icon character standing for the Change source button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is a song title in quotes, or "this song" when unknown -->
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an artist name in quotes, or "this artist" when unknown -->
+    <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an album title in quotes, or "this album" when unknown -->
+    <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
+    <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
+    <!-- %1$s is the downloaded part of a file and %2$s the whole file, both file sizes, e.g. "1.2 MB of 4 MB" -->
+    <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
+    <!-- %1$s is the time left, e.g. 4:32. The sleep timer is on hold (not counting down) because the music is paused; "left" = remaining -->
+    <!-- %1$s is the time left, e.g. 4:32. "Pauses" is a verb: the sleep timer will pause the music after that time -->
+    <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it) -->
+</resources>

@@ -31,10 +31,11 @@
     <string name="screen_title_basic_settings">Cài đặt cơ bản</string>
     <string name="screen_title_terms_of_service">Điều khoản sử dụng</string>
     <string name="screen_title_settings">Cài đặt</string>
-    <string name="screen_title_general">Tổng quan</string>
+    <string name="screen_title_general">Chung</string>
     <string name="screen_title_data">Dữ liệu</string>
     <string name="screen_title_player">Trình phát</string>
     <string name="screen_title_ui">Giao diện</string>
+    <string name="screen_title_font_preview">Xem phông chữ</string>
     <string name="screen_title_network">Mạng</string>
     <string name="screen_title_backup">Sao lưu</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
@@ -43,8 +44,7 @@
     <string name="screen_title_account">Tài khoản</string>
     <string name="screen_title_history">Lịch sử phát</string>
     <string name="screen_title_statistics">Số liệu thống kê</string>
-    <string name="screen_title_song_details">Chi tiết</string>
-    <string name="screen_title_artist_details">Chi tiết</string>
+    <string name="screen_title_details">Chi tiết</string>
     <string name="screen_title_liked">Đã Thích</string>
     <string name="screen_title_disliked">Nhạc bị ghét</string>
     <string name="screen_title_downloaded">Đã tải về</string>
@@ -57,7 +57,7 @@
     <string name="tab_songs">Nhạc</string>
     <string name="tab_albums">Album</string>
     <string name="tab_artists">Nghệ sĩ</string>
-    <string name="tab_playlists">Danh sách phát</string>
+    <string name="tab_playlists">Thư viện</string>
     <string name="tab_lyrics">Lời bài hát</string>
     <string name="tab_player">Trình phát</string>
     <string name="tab_queue">Danh sách nhạc</string>
@@ -82,10 +82,8 @@
     <string name="section_header_date_range">Phạm vi ngày</string>
     <string name="section_header_in_progress">Đang thực thi</string>
     <string name="screen_search_hint_library">Tìm kiếm trong thư viện</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_youtube">Tìm kiếm: %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_opensubsonic">Tìm %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_source">Tìm trên %1$s</string>
     <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
     <string name="screen_voice_search_hint_phrase">Phát … trên %1$s</string>
     <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
@@ -122,12 +120,13 @@
     <string name="screen_artist_details_status_not_found">Không tìm được thông tin về nghệ sĩ %1$s.</string>
     <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <string name="screen_artist_details_hint_search">Dùng nút tìm (%1$s) để tìm bằng từ khóa khác.</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an album title in quotes, or "this album" when unknown -->
+    <string name="screen_album_details_status_not_found">%1$s không có tin về album %2$s.</string>
     <string name="screen_profiles_hint_search_or_add">Tìm hoặc thêm hồ sơ</string>
     <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
     <string name="screen_profiles_status_active_since">Được sử dụng từ %1$s</string>
     <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
     <string name="screen_profiles_status_last_seen">Lần cuối dùng: %1$s</string>
-    <string name="screen_history_status_nothing_played">Không có gì trong lịch sử nghe</string>
     <string name="screen_history_status_no_matches">Không có ghi nhận nào khớp với điều kiện trên</string>
     <string name="screen_history_status_paused">Lịch sử nghe đã bị tạm ngưng</string>
     <string name="screen_liked_status_nothing_liked">Chưa thích bài nào</string>
@@ -148,7 +147,6 @@
     <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
     <string name="status_download_paused_at">Tạm dừng ở mức %1$s</string>
     <string name="screen_download_queue_status_nothing">Không có gì đang tải xuống</string>
-    <string name="screen_statistics_status_nothing_played">Không đủ dữ liệu</string>
     <string name="screen_statistics_status_nothing_this_month">Không đủ dữ liệu cho tháng này</string>
     <string name="screen_player_status_timer_on_hold_song_end">Đang giữ, cho đến hết bài</string>
     <string name="screen_player_status_timer_song_end">Dùng khi nhạc kết thúc</string>
@@ -159,6 +157,11 @@
     <string name="screen_crash_hint">Đã xảy ra lỗi. Tạo báo cáo mới kèm log để được hỗ trợ.</string>
     <string name="screen_crash_status_no_log">Không thể đọc được báo cáo.</string>
     <string name="screen_title_new_playlist">Tạo danh sách nhạc mới</string>
+    <string name="screen_title_edit_playlist">Chỉnh sửa danh sách nhạc</string>
+    <string name="screen_title_edit_song">Chỉnh sửa bài hát</string>
+    <string name="screen_title_edit_album">Chỉnh sửa album</string>
+    <string name="screen_title_edit_artist">Chỉnh sửa nghệ sĩ</string>
+    <string name="screen_edit_hint_artists">Mỗi nghệ sĩ nằm trên một hàng</string>
     <string name="screen_title_old_app_downloads">Nhạc tải trên phiên bản cũ</string>
     <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
     <string name="screen_old_app_downloads_status_loading">Đang lấy thông tin nhạc… %1$d / %2$d</string>

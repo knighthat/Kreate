@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Settings screens: titles, descriptions, headers and the status of one setting. -->
+<resources>
+    <!-- pages and sections -->
+    <string name="setting_header_library">Biblioteca</string>
+    <string name="setting_header_storage">Almacenamiento</string>
+    <string name="setting_header_downloads">Descargas</string>
+    <string name="setting_header_images">Imágenes</string>
+    <string name="setting_header_navigation">Navegación</string>
+    <string name="setting_header_albums">Álbumes</string>
+    <string name="setting_header_artists">Artistas</string>
+    <string name="setting_header_playlists">Listas de reproducción</string>
+    <string name="setting_title_theme">Tema</string>
+    <string name="setting_title_translate_language">Traducir este idioma</string>
+    <string name="setting_description_translate_language">Ayuda a acabar la traducción en Crowdin</string>
+    <string name="setting_title_request_language">Solicitar nuevo idioma</string>
+    <string name="setting_description_request_language">Pide en Crowdin un idioma que la aplicación no tenga</string>
+    <string name="setting_title_language">Idioma</string>
+    <string name="setting_title_region">Región</string>
+    <string name="setting_header_layout">Diseño</string>
+    <string name="setting_header_launcher">Acceso directo</string>
+    <string name="setting_header_font">Tipografía</string>
+    <string name="setting_header_requests">Solicitudes</string>
+    <string name="setting_header_sources">Fuentes</string>
+    <string name="setting_header_queue">Cola</string>
+    <string name="setting_header_sound">Sonido</string>
+    <string name="setting_header_buffering">Precarga</string>
+    <string name="setting_header_sleep_timer">Temporizador de apagado</string>
+    <string name="setting_header_history">Historial</string>
+    <string name="setting_header_lyrics">Letra</string>
+    <string name="setting_header_picture_in_picture">Imagen en imagen</string>
+    <string name="setting_description_picture_in_picture">Salir de la aplicación muestra la portada, o la letra, en una pequeña ventana</string>
+    <string name="setting_description_picture_in_picture_text_size">Tamaño del texto relativo a la letra en pantalla completa</string>
+    <string name="setting_header_proxy">Proxy</string>
+    <string name="setting_title_account">Cuenta</string>
+    <string name="setting_header_playback">Reproducción</string>
+    <string name="setting_title_server">Servidor</string>
+    <string name="setting_header_server_library">Biblioteca del servidor</string>
+    <!-- what each page is about -->
+    <string name="setting_description_general">Cómo se comporta la aplicación</string>
+    <string name="setting_description_data">Cachés, descargas y el espacio que ocupan</string>
+    <string name="setting_description_player">Cómo suenan las canciones y qué se guarda de ellas</string>
+    <string name="setting_description_ui">Tema, idioma y con qué interactúas</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of a music source, e.g. YouTube Music (proper noun) -->
+    <string name="setting_description_network">Conexiones, tu servidor %1$s y tu cuenta %2$s</string>
+    <string name="setting_description_backup">Guarda o restaura tus perfiles, ajustes y biblioteca</string>
+    <string name="setting_description_about">Versión, licencia y las bibliotecas de código abierto usadas</string>
+    <!-- About -->
+    <string name="setting_title_version">Versión</string>
+    <string name="setting_title_license">Licencia</string>
+    <string name="setting_description_license">GNU General Public License v3.0 o posterior</string>
+    <string name="setting_description_open_source_licenses">Las bibliotecas con las que se hizo la aplicación y sus licencias</string>
+    <string name="setting_title_source_code">Código fuente</string>
+    <string name="setting_description_source_code">Ver cómo está hecha la aplicación, en GitHub</string>
+    <string name="setting_title_report_issue">Informar de un problema</string>
+    <string name="setting_description_report_issue">Habla sobre un error o pide una función, en GitHub</string>
+    <!-- common -->
+    <!-- Two whole numbers: %1$d is the smallest and %2$d the largest value the user may enter. Shown when the entered number is out of range -->
+    <string name="setting_description_between">Entre %1$d y %2$d</string>
+    <!-- data -->
+    <string name="setting_title_disk_cache">Caché del disco</string>
+    <string name="setting_description_disk_cache">Las imágenes ya vistas se quedan en el dispositivo para cargar más rápido</string>
+    <string name="setting_title_song_cache">Caché de canciones</string>
+    <string name="setting_description_song_cache">Las canciones escuchadas se guardan para volver a escuchar en todos los perfiles</string>
+    <string name="setting_title_song_downloads">Descargas de canciones</string>
+    <string name="setting_description_song_downloads">Canciones guardadas para reproducir sin conexión, separadas de la caché</string>
+    <string name="setting_title_size_in_mib">Tamaño en MiB</string>
+    <string name="setting_title_size_in_mb">Tamaño en MB</string>
+    <string name="setting_title_binary_sizes">Unidades binarias</string>
+    <!-- %1$s and %2$s are file sizes, e.g. "1024 MiB is shown as 1 GiB" (binary units) or "1000 MB is shown as 1 GB" (decimal units). "Shown as" = displayed in the app -->
+    <string name="setting_description_binary_sizes">%1$s se muestra como %2$s</string>
+    <!-- general -->
+    <string name="setting_title_local_scan">Buscar canciones locales</string>
+    <!-- Under the switch that scans the device's music files -->
+    <string name="setting_description_local_scan">Busca archivos de música en este dispositivo</string>
+    <!-- Under the switch while the permission to read music and audio is denied -->
+    <string name="setting_description_local_scan_no_permission">Pulsa para permitir que %1$s lea archivos de audio locales</string>
+    <string name="setting_title_local_loudness">Analizador de volumen</string>
+    <!-- Under the switch that measures how loud the device's songs are -->
+    <string name="setting_description_local_loudness">Mide lo alto que suenan las canciones locales para igualar el volumen</string>
+    <string name="setting_title_scan_interval">Intervalo de escaneo</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 minutes" (a counted plural). How often the app looks for new music files on the device -->
+    <string name="setting_description_scan_interval">Buscar canciones locales nuevas cada %1$s</string>
+    <string name="setting_title_parallel_downloads">Descargas a la vez</string>
+    <!-- %1$s is a counted plural of songs, e.g. "2 songs". "Download" is a verb here (the songs are downloaded), "the others" are the other songs in the queue -->
+    <string name="setting_description_parallel_downloads">%1$s descargan a la vez, las otras esperan</string>
+    <string name="setting_title_download_retries">Reintentos de descarga</string>
+    <!-- %1$s is a counted plural of times, e.g. "3 times". How often a failing download is attempted again -->
+    <string name="setting_description_download_retries">Una descarga se intenta %1$s veces más antes de fallar</string>
+    <!-- Shown instead of setting_description_download_retries when the download retries are set to 0 -->
+    <string name="setting_description_download_retries_off">No se intentará de nuevo si hay un fallo</string>
+    <string name="setting_title_download_wifi_only">Solo descargar con Wi-Fi</string>
+    <string name="setting_description_download_wifi_only">Las descargas esperan a una red ilimitada para continuar</string>
+    <string name="setting_title_download_on_low_battery">Descargar con poca batería</string>
+    <string name="setting_description_download_on_low_battery_on">Las descargas continúan sin importar el nivel de batería</string>
+    <string name="setting_description_download_on_low_battery_off">Todas las descargas se detienen mientras la batería está baja</string>
+    <string name="setting_title_download_lyrics">Descargar letras</string>
+    <string name="setting_description_download_lyrics">Conserva la letra de una canción de tu fuente cuando acaba de descargarse</string>
+    <string name="setting_title_memory_cache">Caché de memoria</string>
+    <string name="setting_description_memory_cache">Mantiene las imágenes recientes en un pool de caché más rápido</string>
+    <string name="setting_title_exit_on_back">Salir al pulsar atrás</string>
+    <string name="setting_description_exit_on_back_on">Dar hacia atrás en la primera pantalla cierra la aplicación</string>
+    <string name="setting_description_exit_on_back_off">Dar hacia atrás en la primera pantalla deja la aplicación abierta</string>
+    <string name="setting_title_confirm_exit">Confirmar salida</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How long the app waits before a confirmation can be dismissed; "dismissing confirmation" = closing the exit confirmation -->
+    <string name="setting_description_confirm_exit_status_on">Espera %1$s antes de descartar la confirmación</string>
+    <string name="setting_description_confirm_exit_status_off">Sin confirmación</string>
+    <string name="setting_title_notification_opens_player">Ir a reproductor desde notificación</string>
+    <string name="setting_description_notification_opens_player">Pulsar la notificación multimedia abre el reproductor</string>
+    <string name="setting_title_page_button">Botón de página</string>
+    <string name="setting_title_first_button">Primer botón</string>
+    <string name="setting_title_second_button">Segundo botón</string>
+    <!-- UI -->
+    <string name="setting_title_contrast">Contraste</string>
+    <string name="setting_title_icon_only">Solo icono</string>
+    <string name="setting_description_icon_only">Esconder etiquetas de botón</string>
+    <string name="setting_title_playlist_initial">Inicial de la lista de reproducción</string>
+    <string name="setting_description_playlist_initial">Las listas de reproducción sin imagen ponen la primera letra de su nombre</string>
+    <string name="setting_title_app_icon">Icono de aplicación</string>
+    <string name="setting_title_app_font">Tipografía de la app</string>
+    <string name="setting_title_lyrics_font">Tipografía de la letra</string>
+    <!-- %1$s is the name of a font (never translated); the row opens a file picker to change it -->
+    <string name="setting_description_font">%1$s. Toca para cambiar la tipografía</string>
+    <!-- network -->
+    <string name="setting_title_connect_timeout">Tiempo de espera de conexión</string>
+    <string name="setting_description_connect_timeout">Tiempo para llegar al servidor antes de dejar de intentarlo</string>
+    <string name="setting_title_read_timeout">Tiempo de espera de lectura</string>
+    <string name="setting_description_read_timeout">Tiempo que un servidor puede pasar sin contestar en medio de una respuesta</string>
+    <string name="setting_title_retries">Reintentos</string>
+    <string name="setting_description_retries">Las peticiones que reciban error de servidor se envían de nuevo</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Configure" is a verb (imperative), the title of a row that opens that source's settings -->
+    <string name="setting_title_configure_source">Configurar %1$s</string>
+    <!-- proxy -->
+    <string name="setting_title_use_a_proxy">Usar proxy</string>
+    <string name="setting_description_proxy_status_off">Desactivado, las solicitudes van directamente a sus servidores</string>
+    <string name="setting_description_proxy_status_incomplete">Nada se envía hasta que tenga host y puerto. Toca para establecerlos</string>
+    <!-- %1$s is a protocol and an address, e.g. "SOCKS5 · 192.168.1.2:1080" (not translated). Proxy = a server that relays network traffic -->
+    <string name="setting_description_proxy_status_on">A través de %1$s. Toca para cambiarlo</string>
+    <!-- %1$s is the name of a music source or server, e.g. YouTube Music (proper noun). The source has its own proxy switched off, so the app's proxy is used; the Network page is a screen of this app -->
+    <string name="setting_description_proxy_source_off">Desactivado, las solicitudes de %1$s pasan por el proxy de la página Red</string>
+    <string name="setting_proxy_title_host">Host</string>
+    <string name="setting_proxy_title_port">Puerto</string>
+    <string name="setting_title_username">Nombre de usuario</string>
+    <string name="setting_title_password">Contraseña</string>
+    <string name="setting_description_host_scheme">Omitir el esquema, como http://</string>
+    <string name="setting_description_host_only">Sólo el nombre del host o su dirección IP</string>
+    <string name="setting_description_port_range">Un puerto del 1 al 65535</string>
+    <!-- stream quality -->
+    <string name="setting_title_on_wifi">Usando Wi-Fi</string>
+    <string name="setting_title_on_mobile_data">Usando datos móviles</string>
+    <!-- library sync -->
+    <string name="setting_title_sync_songs">Sincronizar canciones</string>
+    <string name="setting_title_sync_playlists">Sincronizar listas</string>
+    <string name="setting_title_sync_albums">Sincronizar álbums</string>
+    <string name="setting_title_sync_artists">Sincronizar artistas</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); synced = kept the same on the source and in the app's own database -->
+    <string name="setting_description_sync_liked_songs_on">Las canciones gustadas en %1$s se sincronizan con la base de datos local</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); "pulled" = fetched from the source -->
+    <string name="setting_description_sync_liked_songs_off">Las canciones gustadas no se extraen de %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Your playlists" = the user's own; synced = kept the same on the source and in the app's own database -->
+    <string name="setting_description_sync_playlists_on">Tus listas de reproducción en %1$s se sincronizan con la base de datos local</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Your playlists" = the user's own; "pulled" = fetched from the source -->
+    <string name="setting_description_sync_playlists_off">Tus listas de reproducción no se extraen de %1$s</string>
+    <string name="setting_description_sync_albums_status_off">No extrae álbumes</string>
+    <string name="setting_description_sync_artists_status_off">No extrae artistas</string>
+    <string name="setting_description_sync_albums_status_liked">Sincroniza álbumes con \'me gusta\' a la base de datos local</string>
+    <string name="setting_description_sync_artists_status_liked">Sincroniza artistas con \'me gusta\' a la base de datos local</string>
+    <string name="setting_description_sync_albums_status_all">Muestra todos los álbumes disponibles</string>
+    <string name="setting_description_sync_artists_status_all">Muestra todos los artistas disponibles</string>
+    <!-- player -->
+    <string name="setting_title_radio_from_songs">Radio desde Canciones</string>
+    <string name="setting_description_radio_from_tap_on">Una canción seleccionada suena con canciones similares</string>
+    <string name="setting_description_radio_from_tap_off">Una canción seleccionada suena con las canciones de debajo</string>
+    <string name="setting_title_radio_from_search">Radio desde búsqueda</string>
+    <string name="setting_title_keep_the_queue">Mantener la cola</string>
+    <string name="setting_description_keep_the_queue">Vuelve donde lo dejaste cuando se cerró la aplicación</string>
+    <string name="setting_title_save_interval">Intervalo de guardado</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How often the playback queue is saved; "the song plays" = is being played -->
+    <string name="setting_description_save_interval">Guardar cola cada %1$s mientras suena la canción</string>
+    <string name="setting_title_load_next_song_ahead">Cargar la próxima canción</string>
+    <!-- %1$s is a duration, e.g. "10 seconds". How much of the next song is fetched before the current one ends ("load" = download into memory, not upload) -->
+    <string name="setting_description_load_next_song_ahead">Carga %1$s de la siguiente canción antes de que empiece</string>
+    <string name="setting_description_load_next_song_ahead_off">Sólo cargar la siguiente canción cuando empiece</string>
+    <string name="setting_title_when_a_song_fails">Cuando falla una canción</string>
+    <string name="setting_title_login_for_playback">Inicio de sesión para reproducir</string>
+    <string name="setting_description_login_for_playback_never">No usar inicio de sesión para reproducción</string>
+    <string name="setting_description_login_for_playback_on_failure">Reintentar con inicio de sesión si hay fallo</string>
+    <string name="setting_description_login_for_playback_always">Siempre usar inicio de sesión para reproducción</string>
+    <string name="setting_title_give_up_loading_after">Dejar de cargar después de</string>
+    <!-- %1$s is a duration, e.g. "30 seconds". How long the app waits for a song to load before it reports a failure -->
+    <string name="setting_description_give_up_loading_after">Esperar %1$s antes de dar error</string>
+    <string name="setting_description_give_up_loading_after_off">Esperar hasta que la red se apague</string>
+    <string name="setting_title_even_out_loudness">Igualar volumen</string>
+    <string name="setting_description_even_out_loudness">Las canciones con poco y mucho volumen suenan a volúmenes similares</string>
+    <string name="setting_description_target_loudness_status_disabled">Normalizar volumen está desactivado</string>
+    <string name="setting_title_target_loudness">Volumen objetivo</string>
+    <string name="setting_title_load_ahead">Cargar los siguientes</string>
+    <!-- %1$s is a duration, e.g. "30 seconds". How far ahead of the playback position the song is loaded (downloaded into memory) -->
+    <string name="setting_description_load_ahead">Carga hasta %1$s más allá</string>
+    <!-- %1$s is the name of this app, Kreate. With no limit the app loads the whole song -->
+    <string name="setting_description_load_ahead_unlimited">Carga todo lo que pueda %1$s</string>
+    <string name="setting_title_load_before_playing">Cargar antes de reproducir</string>
+    <string name="setting_title_keep_what_was_played">Mantener lo que se reprodujo</string>
+    <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). Seeking back = moving the playback position backwards; "it" = the part of the song already played -->
+    <string name="setting_description_keep_what_was_played">Retroceder hasta %1$s no lo vuelve a cargar</string>
+    <string name="setting_title_remove_button">Botón Eliminar</string>
+    <string name="setting_title_add_button">Botón Añadir</string>
+    <string name="setting_title_pause_history">Pausar historial</string>
+    <string name="setting_description_pause_history_on">No se guarda lo que escuchas</string>
+    <string name="setting_description_pause_history_off">Guarda lo que escuchas</string>
+    <string name="setting_title_minimum_play_time">Tiempo de reproducción mínimo</string>
+    <string name="setting_description_minimum_play_time">Las canciones que se reproduzcan menos tiempo no se añaden al historial</string>
+    <string name="setting_title_lyrics_source">Fuente de la letra</string>
+    <string name="setting_title_preferred_timing">Sincronización preferida</string>
+    <string name="setting_title_always_fetch_lyrics">Obtener letras siempre</string>
+    <string name="setting_description_always_fetch_lyrics_on">Las letras se obtienen cada vez que se ven y no se guardan</string>
+    <string name="setting_description_always_fetch_lyrics_off">Las letras son guardadas desde la fuente sin buscarlas de nuevo</string>
+    <string name="setting_title_text_size">Tamaño del texto</string>
+    <string name="setting_title_tapping_an_album">Pulsar un álbum</string>
+    <string name="setting_title_tapping_an_artist">Pulsar un artista</string>
+    <string name="setting_title_tapping_a_playlist">Pulsar una lista de reproducción</string>
+    <!-- backup -->
+    <string name="setting_title_restore">Restaurar</string>
+    <string name="setting_description_restore">Reemplaza todo con una copia de seguridad. La aplicación se reiniciará.</string>
+    <string name="setting_title_back_up">Copia de seguridad</string>
+    <!-- YouTube -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Title of a switch: "Use" is a verb (imperative); "account" is the user's login on that source -->
+    <string name="setting_title_use_youtube_account">Usar cuenta de %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the user's saved songs, playlists and artists; "this account" = the signed-in account -->
+    <string name="setting_description_use_youtube_account_on">Tu biblioteca de %1$s se sincroniza con esta cuenta</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). The source is used without logging in; "library" = the user's saved songs, playlists and artists -->
+    <string name="setting_description_use_youtube_account_off">Se usa %1$s sin iniciar sesión, tu biblioteca no se sincroniza</string>
+    <string name="setting_title_sign_in">Iniciar sesión</string>
+    <string name="setting_description_sign_in_youtube">Trae tus álbumes, artistas y listas de reproducción</string>
+    <string name="setting_description_tap_to_change_channel">Toca para cambiar el canal</string>
+    <string name="setting_description_tap_to_sign_out">Toca para cerrar sesión</string>
+    <string name="setting_description_sign_in_proxy_incomplete">Establece primero el host y el puerto del proxy</string>
+    <!-- OpenSubsonic -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Contacted" = no network requests are sent to it -->
+    <string name="setting_description_use_opensubsonic">No se contacta a %1$s cuando esto está desactivado</string>
+    <string name="setting_title_server_address">Dirección del servidor</string>
+    <string name="setting_title_trusted_until_now">De confianza hasta ahora</string>
+    <string name="setting_title_presented_now">Presentado ahora</string>
+    <string name="setting_description_server_url_scheme">Comenzar con https:// o http://</string>
+    <string name="setting_description_server_url_host">Añadir el host del servidor</string>
+    <string name="setting_title_allow_self_signed_certificate">Permitir certificado autofirmado</string>
+    <string name="setting_title_issued_to">Emitido para</string>
+    <string name="setting_title_valid_from">Válido desde</string>
+    <string name="setting_title_valid_until">Válido hasta</string>
+    <!-- SHA-256 is the name of a hashing algorithm, not translated; a fingerprint is a short code that identifies a security certificate -->
+    <string name="setting_title_sha256_fingerprint">Huella SHA-256</string>
+    <string name="setting_title_api_key">Clave API</string>
+    <string name="setting_title_direct_play">Reproducción directa</string>
+    <string name="setting_title_replay_gain_reference">Referencia de ReplayGain</string>
+    <!-- %1$s is a loudness value, e.g. "-14 LUFS"; %2$s is the name of the user's OpenSubsonic server (proper noun, shown with a possessive 's). ReplayGain = a volume-levelling tag stored in audio files; "the loudness ... bring songs to" = the target level -->
+    <string name="setting_description_replay_gain_reference">%1$s, el volumen que ReplayGain de %2$s pone a las canciones</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Songs are played straight from the server ("streamed") and not saved in the app's song cache -->
+    <string name="setting_description_direct_play">Transmite canciones de %1$s sin guardarlas en la caché de canciones</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The song cache (temporary copies of songs) is switched off -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
+    <string name="setting_title_account_status_signed_out">%1$s cerró tu sesión</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may change this shared setting -->
+    <string name="setting_description_default_profile_only">Compartido entre perfiles, solo %1$s lo puede cambiar</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may create or restore a backup -->
+    <string name="setting_description_backup_status_default_profile_only">Solo %1$s puede crear o restaurar copias de seguridad</string>
+    <!-- statuses of one setting -->
+    <!-- Self-signed certificate = a security certificate the server made itself -->
+    <string name="setting_description_allow_self_signed_certificate_status_not_allowed">No se permite el certificado autofirmado</string>
+    <!-- "Tap" = touch the row; "allow" = decide whether to trust it. Self-signed certificate = a security certificate the server made itself -->
+    <string name="setting_description_allow_self_signed_certificate_status_detected">El servidor utiliza un certificado autofirmado. Toca para permitir</string>
+    <!-- Self-signed certificate = a security certificate the server made itself; "you" is the user, gender unknown. The user is asked to trust it when the server presents one -->
+    <string name="setting_description_allow_self_signed_certificate_status_allowed">Permitido, se te pedirá que confíes en el certificado del servidor</string>
+    <!-- %1$s is the host name of the user\'s own server, %2$s the start of the certificate\'s fingerprint (letters and numbers, not translated). "Tap" = touch the row; "forget" = stop trusting it -->
+    <string name="setting_description_allow_self_signed_certificate_status_trusted">%1$s - %2$s de confianza. Pulsa para olvidarlo</string>
+    <!-- "Tap" = touch the row; "approve" = decide to trust the new certificate -->
+    <string name="setting_description_allow_self_signed_certificate_status_changed">El certificado cambió. Pulsa para aprobarlo</string>
+    <!-- "Sign in" is the name of a settings row; the address is entered there -->
+    <string name="setting_description_server_status_no_server">No hay dirección del servidor, añádela al iniciar sesión</string>
+    <string name="setting_description_status_not_signed_in">Sesión no iniciada</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
+    <string name="setting_description_configure_youtube_status_signed_out">%1$s cerró tu sesión</string>
+    <string name="setting_description_configure_opensubsonic_status_no_server">Ningún servidor establecido</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
+    <string name="setting_description_configure_opensubsonic_status_unreachable">No se puede alcanzar %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="setting_description_status_certificate_untrusted">El certificado de %1$s no es de confianza</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="setting_description_status_certificate_changed">El certificado de %1$s cambió</string>
+    <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
+    <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">No es un servidor %1$s</string>
+    <string name="setting_description_account_status_session_ended">La sesión terminó, toca para iniciar sesión de nuevo</string>
+    <!-- %1$s is the reason the account check failed, a short text such as "Can't reach YouTube Music". "Tap" = touch the row to try again -->
+    <string name="setting_description_account_status_failed">%1$s, toca para intentarlo de nuevo</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection -->
+    <string name="setting_description_account_status_unreachable">No se puede alcanzar %1$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
+    <string name="setting_description_server_status_checking">Comprobando %1$s…</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
+    <string name="setting_description_server_status_unreachable">No se puede alcanzar %1$s: %2$s</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "its own" = a self-signed certificate that the server made itself -->
+    <string name="setting_description_server_status_certificate_untrusted">El certificado de %1$s no es de confianza. Si usa el suyo propio, permitir certificados autofirmados</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "review" = look at the new certificate and decide whether to trust it -->
+    <string name="setting_description_server_status_certificate_changed">El certificado de %1$s ha cambiado. Toca para revisarlo</string>
+    <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). "This address" = the address the user entered, which isn't a server that speaks it -->
+    <string name="setting_description_server_status_not_opensubsonic">Esta dirección no es un servidor %1$s</string>
+    <string name="setting_description_sign_in_status_checking">Iniciando sesión…</string>
+    <string name="setting_description_sign_in_status_wrong_credentials">Nombre de usuario o contraseña incorrectos</string>
+    <string name="setting_description_sign_in_status_invalid_api_key">Clave de API incorrecta</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
+    <string name="setting_description_sign_in_status_refused">%1$s se negó a iniciar sesión (%2$d)</string>
+    <string name="setting_description_sign_in_status_start_syncing">Inicia sesión para empezar a sincronizar</string>
+    <!-- %1$s is the user's account name on YouTube Music or their username on an OpenSubsonic server (a person's name or handle, gender unknown, not translated) -->
+    <string name="setting_description_sign_in_status_signed_in_as">Has iniciado sesión como %1$s</string>
+    <string name="setting_description_sign_in_status_signed_in_with_api_key">Sesión iniciada con una clave API</string>
+    <string name="setting_description_sign_in_status_waiting_for_server">Esperando a que el servidor complete la autenticación</string>
+    <string name="setting_description_restore_status_reading">Leyendo…</string>
+    <string name="setting_description_restore_status_failed">No se pudo leer la copia de seguridad</string>
+    <string name="setting_description_back_up_status_saving">Guardando…</string>
+    <string name="setting_description_back_up_status_saved">Copia de seguridad guardada</string>
+    <string name="setting_description_back_up_status_failed">No se pudo guardar la copia de seguridad</string>
+    <string name="setting_header_logging">Registros</string>
+    <string name="setting_title_log_level">Nivel de registro</string>
+    <string name="setting_title_log_rollover_size">Tamaño del Rollover</string>
+    <string name="setting_description_log_rollover_size">Un nuevo archivo empieza cuando el actual es así de grande</string>
+    <string name="setting_title_log_keep">Mantener</string>
+    <string name="setting_description_log_keep">Los archivos más antiguos que el actual también se mantienen</string>
+    <string name="setting_title_log_export">Exportar</string>
+    <string name="setting_description_log_export">Guarda los archivos de registro como un zip</string>
+    <string name="setting_title_log_copy">Copiar</string>
+    <string name="setting_description_log_copy">Copia la última parte del registro</string>
+    <string name="setting_title_crash_log_retention">Borrar los registros de fallos después de</string>
+    <string name="setting_description_crash_log_retention">Eliminados al iniciar la aplicación si tienen más de %1$s</string>
+    <string name="setting_title_pin_playlist">Fijar arriba</string>
+    <string name="setting_description_pin_playlist">Las listas de reproducción fijadas aparecen primero en la lista</string>
+    <string name="setting_title_public_playlist">Pública</string>
+    <string name="setting_description_public_playlist">Otros usuarios del servidor pueden verla</string>
+    <string name="setting_title_playlist_privacy">Quién puede verla</string>
+</resources>

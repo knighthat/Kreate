@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Texts that appear only in the setup wizard. -->
+<resources>
+    <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
+    <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
+    <string name="wizard_profile_entry">Passe die App deinem Geschmack nach an.</string>
+    <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
+    <string name="wizard_music">Musik</string>
+    <string name="wizard_music_description">Die Audiodateien auf diesem Gerät lesen, um deine Bibliothek zu erstellen</string>
+    <string name="wizard_notifications">Benachrichtigungen</string>
+    <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
+    <string name="wizard_restore_a_backup">Backup wiederherstellen</string>
+    <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
+    <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->
+    <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
+    <string name="wizard_distributed_under">Unter der %1$s verteilt.</string>
+    <string name="wizard_get_started">Erste Schritte</string>
+    <string name="wizard_start_listening">Mit dem Hören anfangen</string>
+</resources>

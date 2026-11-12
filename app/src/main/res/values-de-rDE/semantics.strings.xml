@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Icon descriptions for accessibility and the entries of overflow menus. -->
+<resources>
+    <string name="semantic_most_listened">Am meisten angehört</string>
+    <string name="semantic_add_to_queue">Zur Queue hinzufügen</string>
+    <string name="semantic_back">Zurück</string>
+    <string name="semantic_bookmark">Lesezeichen</string>
+    <string name="semantic_change_source">Quelle ändern</string>
+    <string name="semantic_clear_the_queue">Queue leeren</string>
+    <string name="semantic_config">Konfiguration</string>
+    <string name="semantic_create_playlist">Playlist erstellen</string>
+    <string name="semantic_dislike">Mag ich nicht</string>
+    <string name="semantic_disliked">Mag ich nicht</string>
+    <string name="semantic_show_text">Text anzeigen</string>
+    <string name="semantic_hide_text">Text ausblenden</string>
+    <string name="semantic_equalizer">Equalizer</string>
+    <string name="semantic_explicit">Nicht jugendfrei</string>
+    <string name="semantic_downloaded">Heruntergeladen</string>
+    <string name="semantic_cached">Gecacht</string>
+    <string name="semantic_follow">Folgen</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
+    <string name="semantic_from_youtube">Von %1$s</string>
+    <string name="semantic_larger">Größer</string>
+    <string name="semantic_select_source">Quelle auswählen</string>
+    <string name="semantic_repeat_off">Wiederholen deaktivieren</string>
+    <string name="semantic_remove_time">Zeit entfernen</string>
+    <string name="semantic_add_time">Zeit hinzufügen</string>
+    <string name="semantic_stop_the_sleep_timer">Einschlaf-Timer beenden</string>
+    <string name="semantic_reorder">Neu anordnen</string>
+    <string name="semantic_like">Mag ich</string>
+    <string name="semantic_more">Mehr</string>
+    <string name="semantic_skip_next">Nächster</string>
+    <string name="semantic_on_this_device">Auf diesem Gerät</string>
+    <string name="semantic_open_one_at_random">Zufällig einen öffnen</string>
+    <string name="semantic_play">Wiedergabe</string>
+    <string name="semantic_play_all">Alle abspielen</string>
+    <string name="semantic_profile">Profil</string>
+    <string name="semantic_newest_first">Neuste zuerst</string>
+    <string name="semantic_delete_all_downloads">Alle Downloads löschen</string>
+    <string name="semantic_remove_songs">Songs entfernen</string>
+    <string name="semantic_search">Suchen</string>
+    <string name="semantic_see_more">Mehr anzeigen</string>
+    <string name="semantic_set">Übernehmen</string>
+    <string name="semantic_settings">Einstellungen</string>
+    <string name="semantic_share">Teilen</string>
+    <string name="semantic_shown">Angezeigt</string>
+    <string name="semantic_shuffle">Zufallswiedergabe</string>
+    <string name="semantic_sleep_timer">Einschlaf-Timer</string>
+    <string name="semantic_smaller">Kleiner</string>
+    <string name="semantic_text_size">Schriftgröße</string>
+    <string name="semantic_unfollow">Entfolgen</string>
+</resources>

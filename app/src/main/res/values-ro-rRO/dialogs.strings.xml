@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Dialog titles and bodies. -->
+<resources>
+    <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
+    <!-- %1$s is the host name or address of the user's own server. Self-signed = a security certificate the server made itself, not checked by anyone else -->
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome (proper noun, shown with a possessive 's); "you" is the user, gender unknown. Certificate = the server's security certificate -->
+    <!-- %1$s is the playlist's quoted name -->
+    <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
+    <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
+    <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
+    <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
+    <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
+    <!-- %1$s is the space the downloaded songs take, a file size with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <!-- %1$s is the space the downloaded songs take, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
+    <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
+</resources>

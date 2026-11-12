@@ -22,6 +22,8 @@
     <string name="wizard_intro">Hoàn tất các bước sau để bắt đầu nghe nhạc. Sau đây là các bước cần hoàn tất:</string>
     <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
     <string name="wizard_permissions_entry">Kiểm soát những gì %1$s có thể nhìn thấy và truy cập.</string>
+    <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
+    <string name="wizard_sign_in_entry">Đăng nhập vào các thư viện nhạc.</string>
     <string name="wizard_import_entry">Mang dữ liệu từ máy khác hoặc từ bản sao lưu.</string>
     <string name="wizard_profile_entry">Tùy chỉnh ứng dụng theo ý thích.</string>
     <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
@@ -30,6 +32,8 @@
     <string name="wizard_music_description">Truy cập vào kho nhạc nội bộ</string>
     <string name="wizard_notifications">Thông báo</string>
     <string name="wizard_notifications_description">Xem lỗi và các tác vụ ngầm khác</string>
+    <string name="wizard_sign_in_intro">Không bắt buộc. Mọi thứ có thể làm lại trong cài đặt.</string>
+    <string name="wizard_sign_in_tile_description">Nhấn để đăng nhập</string>
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <string name="wizard_import_intro">Có bản sao lưu từ phiên bản %1$s khác? Tải lên đây để khôi phục chúng. Có thể bỏ qua bước này.</string>
     <string name="wizard_reading_the_backup">Đang đọc bản sao lưu…</string>
@@ -39,6 +43,9 @@
     <string name="wizard_restore_a_backup_description">Chọn bản sao lưu từ các phiên bản trước</string>
     <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
     <string name="wizard_profile_intro">Tự đặt thành %1$s nếu để trống. Tên có thể được thay đổi về sau.</string>
+    <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->
+    <string name="wizard_profile_intro_migrated">Tên sẽ được giữ nguyên nếu không nhập gì. Có thể thay đổi sau.</string>
+    <string name="wizard_quality_intro">Chất lượng nhạc khi nghe. Có thể thay đổi trong cài đặt.</string>
     <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
     <string name="wizard_distributed_under">Phân phối dưới giấy phép %1$s.</string>
     <string name="wizard_get_started">Bắt đầu</string>

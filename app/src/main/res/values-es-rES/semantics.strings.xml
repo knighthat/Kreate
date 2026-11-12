@@ -67,6 +67,8 @@
     <string name="semantic_profile">Perfil</string>
     <string name="semantic_newest_first">Más reciente primero</string>
     <string name="semantic_oldest_first">Más antiguo primero</string>
+    <string name="semantic_playlist_order">Orden de la lista</string>
+    <string name="semantic_reversed_order">Orden inverso</string>
     <string name="semantic_remove_bookmark">Eliminar favorito</string>
     <string name="semantic_remove_dislike">Quitar no me gusta</string>
     <string name="semantic_undislike_all">No me gusta ninguna</string>
@@ -77,6 +79,7 @@
     <string name="semantic_remove_like">Quitar me gusta</string>
     <string name="semantic_remove_songs">Eliminar canciones</string>
     <string name="semantic_delete_playlist">Eliminar lista de reproducción</string>
+    <string name="semantic_edit_playlist">Editar lista de reproducción</string>
     <string name="semantic_restart_the_app">Reiniciar aplicación</string>
     <string name="semantic_restart_the_player">Reiniciar reproductor</string>
     <string name="semantic_resume_the_sleep_timer">Reanudar el temporizador de apagado</string>

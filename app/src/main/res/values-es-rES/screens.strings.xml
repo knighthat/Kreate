@@ -35,6 +35,7 @@
     <string name="screen_title_data">Datos</string>
     <string name="screen_title_player">Reproductor</string>
     <string name="screen_title_ui">Interfaz</string>
+    <string name="screen_title_font_preview">Vista previa de tipografía</string>
     <string name="screen_title_network">Red</string>
     <string name="screen_title_backup">Copia de seguridad</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
@@ -43,8 +44,7 @@
     <string name="screen_title_account">Cuenta</string>
     <string name="screen_title_history">Historial</string>
     <string name="screen_title_statistics">Estadísticas</string>
-    <string name="screen_title_song_details">Detalles</string>
-    <string name="screen_title_artist_details">Detalles</string>
+    <string name="screen_title_details">Detalles</string>
     <string name="screen_title_liked">Me gusta</string>
     <string name="screen_title_disliked">No me gusta</string>
     <string name="screen_title_downloaded">Descargas</string>
@@ -82,14 +82,12 @@
     <string name="section_header_date_range">Rango de fechas</string>
     <string name="section_header_in_progress">En progreso</string>
     <string name="screen_search_hint_library">Buscar en tu biblioteca</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_youtube">Buscar en %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
-    <string name="screen_search_hint_opensubsonic">Buscar en %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_source">Buscar en %1$s</string>
     <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
     <string name="screen_voice_search_hint_phrase">Reproduce … en %1$s</string>
     <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
-    <string name="screen_voice_search_hint_order">%1$s busca en estas empezando por arriba hasta que se encuentra coincidencia. Arrastra para cambiar el orden, desactiva una para saltarla.</string>
+    <string name="screen_voice_search_hint_order">%1$s busca aquí, empezando por arriba, hasta que se encuentra coincidencia. Arrastra para cambiar el orden, desactiva una para saltarla.</string>
     <string name="screen_search_status_no_history">Tus búsquedas aparecerán aquí</string>
     <!-- %1$s is what the user typed, in quotes (the user's own text). Search suggestions -->
     <string name="screen_search_status_no_suggestions">No hay sugerencias para %1$s</string>
@@ -114,21 +112,22 @@
     <!-- %1$s is a small icon character standing for the Change source button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <string name="screen_lyrics_hint_change_source">Presiona Cambiar fuente (%1$s) abajo para elegir otra.</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is a song title in quotes, or "this song" when unknown -->
-    <string name="screen_song_details_status_not_found">%1$s no tiene coincidencia con %2$s.</string>
+    <string name="screen_song_details_status_not_found">No hay coincidencia para %2$s en %1$s.</string>
     <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <string name="screen_song_details_hint_search">Presiona Buscar (%1$s) para buscar con otras palabras.</string>
     <string name="screen_song_details_hint_not_kept">No está en tu biblioteca, por lo que esta coincidencia no se guarda</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an artist name in quotes, or "this artist" when unknown -->
-    <string name="screen_artist_details_status_not_found">%1$s no tiene coincidencia con %2$s.</string>
+    <string name="screen_artist_details_status_not_found">No hay coincidencia para %2$s en %1$s.</string>
     <!-- %1$s is a small icon character (magnifying glass) standing for the Search button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <string name="screen_artist_details_hint_search">Pulsa Buscar (%1$s) para buscar con otro nombre.</string>
+    <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an album title in quotes, or "this album" when unknown -->
+    <string name="screen_album_details_status_not_found">No hay coincidencia para %2$s en %1$s.</string>
     <string name="screen_profiles_hint_search_or_add">Buscar o añadir perfil</string>
     <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
     <string name="screen_profiles_status_active_since">Activo desde %1$s</string>
     <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
     <string name="screen_profiles_status_last_seen">Visto por última vez %1$s</string>
-    <string name="screen_history_status_nothing_played">Todavía no has reproducido nada</string>
-    <string name="screen_history_status_no_matches">Ninguna reproducción coincide con los filtros</string>
+    <string name="screen_history_status_no_matches">No hay reproducciones que coincidan con los filtros</string>
     <string name="screen_history_status_paused">Historial pausado, no se añaden nuevas reproducciones</string>
     <string name="screen_liked_status_nothing_liked">No hay canciones con me gusta</string>
     <string name="screen_liked_status_no_matches">No hay canciones con me gusta que coincidan con los filtros</string>
@@ -148,7 +147,6 @@
     <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
     <string name="status_download_paused_at">Pausada al %1$s</string>
     <string name="screen_download_queue_status_nothing">No se está descargando nada</string>
-    <string name="screen_statistics_status_nothing_played">Todavía no has reproducido nada</string>
     <string name="screen_statistics_status_nothing_this_month">No has reproducido nada este mes</string>
     <string name="screen_player_status_timer_on_hold_song_end">En espera, hasta que la canción termine</string>
     <string name="screen_player_status_timer_song_end">Se pausa al acabar la canción</string>
@@ -159,6 +157,11 @@
     <string name="screen_crash_hint">Algo salió mal. Comparte el registro de abajo cuando lo reportes.</string>
     <string name="screen_crash_status_no_log">No se pudo leer el registro de errores.</string>
     <string name="screen_title_new_playlist">Nueva lista de reproducción</string>
+    <string name="screen_title_edit_playlist">Editar lista de reproducción</string>
+    <string name="screen_title_edit_song">Editar canción</string>
+    <string name="screen_title_edit_album">Editar álbum</string>
+    <string name="screen_title_edit_artist">Editar artista</string>
+    <string name="screen_edit_hint_artists">Un artista por línea</string>
     <string name="screen_title_old_app_downloads">Descargas antiguas</string>
     <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
     <string name="screen_old_app_downloads_status_loading">Cargando canciones… %1$d de %2$d</string>

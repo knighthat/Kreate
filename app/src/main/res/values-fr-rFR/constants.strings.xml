@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Display names of enum values. -->
+<resources>
+    <string name="constant_theme_mode_automatic">Système</string>
+    <string name="constant_theme_mode_automatic_dynamic">Fond d\'écran</string>
+    <string name="constant_theme_mode_light">Clair</string>
+    <string name="constant_history_range_all_time">Tout le temps</string>
+    <string name="constant_history_range_today">Aujourd\'hui</string>
+    <string name="constant_history_range_last_7_days">7 derniers jours</string>
+    <string name="constant_history_range_last_30_days">30 derniers jours</string>
+    <string name="constant_history_range_this_year">Cette année</string>
+    <string name="constant_statistics_period_all_time">Tout le temps</string>
+    <string name="constant_statistics_period_this_month">Ce mois-ci</string>
+    <string name="constant_theme_mode_light_dynamic">Luminosité dynamique</string>
+    <string name="constant_theme_mode_dark">Sombre</string>
+    <string name="constant_theme_mode_dark_dynamic">Dynamique sombre</string>
+    <string name="constant_theme_mode_pitch_black">Noir absolu</string>
+    <string name="constant_contrast_level_normal">Normal</string>
+    <string name="constant_contrast_level_medium">Moyen</string>
+    <string name="constant_contrast_level_high">Élevé</string>
+    <string name="constant_app_icon_black">Noir</string>
+    <string name="constant_release_type_album">Album</string>
+    <string name="constant_release_type_ep">EP</string>
+    <string name="constant_release_type_single">Single</string>
+    <string name="constant_sync_mode_off">Désactivé</string>
+    <string name="constant_sync_mode_liked">Uniquement « J\'aime »</string>
+    <string name="constant_sync_mode_all">Tout</string>
+    <string name="constant_opensubsonic_auth_password">Mot de passe</string>
+    <string name="constant_opensubsonic_auth_api_key">Clé API</string>
+    <string name="constant_auto_tap_action_open">Afficher ses morceaux</string>
+    <string name="constant_auto_tap_action_play_from_start">Lire depuis le début</string>
+    <string name="constant_auto_tap_action_play_randomly">Lire dans un ordre aléatoire</string>
+    <string name="constant_queue_action_enqueue">Ajouter à la file d\'attente</string>
+    <string name="constant_playlist_button_enqueue">Ajouter à la file d\'attente</string>
+    <string name="constant_playlist_button_share">Partager</string>
+    <string name="constant_playback_failure_action_skip">Passer au morceau suivant</string>
+    <string name="constant_playback_login_never">Jamais</string>
+    <string name="constant_playback_login_on_failure">En cas de défaillance</string>
+    <string name="constant_playback_login_always">Toujours</string>
+    <string name="constant_stream_quality_ytm_low">Faible, environ 48 kbps</string>
+    <string name="constant_stream_quality_ytm_medium">Moyen, environ 128 kbps</string>
+    <string name="constant_stream_quality_ytm_high">Élevée, environ 160 kbps</string>
+    <string name="constant_stream_quality_ytm_original">Version originale, 256 kbps avec l\'abonnement Premium, sinon qualité « Élevée »</string>
+    <string name="constant_lyrics_sync_word">Mot à mot</string>
+    <string name="constant_lyrics_sync_line">Ligne par ligne</string>
+    <string name="constant_lyrics_sync_none">Texte brut</string>
+    <string name="constant_log_level_warning">Avertissement</string>
+    <string name="constant_log_level_error">Erreur</string>
+    <string name="constant_playlist_privacy_public">Public</string>
+</resources>

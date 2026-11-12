@@ -36,6 +36,7 @@
     <string name="dialog_body_reset_the_order">Vị trí sẽ được khôi phục lại theo album chỉ định.</string>
     <string name="dialog_title_unsaved_changes">Lưu thay đổi?</string>
     <string name="dialog_body_unsaved_changes">Mọi thay đổi chưa được lưu.</string>
+    <string name="dialog_body_unsaved_edits">Thay đổi chưa được lưu.</string>
     <string name="dialog_title_delete_playlist">Xóa danh sách này?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">Xóa danh sách nhạc %1$s. Nhạc vẫn sẽ được trên máy.</string>
@@ -95,10 +96,8 @@
     <string name="dialog_body_find_recording_no_matches">Không tìm thấy bài nhạc nào</string>
     <string name="dialog_title_find_artist">Tìm nghệ sĩ</string>
     <string name="dialog_body_find_artist_no_matches">Không tìm thấy nghệ sĩ nào</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_youtube">Đăng xuất khỏi %1$s?</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
-    <string name="dialog_title_sign_out_of_opensubsonic">Đăng xuất khỏi %1$s?</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out">Đăng xuất khỏi %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">Tên đăng nhập, mật khẩu và mã API sẽ bị xóa. Đăng nhập lại bất cứ lúc nào.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
     <string name="dialog_body_sign_out_of_youtube">Ngưng đồng bộ thư viện trên %1$s, nhạc đã thích sẽ được giữ nguyên trên máy. Đăng nhập lại bất cứ lúc nào.</string>

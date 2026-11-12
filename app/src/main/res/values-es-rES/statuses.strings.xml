@@ -34,4 +34,5 @@
     <string name="status_no_playlists_to_add_to">No hay listas a las que puedas añadir</string>
     <string name="status_couldnt_load_playlists">No se pudieron cargar las listas</string>
     <string name="status_playlist_empty">Esta lista de reproducción no tiene canciones</string>
+    <string name="status_nothing_played">Todavía no has reproducido nada</string>
 </resources>

@@ -34,4 +34,5 @@
     <string name="status_no_playlists_to_add_to">Không có danh sách nào</string>
     <string name="status_couldnt_load_playlists">Không thể tải danh sách</string>
     <string name="status_playlist_empty">Không có nhạc</string>
+    <string name="status_nothing_played">Chưa nghe gì</string>
 </resources>

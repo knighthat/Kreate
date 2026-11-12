@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Button texts and menu items. -->
+<resources>
+    <string name="action_close">Fermer</string>
+    <string name="action_open_website">Ouvrir le site web</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_save_changes">Enregistrer les modifications</string>
+    <string name="action_discard_changes">Ignorer les modifications</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_ok">OK</string>
+    <string name="action_skip">Passer</string>
+    <string name="action_forget">Ignorer</string>
+    <string name="action_sign_in">Se connecter</string>
+    <string name="action_update">Mettre à jour</string>
+    <string name="action_sign_out">Se déconnecter</string>
+    <string name="action_pick_backup">Choisir une sauvegarde</string>
+    <string name="action_trust_new_certificate">Considérer le nouveau certificat comme fiable</string>
+    <string name="action_not_now">Pas maintenant</string>
+    <string name="action_accept">Accepter</string>
+    <string name="action_deny">Refuser</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_create">Créer</string>
+    <string name="action_try_again">Réessayer</string>
+    <string name="action_retry">Réessayer</string>
+    <string name="action_undo">Annuler</string>
+    <string name="action_reload">Actualiser</string>
+    <string name="action_account_switch">Changer</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_add">Ajouter</string>
+    <string name="action_less">Moins</string>
+    <string name="action_more">Plus</string>
+    <string name="action_restart">Redémarrer</string>
+    <string name="action_apply">Appliquer</string>
+    <string name="action_apply_and_restart">Appliquer &amp; redémarrer</string>
+    <string name="action_reset">Réinitialiser</string>
+    <string name="menu_edit">Modifier</string>
+    <string name="action_use_original">Utiliser l\'original</string>
+    <string name="action_clear">Effacer</string>
+    <string name="action_undislike">Ne plus aimer</string>
+    <string name="action_grant">Autoriser</string>
+    <string name="action_go_back">Retour</string>
+    <string name="action_next">Suivant</string>
+    <string name="action_stop">Arrêter</string>
+    <string name="action_download">Télécharger</string>
+    <string name="action_move_to_downloads">Déplacer vers les téléchargements</string>
+    <string name="action_remove_from_cache">Supprimer du cache</string>
+    <string name="action_play">Lecture</string>
+    <string name="action_play_next">Suivant</string>
+    <string name="action_queue">File d\'attente</string>
+    <string name="menu_play_next">Lire le titre suivant</string>
+    <string name="menu_add_to_queue">Ajouter à la file d\'attente</string>
+    <string name="menu_add_to_playlist">Ajouter à la playlist</string>
+    <string name="menu_start_radio">Lancer la radio</string>
+    <string name="menu_details">Détails</string>
+    <string name="menu_statistics">Statistiques</string>
+    <string name="menu_go_to_album">Aller à l\'album</string>
+    <string name="menu_title_artists">Artistes</string>
+    <string name="menu_title_add_to_playlist">Ajouter à la playlist</string>
+    <string name="menu_remove_from_playlist">Supprimer de la playlist</string>
+    <string name="menu_delete_from_history">Supprimer de l\'historique</string>
+    <string name="menu_shuffle">Aléatoire</string>
+    <string name="menu_show_disliked">Afficher les « Je n\'aime pas »</string>
+    <string name="menu_cached_only">Uniquement en cache</string>
+    <string name="menu_downloaded_only">Téléchargés uniquement</string>
+    <string name="menu_bookmarked_only">Favoris uniquement</string>
+    <string name="menu_followed_only">Suivis uniquement</string>
+    <string name="menu_monthly_only">Mensuel uniquement</string>
+    <string name="menu_off">Désactivé</string>
+    <string name="menu_end_of_song">Fin du morceau</string>
+    <string name="action_copy">Copier</string>
+    <string name="action_export">Exporter</string>
+    <string name="action_download_all">Tout télécharger</string>
+    <string name="action_select">Sélectionner</string>
+    <string name="action_clear_all">Tout effacer</string>
+    <string name="action_select_all">Tout sélectionner</string>
+</resources>

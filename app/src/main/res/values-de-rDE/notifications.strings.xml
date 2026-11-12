@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Notification channels, titles and subtitles. -->
+<resources>
+    <string name="notification_playback_title_channel">Probleme bei der Wiedergabe</string>
+    <string name="notification_playback_subtitle_channel">Ein Song konnte nicht abgespielt werden</string>
+    <string name="notification_other_title_channel">Sonstige</string>
+    <string name="notification_sleep_timer_title_channel">Einschlaf-Timer</string>
+    <!-- %1$s is a counted plural, e.g. "12 songs". Found on the device by a scan for local music -->
+    <!-- %1$d is the number of songs processed so far, %2$d the total, both whole numbers, shown as a fraction, e.g. 3/10 -->
+    <!-- %1$d is the number of songs whose loudness was measured, %2$d the total, both whole numbers. "Measured" = the loudness (volume level) of the song was analyzed -->
+    <!-- Whole numbers. %1$d = songs measured, %2$d = total songs, %3$d = failures listed in the notification (shown as child notifications), %4$d = all failures. Measured = the loudness of the song was analyzed -->
+    <!-- %1$s is the internal id of a song (text/number, not translated), used as its name when the song has no title -->
+    <string name="notification_sleep_timer_title_running">Einschlaf-Timer</string>
+    <!-- %1$s is a clock time of the device, e.g. 22:30. The sleep timer paused the music at that time -->
+    <string name="notification_downloads_title_channel">Downloads</string>
+    <string name="notification_downloads_subtitle_paused">Pausiert</string>
+</resources>
