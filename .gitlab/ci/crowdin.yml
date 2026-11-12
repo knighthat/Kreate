@@ -67,5 +67,5 @@ download:
     - crowdin download --no-progress --no-skip-untranslated-files -b "$BRANCH"
     - git add -A
     # When Crowdin's export matches what BRANCH holds, the branch is simply BRANCH again
-    - git diff --cached --quiet || git commit -m "update translations from crowdin"
+    - git diff --cached --quiet || git commit -m "update translation $(date -u +%Y/%m/%d)"
     - git push --force origin "${BRANCH}_l10n"
