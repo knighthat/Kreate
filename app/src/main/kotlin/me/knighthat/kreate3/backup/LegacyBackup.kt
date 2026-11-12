@@ -35,6 +35,8 @@ import me.knighthat.kreate3.download.LegacyDownloads
 import me.knighthat.kreate3.download.parseLegacyDownloadIds
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import me.knighthat.kreate3.preferences.Profile
+import okio.buffer
+import okio.source
 import java.io.File
 import java.io.InputStream
 import java.util.zip.ZipEntry
@@ -128,8 +130,12 @@ class LegacyBackup(
             generateSequence { zip.nextEntry }
                 .firstOrNull { it.name == MANIFEST_ENTRY }
                 ?.let {
-                    // A manifest is small, a bigger one is not one of ours
-                    val text = zip.readNBytes(MAX_MANIFEST_BYTES).decodeToString()
+                    val manifest = zip.source().buffer()
+                    // A manifest is small, a bigger one is not one of ours. Reads up to the entry's
+                    // end or one byte past the limit
+                    manifest.request(MAX_MANIFEST_BYTES + 1L)
+                    if (manifest.buffer.size > MAX_MANIFEST_BYTES) return@runCatching false
+                    val text = manifest.buffer.readUtf8()
                     JSON.parseToJsonElement(text).jsonObject["source"]?.jsonPrimitive?.contentOrNull == SOURCE
                 } == true
         }.getOrDefault(false)

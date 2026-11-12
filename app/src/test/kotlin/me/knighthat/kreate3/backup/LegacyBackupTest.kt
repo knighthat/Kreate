@@ -157,4 +157,16 @@ class LegacyBackupTest {
         assertEquals(false, LegacyBackup.isLegacy(zip(mapOf("kreate.db" to database))))
         assertEquals(false, LegacyBackup.isLegacy("not a zip".byteInputStream()))
     }
+
+    @Test
+    fun readsAManifestUpTo64KiB() {
+        // Padded with whitespace, which the JSON allows: a manifest at the limit is read whole
+        val padded = manifest().let { it + " ".repeat(64 * 1024 - it.length) }
+        assertEquals(true, LegacyBackup.isLegacy(zip(complete + ("manifest.json" to padded))))
+        // One byte more and it's not one of ours
+        assertEquals(
+            false,
+            LegacyBackup.isLegacy(zip(complete + ("manifest.json" to "$padded "))),
+        )
+    }
 }
