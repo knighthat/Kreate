@@ -43,8 +43,12 @@ new id (re-encode, new album id); the old id points nowhere.
   ATV, new album `MPREb_AvgaEVYNlCm`); BLACKFOX `Xquk9xxVcpE` → `hekAwcwLXc4` (same length, on a
   best-of); Megalovania `osUVQPnXnEo` → `BXUfJpPCxZs` with the title now
   "Megalovania (feat. ThunderScott)" and the artist name cased differently, so titles match by
-  "holds" and artists by id. Code: `YouTubeProvider.isPlayable` / `replacementOf`, used by
-  `PlaybackRecovery` (`ReplacedSongs.kt`).
+  "holds" and artists by id. Matching changed 2026-11-13 (maintainer: albums and artists are
+  usually changed): the length (±2 s) decides with a title sharing at least half the shorter
+  title's words; artist ids only break ties. Code: `YouTubeProvider.isPlayable` / `replacementOf`,
+  used by
+  `PlaybackRecovery` (`ReplacedSongs.kt`) and by the playlist import's look-up for ids missing
+  from the `get_queue` answer (`PlaylistImporter.replacementOf`).
 - A word starting with `-` in a search is taken as "without it": "LEVEL5 -judgelight- Sayaka
   Sasaki" and "sister's noise -version 2022- fripSide" found nothing related, so `replacementOf`
   searches with hyphens turned into spaces. Titles are compared folded (NFKC, lower case, words

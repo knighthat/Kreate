@@ -24,6 +24,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
@@ -34,6 +35,7 @@ import me.knighthat.kreate3.database.repository.ImportedCredits
 import me.knighthat.kreate3.database.repository.PlaylistImportRepository
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.SongReplacement
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Message
@@ -102,7 +104,8 @@ enum class ImportSkip {
     DUPLICATE,
 
     /**
-     * A YouTube song looked up again that YouTube's answer left out.
+     * A YouTube song looked up again that YouTube's answer left out, with no song found published
+     * in its place.
      */
     GONE,
 }
@@ -143,7 +146,9 @@ enum class NotLookedUp {
  *   kept as it is.
  * - Or, when the user asks to look them up again and YouTube answers, its answer decides (see
  *   [lookUpYouTube]): a song it plays goes in with its current details, one it doesn't play as
- *   the file has it, one missing from its answer is left out.
+ *   the file has it. One missing from its answer is searched for as the song YouTube
+ *   published in its place, like a song that no longer plays (see [replacementOf]): found, it
+ *   goes in instead and takes the old song's stored rows; else it is left out.
  *   Songs already stored keep their rows.
  * - Device songs go in when the library has them: the same id with the same title, else the one
  *   song of the device with that exact title (ends trimmed), the closest in length when several
@@ -185,7 +190,7 @@ class PlaylistImporter(
      * [YouTubeProvider.lookUpSongs]). Every song YouTube plays is stored like a played one, a song
      * already stored keeps its row. A song YouTube doesn't play (taken down or published again) is
      * left out of the answer and goes in as the file has it: searching for its new upload is put
-     * off until replaced songs are found on play.
+     * off. A song missing from YouTube's answer is searched for with [replacementOf].
      *
      * @return the song each YouTube id goes in as, `null` for one left out; `null` when YouTube
      * refused the lookup (nothing is stored then)
@@ -209,16 +214,90 @@ class PlaylistImporter(
                 SongLookup.Unplayable -> null
                 null -> song.id to null
             }
-        }.toMap()
+        }.toMap(HashMap())
         Logger.i(tag = TAG) {
             "Looked up ${songs.size} YouTube songs: ${found.count { it.value != null }} play, " +
                     "${songs.size - found.size} don't, ${found.count { it.value == null }} unknown"
+        }
+
+        // One search each, one after the other
+        for (song in songs) {
+            if (song.id !in found || found[song.id] != null) continue
+            when (val inPlace = replacementOf(song)) {
+                null -> {}
+                InPlace.Downloaded -> found.remove(song.id)
+                is InPlace.Replaced -> found[song.id] = inPlace.song
+            }
         }
 
         found.values.filterNotNull().distinctBy { it.song.id }.forEach { remote ->
             if (!catalog.addToLibrary(remote.song.id)) catalog.savePlayedSong(remote)
         }
         return found
+    }
+
+    /**
+     * The song YouTube published in place of [song], which its lookup left out, found with
+     * [YouTubeProvider.replacementOf] from the file's title and length (artists only search and
+     * break ties), the search a song that no longer plays gets. A song without a title or length
+     * can't be matched. A replacement
+     * found takes what the library keeps of [song] (`RemoteCatalogRepository.replaceSong`), like
+     * on play; a failure to move it is logged and the replacement still goes in.
+     *
+     * @return `null` when none is found or YouTube can't be reached for it
+     */
+    private suspend fun replacementOf(song: PlaylistSong): InPlace? {
+        val title = song.title
+        val duration = song.duration
+        if (title == null || duration == null) {
+            Logger.i(tag = TAG) {
+                "${song.id} has no ${if (title == null) "title" else "length"} to match, it's gone"
+            }
+            return null
+        }
+        val found = try {
+            youTube.replacementOf(
+                songId = song.id,
+                title = title,
+                artists = song.artists,
+                artistIds = song.artistIds,
+                duration = duration,
+            )
+        } catch (e: YouTubeException) {
+            Logger.w(e, TAG) { "Couldn't search for the song in place of ${song.id}" }
+            null
+        } ?: return null
+
+        val newId = found.song.song.id
+        try {
+            when (catalog.replaceSong(song.id, found.song)) {
+                SongReplacement.MOVED ->
+                    Logger.i(tag = TAG) { "What was kept of ${song.id} is $newId's now" }
+
+                SongReplacement.DOWNLOADED -> {
+                    Logger.i(tag = TAG) { "${song.id} is downloaded, it stays in place of $newId" }
+                    return InPlace.Downloaded
+                }
+
+                SongReplacement.NOT_STORED ->
+                    Logger.i(tag = TAG) { "${song.id} isn't stored, $newId goes in in its place" }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't move what was kept of ${song.id} to $newId" }
+        }
+        return InPlace.Replaced(found.song)
+    }
+
+    /** What [replacementOf] found for a song its lookup left out. */
+    private sealed interface InPlace {
+
+        /** [song] is published in its place and goes in instead. */
+        data class Replaced(val song: RemoteSong) : InPlace
+
+        /** A user has it downloaded: it is kept and goes in as it is. */
+        data object Downloaded : InPlace
     }
 
     /**

@@ -41,6 +41,7 @@ import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.SongReplacement
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import org.junit.After
@@ -95,6 +96,9 @@ class OpenSubsonicLibraryTest {
         override suspend fun saveQueuedSong(song: RemoteSong) = error("Not queued here")
 
         override suspend fun addToLibrary(songId: String): Boolean = error("Not added here")
+
+        override suspend fun replaceSong(oldId: String, song: RemoteSong): SongReplacement =
+            error("Not replaced here")
     }
 
     /** Keeps the reaction of each song, the rest of the library isn't used here. */

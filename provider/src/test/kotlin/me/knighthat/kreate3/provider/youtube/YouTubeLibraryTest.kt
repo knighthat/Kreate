@@ -35,6 +35,7 @@ import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.SongReplacement
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import org.junit.After
@@ -71,6 +72,9 @@ class YouTubeLibraryTest {
         override suspend fun saveQueuedSong(song: RemoteSong) = error("Not queued here")
 
         override suspend fun addToLibrary(songId: String): Boolean = error("Not added here")
+
+        override suspend fun replaceSong(oldId: String, song: RemoteSong): SongReplacement =
+            error("Not replaced here")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochSeconds(1_000)) : Clock {

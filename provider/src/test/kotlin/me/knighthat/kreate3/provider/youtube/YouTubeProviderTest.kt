@@ -360,24 +360,57 @@ class YouTubeProviderTest {
     }
 
     @Test
-    fun aReplacementHasTheLengthAndArtistOfTheOldSong() = runBlocking {
+    fun aReplacementHasTheLengthOfTheOldSong() = runBlocking {
         val provider = replacements()
 
         assertNull(
             provider.replacementOf("x", "BLACKFOX", "fripSide", fripSide, (4 * 60 + 29).seconds)
         )
-        assertNull(
-            provider.replacementOf(
-                "x",
-                "BLACKFOX",
-                "fripSide",
-                listOf("UCx"),
-                (4 * 60 + 25).seconds
-            )
-        )
         // Words of the title, not letters of a word
         assertNull(
             provider.replacementOf("x", "BLACK", "fripSide", fripSide, (4 * 60 + 25).seconds)
+        )
+        assertNull(
+            provider.replacementOf(
+                "x",
+                "Our First Song",
+                "fripSide",
+                fripSide,
+                (5 * 60 + 17).seconds
+            )
+        )
+    }
+
+    @Test
+    fun artistsAreNotNeededToMatch() = runBlocking {
+        val provider = replacements()
+
+        assertEquals(
+            "hekAwcwLXc4",
+            provider.replacementOf("x", "BLACKFOX", "someone", listOf("UCx"), (4 * 60 + 25).seconds)
+                ?.song?.song?.id,
+        )
+        assertEquals(
+            "hekAwcwLXc4",
+            provider.replacementOf("x", "BLACKFOX", null, emptyList(), (4 * 60 + 25).seconds)
+                ?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun aTitleSharingHalfTheWordsIsAReplacement() = runBlocking {
+        val provider = replacements()
+
+        // "Our Last Place" shares 2 of 3 words, the length decides
+        assertEquals(
+            "U40ADKsaQzI",
+            provider.replacementOf("x", "Last Place", null, emptyList(), (5 * 60 + 16).seconds)
+                ?.song?.song?.id,
+        )
+        assertEquals(
+            "U40ADKsaQzI",
+            provider.replacementOf("x", "Our Final Place", null, emptyList(), (5 * 60 + 17).seconds)
+                ?.song?.song?.id,
         )
     }
 
@@ -416,10 +449,10 @@ class YouTubeProviderTest {
     }
 
     @Test
-    fun aSongWithoutArtistIdsIsNotSearched() = runBlocking {
+    fun aTitleWithoutWordsIsNotSearched() = runBlocking {
         val provider = replacements()
 
-        assertNull(provider.replacementOf("x", "BLACKFOX", "fripSide", emptyList(), 265.seconds))
+        assertNull(provider.replacementOf("x", " - ", "fripSide", fripSide, 265.seconds))
         assertTrue(requests.isEmpty())
     }
 

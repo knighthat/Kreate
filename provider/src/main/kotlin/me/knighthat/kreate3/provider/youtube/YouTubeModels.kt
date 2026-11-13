@@ -282,3 +282,18 @@ enum class PlaylistPrivacy {
     /** Only its owner. */
     PRIVATE,
 }
+
+/** How a result's title is to a song's, by [YouTubeProvider.replacementOf], closest first. */
+internal enum class TitleMatch(val text: String) {
+    /** The same text. */
+    AS_WRITTEN("as written"),
+
+    /** The same words, folded. */
+    FOLDED("the same folded"),
+
+    /** Holds the song's words in order, like "Megalovania (feat. ThunderScott)". */
+    HOLDING("holding it"),
+
+    /** Shares at least half of the shorter title's words. */
+    SHARING("sharing words"),
+}

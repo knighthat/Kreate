@@ -94,8 +94,9 @@ Root
   `PlaylistImporter.kt` — `PlaylistImporter` (Koin single in `KreateApplication`): `readCsv(uri)`
   and the shared entry point `importPlaylists(List<PlaylistToImport>, lookUp)` (any file format's
   rows → new local playlists; YouTube stored from the row (album/artists when it has their ids,
-  `credits`), or with `lookUp` looked up again
-  (`lookUpSongs`; dead ones go in from the file, ones missing from the answer left out as `GONE`);
+  `credits`), or with `lookUp` looked up again (`lookUpSongs`; dead ones go in from the file, ones
+  missing from the answer searched with
+  `replacementOf` and replaced (`replaceSong` moves the old rows), else left out as `GONE`);
   device songs matched by
   `LocalMatcher` (id + title, else unique title / closest length), OpenSubsonic only stored ones
   or covers of the server set now), `PlaylistImportReport` with `ImportSkip` reasons,

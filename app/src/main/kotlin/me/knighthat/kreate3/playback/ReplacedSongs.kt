@@ -48,7 +48,7 @@ sealed interface SongCheck {
  * ([ERROR_CODE_UNAVAILABLE]), and if not, the song YouTube published in its place: YouTube
  * re-encodes songs or publishes them again under another id, the old one stops playing and points
  * nowhere. Found with [YouTubeProvider.isPlayable], then [YouTubeProvider.replacementOf] from the
- * title, artists and length of [item]. A song without a title, a length or artist ids can't be
+ * title, artists and length of [item]. A song without a title or a length can't be
  * matched and is [SongCheck.Gone]. Songs of other origins are [SongCheck.Playable].
  *
  * A replacement found takes what the library keeps of [item] with [store] before it is queued
