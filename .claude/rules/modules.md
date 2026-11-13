@@ -10,7 +10,9 @@ paths:
 Shape: `:model` (pure Kotlin/JVM, no deps) ← `:database`, `:preferences`, `:lyrics`, `:provider`,
 `:app`. `:provider` → `:database`, `:preferences`; `:app` → everything. `:lyrics` sees only
 `:model`; `:database` and `:preferences` don't know each other (`ProfileUserSync` in `:app` bridges
-them).
+them). `:discord` (Discord's Rich Presence) depends on no module; `:app` keeps the tokens and hands
+it a
+client and the access token.
 
 - Keep modules independent: a module depends only on `:model` plus libraries unless it truly can't
   work without another. Don't add `project(":x")` to reach one or two types.

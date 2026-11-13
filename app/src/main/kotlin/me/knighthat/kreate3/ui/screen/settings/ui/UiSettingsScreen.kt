@@ -35,6 +35,7 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.presence.DiscordCovers
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
@@ -163,7 +164,11 @@ private fun UiSettingsContent(
         SwitchSetting(
             title = stringResource(R.string.setting_title_binary_sizes),
             checked = binarySizes,
-            onCheckedChange = { Preferences.BINARY_SIZES.update(it) },
+            onCheckedChange = {
+                Preferences.BINARY_SIZES.update(it)
+                // Discord's cover sizes have their stops in these units
+                DiscordCovers.snapSettings(it)
+            },
             summary = binarySizesSummary(binarySizes),
         )
 

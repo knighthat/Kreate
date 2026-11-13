@@ -18,8 +18,10 @@
 
 package me.knighthat.kreate3.source
 
+import android.net.Uri
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.repository.ArtistRepository
@@ -48,18 +50,32 @@ class ArtistPictures(
      */
     fun fillMissing(shown: List<UserArtistView>) {
         shown.filter { it.thumbnail == null && it.origin != Origin.LOCAL && asked.add(it.artistId) }
-            .forEach { artist ->
-                scope.launch {
-                    val picture = try {
-                        providers[artist.origin].artist(artist.artistId)?.thumbnail
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
-                        null
-                    } ?: return@launch
-                    // The user's own picture or one stored meanwhile stays
-                    artists.update(artist.artistId) { it.copy(thumbnail = it.thumbnail ?: picture) }
-                }
-            }
+            .forEach { artist -> scope.launch { fetch(artist.artistId, artist.origin) } }
+    }
+
+    /**
+     * The picture of the artist [artistId] of [origin]: the stored one, else asked of its source
+     * once per run like [fillMissing], and stored when the artist is. `null` when there's none,
+     * like for a device artist.
+     */
+    suspend fun pictureOf(artistId: String, origin: Origin): Uri? {
+        val artist = artists.find(artistId).first()
+        artist?.thumbnail?.let { return it }
+        if (origin == Origin.LOCAL || !asked.add(artistId)) return null
+        return fetch(artistId, origin)
+    }
+
+    private suspend fun fetch(artistId: String, origin: Origin): Uri? {
+        val picture = try {
+            providers[origin].artist(artistId)?.thumbnail
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            null
+        } ?: return null
+        // The user's own picture or one stored meanwhile stays; an artist not stored isn't added
+        if (artists.find(artistId).first() != null)
+            artists.update(artistId) { it.copy(thumbnail = it.thumbnail ?: picture) }
+        return picture
     }
 }

@@ -372,4 +372,21 @@
     <string name="setting_title_public_playlist">Public</string>
     <string name="setting_description_public_playlist">Other users of the server can see it</string>
     <string name="setting_title_playlist_privacy">Who can see it</string>
+    <string name="setting_header_integrations">Integrations</string>
+    <!-- Main switch of the Discord page; "activity" = what the user plays and browses, shown on their Discord profile -->
+    <string name="setting_title_discord_enabled">Show activity on %1$s</string>
+    <!-- %1$s is Discord. Text under the main switch while it is on -->
+    <string name="setting_description_discord_enabled_on">What you play and browse shows on your %1$s profile</string>
+    <string name="setting_description_discord_enabled_off">Nothing shows on your %1$s profile</string>
+    <!-- %1$s is Discord. Row to sign in, with what signing in does under it -->
+    <string name="setting_description_sign_in_discord">Lets the app set your %1$s status, nothing else</string>
+    <string name="setting_description_sign_in_status_waiting">Waiting for the sign in page…</string>
+    <!-- Text under each source's switch on the Discord page -->
+    <string name="setting_description_discord_source">Its songs, albums, artists, playlists and searches</string>
+    <!-- Text under the OpenSubsonic and "On device" switches on the Discord page: their albums, artists and playlists don't show -->
+    <string name="setting_description_discord_source_uploaded">Its songs and searches</string>
+    <string name="setting_header_discord_covers">Uploaded covers</string>
+    <!-- %1$s is litterbox, the host the covers go to. Text under the section's first slider: only some covers are uploaded -->
+    <string name="setting_description_discord_covers">Covers only the app can open go to %1$s for an hour</string>
+    <string name="setting_title_discord_cover_resolution">Largest cover</string>
 </resources>

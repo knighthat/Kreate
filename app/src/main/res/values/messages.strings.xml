@@ -278,4 +278,8 @@
     <string name="error_create_playlist">Couldn\'t create %1$s</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
     <string name="snackbar_old_app_downloads_started">Downloading %1$s from the old app</string>
+    <!-- %1$s is Discord -->
+    <string name="error_discord_sign_in">Couldn\'t sign in to %1$s</string>
+    <!-- %1$s is Discord. The app was closed during the sign in, it has to be started again -->
+    <string name="error_discord_sign_in_again">The %1$s sign in expired, try again</string>
 </resources>

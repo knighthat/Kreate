@@ -77,6 +77,9 @@ import androidx.compose.ui.unit.max
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.presence.BrowsedKind
+import me.knighthat.kreate3.presence.ShowBrowsingOnDiscord
+import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.Blur
 import me.knighthat.kreate3.ui.component.BlurredCover
@@ -154,6 +157,16 @@ fun ArtistDetailScaffold(
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     val background = MaterialTheme.colorScheme.surfaceDim
+    ShowBrowsingOnDiscord(
+        kind = BrowsedKind.ARTIST,
+        origin = origin,
+        name = name,
+        creator = null,
+        models = remember(thumbnail, standIn) {
+            listOfNotNull(thumbnailModel(thumbnail, null), thumbnailModel(standIn, null))
+        },
+        link = YouTubeLinks.artist(artistId).takeIf { origin == Origin.YOUTUBE },
+    )
     val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
             TopAppBarDefaults.TopAppBarExpandedHeight
     val direction = LocalLayoutDirection.current

@@ -32,6 +32,32 @@ Root
   `KreateApp(openRoute)`, which collapses the player and pushes it; anything else →
   `error_open_link`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
+- presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol):
+  `PresenceModule.kt` (`presenceModule(isSetup)`: a Ktor client without read timeout through the
+  network proxy (named `discord`), `DiscordAuth`/`DiscordClient` with `BuildConfig.DISCORD_APP_ID` /
+  `DISCORD_REDIRECT_URI`, `DiscordPresence` created at start once set up), `DiscordAccount.kt`
+  (tokens in `Secrets.DISCORD_*`; `access(profile, force)` refreshes a day ahead or when the gateway
+  refused it, saves only while that profile is active, forgets them on `invalid_grant`;
+  `DiscordAccountState`; `start` → URL to open,
+  `finish(uri)` from the callback, `abandon` on resume without an answer, `refreshUser` once per
+  profile, `signOut` revokes), `DiscordCallbackActivity.kt` (exported, `kreate3://discord/callback`,
+  own task, hands the answer over and brings `KreateActivity` back), `Doing.kt` (`Doing.Listening`/
+  `Browsing`/`Searching`, `BrowsedKind`, `PresenceState` (player's song + page on screen),
+  `ShowOnDiscord`/`ShowBrowsingOnDiscord`/`ShowSearchingOnDiscord` composables, off in previews;
+  called by the album/artist/playlist detail scaffolds and `SearchResultsScreen`),
+  `DiscordPresence.kt` (picks the song over a page, pages shown for YouTube only, a page reads item
+  name / creator / "Viewing …", per-source switches, English texts from `DiscordTexts.kt` (literals
+  on purpose), YouTube covers as YouTube's URL at `DISCORD_COVER_SIZE`, others uploaded, the
+  artist's
+  picture through `ArtistPictures.pictureOf`, `app_logo` fallback, connection while enabled + signed
+  in
+  + something shown or shown in the last minute, per profile; `REJECTED` → forced refresh, a failed
+    refresh retried after 1 min), `CoverUploads.kt` (`DiscordCovers`:
+    resolution stops, size stops by `BINARY_SIZES`, `snapSettings`;
+    `CoverUploads.publicUrl(models)`:
+    first cover that loads at the setting's size, MD5 of its pixels, JPEG shrunk to the network's
+    limit,
+    litterbox `1h`, reused 55 min, a failure waits 10 min).
 - `AppLanguage.kt` — app language, per profile in `Preferences.LANGUAGE` (empty = the device's):
   `available` from `BuildConfig.LANGUAGES` (English + the `values-*` folders with
   a `*.strings.xml`, listed by `app/build.gradle.kts`), `displayName` in the language itself,

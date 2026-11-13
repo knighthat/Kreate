@@ -63,4 +63,7 @@
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="pb">%1$s PB</string>
     <string name="lufs" translatable="false">%1$s LUFS</string>
+    <string name="discord" translatable="false">Discord</string>
+    <string name="litterbox" translatable="false">litterbox</string>
+    <string name="pixel_symbol" translatable="false">px</string>
 </resources>

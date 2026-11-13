@@ -30,6 +30,7 @@ Tests mirror the main paths under `src/test/`.
   `SongRepositoryTest`, `UserLibraryRepositoryTest`, `UserRepositoryTest`, `UserScopeTest`.
 - preferences: `CodecTest`, `PreferencesBackupTest`, `DataStorePreferenceStorageTest`,
   `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest`.
+- discord: `DiscordActivityTest` (text limits, gateway JSON of buttons and assets).
 - lyrics: `LyricsFinderTest`, `LyricsSourcesTest` (MockEngine), `LyricsParserTest`. app:
   ui/screen/player/`LoadLyricsTest`.
 - provider: opensubsonic/ `OpenSubsonicLibraryTest`, `OpenSubsonicMappersTest`,

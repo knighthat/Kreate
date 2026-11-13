@@ -149,7 +149,7 @@ private fun LufsSlider(
     steps = ((LUFS_MAX - LUFS_MIN) / LUFS_STEP).roundToInt() - 1,
     number = ::lufsNumber,
     unit = { stringResource(R.string.lufs_symbol) },
-    fromMiddle = true,
+    fillFrom = LUFS_MIDDLE,
     held = held,
     modifier = modifier,
     enabled = enabled,
@@ -164,6 +164,39 @@ private fun lufsNumber(lufs: Float): String {
     val tenths = (lufs * 10).roundToInt()
     return if (tenths % 10 == 0) (tenths / 10).toString() else "%.1f".format(tenths / 10f)
 }
+
+/**
+ * A slider for a length in pixels from the start of [range] to its end, stopping every [step]
+ * from the start: a thin track filled from [fillFrom] (marked) to a ball with the length in it,
+ * which grows while held; "px" sits under the middle of the track.
+ */
+@Composable
+fun PixelSlider(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    range: IntRange,
+    step: Int,
+    fillFrom: Int,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onValueChangeFinished: (() -> Unit)? = null,
+) = BallSlider(
+    value = value.toFloat(),
+    // On a stop exactly, the slider's own snapping leaves float error
+    onValueChange = { onValueChange(range.first + ((it - range.first) / step).roundToInt() * step) },
+    valueRange = range.first.toFloat()..range.last.toFloat(),
+    // The stops between the two ends
+    steps = (range.last - range.first) / step - 1,
+    number = { it.roundToInt().toString() },
+    unit = { stringResource(R.string.pixel_symbol) },
+    fillFrom = fillFrom.toFloat(),
+    held = null,
+    modifier = modifier,
+    enabled = enabled,
+    onValueChangeFinished = onValueChangeFinished,
+    leadingIcon = null,
+    trailingIcon = null,
+)
 
 /**
  * A slider for a number of seconds from the start of [range] to its end, stopping at every whole
@@ -424,7 +457,7 @@ private fun WholeSlider(
     steps = (range.last - range.first - 1).coerceAtLeast(0),
     number = number?.let { { value: Float -> it(value.roundToInt()) } },
     unit = unit?.let { { value: Float -> it(value.roundToInt()) } },
-    fromMiddle = false,
+    fillFrom = null,
     held = held,
     modifier = modifier,
     enabled = enabled,
@@ -455,7 +488,7 @@ fun SliderIcon(@DrawableRes icon: Int, @DrawableRes badge: Int? = null) = Box {
 
 /**
  * The slider the ones here are made of: a thin track filled to a ball from the start, or from the
- * middle (marked) when [fromMiddle], with [leadingIcon] and [trailingIcon] at the ends. The ball
+ * value [fillFrom] (marked) when it's given, with [leadingIcon] and [trailingIcon] at the ends. The ball
  * has [number] of the value in it and grows while held; [unit] of the value sits under the middle
  * of the track. Without them the ball is empty and nothing is under the track.
  *
@@ -472,7 +505,7 @@ private fun BallSlider(
     steps: Int,
     number: ((Float) -> String)?,
     unit: (@Composable (Float) -> String)?,
-    fromMiddle: Boolean,
+    fillFrom: Float?,
     held: Boolean?,
     modifier: Modifier,
     enabled: Boolean,
@@ -535,7 +568,7 @@ private fun BallSlider(
                     }
                 }
             },
-            track = { state -> ThinTrack(state, fromMiddle) },
+            track = { state -> ThinTrack(state, fillFrom) },
             modifier = Modifier.weight(1f),
         )
         trailingIcon?.invoke()
@@ -550,12 +583,12 @@ private fun BallSlider(
 
 /**
  * The thin track of [BallSlider], round at both ends, filled from its start to the thumb, or from
- * its middle when [fromMiddle], with the middle marked across it then. The thumb covers the track,
+ * the value [fillFrom] when it's given, with that value marked across it then. The thumb covers the track,
  * so there's no gap around it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ThinTrack(state: SliderState, fromMiddle: Boolean) {
+private fun ThinTrack(state: SliderState, fillFrom: Float?) {
     val active = MaterialTheme.colorScheme.primary
     val inactive = MaterialTheme.colorScheme.secondaryContainer
     val mark = MaterialTheme.colorScheme.onSurfaceVariant
@@ -570,8 +603,10 @@ private fun ThinTrack(state: SliderState, fromMiddle: Boolean) {
         val fraction = if (span == 0f) 0f else ((state.value - range.start) / span).coerceIn(0f, 1f)
         // The slider lays the track out from the thumb's middle at the start to it at the end
         val thumbX = fraction * size.width
-        val middleX = size.width / 2
-        val fromX = if (fromMiddle) middleX else 0f
+        val markX = fillFrom?.let {
+            if (span == 0f) 0f else ((it - range.start) / span).coerceIn(0f, 1f) * size.width
+        }
+        val fromX = markX ?: 0f
         val height = THIN_TRACK_HEIGHT.toPx()
         val top = (size.height - height) / 2
         val corner = CornerRadius(height / 2)
@@ -582,11 +617,11 @@ private fun ThinTrack(state: SliderState, fromMiddle: Boolean) {
             topLeft = Offset(min(fromX, thumbX), top),
             size = Size(abs(thumbX - fromX), height),
         )
-        if (!fromMiddle) return@Canvas
+        if (markX == null) return@Canvas
         val markWidth = MIDDLE_MARK_WIDTH.toPx()
         drawRoundRect(
             color = mark,
-            topLeft = Offset(middleX - markWidth / 2, 0f),
+            topLeft = Offset(markX - markWidth / 2, 0f),
             size = Size(markWidth, size.height),
             cornerRadius = CornerRadius(markWidth / 2),
         )
@@ -700,6 +735,39 @@ private fun StopSliderPreview() = PreviewTheme {
             // Held, the ball grown
             StopSlider(value = 1, onValueChange = {}, stops = 3, held = true)
             StopSlider(value = 1, onValueChange = {}, stops = 3, enabled = false)
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun PixelSliderPreview() = PreviewTheme {
+    Surface {
+        var value by remember { mutableIntStateOf(768) }
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Filled back to the mark at 1024, then past it
+            PixelSlider(
+                value = value,
+                onValueChange = { value = it },
+                range = 256..1536,
+                step = 256,
+                fillFrom = 1024,
+            )
+            PixelSlider(
+                value = 1536,
+                onValueChange = {},
+                range = 256..1536,
+                step = 256,
+                fillFrom = 1024
+            )
+            PixelSlider(
+                value = 512,
+                onValueChange = {},
+                range = 256..1536,
+                step = 256,
+                fillFrom = 1024,
+                enabled = false,
+            )
         }
     }
 }

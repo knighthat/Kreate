@@ -30,7 +30,9 @@ source/ (app-side glue for sources)
 - `PlaylistExportSongs.kt` — `PlaylistExportSongs.of(playlistId)`: an app playlist's songs to
   export, disliked left out, via `listOfPlaylist` + `SongRepository.sourceValues` (no user
   overrides).
-- `ArtistPictures.kt` — `ArtistPictures.fillMissing` (Koin single): asks each shown stored artist
+- `ArtistPictures.kt` — `ArtistPictures.fillMissing` (Koin single; `pictureOf(id, origin)` for one
+  artist, the stored picture or the source's, once per run, Discord's presence uses it): asks each
+  shown stored artist
   without a picture (not device ones) its source's `Provider.artist` once per run, in the
   background, and stores the picture; artists stored from song credits come without one. Statistics
   uses it.

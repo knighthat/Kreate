@@ -638,6 +638,51 @@ object Preferences : KoinComponent {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Discord">
+    /**
+     * Whether the app shows on the user's Discord profile what they listen to and browse, once
+     * they signed in (`Secrets.DISCORD_ACCESS_TOKEN`). On by default. Read by `DiscordPresence`.
+     */
+    val DISCORD_ENABLED by lazy { boolean("discord_enabled", true) }
+
+    /**
+     * Whether Discord shows the songs of YouTube Music while one plays, and its albums, artists,
+     * playlists and searches while they are open. On by default. While it's off and such a song
+     * plays, Discord shows nothing at all. Read by `DiscordPresence`.
+     */
+    val DISCORD_YOUTUBE by lazy { boolean("discord_youtube", true) }
+
+    /**
+     * Like [DISCORD_YOUTUBE], for the OpenSubsonic server, whichever server it is: its songs and
+     * searches only, its albums, artists and playlists never show (each would be a cover upload).
+     */
+    val DISCORD_OPEN_SUBSONIC by lazy { boolean("discord_open_subsonic", true) }
+
+    /**
+     * Like [DISCORD_YOUTUBE], for the music on the device: its songs and searches only, its
+     * albums, artists and playlists never show (each would be a cover upload).
+     */
+    val DISCORD_LOCAL by lazy { boolean("discord_local", true) }
+
+    /**
+     * Longest edge, in pixels, of a cover the app uploads for Discord to show (those of the
+     * OpenSubsonic server and of the device; YouTube's are shown from YouTube): 256 to 1536 in
+     * steps of 256, 1024 by default, Discord's advice. A smaller cover is sent as it is. Read by
+     * `CoverUploads`.
+     */
+    val DISCORD_COVER_SIZE by lazy { int("discord_cover_size", 1024) }
+
+    /**
+     * Largest file, in bytes, of a cover uploaded for Discord on Wi-Fi and other networks that
+     * aren't metered: a stop of `DiscordCovers.sizes`, which follow [BINARY_SIZES], 512 KiB by
+     * default. The cover is a JPEG made smaller until it fits. Read by `CoverUploads`.
+     */
+    val DISCORD_COVER_BYTES_WIFI by lazy { int("discord_cover_bytes_wifi", 524_288) }
+
+    /** Like [DISCORD_COVER_BYTES_WIFI], on mobile data and other metered networks. */
+    val DISCORD_COVER_BYTES_MOBILE by lazy { int("discord_cover_bytes_mobile", 524_288) }
+    //</editor-fold>
+
     /**
      * Suspends until the active profile's settings, and [GlobalPreferences], are loaded for the first
      * time.

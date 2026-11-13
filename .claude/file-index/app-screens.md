@@ -265,7 +265,8 @@ ui/screen/
   list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
   dialog)/Section, MainSwitch (page-top switch), SettingsSummary (row text: title 1 line, summary
   2), Switch/Choice/Radio/Number/Text settings, Slider setting (`StopSlider`, optional end icons),
-  SecondSetting/MinuteSetting/PercentSetting/CountSetting/LufsSetting (slider rows saved on release,
+  SecondSetting/MinuteSetting/PercentSetting/CountSetting/LufsSetting/PixelSetting (slider rows
+  saved on release,
   optional
   summary, dimmed
   while disabled), `prettyName`), `StreamQualitySettings.kt` (
@@ -308,7 +309,11 @@ ui/screen/
     paragraph; Save in the top bar answers the `StagedFont`),
     `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
-    `OpenSubsonicServer`, nothing asked there), `network/youtube/` (`YouTubeSettingsScreen.kt`
+    `OpenSubsonicServer`, nothing asked there; Integrations: "Configure Discord" with
+    `DiscordAccountState.summary`), `network/discord/DiscordSettingsScreen.kt` (main switch, account
+    row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches, largest
+    cover `PixelSetting` filled from 1024, Wi-Fi / mobile size `SliderSetting`s on
+    `DiscordCovers.sizes`), `network/youtube/` (`YouTubeSettingsScreen.kt`
     account
     page + always-shown Region choice and Playback quality sliders, `YouTubeAccountViewModel.kt`,
     `YouTubeSignInScreen.kt` WebView sign-in (`YouTubeSignInContent` takes callbacks, the wizard

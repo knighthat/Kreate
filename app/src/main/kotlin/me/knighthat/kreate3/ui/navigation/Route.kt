@@ -97,6 +97,10 @@ data object YouTubeSettings : Route
 @Serializable
 data object OpenSubsonicSettings : Route
 
+/** Discord's Rich Presence, opened from [NetworkSettings]. */
+@Serializable
+data object DiscordSettings : Route
+
 /** The OpenSubsonic server's credentials, opened from [OpenSubsonicSettings]. */
 @Serializable
 data object OpenSubsonicSignIn : Route

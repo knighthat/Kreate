@@ -63,6 +63,13 @@ android {
             "LANGUAGES",
             "\"${(listOf("en") + languages.sorted()).joinToString(",")}\""
         )
+
+        // Kreate's app on Discord's developer portal, a public client: the id isn't a secret.
+        // The redirect is set on the portal too, and in the manifest's DiscordCallbackActivity
+        buildConfigField("String", "DISCORD_APP_ID", "\"1370148610158759966\"")
+        buildConfigField("String", "DISCORD_REDIRECT_URI", "\"kreate3://discord/callback\"")
+        // Where Discord's "Get Kreate" button leads, the Patreon build has its own
+        buildConfigField("String", "HOMEPAGE_URL", "\"https://github.com/knighthat/Kreate\"")
     }
 
     // Credentials come from the environment, never from files in the repo
@@ -111,6 +118,7 @@ android {
         create("patreon") {
             dimension = "platform"
             versionNameSuffix = "+$name"
+            buildConfigField("String", "HOMEPAGE_URL", "\"https://patreon.com/knighthat\"")
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
@@ -241,6 +249,7 @@ dependencies {
     implementation(project(":preferences"))
     implementation(project(":provider"))
     implementation(project(":lyrics"))
+    implementation(project(":discord"))
 
     // Core
     implementation(libs.androidx.core.ktx)

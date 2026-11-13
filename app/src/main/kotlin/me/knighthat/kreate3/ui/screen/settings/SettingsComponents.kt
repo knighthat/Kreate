@@ -73,6 +73,7 @@ import me.knighthat.kreate3.ui.component.CountSlider
 import me.knighthat.kreate3.ui.component.LufsSlider
 import me.knighthat.kreate3.ui.component.MinuteSlider
 import me.knighthat.kreate3.ui.component.PercentSlider
+import me.knighthat.kreate3.ui.component.PixelSlider
 import me.knighthat.kreate3.ui.component.RestartAppButton
 import me.knighthat.kreate3.ui.component.SecondSlider
 import me.knighthat.kreate3.ui.component.StopSlider
@@ -619,6 +620,42 @@ fun LufsSetting(
         LufsSlider(
             value = position,
             onValueChange = { position = it },
+            enabled = enabled,
+            // A tap moves and lets go in one frame, read the position it left
+            onValueChangeFinished = { if (position != value) onSelect(position) },
+        )
+    }
+}
+
+/**
+ * A setting of a length in pixels in [range], every [step] from its start, picked on a
+ * [PixelSlider] filled from [fillFrom]. The setting changes only when the slider is let go.
+ * While not [enabled] the row is dimmed and the slider doesn't move.
+ *
+ * @param summary under the title, like what it's for; none when `null`
+ */
+@Composable
+fun PixelSetting(
+    title: String,
+    value: Int,
+    range: IntRange,
+    step: Int,
+    fillFrom: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+) {
+    // Where the slider is while it is dragged
+    var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
+
+    SliderRow(title, summary, enabled, modifier) {
+        PixelSlider(
+            value = position,
+            onValueChange = { position = it },
+            range = range,
+            step = step,
+            fillFrom = fillFrom,
             enabled = enabled,
             // A tap moves and lets go in one frame, read the position it left
             onValueChangeFinished = { if (position != value) onSelect(position) },

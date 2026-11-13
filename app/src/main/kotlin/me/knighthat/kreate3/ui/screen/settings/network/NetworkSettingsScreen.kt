@@ -27,6 +27,8 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.presence.DiscordAccount
+import me.knighthat.kreate3.presence.DiscordAccountState
 import me.knighthat.kreate3.provider.opensubsonic.CheckState
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
@@ -38,6 +40,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SliderIcon
 import me.knighthat.kreate3.ui.component.openSubsonicName
+import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
@@ -69,6 +72,18 @@ private fun YouTubeAccountState.summary(): String = when (this) {
     is YouTubeAccountState.Failed -> reason ?: stringResource(
         R.string.setting_description_account_status_unreachable,
         stringResource(R.string.source_ytm)
+    )
+}
+
+/** Who is signed in to Discord, for the row that opens its page. */
+@Composable
+internal fun DiscordAccountState.summary(): String = when (this) {
+    DiscordAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
+    DiscordAccountState.SigningIn -> stringResource(R.string.setting_description_sign_in_status_waiting)
+    DiscordAccountState.SignedIn -> stringResource(R.string.status_signed_in)
+    is DiscordAccountState.Known -> stringResource(
+        R.string.setting_description_sign_in_status_signed_in_as,
+        user.displayName ?: user.username
     )
 }
 
@@ -124,6 +139,7 @@ fun NetworkSettingsScreen(
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
     youtube: YouTubeAccountStore = koinInject(),
+    discord: DiscordAccount = koinInject(),
 ) {
     // What the app found out when it started and after each change, nothing is asked here
     val server by OpenSubsonicServer.server.collectFlowAsState()
@@ -134,6 +150,8 @@ fun NetworkSettingsScreen(
     val connectTimeout by Preferences.NETWORK_CONNECT_TIMEOUT.collectAsStateWithLifecycle()
     val readTimeout by Preferences.NETWORK_READ_TIMEOUT.collectAsStateWithLifecycle()
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
+    val discordEnabled by Preferences.DISCORD_ENABLED.collectAsStateWithLifecycle()
+    val discordAccount by discord.state.collectFlowAsState()
 
     NetworkSettingsContent(
         connectTimeout = connectTimeout,
@@ -145,6 +163,7 @@ fun NetworkSettingsScreen(
         url = url,
         server = server,
         serverName = openSubsonicName(),
+        discord = if (discordEnabled) discordAccount.summary() else stringResource(R.string.status_off),
         onBack = onBack,
         onOpen = onOpen,
         modifier = modifier,
@@ -166,6 +185,7 @@ fun NetworkSettingsScreen(
 /**
  * @param url the OpenSubsonic server's address, empty while there is none
  * @param serverName what the server is called, see [openSubsonicName]
+ * @param discord the status of Discord's presence, see [DiscordAccountState.summary]
  * @param proxy the app's proxy, see [ProxySettings]
  */
 @Composable
@@ -179,6 +199,7 @@ private fun NetworkSettingsContent(
     url: String,
     server: CheckState,
     serverName: String,
+    discord: String,
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
@@ -239,6 +260,16 @@ private fun NetworkSettingsContent(
             },
             onClick = { onOpen(OpenSubsonicSettings) },
         )
+
+        SettingsSection(stringResource(R.string.setting_header_integrations))
+        SettingsItem(
+            title = stringResource(
+                R.string.setting_title_configure_source,
+                stringResource(R.string.discord)
+            ),
+            summary = discord,
+            onClick = { onOpen(DiscordSettings) },
+        )
     }
 }
 
@@ -263,6 +294,7 @@ private fun NetworkSettingsPreview() = PreviewTheme {
             ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
         ),
         serverName = "Navidrome",
+        discord = "Signed in as neoncoast",
         onBack = {},
         onOpen = {},
         proxy = { PreviewProxySettings(source = null) },

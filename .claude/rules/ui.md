@@ -44,8 +44,9 @@ charts: `.claude/docs/charts.md`.
   needs a `Context` (starting activities, image loaders). View models keep their `Context` and
   pass `context.resources` to such helpers.
 - Text stays a literal (not in a `*.strings.xml`) only for: the labels of a setting's values (not
-  extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated), and
-  preview-only text.
+  extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated),
+  preview-only text, and what Discord's presence reads (`presence/DiscordTexts.kt`, English on
+  purpose: Discord shows it as it is to everyone).
 - `Notifier` drops a message without a channel while no screen listens (one with a channel goes
   to the system instead), and `ShowMessages` starts listening a moment after the screen starts.
   Code that posts as the app opens (a failure found at startup) or right after another activity

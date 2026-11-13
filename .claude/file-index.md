@@ -16,6 +16,7 @@ part for the folder you work in. Module shape and rules: `.claude/rules/modules.
 | `preferences.md`  | `:preferences`: settings, secrets, profiles, backups of preferences                                                                         |
 | `provider.md`     | `:provider`: OpenSubsonic and YouTube providers, plus the proxy files of every module                                                       |
 | `lyrics.md`       | `:lyrics`: lyrics sources, finder, parser                                                                                                   |
+| `discord.md`      | `:discord`: OAuth2 sign in, gateway client and presence of Discord's Rich Presence                                                          |
 | `tests.md`        | unit tests of every module                                                                                                                  |
 
 A new file goes in the part for its folder; a new folder of `:app` big enough to need its own part

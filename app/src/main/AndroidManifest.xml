@@ -125,6 +125,29 @@
             android:name=".ProfilesActivity"
             android:exported="false" />
 
+        <!-- Where Discord's sign in page sends its answer, BuildConfig.DISCORD_REDIRECT_URI. Its
+             own task, so it never stays on top of the browser's -->
+        <activity
+            android:name=".presence.DiscordCallbackActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="discord"
+                    android:path="/callback"
+                    android:scheme="kreate3" />
+            </intent-filter>
+        </activity>
+
         <!-- Opened after a crash. Its own process, so it works whatever state the app died in -->
         <activity
             android:name=".logging.CrashActivity"

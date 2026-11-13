@@ -108,6 +108,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private var persistentQueue: PersistentQueue? = null
     private var audioEffects: AudioEffectSession? = null
     private var sleepTimer: SleepTimerRunner? = null
+    private var presence: PresenceReporter? = null
 
     // The player is used on the main thread, so is everything that follows it. One per session.
     private var scope: CoroutineScope? = null
@@ -175,6 +176,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             youTube.checkUnavailable(item, { it.queued() }, catalog::replaceSong)
         }
         PlaybackHistoryRecorder(player, get(), writeScope)
+        // What plays, for Discord
+        presence = PresenceReporter(player, get())
         persistentQueue = PersistentQueue(
             player = player,
             queue = get(),
@@ -253,6 +256,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         audioEffects = null
         sleepTimer?.release()
         sleepTimer = null
+        presence?.release()
+        presence = null
         // Before the player is released, it saves where the song is
         persistentQueue?.release()
         persistentQueue = null

@@ -146,6 +146,8 @@ fun YouTubePlaylistDetailScreen(
                 onAction = rememberQueueActions { viewModel.songs.value },
                 onSongClick = rememberSongTap(null) { viewModel.songs.value },
                 share = viewModel::shareLink,
+                // The account's liked songs are its own, nobody else can open them
+                link = viewModel.shareLink().getOrNull()?.takeUnless { it.endsWith("list=LM") },
                 edit = edit,
                 actions = actions,
                 modifier = modifier,
@@ -180,6 +182,7 @@ private fun YouTubePlaylistDetailContent(
     actions: PlaylistEditActions,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
+    link: String? = null,
 ) {
     val playlist = (state as? LiveState.Ready)?.value
     val listState = rememberLazyListState()
@@ -203,6 +206,7 @@ private fun YouTubePlaylistDetailContent(
         onBack = { if (edit.dirty) confirmLeave = true else onBack() },
         onAction = onAction.takeIf { songs.isNotEmpty() },
         share = share,
+        link = link,
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,

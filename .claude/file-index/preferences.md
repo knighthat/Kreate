@@ -11,7 +11,8 @@ on
   memory cache, log level/rollover/keep, crash log retention), default profile edits them.
   `GlobalPreferenceStorage.kt` — `global.preferences_pb`
   (these + the profile list), its engine, damaged file rebuilt from profile folders.
-- `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens in
+- `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens (Discord's OAuth2
+  ones too) in
   `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`).
 - `app/res/xml/backup_rules.xml` (API ≤30) + `data_extraction_rules.xml` (API 31+) — backup/transfer
   exclusions (`.claude/rules/storage.md`).

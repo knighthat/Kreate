@@ -59,6 +59,7 @@ import me.knighthat.kreate3.playback.playbackModule
 import me.knighthat.kreate3.playlist.PlaylistImporter
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.preferencesModule
+import me.knighthat.kreate3.presence.presenceModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -238,6 +239,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 providerModule,
                 lyricsModule,
                 networkModule,
+                presenceModule(setupCompletedFile().exists()),
                 playbackModule,
                 downloadModule,
                 viewModelModule

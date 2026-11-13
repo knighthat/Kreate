@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.presence.ShowSearchingOnDiscord
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.BackButton
@@ -135,6 +136,7 @@ fun SearchResultsScreen(
     val onSongClick = rememberSongTap(Preferences.SEARCH_SONGS_TAP_RADIO) {
         songs.itemSnapshotList.items
     }
+    ShowSearchingOnDiscord(viewModel.query, viewModel.origin)
 
     SearchResultsContent(
         query = viewModel.query,

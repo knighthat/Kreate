@@ -91,6 +91,7 @@ import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.CreatePlaylist
 import me.knighthat.kreate3.ui.navigation.DataSettings
+import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.ui.navigation.Disliked
 import me.knighthat.kreate3.ui.navigation.DownloadQueue
 import me.knighthat.kreate3.ui.navigation.Downloaded
@@ -196,6 +197,7 @@ import me.knighthat.kreate3.ui.screen.settings.backup.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.data.DataSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.general.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.NetworkSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.network.discord.DiscordSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSettingsScreen
@@ -221,7 +223,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
         Settings, GeneralSettings, DataSettings, PlayerSettings, VoiceSearchSettings, UiSettings, NetworkSettings, YouTubeSettings,
-        OpenSubsonicSettings, OpenSubsonicSignIn, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
+        OpenSubsonicSettings, OpenSubsonicSignIn, DiscordSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
         is SearchResults, is ProxyEditor, is FontPreview, is CreatePlaylist -> false
@@ -624,6 +626,7 @@ fun KreateApp(
                                         )
                                     }
                                     entry<OpenSubsonicSignIn> { OpenSubsonicSignInScreen(topLevel::pop) }
+                                    entry<DiscordSettings> { DiscordSettingsScreen(topLevel::pop) }
                                     entry<ProxyEditor> { ProxyEditorScreen(it.key, topLevel::pop) }
                                     entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
                                     entry<About> {

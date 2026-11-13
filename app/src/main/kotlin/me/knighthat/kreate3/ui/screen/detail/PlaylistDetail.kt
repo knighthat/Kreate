@@ -96,6 +96,8 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.presence.BrowsedKind
+import me.knighthat.kreate3.presence.ShowBrowsingOnDiscord
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.ui.component.BackButton
@@ -164,6 +166,7 @@ private val PLACEHOLDER_ICON_SIZE = 72.dp
  * @param menu the sheet the ⋮ button opens, given what closes it; `null` hides the button
  * @param reversed whether the songs run from the playlist's end, for the sort order button
  * @param onToggleOrder turns the songs around, `null` turns the button off
+ * @param link where anyone can open the playlist, for Discord's button; `null` for none
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,9 +187,18 @@ fun PlaylistDetailScaffold(
     menu: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     reversed: Boolean = false,
     onToggleOrder: (() -> Unit)? = null,
+    link: String? = null,
     content: LazyListScope.() -> Unit,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    ShowBrowsingOnDiscord(
+        kind = BrowsedKind.PLAYLIST,
+        origin = origin,
+        name = name,
+        creator = owner,
+        models = remember(models, songCovers) { models.ifEmpty { songCovers.take(1) } },
+        link = link,
+    )
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
     }

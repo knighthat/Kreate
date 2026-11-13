@@ -18,10 +18,6 @@
 
 package me.knighthat.kreate3.preferences
 
-import me.knighthat.kreate3.preferences.Secrets.NETWORK_PROXY_USERNAME
-import me.knighthat.kreate3.preferences.Secrets.OPEN_SUBSONIC_PROXY_USERNAME
-import me.knighthat.kreate3.preferences.Secrets.YOUTUBE_COOKIES
-import me.knighthat.kreate3.preferences.Secrets.YOUTUBE_PROXY_USERNAME
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -78,4 +74,17 @@ object Secrets : KoinComponent {
 
     /** Password of [NETWORK_PROXY_USERNAME]. */
     val NETWORK_PROXY_PASSWORD by lazy { store.secret("network_proxy_password") }
+
+    /**
+     * OAuth2 token Discord gave the app when the user signed in, sent as `Bearer` to set their
+     * presence. Empty while nobody is signed in. It runs out at [DISCORD_TOKEN_EXPIRES], then
+     * [DISCORD_REFRESH_TOKEN] gets a new one.
+     */
+    val DISCORD_ACCESS_TOKEN by lazy { store.secret("discord_access_token") }
+
+    /** Trades for a new [DISCORD_ACCESS_TOKEN], Discord gives a new one each time. */
+    val DISCORD_REFRESH_TOKEN by lazy { store.secret("discord_refresh_token") }
+
+    /** When [DISCORD_ACCESS_TOKEN] runs out, in seconds since the epoch, as text. */
+    val DISCORD_TOKEN_EXPIRES by lazy { store.secret("discord_token_expires") }
 }

@@ -91,6 +91,9 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.presence.BrowsedKind
+import me.knighthat.kreate3.presence.ShowBrowsingOnDiscord
+import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
@@ -203,6 +206,14 @@ fun AlbumDetailScaffold(
     val covers = remember(models, standIn) {
         (models + listOfNotNull(thumbnailModel(standIn, null))).distinct()
     }
+    ShowBrowsingOnDiscord(
+        kind = BrowsedKind.ALBUM,
+        origin = origin,
+        name = name,
+        creator = artists,
+        models = covers,
+        link = YouTubeLinks.album(albumId).takeIf { origin == Origin.YOUTUBE },
+    )
     val picture = rememberSharedPicture(albumPictureKey(albumId), MaterialTheme.shapes.medium)
     // Everything but the cover, shown once it landed, see pictureFirst
     val contents = rememberContentsAfterPicture()
