@@ -227,6 +227,25 @@ internal class StatisticsRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun originsKeepOnlyTheirPlays() = runBlocking {
+        librarySong("local", minutes = 1)
+        librarySong("yt", minutes = 1, origin = Origin.YOUTUBE)
+        playAt("local", 1)
+        playAt("yt", 3)
+        val youtube = setOf(Origin.YOUTUBE)
+
+        assertEquals(
+            listOf("yt"),
+            repository.topSongs(null, 5, youtube).first().map { it.song.songId })
+        assertEquals(1, repository.summary(null, youtube).first().plays)
+        assertEquals(
+            listOf(OriginTime(Origin.YOUTUBE, 3.minutes)),
+            repository.timeByOrigin(null, youtube).first(),
+        )
+        assertEquals(2, repository.summary(null).first().plays)
+    }
+
+    @Test
     fun songPlaysAreOldestFirst() = runBlocking {
         librarySong("s", minutes = 1)
         playAt("s", 2, at = 20)

@@ -28,6 +28,9 @@
     <string name="constant_history_range_this_year">This year</string>
     <string name="constant_statistics_period_all_time">All time</string>
     <string name="constant_statistics_period_this_month">This month</string>
+    <string name="constant_statistics_period_last_3_months">3 months</string>
+    <string name="constant_statistics_period_last_6_months">6 months</string>
+    <string name="constant_statistics_period_this_year">This year</string>
     <string name="constant_theme_mode_light_dynamic">Light dynamic</string>
     <string name="constant_theme_mode_dark">Dark</string>
     <string name="constant_theme_mode_dark_dynamic">Dark dynamic</string>

@@ -76,6 +76,9 @@ val StatisticsPeriod.labelRes: Int
     get() = when (this) {
         StatisticsPeriod.ALL_TIME -> R.string.constant_statistics_period_all_time
         StatisticsPeriod.THIS_MONTH -> R.string.constant_statistics_period_this_month
+        StatisticsPeriod.LAST_3_MONTHS -> R.string.constant_statistics_period_last_3_months
+        StatisticsPeriod.LAST_6_MONTHS -> R.string.constant_statistics_period_last_6_months
+        StatisticsPeriod.THIS_YEAR -> R.string.constant_statistics_period_this_year
     }
 
 @get:StringRes

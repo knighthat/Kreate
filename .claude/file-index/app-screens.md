@@ -73,8 +73,12 @@ ui/screen/
   back); the newest/oldest button stays in the bar; tap plays the song alone; undislikes go through
   the song's source like the song menu, on
   the app scope; nothing is kept). `StatisticsScreen.kt` + `StatisticsViewModel.kt`
-  (All time / This month chips, nothing kept; summary tiles with the change against last month up to
-  the same day (`monthToDate`), top 5 songs with minutes, 3 albums, 10 artists, time per source;
+  (Config opens `StatisticsSheet`: source chips and All time / This month / 3 months / 6 months /
+  This year presets (`StatisticsPeriod.range`) plus a calendar, as `StatisticsFilter`, nothing kept;
+  the bar's subtitle names the days (`periodText`, `DateUtils.formatDateRange`, "All time" for all);
+  summary
+  tiles with the change against last month up to the same day (`monthToDate`, This month only), top
+  5 songs with minutes, 3 albums, 10 artists, time per source;
   songs open `SongStatisticsScreen.kt` + `SongStatisticsViewModel.kt`, albums and artists
   `GroupStatisticsScreen.kt` + `GroupStatisticsViewModel.kt` (one of each per `AlbumStatistics`/
   `ArtistStatistics` route: header opening the real page, numbers, charts, top 10 songs opening
@@ -93,16 +97,17 @@ ui/screen/
   that play on in its group (`songsFrom`); menu adds Delete from history (that play); top bar:
   newest/oldest toggle and Config, which opens `HistorySheet` (a `ModalBottomSheet`: Play all,
   Play next, Add to queue, Shuffle, Clear history as a row of `LabeledIconButton`s (labels hidden
-  while Icon only), origin chips (shown even for one origin) (
-  `FilterIconButton`s while Icon
-  only), date presets and an inline `DateRangePicker`, each applied at once); nothing is kept, the
+  while Icon only), origin chips and date presets with an inline `DateRangePicker` from
+  `FilterSheet.kt`, each applied at once); nothing is kept, the
   page opens unfiltered and
   newest first; entries carry the `query` they came from, keys use it and the list goes to the top
   when it changes;
   Clear history clears all, or only what's shown while filtered; paused banner with Resume),
   `HistoryGroups.kt` (`HistoryBuckets`: Today, Yesterday, days to 6, weeks to a month, months to a
   year, years up to 50; `spans()` gives each bucket's time span; `HistoryRange` as picker UTC days,
-  presets).
+  presets). `FilterSheet.kt` (filter sheet parts History and Statistics share: `SheetHeader`,
+  `OriginFilter` chips (shown even for one origin, `FilterIconButton`s while Icon only),
+  `DateRangeFilter` with `RangePreset` chips and an inline `DateRangePicker` up to today).
 - home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'; the
   toolbar's `ConfigButton` opens the tab's `sheet`),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
@@ -179,7 +184,8 @@ ui/screen/
   grows from the card (`sharedPicture`) with the card's picture standing in while the large one
   loads),
   `DetailScaffold.kt` (`OpenedItem` / `SavedStateHandle.openedItem()`: the name and picture of the
-  card an artist or album was opened from, shown until the page has its own; `contentPadding` added
+  card an artist or album was opened from, shown until the page has its own; optional `subtitle`
+  under the title; `contentPadding` added
   to the bar's; lists take its padding as content
   padding), `DetailHeader.kt` (`DetailHeader`, unused since the redesigns; `DetailDescription`;
   `AlbumTrack` (track number in

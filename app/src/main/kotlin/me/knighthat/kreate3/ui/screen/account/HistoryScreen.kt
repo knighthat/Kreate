@@ -25,14 +25,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -40,19 +37,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,14 +50,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -93,7 +80,6 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AddToQueueButton
 import me.knighthat.kreate3.ui.component.ConfigButton
-import me.knighthat.kreate3.ui.component.FilterIconButton
 import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -104,16 +90,13 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.SortOrderButton
-import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.playTapped
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.queue
-import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import java.util.Calendar
 import java.util.TimeZone
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -452,29 +435,8 @@ private fun HistorySheet(
     val scope = rememberCoroutineScope()
     val now = remember { System.currentTimeMillis() }
     val zone = remember { TimeZone.getDefault() }
-    val today = remember(now, zone) { utcDay(now, zone) }
-    val thisYear =
-        remember(now, zone) {
-            Calendar.getInstance(zone).apply { timeInMillis = now }[Calendar.YEAR]
-        }
-    val dates = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = range?.firstDay,
-        initialSelectedEndDateMillis = range?.lastDay,
-        selectableDates = remember(today, thisYear) {
-            object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis <= today
-                override fun isSelectableYear(year: Int) = year <= thisYear
-            }
-        },
-    )
-    val currentRange by rememberUpdatedState(range)
-    val currentPick by rememberUpdatedState(onPickRange)
-
-    // A range picked on the calendar shows once it has both ends, a start alone waits for its end
-    LaunchedEffect(dates.selectedStartDateMillis, dates.selectedEndDateMillis) {
-        val start = dates.selectedStartDateMillis ?: return@LaunchedEffect
-        val end = dates.selectedEndDateMillis ?: return@LaunchedEffect
-        HistoryRange(start, end).takeIf { it != currentRange }?.let(currentPick)
+    val presets = remember(now, zone) {
+        HistoryRangePreset.entries.map { RangePreset(it.labelRes, it.range(now, zone)) }
     }
 
     // Slides the sheet away before doing what was picked
@@ -520,83 +482,11 @@ private fun HistorySheet(
             }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            if (choices.isNotEmpty()) {
-                SheetHeader(stringResource(R.string.section_header_source))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                    choices.forEach {
-                        if (iconOnly) {
-                            FilterIconButton(
-                                it.icon,
-                                stringResource(it.sourceRes),
-                                selected = it in selected,
-                                onToggle = { onToggleOrigin(it) },
-                            )
-                        } else {
-                            FilterChip(
-                                selected = it in selected,
-                                onClick = { onToggleOrigin(it) },
-                                label = { Text(stringResource(it.sourceRes)) },
-                                leadingIcon = {
-                                    // The label says the same, nothing more for screen readers
-                                    Icon(
-                                        painter = painterResource(it.icon),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                    )
-                                },
-                            )
-                        }
-                    }
-                }
-            }
-
-            SheetHeader(stringResource(R.string.section_header_date_range))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) {
-                HistoryRangePreset.entries.forEach { preset ->
-                    val days = preset.range(now, zone)
-                    FilterChip(
-                        selected = days == range,
-                        onClick = {
-                            dates.setSelection(days?.firstDay, days?.lastDay)
-                            days?.let { dates.displayedMonthMillis = it.firstDay }
-                            // Every day isn't a selection of the calendar, it's applied here
-                            if (days == null) onPickRange(null)
-                        },
-                        label = { Text(stringResource(preset.labelRes)) },
-                    )
-                }
-            }
-            // The calendar scrolls by itself, inside the sheet it needs a height of its own
-            DateRangePicker(
-                state = dates,
-                title = null,
-                showModeToggle = false,
-                // The sheet's color, the picker's own is for a dialog
-                colors = DatePickerDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.height(DATE_PICKER_HEIGHT),
-            )
+            OriginFilter(choices, selected, onToggleOrigin)
+            DateRangeFilter(range, presets, onPickRange)
         }
     }
 }
-
-/** Names a part of the [HistorySheet]. */
-@Composable
-private fun SheetHeader(title: String) =
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
-    )
-
-/** Height of the calendar in the [HistorySheet], a few weeks of a month and its headline. */
-private val DATE_PICKER_HEIGHT = 480.dp
 
 private fun Resources.ago(plural: Int, count: Int): String =
     getString(R.string.status_ago, getQuantityString(plural, count, count))

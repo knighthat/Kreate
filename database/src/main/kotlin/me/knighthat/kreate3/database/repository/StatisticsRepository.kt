@@ -27,22 +27,36 @@ import me.knighthat.kreate3.database.model.TopAlbum
 import me.knighthat.kreate3.database.model.TopArtist
 import me.knighthat.kreate3.database.model.TopSong
 import me.knighthat.kreate3.database.model.UserSongView
+import me.knighthat.kreate3.model.Origin
 
 /**
  * What the active user's history adds up to. Every function follows changes, counts only the
- * plays in [PlayPeriod] (all of them for `null`) and, like `HistoryRepository.plays`, leaves out
+ * plays in [PlayPeriod] (all of them for `null`), of songs from the given origins (every origin
+ * while they're empty) and, like `HistoryRepository.plays`, leaves out
  * disliked songs and songs no longer in the library.
  */
 interface StatisticsRepository {
 
-    fun summary(period: PlayPeriod?): Flow<ListeningSummary>
+    fun summary(period: PlayPeriod?, origins: Set<Origin> = emptySet()): Flow<ListeningSummary>
 
     /** The [limit] songs listened to the most, see [TopSong.listens]. */
-    fun topSongs(period: PlayPeriod?, limit: Int): Flow<List<TopSong>>
+    fun topSongs(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopSong>>
 
-    fun topAlbums(period: PlayPeriod?, limit: Int): Flow<List<TopAlbum>>
+    fun topAlbums(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopAlbum>>
 
-    fun topArtists(period: PlayPeriod?, limit: Int): Flow<List<TopArtist>>
+    fun topArtists(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopArtist>>
 
     /**
      * The song listened to the longest of all time, its plays' time spent added up, right now.
@@ -53,7 +67,10 @@ interface StatisticsRepository {
     suspend fun mostListened(likedOnly: Boolean = false): UserSongView?
 
     /** How long the songs of each origin were listened to, the longest first. */
-    fun timeByOrigin(period: PlayPeriod?): Flow<List<OriginTime>>
+    fun timeByOrigin(
+        period: PlayPeriod?,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<OriginTime>>
 
     /** Every play of [songId], the oldest first. */
     fun songPlays(songId: String): Flow<List<PlaybackHistory>>

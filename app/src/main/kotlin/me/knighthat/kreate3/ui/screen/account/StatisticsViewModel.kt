@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.account
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -33,10 +34,13 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.database.model.ListeningSummary
 import me.knighthat.kreate3.database.model.OriginTime
 import me.knighthat.kreate3.database.model.PlayPeriod
 import me.knighthat.kreate3.database.repository.StatisticsRepository
+import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.source.ArtistPictures
 import me.knighthat.kreate3.ui.component.toMediaItem
 import java.util.Calendar
@@ -44,8 +48,18 @@ import java.util.TimeZone
 import kotlin.time.Duration
 import kotlin.time.Instant
 
-/** The plays the Statistics page adds up. */
-enum class StatisticsPeriod { ALL_TIME, THIS_MONTH }
+/** Ready-made ranges of the Statistics page's date picker. */
+enum class StatisticsPeriod { ALL_TIME, THIS_MONTH, LAST_3_MONTHS, LAST_6_MONTHS, THIS_YEAR }
+
+/**
+ * The plays the Statistics page adds up: those of [range] (every day for `null`) of songs from
+ * [origins] (every origin while it's empty).
+ */
+@Immutable
+data class StatisticsFilter(
+    val range: HistoryRange? = null,
+    val origins: Set<Origin> = emptySet(),
+)
 
 /**
  * A song, an album or an artist with the times it was listened through, see `TopSong.listens`,
@@ -54,12 +68,14 @@ enum class StatisticsPeriod { ALL_TIME, THIS_MONTH }
 data class RankedItem(val item: MediaItem, val listens: Double, val timeSpent: Duration)
 
 /**
- * What the Statistics page shows for [period].
+ * What the Statistics page shows for [filter].
  *
+ * @property period the preset that picks the same days as the filter, `null` for days picked on the calendar
  * @property previous the summary of last month up to the same day and time, for [StatisticsPeriod.THIS_MONTH] only
  */
 data class StatisticsState(
-    val period: StatisticsPeriod,
+    val filter: StatisticsFilter,
+    val period: StatisticsPeriod?,
     val summary: ListeningSummary,
     val previous: ListeningSummary?,
     val songs: List<RankedItem>,
@@ -69,44 +85,66 @@ data class StatisticsState(
 )
 
 /**
- * How the active user listens: what they played the most, how long and from where, of all time
- * or this month. Disliked songs are left out. Nothing is kept, the page opens on all time.
+ * How the active user listens: what they played the most, how long and from where, in the days
+ * and from the origins picked. Disliked songs are left out. Nothing is kept, the page opens on all
+ * time and every origin.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatisticsViewModel(
     statistics: StatisticsRepository,
+    songRepository: UserSongRepository,
     pictures: ArtistPictures,
 ) : ViewModel() {
 
-    private val _period = MutableStateFlow(StatisticsPeriod.ALL_TIME)
+    private val _filter = MutableStateFlow(StatisticsFilter())
 
-    val period: StateFlow<StatisticsPeriod> = _period.asStateFlow()
+    val filter: StateFlow<StatisticsFilter> = _filter.asStateFlow()
 
-    /** `null` until the first answer of the period. */
-    val state: StateFlow<StatisticsState?> = _period
-        .flatMapLatest { period ->
-            val spans = when (period) {
-                StatisticsPeriod.ALL_TIME -> null
-                StatisticsPeriod.THIS_MONTH ->
-                    monthToDate(System.currentTimeMillis(), TimeZone.getDefault())
+    /**
+     * The origins to offer a chip for: the library's and the selected ones, so they can be turned
+     * off. Offered even when there is one, the sheet always shows its source.
+     */
+    val choices: StateFlow<List<Origin>> =
+        combine(songRepository.origins(), _filter) { stored, filter ->
+            val offered = stored + filter.origins
+            Origin.entries.filter { it in offered }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    /** `null` until the first answer of the filter. */
+    val state: StateFlow<StatisticsState?> = _filter
+        .flatMapLatest { filter ->
+            val now = System.currentTimeMillis()
+            val zone = TimeZone.getDefault()
+            val origins = filter.origins
+            val preset =
+                StatisticsPeriod.entries.firstOrNull { it.range(now, zone) == filter.range }
+            val span = filter.range?.let {
+                PlayPeriod(
+                    Instant.fromEpochMilliseconds(it.start(zone)),
+                    Instant.fromEpochMilliseconds(it.end(zone)),
+                )
             }
+            // Only this month has a month to compare with
+            val lastMonth =
+                if (preset == StatisticsPeriod.THIS_MONTH) monthToDate(now, zone).second else null
             val totals = combine(
-                statistics.summary(spans?.first),
-                spans?.let { statistics.summary(it.second) } ?: flowOf(null),
-                statistics.timeByOrigin(spans?.first),
+                statistics.summary(span, origins),
+                lastMonth?.let { statistics.summary(it, origins) } ?: flowOf(null),
+                statistics.timeByOrigin(span, origins),
                 ::Triple,
             )
             val tops = combine(
-                statistics.topSongs(spans?.first, TOP_SONGS),
-                statistics.topAlbums(spans?.first, TOP_ALBUMS),
+                statistics.topSongs(span, TOP_SONGS, origins),
+                statistics.topAlbums(span, TOP_ALBUMS, origins),
                 // Artists stored from song credits have no picture, their source has it
-                statistics.topArtists(spans?.first, TOP_ARTISTS)
+                statistics.topArtists(span, TOP_ARTISTS, origins)
                     .onEach { top -> pictures.fillMissing(top.map { it.artist }) },
                 ::Triple,
             )
-            combine(totals, tops) { (summary, previous, origins), (songs, albums, artists) ->
+            combine(totals, tops) { (summary, previous, byOrigin), (songs, albums, artists) ->
                 StatisticsState(
-                    period = period,
+                    filter = filter,
+                    period = preset,
                     summary = summary,
                     previous = previous,
                     songs = songs.mapNotNull { top ->
@@ -126,15 +164,23 @@ class StatisticsViewModel(
                             it.timeSpent
                         )
                     },
-                    origins = origins,
+                    origins = byOrigin,
                 )
             }
         }
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    fun pickPeriod(period: StatisticsPeriod) {
-        _period.value = period
+    /** Adds up the plays of [range], of every day for `null`. */
+    fun pickRange(range: HistoryRange?) {
+        _filter.update { it.copy(range = range) }
+    }
+
+    /** Counts the songs of [origin] when they're left out, leaves them out otherwise. */
+    fun toggleOrigin(origin: Origin) {
+        _filter.update {
+            it.copy(origins = if (origin in it.origins) it.origins - origin else it.origins + origin)
+        }
     }
 
     private companion object {
@@ -142,6 +188,36 @@ class StatisticsViewModel(
         const val TOP_SONGS = 5
         const val TOP_ALBUMS = 3
         const val TOP_ARTISTS = 10
+    }
+}
+
+/**
+ * The days of the preset at [now] in [zone], `null` for every day. A number of months goes back
+ * from today, which is in it, to the day after the same date that many months ago.
+ */
+fun StatisticsPeriod.range(now: Long, zone: TimeZone): HistoryRange? {
+    val today = utcDay(now, zone)
+
+    fun utc(change: Calendar.() -> Unit) =
+        Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            timeInMillis = today
+            change()
+        }.timeInMillis
+
+    fun monthsBack(months: Int) = HistoryRange(
+        utc {
+            add(Calendar.MONTH, -months)
+            add(Calendar.DAY_OF_MONTH, 1)
+        },
+        today,
+    )
+
+    return when (this) {
+        StatisticsPeriod.ALL_TIME -> null
+        StatisticsPeriod.THIS_MONTH -> HistoryRange(utc { set(Calendar.DAY_OF_MONTH, 1) }, today)
+        StatisticsPeriod.LAST_3_MONTHS -> monthsBack(3)
+        StatisticsPeriod.LAST_6_MONTHS -> monthsBack(6)
+        StatisticsPeriod.THIS_YEAR -> HistoryRange(utc { set(Calendar.DAY_OF_YEAR, 1) }, today)
     }
 }
 

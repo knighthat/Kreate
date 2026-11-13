@@ -32,6 +32,7 @@ import me.knighthat.kreate3.database.model.TopAlbum
 import me.knighthat.kreate3.database.model.TopArtist
 import me.knighthat.kreate3.database.model.TopSong
 import me.knighthat.kreate3.database.model.UserSongView
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -45,9 +46,9 @@ internal class StatisticsRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun summary(period: PlayPeriod?): Flow<ListeningSummary> =
+    override fun summary(period: PlayPeriod?, origins: Set<Origin>): Flow<ListeningSummary> =
         scope.observe(ListeningSummary(0, 0, 0, Duration.ZERO)) { userId ->
-            val plays = playsIn(period)
+            val plays = playsIn(period, origins = origins)
             playbackHistoryDao.observeListeningSummary(
                 query(
                     userId,
@@ -62,14 +63,26 @@ internal class StatisticsRepositoryImpl(
             ).map { ListeningSummary(it.plays, it.songs, it.artists, it.timeSpent.seconds) }
         }
 
-    override fun topSongs(period: PlayPeriod?, limit: Int): Flow<List<TopSong>> =
-        songs(period, Of.All, limit)
+    override fun topSongs(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin>,
+    ): Flow<List<TopSong>> =
+        songs(period, Of.All, limit, origins)
 
-    override fun topAlbums(period: PlayPeriod?, limit: Int): Flow<List<TopAlbum>> =
-        albums(period, Of.All, limit)
+    override fun topAlbums(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin>,
+    ): Flow<List<TopAlbum>> =
+        albums(period, Of.All, limit, origins)
 
-    override fun topArtists(period: PlayPeriod?, limit: Int): Flow<List<TopArtist>> =
-        artists(period, Of.All, limit)
+    override fun topArtists(
+        period: PlayPeriod?,
+        limit: Int,
+        origins: Set<Origin>,
+    ): Flow<List<TopArtist>> =
+        artists(period, Of.All, limit, origins)
 
     override suspend fun mostListened(likedOnly: Boolean): UserSongView? {
         // A like is a time, a dislike is negative
@@ -92,14 +105,19 @@ internal class StatisticsRepositoryImpl(
         ).firstOrNull()?.song?.toModel()
     }
 
-    override fun timeByOrigin(period: PlayPeriod?): Flow<List<OriginTime>> =
+    override fun timeByOrigin(period: PlayPeriod?, origins: Set<Origin>): Flow<List<OriginTime>> =
         scope.observe(emptyList()) { userId ->
             playbackHistoryDao.observeOriginTimes(
                 query(
                     userId,
                     """
                         SELECT v.origin AS origin, SUM(h.time_spent) AS time_spent
-                        ${playsIn(period)} GROUP BY v.origin ORDER BY time_spent DESC
+                        ${
+                        playsIn(
+                            period,
+                            origins = origins
+                        )
+                    } GROUP BY v.origin ORDER BY time_spent DESC
                     """.trimIndent()
                 )
             ).map { rows -> rows.map { OriginTime(it.origin, it.timeSpent.seconds) } }
@@ -129,7 +147,12 @@ internal class StatisticsRepositoryImpl(
     override fun artistPlays(artistId: String): Flow<List<PlaybackHistory>> =
         plays(Of.Artist(artistId))
 
-    private fun songs(period: PlayPeriod?, of: Of, limit: Int): Flow<List<TopSong>> =
+    private fun songs(
+        period: PlayPeriod?,
+        of: Of,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopSong>> =
         scope.observe(emptyList()) { userId ->
             playbackHistoryDao.observeTopSongs(
                 query(
@@ -138,7 +161,8 @@ internal class StatisticsRepositoryImpl(
                         ${
                         perSong(
                             period,
-                            of
+                            of,
+                            origins,
                         )
                     } SELECT v.*, ps.listens AS listens, ps.time_spent AS time_spent
                         FROM per_song ps
@@ -153,14 +177,19 @@ internal class StatisticsRepositoryImpl(
         }
 
     /** Albums of the plays [of] allows, so for [Of.Artist] the albums of their songs. */
-    private fun albums(period: PlayPeriod?, of: Of, limit: Int): Flow<List<TopAlbum>> =
+    private fun albums(
+        period: PlayPeriod?,
+        of: Of,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopAlbum>> =
         scope.observe(emptyList()) { userId ->
             // The columns of user_album_view, for albums the user may keep nothing about
             playbackHistoryDao.observeTopAlbums(
                 query(
                     userId,
                     """
-                        ${perSong(period, of)} SELECT ?1 AS user_id, a.id AS album_id,
+                        ${perSong(period, of, origins)} SELECT ?1 AS user_id, a.id AS album_id,
                         a.origin AS origin, COALESCE(ual.name, a.name) AS name,
                         COALESCE(ual.artists, a.artists) AS artists,
                         COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail, a.year AS year,
@@ -183,7 +212,12 @@ internal class StatisticsRepositoryImpl(
      * Artists credited on the songs of the plays [of] allows. For [Of.Artist] only that artist
      * is kept, not the others credited with them.
      */
-    private fun artists(period: PlayPeriod?, of: Of, limit: Int): Flow<List<TopArtist>> =
+    private fun artists(
+        period: PlayPeriod?,
+        of: Of,
+        limit: Int,
+        origins: Set<Origin> = emptySet(),
+    ): Flow<List<TopArtist>> =
         scope.observe(emptyList()) { userId ->
             val only = if (of is Of.Artist) "AND ar.id = ?2" else ""
             // The columns of user_artist_view, for artists the user may keep nothing about
@@ -191,7 +225,7 @@ internal class StatisticsRepositoryImpl(
                 query(
                     userId,
                     """
-                        ${perSong(period, of)} SELECT ?1 AS user_id, ar.id AS artist_id,
+                        ${perSong(period, of, origins)} SELECT ?1 AS user_id, ar.id AS artist_id,
                         ar.origin AS origin, COALESCE(ua.name, ar.name) AS name,
                         COALESCE(ua.thumbnail, ar.thumbnail) AS thumbnail,
                         (SELECT COUNT(*) FROM song_artist_map c WHERE c.artist_id = ar.id) AS song_count,
@@ -256,36 +290,41 @@ internal class StatisticsRepositoryImpl(
 
         /**
          * `FROM` the plays of the user `?1` in [period], every play for `null` (aliased `h`), of
-         * songs the library keeps and aren't disliked (aliased `v`), narrowed by [of]. A like is
-         * a time, a dislike is negative. The period's numbers are written into the query, never the
-         * user's input.
+         * songs the library keeps and aren't disliked (aliased `v`), from [origins] (every origin
+         * while empty), narrowed by [of]. A like is a time, a dislike is negative. The period's
+         * numbers and the origins' names are written into the query, never the user's input.
          */
-        fun playsIn(period: PlayPeriod?, of: Of = Of.All): String {
+        fun playsIn(
+            period: PlayPeriod?,
+            of: Of = Of.All,
+            origins: Set<Origin> = emptySet(),
+        ): String {
             val span = period?.let {
                 """
                     AND h.created_at >= ${it.start.toEpochMilliseconds()}
                     AND h.created_at < ${it.end.toEpochMilliseconds()}
                 """.trimIndent()
             }.orEmpty()
+            val origin = originFilter(origins).replace("AND origin", "AND v.origin")
             return """
                 FROM playback_history h
                 JOIN user_song_view v ON v.user_id = h.user_id AND v.song_id = h.song_id
-                WHERE h.user_id = ?1 AND (v.liked_at IS NULL OR v.liked_at >= 0) $span ${of.filter}
+                WHERE h.user_id = ?1 AND (v.liked_at IS NULL OR v.liked_at >= 0) $span $origin ${of.filter}
             """.trimIndent()
         }
 
         /**
-         * `WITH per_song`: each song played in [period] that [of] allows, with its album, time
-         * spent in seconds and listens (time spent over its length, a listen per play while the
-         * length is unknown).
+         * `WITH per_song`: each song from [origins] played in [period] that [of] allows, with its
+         * album, time spent in seconds and listens (time spent over its length, a listen per play
+         * while the length is unknown).
          */
-        fun perSong(period: PlayPeriod?, of: Of): String =
+        fun perSong(period: PlayPeriod?, of: Of, origins: Set<Origin> = emptySet()): String =
             """
                 WITH per_song AS (SELECT h.song_id AS song_id, MAX(v.album_id) AS album_id,
                 SUM(h.time_spent) AS time_spent,
                 CASE WHEN MAX(v.duration) > 0 THEN SUM(h.time_spent) * 1.0 / MAX(v.duration)
                 ELSE COUNT(*) * 1.0 END AS listens
-                ${playsIn(period, of)} GROUP BY h.song_id)
+                ${playsIn(period, of, origins)} GROUP BY h.song_id)
             """.trimIndent()
     }
 }

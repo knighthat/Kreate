@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.plus
@@ -54,8 +55,9 @@ internal fun SavedStateHandle.openedItem(): OpenedItem =
     OpenedItem(get<String>(OPENED_NAME), get<String>(OPENED_PICTURE)?.toUri())
 
 /**
- * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
- * its [actions] at the end, and the [bottomBar] and [snackbarHost] if there are any.
+ * The frame of a detail screen: a small top bar with a back button, the [title] of the item (with
+ * a [subtitle] under it when given) and its [actions] at the end, and the [bottomBar] and
+ * [snackbarHost] if there are any.
  *
  * @param contentPadding room [content] adds around its items on top of the bar's, e.g. so the last
  * one can scroll clear of what floats over the screen
@@ -70,6 +72,7 @@ fun DetailScaffold(
     actions: @Composable RowScope.() -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
+    subtitle: String? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -77,7 +80,19 @@ fun DetailScaffold(
             // Below its buttons, above them is the status bar
             CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
                 TopAppBar(
-                    title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    title = {
+                        Column {
+                            Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            if (subtitle != null)
+                                Text(
+                                    subtitle,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                        }
+                    },
                     navigationIcon = {
                         BackButton(onBack)
                     },
