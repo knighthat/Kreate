@@ -26,6 +26,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
     <string name="action_skip">Skip</string>
+    <!-- Confirms looking up the songs of a playlist file again on the music source before importing them -->
+    <string name="action_look_up">Look up</string>
     <string name="action_forget">Forget</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_update">Update</string>
@@ -118,4 +120,6 @@
     <string name="action_select">Select</string>
     <string name="action_clear_all">Clear all</string>
     <string name="action_select_all">Select all</string>
+    <!-- Makes playlists out of a playlist file the user picks, e.g. one exported from this app or its old version -->
+    <string name="menu_import_playlists">Import from file</string>
 </resources>

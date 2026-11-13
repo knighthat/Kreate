@@ -56,6 +56,7 @@ import me.knighthat.kreate3.notification.SystemNotifications
 import me.knighthat.kreate3.notification.createNotificationChannels
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.playbackModule
+import me.knighthat.kreate3.playlist.PlaylistImporter
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -223,6 +224,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
                     // Stores songs fetched live once the user keeps something about them
                     single { SongStore(get(), get(), get(), get()) }
+                    // Local playlists made out of playlist files
+                    single { PlaylistImporter(androidContext(), get(), get(), get(), get()) }
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     // Pictures of artists stored from song credits, which carry none
                     single { ArtistPictures(get(), get(), get()) }

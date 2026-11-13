@@ -82,6 +82,20 @@ Root
   `stageWithoutRollback`
   build `kreate.db` with `LegacyImport` and a profile list, through `Backup.stageBuilt`. Not wired
   to any screen yet. Rules in `.claude/rules/backup.md`.
+- playlist/`PlaylistCsv.kt` — reads playlist CSV files of the old Kreate app and this one
+  (`parsePlaylistCsv`: columns in any order, case ignored, `Origin` column optional; old rows: id of
+  digits = device song, else YouTube; `Duration` in seconds or `m:ss`; `MissingColumnsException`),
+  `groupPlaylistRows` (one playlist per `PlaylistName`, unnamed rows → the file's name, else
+  `Playlist-<n>`), `readCsv` (RFC 4180 records via kotlin-csv).
+  `PlaylistImporter.kt` — `PlaylistImporter` (Koin single in `KreateApplication`): `readCsv(uri)`
+  and the shared entry point `importPlaylists(List<PlaylistToImport>, lookUp)` (any file format's
+  rows → new local playlists; YouTube stored from the row, or with `lookUp` looked up again
+  (`lookUpSongs`; dead ones go in from the file, ones missing from the answer left out as `GONE`);
+  device songs matched by
+  `LocalMatcher` (id + title, else unique title / closest length), OpenSubsonic only stored ones
+  or covers of the server set now), `PlaylistImportReport` with `ImportSkip` reasons,
+  `importMessage`/`importFailedMessage`. Used by the home Playlists tab sheet's "Import from file"
+  entry.
 
 notification/
 

@@ -1,0 +1,428 @@
+/*
+ * Kreate
+ * Copyright (C) 2026 KnightHat
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package me.knighthat.kreate3.playlist
+
+import android.content.Context
+import android.content.res.Resources
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.core.net.toUri
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.repository.PlaylistImportRepository
+import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.AppChannel
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.MessageDuration
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.SongLookup
+import me.knighthat.kreate3.provider.youtube.YouTubeException
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
+/**
+ * A song to put in an imported playlist, as a file has it.
+ *
+ * @property id the song's id at its [origin], empty when the file has none
+ * @property origin where the song is from, `null` when the file names a source this app doesn't
+ * know
+ * @property title the song's title, `null` when the file has none
+ * @property artists the file's text for its artists, `null` when it has none
+ * @property duration its length, `null` when unknown
+ * @property thumbnail address of its cover, `null` when the file has none
+ * @property fromOldApp whether the file is the old Kreate app's, which doesn't name sources
+ */
+data class PlaylistSong(
+    val id: String,
+    val origin: Origin?,
+    val title: String? = null,
+    val artists: String? = null,
+    val duration: Duration? = null,
+    val thumbnail: String? = null,
+    val fromOldApp: Boolean = false,
+)
+
+/** A playlist to make out of a file: its [name] and its [songs] in order. */
+data class PlaylistToImport(val name: String, val songs: List<PlaylistSong>)
+
+/** Why a song of a file wasn't imported. */
+enum class ImportSkip {
+    /** The file gives no id. */
+    NO_ID,
+
+    /** The file names a source this app doesn't know. */
+    UNKNOWN_SOURCE,
+
+    /** A device song the library doesn't have. */
+    NOT_ON_DEVICE,
+
+    /** An OpenSubsonic song not stored, whose cover isn't of the server set now. */
+    NOT_ON_SERVER,
+
+    /** Its id is stored for a song of another source. */
+    ID_TAKEN,
+
+    /** It is in the same playlist already. */
+    DUPLICATE,
+
+    /**
+     * A YouTube song looked up again that YouTube's answer left out.
+     */
+    GONE,
+}
+
+/**
+ * What an import did.
+ *
+ * @property rows how many songs the file listed
+ * @property playlists how many playlists were made
+ * @property imported how many songs went into them
+ * @property skipped how many songs were left out, for each reason
+ * @property notLookedUp why the YouTube songs the user asked to look up went in as the file has
+ * them instead, `null` when they were looked up or not asked to be
+ */
+data class PlaylistImportReport(
+    val rows: Int,
+    val playlists: Int,
+    val imported: Int,
+    val skipped: Map<ImportSkip, Int>,
+    val notLookedUp: NotLookedUp? = null,
+)
+
+/** Why a lookup the user asked for didn't happen, see [PlaylistImporter.importPlaylists]. */
+enum class NotLookedUp {
+    /** YouTube refused it, which one removed or private song does. */
+    REFUSED,
+
+    /** YouTube couldn't be reached, like when the connection dropped. */
+    UNREACHABLE,
+}
+
+/**
+ * Makes the active user's local playlists out of playlist files:
+ *
+ * - YouTube songs are stored from the file's title, length and cover, like a live song added
+ *   to a playlist, without artists: a file has no artist ids, they come with the song's next
+ *   fetch. One stored already is kept as it is.
+ * - Or, when the user asks to look them up again and YouTube answers, its answer decides (see
+ *   [lookUpYouTube]): a song it plays goes in with its current details, one it doesn't play as
+ *   the file has it, one missing from its answer is left out.
+ *   Songs already stored keep their rows.
+ * - Device songs go in when the library has them: the same id with the same title, else the one
+ *   song of the device with that exact title (ends trimmed), the closest in length when several
+ *   have it. Others are skipped, the scan stores device songs. A song of the old app's file goes
+ *   in only by its id (with the same title when the file has one).
+ * - OpenSubsonic songs go in when stored, or when their cover is an address of the server set
+ *   now, which shows they are from that server; they are stored from the file then.
+ * - A song in the same playlist twice goes in once. A playlist with nothing to hold isn't made.
+ *
+ * Every playlist made is new, also when one has the same name.
+ */
+class PlaylistImporter(
+    private val context: Context,
+    private val repository: PlaylistImportRepository,
+    private val openSubsonic: OpenSubsonicProvider,
+    private val youTube: YouTubeProvider,
+    private val catalog: RemoteCatalogRepository,
+) {
+
+    /**
+     * The playlists of the CSV file at [uri], see [parsePlaylistCsv]. Songs without a playlist
+     * name go to one named after the file.
+     *
+     * @throws MissingColumnsException when the file isn't a playlist CSV
+     * @throws java.io.IOException when the file can't be read
+     */
+    suspend fun readCsv(uri: Uri): List<PlaylistToImport> = withContext(Dispatchers.IO) {
+        val rows = context.contentResolver.openInputStream(uri)
+            ?.bufferedReader()
+            ?.use(::parsePlaylistCsv)
+            ?: throw java.io.FileNotFoundException("Can't open $uri")
+        groupPlaylistRows(rows, fileName(uri))
+    }
+
+    /**
+     * Looks the YouTube songs of [playlists] up again: in requests of up to a thousand, each sent
+     * once more with a visitor id when it had none, one refused refusing all (see
+     * [YouTubeProvider.lookUpSongs]). Every song YouTube plays is stored like a played one, a song
+     * already stored keeps its row. A song YouTube doesn't play (taken down or published again) is
+     * left out of the answer and goes in as the file has it: searching for its new upload is put
+     * off until replaced songs are found on play.
+     *
+     * @return the song each YouTube id goes in as, `null` for one left out; `null` when YouTube
+     * refused the lookup (nothing is stored then)
+     * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
+     */
+    private suspend fun lookUpYouTube(playlists: List<PlaylistToImport>): Map<String, RemoteSong?>? {
+        val songs = playlists.asSequence()
+            .flatMap { it.songs }
+            .filter { it.origin == Origin.YOUTUBE && it.id.isNotEmpty() }
+            .distinctBy { it.id }
+            .toList()
+        if (songs.isEmpty()) return emptyMap()
+
+        val lookups = youTube.lookUpSongs(songs.map { it.id }) ?: run {
+            Logger.w(tag = TAG) { "YouTube refused to look up ${songs.size} songs, they go in as the file has them" }
+            return null
+        }
+        val found = songs.mapNotNull { song ->
+            when (val lookup = lookups[song.id]) {
+                is SongLookup.Found -> song.id to lookup.song
+                SongLookup.Unplayable -> null
+                null -> song.id to null
+            }
+        }.toMap()
+        Logger.i(tag = TAG) {
+            "Looked up ${songs.size} YouTube songs: ${found.count { it.value != null }} play, " +
+                    "${songs.size - found.size} don't, ${found.count { it.value == null }} unknown"
+        }
+
+        found.values.filterNotNull().distinctBy { it.song.id }.forEach { remote ->
+            if (!catalog.addToLibrary(remote.song.id)) catalog.savePlayedSong(remote)
+        }
+        return found
+    }
+
+    /**
+     * Makes a local playlist of each of [playlists]. The entry point for every kind of playlist
+     * file: read it into [PlaylistToImport]s, then call this.
+     *
+     * @param lookUp whether to look the YouTube songs up again first, see [lookUpYouTube]. When
+     * YouTube refuses it or can't be reached, the songs go in as the file has them and the report
+     * says why ([PlaylistImportReport.notLookedUp]).
+     */
+    suspend fun importPlaylists(
+        playlists: List<PlaylistToImport>,
+        lookUp: Boolean = false,
+    ): PlaylistImportReport {
+        val skipped = sortedMapOf<ImportSkip, Int>()
+        fun skip(reason: ImportSkip) = skipped.merge(reason, 1, Int::plus)
+        var notLookedUp: NotLookedUp? = null
+        val looked = if (!lookUp)
+            null
+        else try {
+            lookUpYouTube(playlists) ?: null.also { notLookedUp = NotLookedUp.REFUSED }
+        } catch (e: YouTubeException) {
+            // Refusals come back as null, only an unreachable YouTube throws
+            Logger.w(
+                e,
+                TAG
+            ) { "Couldn't reach YouTube to look songs up, they go in as the file has them" }
+            notLookedUp = NotLookedUp.UNREACHABLE
+            null
+        }
+
+        val origins = playlists.flatMap { it.songs }.mapNotNullTo(HashSet()) { it.origin }
+        val local =
+            if (Origin.LOCAL in origins) repository.storedSongs(Origin.LOCAL) else emptyList()
+        val openSubsonicIds = if (Origin.OPEN_SUBSONIC in origins)
+            repository.storedSongs(Origin.OPEN_SUBSONIC).mapTo(HashSet()) { it.id }
+        else
+            emptySet()
+
+        val localMatcher = withContext(Dispatchers.Default) { LocalMatcher(local) }
+        var made = 0
+        var imported = 0
+        for (playlist in playlists) {
+            val songs = withContext(Dispatchers.Default) {
+                val picked = LinkedHashMap<String, Song>()
+                for (song in playlist.songs) {
+                    val origin = song.origin
+                    val kept = when {
+                        song.id.isEmpty() -> null.also { skip(ImportSkip.NO_ID) }
+                        origin == null -> null.also { skip(ImportSkip.UNKNOWN_SOURCE) }
+                        origin == Origin.YOUTUBE && looked != null && song.id in looked ->
+                            looked[song.id]?.song ?: null.also { skip(ImportSkip.GONE) }
+
+                        origin == Origin.LOCAL -> (if (song.fromOldApp) localMatcher.matchId(song) else localMatcher.match(
+                            song
+                        ))
+                            ?: null.also { skip(ImportSkip.NOT_ON_DEVICE) }
+
+                        origin == Origin.OPEN_SUBSONIC &&
+                                song.id !in openSubsonicIds &&
+                                song.thumbnail?.toUri()
+                                    ?.let(openSubsonic::isCoverOfServer) != true ->
+                            null.also { skip(ImportSkip.NOT_ON_SERVER) }
+
+                        else -> song.toModel(origin)
+                    } ?: continue
+
+                    if (kept.id in picked)
+                        skip(ImportSkip.DUPLICATE)
+                    else
+                        picked[kept.id] = kept
+                }
+                picked.values.toList()
+            }
+            if (songs.isEmpty()) continue
+
+            val result = repository.importPlaylist(playlist.name, songs)
+            val byId = songs.associateBy { it.id }
+            result.leftOut.forEach {
+                skip(if (byId[it]?.origin == Origin.LOCAL) ImportSkip.NOT_ON_DEVICE else ImportSkip.ID_TAKEN)
+            }
+            if (result.playlistId != null) made++
+            imported += result.added
+        }
+
+        val rows = playlists.sumOf { it.songs.size }
+        Logger.i(tag = TAG) { "Imported $imported of $rows songs into $made playlists, skipped $skipped" }
+        return PlaylistImportReport(rows, made, imported, skipped, notLookedUp)
+    }
+
+    /** The file's name without its extension, `null` when the provider doesn't say. */
+    private fun fileName(uri: Uri): String? =
+        context.contentResolver
+            .query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+            ?.use { cursor ->
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index >= 0 && cursor.moveToFirst()) cursor.getString(index) else null
+            }
+            ?.substringBeforeLast('.')
+            ?.trim()
+            ?.takeIf(String::isNotEmpty)
+
+    private fun PlaylistSong.toModel(origin: Origin) = Song(
+        id = id,
+        origin = origin,
+        name = title,
+        thumbnail = thumbnail?.toUri(),
+        duration = duration,
+    )
+
+    private companion object {
+        const val TAG = "PlaylistImport"
+    }
+}
+
+/** Finds a file's device song among the device songs of the library, see [PlaylistImporter]. */
+internal class LocalMatcher(songs: List<Song>) {
+
+    private val byId = songs.associateBy { it.id }
+    private val byTitle = songs.filter { it.name != null }.groupBy { it.name!!.trim() }
+
+    /** The library's device song with [song]'s id, when the file has no title or the same one. */
+    fun matchId(song: PlaylistSong): Song? {
+        val title = song.title?.trim()
+        return byId[song.id]?.takeIf { title == null || it.name?.trim() == title }
+    }
+
+    /** [matchId], else the song with the same title, see [PlaylistImporter]. */
+    fun match(song: PlaylistSong): Song? {
+        matchId(song)?.let { return it }
+        val title = song.title?.trim() ?: return null
+
+        val candidates = byTitle[title] ?: return null
+        if (candidates.size == 1) return candidates.single()
+
+        val length = song.duration ?: return null
+        return candidates
+            .filter { it.duration != null }
+            .minByOrNull { (it.duration!! - length).absoluteValue }
+            ?.takeIf { (it.duration!! - length).absoluteValue <= MATCH_LENGTH_SLACK }
+    }
+
+    private companion object {
+        /** Lengths are whole seconds in files, and tags and the media index may differ a little. */
+        val MATCH_LENGTH_SLACK = 2.seconds
+    }
+}
+
+/**
+ * What to tell the user about [report]: how many songs went into how many playlists, then a line
+ * for each reason songs were skipped.
+ */
+fun importMessage(resources: Resources, report: PlaylistImportReport): Message {
+    val lines = ArrayList<String>()
+    lines += when {
+        report.rows == 0 -> resources.getString(R.string.snackbar_playlist_import_empty)
+        report.imported == 0 -> resources.getString(R.string.snackbar_playlist_import_nothing)
+        else -> resources.getString(
+            R.string.snackbar_playlists_imported,
+            resources.getQuantityString(R.plurals.song, report.imported, report.imported),
+            resources.getQuantityString(R.plurals.playlist, report.playlists, report.playlists),
+        )
+    }
+    report.notLookedUp?.let { reason ->
+        lines += resources.getString(
+            when (reason) {
+                NotLookedUp.REFUSED -> R.string.snackbar_playlist_import_not_looked_up
+                NotLookedUp.UNREACHABLE -> R.string.snackbar_playlist_import_not_looked_up_unreachable
+            },
+            resources.getString(R.string.source_ytm),
+        )
+    }
+    report.skipped.forEach { (reason, count) ->
+        lines += resources.getString(
+            R.string.snackbar_playlist_import_skipped,
+            resources.getQuantityString(R.plurals.song, count, count),
+            reason.text(resources),
+        )
+    }
+    return Message(
+        text = lines.joinToString("\n"),
+        duration = MessageDuration.LONG,
+        dismissable = true,
+        channel = AppChannel.OTHER,
+    )
+}
+
+/** What to tell the user when an import failed with [error]. */
+fun importFailedMessage(resources: Resources, error: Throwable): Message {
+    val text = if (error is MissingColumnsException)
+        resources.getString(
+            R.string.error_import_playlists_missing_columns,
+            error.columns.joinToString(", "),
+        )
+    else
+        resources.getString(
+            R.string.error_import_playlists,
+            error.localizedMessage ?: resources.getString(R.string.error_reason_unknown),
+        )
+    return Message(
+        text = text,
+        duration = MessageDuration.LONG,
+        dismissable = true,
+        channel = AppChannel.OTHER,
+    )
+}
+
+private fun ImportSkip.text(resources: Resources): String = when (this) {
+    ImportSkip.NO_ID -> resources.getString(R.string.error_reason_import_no_id)
+    ImportSkip.UNKNOWN_SOURCE -> resources.getString(R.string.error_reason_import_unknown_source)
+    ImportSkip.NOT_ON_DEVICE -> resources.getString(R.string.error_reason_import_not_on_device)
+    ImportSkip.NOT_ON_SERVER -> resources.getString(
+        R.string.error_reason_import_not_on_server,
+        resources.getString(R.string.source_opensubsonic),
+    )
+
+    ImportSkip.ID_TAKEN -> resources.getString(R.string.error_reason_import_id_taken)
+    ImportSkip.DUPLICATE -> resources.getString(R.string.error_reason_import_duplicate)
+    ImportSkip.GONE -> resources.getString(
+        R.string.error_reason_import_gone,
+        resources.getString(R.string.source_ytm),
+    )
+}

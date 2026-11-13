@@ -20,11 +20,13 @@ Tests mirror the main paths under `src/test/`.
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`,
   ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`, `UndislikedMessageTest`,
   `UnlikedMessageTest`
-  (Undislike all's and Unlike all's message).
+  (Undislike all's and Unlike all's message), playlist/`PlaylistCsvTest` (old and new headers,
+  durations, quoting, missing headers, grouping, `LocalMatcher`).
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
   repository/ `HistoryRepositoryTest`, `StatisticsRepositoryTest`, `LocalCatalogRepositoryTest`,
   `MappersTest`,
-  `PlaylistRepositoryTest`, `RemoteCatalogRepositoryTest`, `SearchPatternTest`,
+  `PlaylistRepositoryTest`, `PlaylistImportRepositoryTest`, `RemoteCatalogRepositoryTest`,
+  `SearchPatternTest`,
   `SongRepositoryTest`, `UserLibraryRepositoryTest`, `UserRepositoryTest`, `UserScopeTest`.
 - preferences: `CodecTest`, `PreferencesBackupTest`, `DataStorePreferenceStorageTest`,
   `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest`.

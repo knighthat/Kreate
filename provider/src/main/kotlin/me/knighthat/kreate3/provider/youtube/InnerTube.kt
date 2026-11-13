@@ -367,6 +367,17 @@ internal class InnerTube(
             putJsonArray("videoIds") { videoIds.forEach { add(it) } }
         }
 
+    /** Whether requests carry a visitor id given to the current session. */
+    suspend fun hasVisitor(): Boolean = visitor?.let { it.session == session()?.id } == true
+
+    /**
+     * Asks YouTube for a visitor id (`visitor_id`), kept like the one of a first answer. It is
+     * only kept when there is none yet, see [post].
+     */
+    suspend fun requestVisitor() {
+        post("visitor_id") {}
+    }
+
     /**
      * The next part of a list of [endpoint], which must be the one that gave [token].
      *

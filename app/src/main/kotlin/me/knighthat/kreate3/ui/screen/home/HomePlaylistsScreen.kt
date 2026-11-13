@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate3.ui.screen.home
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +27,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +49,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
 import me.knighthat.kreate3.ui.component.LabeledIconButton
@@ -56,6 +63,10 @@ import org.koin.androidx.compose.koinViewModel
 
 
 private const val PLAYLIST_ITEM_SIZE = 220
+
+/** Types a playlist file may have: CSV, which some file managers call plain text. */
+private val PLAYLIST_FILE_TYPES =
+    arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain")
 
 /**
  * Every playlist of the active user, as many to a row as fit.
@@ -81,6 +92,11 @@ fun HomePlaylistsScreen(
     val notifier = LocalNotifier.current
     val nothingToPick = stringResource(R.string.snackbar_nothing_to_pick_playlists)
     val scope = rememberCoroutineScope()
+    val importFrom = rememberLauncherForActivityResult(OpenDocument()) { uri ->
+        uri?.let(viewModel::importFile)
+    }
+    val pendingImport by viewModel.pendingImport.collectAsStateWithLifecycle()
+    pendingImport?.let { LookUpSongsDialog(it.youTubeSongs, viewModel::answerLookUp) }
 
     // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -106,6 +122,7 @@ fun HomePlaylistsScreen(
         },
         onPlayRandom = { playRandom(QueueAction.PLAY) },
         onCreate = onCreate,
+        onImport = { importFrom.launch(PLAYLIST_FILE_TYPES) },
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
@@ -120,7 +137,34 @@ fun HomePlaylistsScreen(
  * @param live the playlists of the external sources, after the ones of the database
  * @param monthlyOnly whether only the monthly playlists show
  * @param offersMonthly whether [monthlyOnly] can be changed: the app's own playlists show
+ * @param onImport asks for a playlist file to make local playlists of
  */
+/**
+ * Asks whether to look the [songs] YouTube songs of a playlist file up again before importing.
+ * [onAnswer] gets `true` to look them up, `false` to import them as they are, `null` when the
+ * dialog is dismissed.
+ */
+@Composable
+private fun LookUpSongsDialog(songs: Int, onAnswer: (Boolean?) -> Unit) = AlertDialog(
+    onDismissRequest = { onAnswer(null) },
+    title = { Text(stringResource(R.string.dialog_title_look_up_songs)) },
+    text = {
+        Text(
+            stringResource(
+                R.string.dialog_body_look_up_songs,
+                pluralStringResource(R.plurals.song, songs, songs),
+                stringResource(R.string.source_ytm),
+            )
+        )
+    },
+    confirmButton = {
+        TextButton(onClick = { onAnswer(true) }) { Text(stringResource(R.string.action_look_up)) }
+    },
+    dismissButton = {
+        TextButton(onClick = { onAnswer(false) }) { Text(stringResource(R.string.action_skip)) }
+    },
+)
+
 @Composable
 private fun HomePlaylistsContent(
     playlists: LazyPagingItems<MediaItem>,
@@ -135,6 +179,7 @@ private fun HomePlaylistsContent(
     onRandom: () -> Unit,
     onPlayRandom: () -> Unit,
     onCreate: () -> Unit,
+    onImport: () -> Unit,
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
@@ -175,15 +220,22 @@ private fun HomePlaylistsContent(
                         stringResource(R.string.menu_shortcut_create_playlist),
                     ) { close(onCreate) }
                 },
-            ) {
-                ConfigToggle(
-                    R.drawable.date_range,
-                    stringResource(R.string.menu_monthly_only),
-                    monthlyOnly,
-                    enabled = offersMonthly,
-                    onToggle = onToggleMonthlyOnly,
-                )
-            }
+                entries = { close ->
+                    ConfigEntry(
+                        R.drawable.upload,
+                        stringResource(R.string.menu_import_playlists),
+                    ) { close(onImport) }
+                },
+                options = {
+                    ConfigToggle(
+                        R.drawable.date_range,
+                        stringResource(R.string.menu_monthly_only),
+                        monthlyOnly,
+                        enabled = offersMonthly,
+                        onToggle = onToggleMonthlyOnly,
+                    )
+                },
+            )
         },
     ) { padding ->
         LazyVerticalGrid(
@@ -221,6 +273,7 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         onRandom = {},
         onPlayRandom = {},
         onCreate = {},
+        onImport = {},
         onSearch = {},
         onProfile = {},
         onSettings = {},

@@ -56,6 +56,7 @@ class YouTubeProviderTest {
         region: String? = null,
         status: HttpStatusCode = HttpStatusCode.OK,
         cookies: String = "",
+        statusOf: (body: JsonObject) -> HttpStatusCode = { status },
         respond: (endpoint: String, body: JsonObject) -> String = { _, _ -> fixture("empty") },
     ): YouTubeProvider {
         val engine = MockEngine { request ->
@@ -65,7 +66,7 @@ class YouTubeProviderTest {
                     request.url.encodedPath.substringAfter("/youtubei/v1/"),
                     request.json()
                 ),
-                status = status,
+                status = statusOf(request.json()),
                 headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
             )
         }
@@ -369,5 +370,97 @@ class YouTubeProviderTest {
         assertEquals("FEmusic_home", requests[0].json().string("browseId"))
         assertEquals(home.continuation, requests[1].json().string("continuation"))
         assertEquals(3, more.items.size)
+    }
+
+    private fun JsonObject.videoIds(): List<String?> =
+        this["videoIds"].asArray.orEmpty().map { it.asString }
+
+    @Test
+    fun lookUpsPairEntriesWithTheIdsAskedByPosition() = runBlocking {
+        // An answer with azxk0-7Zjhk unplayable (published again as bM0x19DYsmA), and bM0x19DYsmA
+        val provider = provider { endpoint, _ ->
+            if (endpoint == "music/get_queue") fixture("queue_unplayable") else fixture("empty")
+        }
+
+        val lookups = provider.lookUpSongs(listOf("azxk0-7Zjhk", "bM0x19DYsmA"))!!
+
+        assertEquals(SongLookup.Unplayable, lookups["azxk0-7Zjhk"])
+        assertEquals("bM0x19DYsmA", (lookups["bM0x19DYsmA"] as SongLookup.Found).song.song.id)
+        assertEquals(1, requests.size)
+
+        // An entry with another id than the one asked in its place doesn't stand for it, even one
+        // that plays
+        val swapped = provider.lookUpSongs(listOf("bM0x19DYsmA", "azxk0-7Zjhk"))!!
+        assertEquals(SongLookup.Unplayable, swapped["bM0x19DYsmA"])
+    }
+
+    private val visitorAnswer = """{"responseContext":{"visitorData":"VISITOR"}}"""
+
+    @Test
+    fun aRefusedLookUpIsAskedOnceMoreWithAVisitorId() = runBlocking {
+        val provider = provider(
+            statusOf = { body -> if ("videoIds" in body) HttpStatusCode.Forbidden else HttpStatusCode.OK },
+        ) { endpoint, _ -> if (endpoint == "visitor_id") visitorAnswer else fixture("empty") }
+
+        assertNull(provider.lookUpSongs(listOf("private", "a", "b")))
+
+        assertEquals(
+            listOf("music/get_queue", "visitor_id", "music/get_queue"),
+            requests.map { it.endpoint })
+        assertNull(requests[0].json().string("context", "client", "visitorData"))
+        assertEquals("VISITOR", requests[2].json().string("context", "client", "visitorData"))
+        // Never split
+        assertEquals(listOf("private", "a", "b"), requests[2].json().videoIds())
+    }
+
+    @Test
+    fun aLookUpRefusedWithAVisitorIdIsNotAskedAgain() = runBlocking {
+        val provider = provider(
+            statusOf = { body ->
+                if ("private" in body.videoIds()) HttpStatusCode.Forbidden else HttpStatusCode.OK
+            },
+        ) { endpoint, _ -> if (endpoint == "visitor_id") visitorAnswer else fixture("empty") }
+        provider.lookUpSongs(listOf("x"))
+        provider.lookUpSongs(listOf("private"))
+        requests.clear()
+
+        assertNull(provider.lookUpSongs(listOf("private")))
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun lookUpsGoInBatchesOfAThousandAndOneRefusedBatchRefusesAll() = runBlocking {
+        val ids = (1..2_500).map { "id$it" }
+        val provider = provider(
+            statusOf = { body ->
+                if ("id1500" in body.videoIds()) HttpStatusCode.Forbidden else HttpStatusCode.OK
+            },
+        ) { endpoint, _ -> if (endpoint == "visitor_id") visitorAnswer else fixture("empty") }
+
+        assertNull(provider.lookUpSongs(ids))
+
+        // The first answer gave a visitor id, so the refused second batch isn't asked again, and
+        // the third is never sent
+        assertEquals(listOf("music/get_queue", "music/get_queue"), requests.map { it.endpoint })
+        assertEquals(listOf(1_000, 1_000), requests.map { it.json().videoIds().size })
+        assertEquals("id1001", requests[1].json().videoIds().first())
+        assertEquals(
+            listOf(null, "CgtWc3ZkODhTa2o2VSjS9rvWBjIKCgJVUxIEGgAgYw%3D%3D"),
+            requests.map { it.json().string("context", "client", "visitorData") },
+        )
+    }
+
+    @Test
+    fun aLookUpThatCanNotReachYouTubeThrows() {
+        val engine = MockEngine { throw java.io.IOException("offline") }
+        val client = HttpClient(engine)
+        val provider = YouTubeProvider(
+            InnerTube({ client }, Json { ignoreUnknownKeys = true }, locale = { Locale.US }),
+            YouTubeParser { null },
+        )
+
+        assertThrows(YouTubeException::class.java) {
+            runBlocking { provider.lookUpSongs(listOf("a")) }
+        }
     }
 }

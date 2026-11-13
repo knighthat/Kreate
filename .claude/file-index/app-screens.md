@@ -109,7 +109,10 @@ ui/screen/
   all/shuffle/play next/add to queue + show disliked, cached only, downloaded only (`SongFilters`,
   cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
-  `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist + monthly only
+  `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist; list entries
+  "Import from file" (a
+  CSV picked with SAF, "Look up songs again?" dialog when it has YouTube songs (`pendingImport`),
+  `PlaylistImporter` on the app scope, result as a message); + monthly only
   (grayed out unless local playlists exist and show); filters live in the view model, kept while the
   tab is in the back stack),
   `CreatePlaylistScreen/ViewModel.kt` (route `CreatePlaylist`, from the Playlists tab and the song

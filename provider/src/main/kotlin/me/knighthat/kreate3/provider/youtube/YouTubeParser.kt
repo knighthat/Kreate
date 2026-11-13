@@ -630,6 +630,28 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         response.path("queueDatas").asArray.orEmpty()
             .mapNotNull { queueSong(it.path("content"))?.first }
 
+    /**
+     * The entries of the answer to [InnerTube.queueOf] in the answer's order: each one's own id
+     * with what it is. One that doesn't play comes with an `unplayableText`, like "[Video blocked
+     * in country]", and without a title, length or cover of its own.
+     */
+    fun queueLookups(response: JsonElement?): List<Pair<String, SongLookup>> =
+        response.path("queueDatas").asArray.orEmpty().mapNotNull { entry ->
+            val content = entry.path("content")
+            val renderer = content.path("playlistPanelVideoRenderer")
+                ?: content.path(
+                    "playlistPanelVideoWrapperRenderer",
+                    "primaryRenderer",
+                    "playlistPanelVideoRenderer",
+                )
+                ?: return@mapNotNull null
+            val id = renderer.path("videoId").asString ?: return@mapNotNull null
+            val plays =
+                renderer.path("unplayableText") == null && renderer.path("title").text() != null
+            val song = if (plays) queueSong(content)?.first else null
+            id to (song?.let(SongLookup::Found) ?: SongLookup.Unplayable)
+        }
+
     private fun watchTabs(response: JsonElement?): JsonElement? =
         response.path(
             "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer",

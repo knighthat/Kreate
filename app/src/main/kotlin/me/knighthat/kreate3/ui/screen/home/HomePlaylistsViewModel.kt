@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate3.ui.screen.home
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -25,6 +27,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,9 +38,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.knighthat.kreate3.auto.AutoLibrary
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.playback.isOnline
+import me.knighthat.kreate3.playlist.PlaylistImporter
+import me.knighthat.kreate3.playlist.PlaylistToImport
+import me.knighthat.kreate3.playlist.importFailedMessage
+import me.knighthat.kreate3.playlist.importMessage
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -54,6 +64,10 @@ class HomePlaylistsViewModel internal constructor(
     private val library: AutoLibrary,
     openSubsonic: OpenSubsonicProvider,
     youTube: YouTubeProvider,
+    private val context: Context,
+    private val importer: PlaylistImporter,
+    private val notifier: Notifier,
+    private val scope: CoroutineScope,
 ) : ViewModel() {
 
     private val remote = LiveItems(viewModelScope) { livePlaylists(openSubsonic, youTube) }
@@ -103,6 +117,11 @@ class HomePlaylistsViewModel internal constructor(
     /** Whether the user's pull to refresh is waiting for the items of the external sources. */
     val pulling: StateFlow<Boolean> = remote.pulling
 
+    private val _pendingImport = MutableStateFlow<PendingImport?>(null)
+
+    /** A read playlist file waiting for the user to say whether to look its YouTube songs up. */
+    val pendingImport: StateFlow<PendingImport?> = _pendingImport.asStateFlow()
+
     /**
      * Fetches the playlists of the server and of YouTube again, call it when the tab shows. Each
      * adds nothing while it isn't set up.
@@ -140,7 +159,67 @@ class HomePlaylistsViewModel internal constructor(
         }
     }
 
+    /**
+     * Reads the playlist file at [uri]. When it has YouTube songs and the device is online it waits
+     * in [pendingImport] for [answerLookUp], otherwise its local playlists are made right away,
+     * from the file's values. It runs on the app's
+     * scope, leaving the tab doesn't stop it; the user is told how it went.
+     */
+    fun importFile(uri: Uri) {
+        scope.launch {
+            val playlists = try {
+                importer.readCsv(uri)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.w(e, TAG) { "Couldn't read the playlist file" }
+                notifier.post(importFailedMessage(context.resources, e))
+                return@launch
+            }
+            val youTubeSongs = playlists.asSequence()
+                .flatMap { it.songs }
+                .filter { it.origin == Origin.YOUTUBE && it.id.isNotEmpty() }
+                .distinctBy { it.id }
+                .count()
+            // Offline there's nothing to look up with, the file goes in as it is
+            if (youTubeSongs > 0 && context.isOnline())
+                _pendingImport.value = PendingImport(playlists, youTubeSongs)
+            else
+                import(playlists, lookUp = false)
+        }
+    }
+
+    /**
+     * The answer to [pendingImport]: `true` looks its YouTube songs up again first, `false`
+     * imports them as the file has them, `null` drops the import.
+     */
+    fun answerLookUp(lookUp: Boolean?) {
+        val pending = _pendingImport.value ?: return
+        _pendingImport.value = null
+        if (lookUp != null) scope.launch { import(pending.playlists, lookUp) }
+    }
+
+    private suspend fun import(playlists: List<PlaylistToImport>, lookUp: Boolean) {
+        val message = try {
+            importMessage(context.resources, importer.importPlaylists(playlists, lookUp))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't import playlists" }
+            importFailedMessage(context.resources, e)
+        }
+        notifier.post(message)
+    }
+
     private companion object {
         const val TAG = "HomePlaylists"
     }
 }
+
+/**
+ * A playlist file read but not imported yet.
+ *
+ * @property playlists what the file holds
+ * @property youTubeSongs how many different YouTube songs it has
+ */
+data class PendingImport(val playlists: List<PlaylistToImport>, val youTubeSongs: Int)

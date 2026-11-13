@@ -373,6 +373,55 @@ class YouTubeProvider internal constructor(
         }
     }
 
+    /**
+     * What YouTube has for each of [songIds], asked with [InnerTube.queueOf] in batches of
+     * [LOOK_UP_BATCH] one after the other (471 at once worked, 2026-11-13). A batch is never split:
+     * finding which ids YouTube refuses would take a request after request. When YouTube refuses a
+     * batch (an HTTP error) and the request carried no visitor id, a visitor id is asked for and
+     * the batch sent once more. A batch refused again makes the whole answer `null`, the batches
+     * after it aren't sent. One id YouTube doesn't know (404, or 500) or won't show signed out
+     * (403, like a private video) refuses its whole batch.
+     *
+     * Entries are paired with the ids by position when the answer has one for each: an entry
+     * carrying another id than the one asked (seen: `XauFHDC8__E` answered as `vr-7KMTnuFU`)
+     * makes the asked one [SongLookup.Unplayable]. Otherwise they are paired by id, ids without
+     * an entry are left out.
+     *
+     * @return `null` when YouTube refused a batch
+     * @throws YouTubeException when YouTube can't be reached
+     */
+    suspend fun lookUpSongs(songIds: List<String>): Map<String, SongLookup>? {
+        val found = HashMap<String, SongLookup>()
+        for (batch in songIds.distinct().chunked(LOOK_UP_BATCH))
+            found += lookUpBatch(batch) ?: return null
+        return found
+    }
+
+    /** One batch of [lookUpSongs], `null` when YouTube refused it. */
+    private suspend fun lookUpBatch(ids: List<String>): Map<String, SongLookup>? {
+        val response = try {
+            innerTube.queueOf(ids)
+        } catch (e: YouTubeException) {
+            e.status ?: throw e
+            if (innerTube.hasVisitor()) return null
+            try {
+                innerTube.requestVisitor()
+                innerTube.queueOf(ids)
+            } catch (again: YouTubeException) {
+                again.status ?: throw again
+                return null
+            }
+        }
+        val entries = parser.queueLookups(response)
+
+        if (entries.size == ids.size)
+            return ids.zip(entries).associate { (asked, entry) ->
+                asked to if (entry.first == asked) entry.second else SongLookup.Unplayable
+            }
+        val byId = entries.toMap()
+        return ids.mapNotNull { id -> byId[id]?.let { id to it } }.toMap()
+    }
+
     /** @return `null` when YouTube doesn't know the album */
     suspend fun albumPage(albumId: String): YouTubeAlbumPage? =
         parser.albumPage(albumId, innerTube.browse(albumId))
@@ -752,6 +801,9 @@ class YouTubeProvider internal constructor(
          */
         const val NOT_FOUND = 404
         const val INTERNAL_ERROR = 500
+
+        /** Most ids sent in one request by [lookUpSongs]. */
+        const val LOOK_UP_BATCH = 1000
 
         fun innerTube(
             client: suspend () -> HttpClient,

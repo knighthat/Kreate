@@ -65,6 +65,19 @@ sealed interface YouTubeItem {
     data class PlaylistItem(val playlist: UserPlaylist) : YouTubeItem
 }
 
+/** What YouTube has for one song id asked with [YouTubeProvider.lookUpSongs]. */
+sealed interface SongLookup {
+
+    /** YouTube plays it: [song] holds its current details. */
+    data class Found(val song: RemoteSong) : SongLookup
+
+    /**
+     * YouTube knows the id but doesn't play it: taken down, published again under another id, or
+     * blocked in the region. The answer says "[Video blocked in country]" for all of them.
+     */
+    data object Unplayable : SongLookup
+}
+
 /**
  * A row of items with a title, like "Quick picks" on the home page or "Singles & EPs" of an artist.
  *

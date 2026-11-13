@@ -30,14 +30,17 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
 - youtube/ — `YouTubeProvider.kt` (public API: search, suggestions, album/artist/playlist pages,
   browse, sign-in session, channels, lyrics; `isYouTubeSession`; `songDetailsOf(ids)` =
   `music/get_queue`,
-  100 ids a request, a 404 or 500 splits the request in halves to drop unknown ids), `InnerTube.kt`
+  100 ids a request, a 404 or 500 splits the request in halves to drop unknown ids;
+  `lookUpSongs(ids)` = `get_queue` batches of 1000, never split, one visitor-id retry, one refused
+  batch → `null`; answers paired by position → `SongLookup`
+  Found/Unplayable, unknown ids left out), `InnerTube.kt`
   (HTTP +
   `YouTubeSession` + `YouTubeException`; `stream` delegates to `YouTubeStreams.kt`, the innertubex
   extractor: signed-out and session extractors, `StreamQuality.audioQuality`, Original = session +
   premium hint), `WebPoTokenProvider.kt` + `PoTokenWebView.kt` + `BotGuard.kt` (PO tokens via a
   hidden WebView, page in `provider/src/main/assets/po_token.html`), `YouTubeParser.kt` (InnerTube
   JSON → models), `YouTubeJson.kt` (JSON path helpers), `YouTubeModels.kt` (`YouTubeItem`,
-  page/section/account/channel models, `YouTubeSearchFilter`, `YouTubeStream`),
+  page/section/account/channel models, `YouTubeSearchFilter`, `YouTubeStream`, `SongLookup`),
   `YouTubeAccountStore.kt` (`YouTubeAccountState` + who is signed in, asked at the app's start and
   when the session, channel or account switch change: `state`, `account`, `isSignedIn`,
   `isLoggedOut`, `refresh()`),

@@ -40,6 +40,10 @@
     <string name="dialog_title_delete_playlist">Delete playlist?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">%1$s will be deleted. Its songs stay in your library.</string>
+    <!-- Asked before importing a playlist file that has songs of YouTube Music -->
+    <string name="dialog_title_look_up_songs">Look up songs again?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Skip" (action_skip) imports the songs as the file has them -->
+    <string name="dialog_body_look_up_songs">The file has %1$s from %2$s. Looking them up brings their current titles and artists. Skip to import them as the file has them.</string>
     <string name="dialog_title_restart_the_app">Restart the app?</string>
     <string name="dialog_body_restart_the_app">Playback stops and the app opens again, settings that need a restart apply then.</string>
     <string name="dialog_title_restart_the_player">Restart the player?</string>

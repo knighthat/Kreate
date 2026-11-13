@@ -155,6 +155,24 @@
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
     <string name="error_reason_certificate_changed">%1$s\'s certificate changed</string>
     <string name="error_reason_unknown">something went wrong</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file gives no id for the song -->
+    <string name="error_reason_import_no_id">no song id</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names a music source this app doesn't know -->
+    <string name="error_reason_import_unknown_source">unknown source</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were files on a device and this device's library doesn't have them -->
+    <string name="error_reason_import_not_on_device">not on this device</string>
+    <!-- %1$s is the name of a music source, OpenSubsonic (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs aren't from the server the user is signed in to -->
+    <string name="error_reason_import_not_on_server">not from your %1$s server</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". A song of another music source already uses the same id in the library -->
+    <string name="error_reason_import_id_taken">another song has the same id</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The file lists the song twice for the same playlist -->
+    <string name="error_reason_import_duplicate">already in the playlist</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were looked up again and the source no longer has them -->
+    <string name="error_reason_import_gone">no longer on %1$s</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
+    <string name="error_import_playlists">Couldn\'t import playlists: %1$s</string>
+    <!-- %1$s is a list of column names separated by commas, e.g. "MediaId, Title" (never translated). The picked file isn't a playlist file of this app or its old version -->
+    <string name="error_import_playlists_missing_columns">Not a playlist file, it lacks the columns %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <string name="error_server_not_configured">Sign in to %1$s in %2$s settings</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
@@ -192,6 +210,18 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Removed %1$s from playlist</string>
     <string name="snackbar_playlist_deleted">Deleted %1$s</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is a counted plural of playlists, e.g. "2 playlists". The songs of a playlist file went into new playlists -->
+    <string name="snackbar_playlists_imported">Imported %1$s into %2$s</string>
+    <!-- %1$s is a counted plural of songs, e.g. "3 songs"; %2$s is the reason, a lowercase fragment from the error_reason_import_* strings. Shown under the import's result, one line per reason -->
+    <string name="snackbar_playlist_import_skipped">%1$s skipped: %2$s</string>
+    <!-- The playlist file the user picked lists no songs -->
+    <string name="snackbar_playlist_import_empty">The file has no songs</string>
+    <!-- None of the songs of the playlist file could be imported; the reasons follow on the next lines -->
+    <string name="snackbar_playlist_import_nothing">No songs imported</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source refused to look the songs up again, which a song taken down or made private does, so they went in as the file has them -->
+    <string name="snackbar_playlist_import_not_looked_up">One or more songs were removed or made private on %1$s, so none were looked up. They were imported as the file has them.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source couldn't be reached (e.g. the connection dropped) to look the songs up again, so they went in as the file has them -->
+    <string name="snackbar_playlist_import_not_looked_up_unreachable">Couldn\'t reach %1$s, so no songs were looked up. They were imported as the file has them.</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
     <string name="snackbar_removed_from_like">Removed from likes</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->

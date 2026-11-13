@@ -77,6 +77,10 @@
         <item quantity="one">file</item>
         <item quantity="other">files</item>
     </plurals>
+    <plurals name="playlist">
+        <item quantity="one">%1$d playlist</item>
+        <item quantity="other">%1$d playlists</item>
+    </plurals>
     <plurals name="unit_playlist">
         <item quantity="one">playlist</item>
         <item quantity="other">playlists</item>

@@ -61,5 +61,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,
   `updateDownloaders`),
   `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
-  `RemoteItem`; liked-song sync from servers). Helpers: `Mappers.kt` (entity↔model),
+  `RemoteItem`; liked-song sync from servers), `PlaylistImport`
+  (`ImportedPlaylist`; `importPlaylist` makes one local playlist from a file's songs in one
+  transaction, stored songs kept as they are, new remote ones stored from the file without artists
+  and with a bare `user_song` row, `storedSongs(origin)` for matching). Helpers: `Mappers.kt`
+  (entity↔model),
   `OriginFilter.kt` (SQL WHERE by origins), `SearchPattern.kt` (escaped LIKE).

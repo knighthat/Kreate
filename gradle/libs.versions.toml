@@ -38,6 +38,7 @@ reorderable = "3.1.0"
 vico = "3.3.1"
 aboutlibraries = "15.3.0"
 kermit = "2.2.0"
+kotlinCsv = "2.0.0"
 
 [libraries]
 # Core
@@ -115,6 +116,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 
 # Logging
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kotlin-csv = { module = "com.jsoizo:kotlin-csv", version.ref = "kotlinCsv" }
 
 # Tooling
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
