@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,12 +43,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.playlist.ImportStep
 
 /** How many covers make a grid, fewer show the first one alone. */
 internal const val GRID_COVERS = 4
@@ -143,6 +147,47 @@ private fun PlaylistRow(
             },
         )
     }
+}
+
+/**
+ * A playlist called [name] that a file import hasn't made yet: its name over what the import is
+ * doing ([step]), with a spinning ring for a cover. Tapping it does nothing.
+ */
+@Composable
+fun ImportingPlaylistItem(name: String, step: ImportStep, modifier: Modifier = Modifier) {
+    val resources = LocalResources.current
+    val item = remember(name, step, resources) {
+        MediaItem.Builder()
+            .setMediaId(name)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle(name)
+                    .setSubtitle(resources.getString(step.labelRes))
+                    .setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
+                    .build()
+            )
+            .build()
+    }
+
+    ItemRow(
+        item = item,
+        onClick = {},
+        modifier = modifier,
+        showThumbnail = false,
+        thumbnailOverlay = {
+            Thumbnail(
+                models = emptyList(),
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.matchParentSize(),
+                placeholder = {
+                    CircularProgressIndicator(
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(24.dp),
+                    )
+                },
+            )
+        },
+    )
 }
 
 /**
@@ -254,6 +299,7 @@ private fun PlaylistItemPreview() = PreviewTheme {
             }
             PlaylistItem(withCovers(focus, 1), onClick = {})
             PlaylistItem(withCovers(gym, GRID_COVERS), onClick = {})
+            ImportingPlaylistItem("Road trip", ImportStep.LOOKING_UP)
         }
     }
 }

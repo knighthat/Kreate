@@ -25,7 +25,9 @@ ui/component/ (shared composables; each file that draws something ends with its 
   own shows its covers (`EXTRA_COVERS`): 4 → 2 × 2 grid, 1–3 → the most played alone, none →
   `queue_music` icon, or the name's first letter on a hue from the name (HCT) while
   `LocalPlaylistInitial` (`Preferences.PLAYLIST_INITIAL`, provided in `KreateApp`) is on; drawn
-  through `Thumbnail`'s `placeholder` slot.
+  through `Thumbnail`'s `placeholder` slot. `ImportingPlaylistItem(name, step)`: the name over the
+  import's step (`ImportStep.labelRes`), a spinning ring for a cover, for a playlist a file import
+  hasn't made yet.
 - `OpenSubsonicName.kt` — `openSubsonicName()`: what texts call the OpenSubsonic server (the
   software's name from `OpenSubsonicServer`, else `source_opensubsonic`); `Resources` variant for
   messages, composable one (reads `Preferences`) for screens to pass to their content.

@@ -27,13 +27,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -49,9 +53,12 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.playlist.ImportStep
+import me.knighthat.kreate3.playlist.ImportingPlaylist
 import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.ImportingPlaylistItem
 import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlaylistItem
@@ -96,6 +103,7 @@ fun HomePlaylistsScreen(
         uri?.let(viewModel::importFile)
     }
     val pendingImport by viewModel.pendingImport.collectAsStateWithLifecycle()
+    val importing by viewModel.importing.collectAsStateWithLifecycle()
     pendingImport?.let { LookUpSongsDialog(it.youTubeSongs, viewModel::answerLookUp) }
 
     // Each visit to the tab, the items of the external sources are fetched again
@@ -103,6 +111,7 @@ fun HomePlaylistsScreen(
 
     HomePlaylistsContent(
         playlists = viewModel.playlists.collectAsLazyPagingItems(),
+        importing = importing,
         live = live,
         choices = choices,
         selected = selected,
@@ -134,12 +143,6 @@ fun HomePlaylistsScreen(
 }
 
 /**
- * @param live the playlists of the external sources, after the ones of the database
- * @param monthlyOnly whether only the monthly playlists show
- * @param offersMonthly whether [monthlyOnly] can be changed: the app's own playlists show
- * @param onImport asks for a playlist file to make local playlists of
- */
-/**
  * Asks whether to look the [songs] YouTube songs of a playlist file up again before importing.
  * [onAnswer] gets `true` to look them up, `false` to import them as they are, `null` when the
  * dialog is dismissed.
@@ -165,9 +168,17 @@ private fun LookUpSongsDialog(songs: Int, onAnswer: (Boolean?) -> Unit) = AlertD
     },
 )
 
+/**
+ * @param importing the playlists of files not made yet, above all the others
+ * @param live the playlists of the external sources, after the ones of the database
+ * @param monthlyOnly whether only the monthly playlists show
+ * @param offersMonthly whether [monthlyOnly] can be changed: the app's own playlists show
+ * @param onImport asks for a playlist file to make local playlists of
+ */
 @Composable
 private fun HomePlaylistsContent(
     playlists: LazyPagingItems<MediaItem>,
+    importing: List<ImportingPlaylist>,
     live: List<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
@@ -238,7 +249,21 @@ private fun HomePlaylistsContent(
             )
         },
     ) { padding ->
+        val gridState = rememberLazyGridState()
+        // The grid keeps its first item in view when items come in above it: scroll up when a
+        // placeholder is made so it shows. Keys only grow, a larger one is a new placeholder;
+        // one leaving doesn't move the grid, nor do those already there when the tab shows
+        val newest = importing.maxOfOrNull { it.key } ?: -1L
+        var newestImport by remember { mutableLongStateOf(newest) }
+        LaunchedEffect(newest) {
+            if (newest > newestImport) {
+                newestImport = newest
+                gridState.animateScrollToItem(0)
+            }
+        }
+
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.Adaptive(minSize = PLAYLIST_ITEM_SIZE.dp),
             contentPadding = padding,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -247,6 +272,9 @@ private fun HomePlaylistsContent(
                 .fillMaxSize()
                 .padding(horizontal = 12.dp),
         ) {
+            items(importing, key = { "importing:${it.key}" }) {
+                ImportingPlaylistItem(it.name, it.step)
+            }
             items(count = playlists.itemCount, key = playlists.itemKey { it.mediaId }) { index ->
                 playlists[index]?.let { PlaylistItem(it, onClick = { onOpen(it) }) }
             }
@@ -262,6 +290,7 @@ private fun HomePlaylistsContent(
 private fun HomePlaylistsPreview() = PreviewTheme {
     HomePlaylistsContent(
         playlists = flowOf(PagingData.from(previewPlaylists())).collectAsLazyPagingItems(),
+        importing = listOf(ImportingPlaylist(0, "Imported mix", ImportStep.LOOKING_UP)),
         live = previewPlaylists(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),

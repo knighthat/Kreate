@@ -197,3 +197,16 @@ Found animating the description under the artist, album and playlist headers (`D
   collapsed lines with nothing below). The effect only drives the animation.
 - Judge it by screen recording and tiling the frames (`emulator.md`), not by reading the code:
   two fixes that looked right were wrong.
+
+## `NoSuchFieldError: $stable` after an incremental build
+
+Seen 2026-11-13, cause not confirmed. `PendingImport` (`HomePlaylistsViewModel.kt`) held an
+`inner class ImportTask` of `PlaylistImporter` (another file). After an incremental build that
+recompiled only `PlaylistImporter.kt`, the first use of `PendingImport` crashed with
+`NoSuchFieldError: No field $stable … in class PlaylistImporter$ImportTask`; `$stable` is the
+field the Compose compiler adds for stability. It happened twice; a `--rerun-tasks` compile of
+`:app` before the second time didn't help.
+
+- Made a top-level class (state passed in), an incremental build of the same kind ran fine.
+- A class held by a class of another file, in `:app`, is better top-level than `inner`.
+- Seen that crash anyway: a clean build is the first thing to try, before suspecting the code.

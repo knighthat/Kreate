@@ -26,6 +26,10 @@ import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Album
@@ -44,6 +48,7 @@ import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.SongLookup
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -82,6 +87,34 @@ data class PlaylistSong(
 
 /** A playlist to make out of a file: its [name] and its [songs] in order. */
 data class PlaylistToImport(val name: String, val songs: List<PlaylistSong>)
+
+/** What an import of a playlist file is doing, in order. */
+enum class ImportStep {
+    /** Reading the file. */
+    READING,
+
+    /** Waiting for the user to say whether to look its YouTube songs up again. */
+    WAITING,
+
+    /** Looking its YouTube songs up again. */
+    LOOKING_UP,
+
+    /** Searching for the new uploads of YouTube songs the lookup didn't know. */
+    SEARCHING,
+
+    /** Storing the songs and making the playlist. */
+    SAVING,
+}
+
+/**
+ * A playlist of a file being imported that isn't made yet, see [PlaylistImporter.importing].
+ *
+ * @property key tells it from the others, also from one with the same [name]; a new placeholder
+ * has a larger one than any before it
+ * @property name the name the file gives it; the file's own name while it is read
+ * @property step what its import is doing
+ */
+data class ImportingPlaylist(val key: Long, val name: String, val step: ImportStep)
 
 /** Why a song of a file wasn't imported. */
 enum class ImportSkip {
@@ -169,6 +202,26 @@ class PlaylistImporter(
     private val catalog: RemoteCatalogRepository,
 ) {
 
+    private val nextKey = AtomicLong()
+    private val _importing = MutableStateFlow<List<ImportingPlaylist>>(emptyList())
+
+    /**
+     * The playlists of the imports going on that aren't made yet, the latest import's first: one
+     * named after the file while it is read ([startImport]), then one per playlist in the order of
+     * the file. One leaves once it is made or left out, all of them when the import ends.
+     */
+    val importing: StateFlow<List<ImportingPlaylist>> = _importing.asStateFlow()
+
+    /**
+     * Starts showing the import of the file at [uri] in [importing], named after the file, at
+     * [ImportStep.READING]. Close the task when the import ends, however it ends.
+     */
+    suspend fun startImport(uri: Uri): ImportTask {
+        val name = withContext(Dispatchers.IO) { fileName(uri) }
+            ?: context.getString(R.string.status_unknown_file)
+        return ImportTask(_importing, nextKey, listOf(name), ImportStep.READING)
+    }
+
     /**
      * The playlists of the CSV file at [uri], see [parsePlaylistCsv]. Songs without a playlist
      * name go to one named after the file.
@@ -196,7 +249,10 @@ class PlaylistImporter(
      * refused the lookup (nothing is stored then)
      * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
      */
-    private suspend fun lookUpYouTube(playlists: List<PlaylistToImport>): Map<String, RemoteSong?>? {
+    private suspend fun lookUpYouTube(
+        playlists: List<PlaylistToImport>,
+        task: ImportTask,
+    ): Map<String, RemoteSong?>? {
         val songs = playlists.asSequence()
             .flatMap { it.songs }
             .filter { it.origin == Origin.YOUTUBE && it.id.isNotEmpty() }
@@ -204,6 +260,7 @@ class PlaylistImporter(
             .toList()
         if (songs.isEmpty()) return emptyMap()
 
+        task.step(ImportStep.LOOKING_UP)
         val lookups = youTube.lookUpSongs(songs.map { it.id }) ?: run {
             Logger.w(tag = TAG) { "YouTube refused to look up ${songs.size} songs, they go in as the file has them" }
             return null
@@ -220,6 +277,7 @@ class PlaylistImporter(
                     "${songs.size - found.size} don't, ${found.count { it.value == null }} unknown"
         }
 
+        if (found.any { it.value == null }) task.step(ImportStep.SEARCHING)
         // One search each, one after the other
         for (song in songs) {
             if (song.id !in found || found[song.id] != null) continue
@@ -302,7 +360,8 @@ class PlaylistImporter(
 
     /**
      * Makes a local playlist of each of [playlists]. The entry point for every kind of playlist
-     * file: read it into [PlaylistToImport]s, then call this.
+     * file: read it into [PlaylistToImport]s, then call this. Until each is made or left out, it
+     * is in [importing], through [task], which this closes.
      *
      * @param lookUp whether to look the YouTube songs up again first, see [lookUpYouTube]. When
      * YouTube refuses it or can't be reached, the songs go in as the file has them and the report
@@ -311,6 +370,22 @@ class PlaylistImporter(
     suspend fun importPlaylists(
         playlists: List<PlaylistToImport>,
         lookUp: Boolean = false,
+        task: ImportTask = ImportTask(
+            _importing,
+            nextKey,
+            playlists.map { it.name },
+            ImportStep.SAVING
+        ),
+    ): PlaylistImportReport = task.use {
+        task.playlists(playlists.map { it.name })
+        makePlaylists(playlists, lookUp, task)
+    }
+
+    /** [importPlaylists], telling [task] what it does and each playlist made or left out. */
+    private suspend fun makePlaylists(
+        playlists: List<PlaylistToImport>,
+        lookUp: Boolean,
+        task: ImportTask,
     ): PlaylistImportReport {
         val skipped = sortedMapOf<ImportSkip, Int>()
         fun skip(reason: ImportSkip) = skipped.merge(reason, 1, Int::plus)
@@ -318,7 +393,7 @@ class PlaylistImporter(
         val looked = if (!lookUp)
             null
         else try {
-            lookUpYouTube(playlists) ?: null.also { notLookedUp = NotLookedUp.REFUSED }
+            lookUpYouTube(playlists, task) ?: null.also { notLookedUp = NotLookedUp.REFUSED }
         } catch (e: YouTubeException) {
             // Refusals come back as null, only an unreachable YouTube throws
             Logger.w(
@@ -329,6 +404,7 @@ class PlaylistImporter(
             null
         }
 
+        task.step(ImportStep.SAVING)
         val origins = playlists.flatMap { it.songs }.mapNotNullTo(HashSet()) { it.origin }
         val local =
             if (Origin.LOCAL in origins) repository.storedSongs(Origin.LOCAL) else emptyList()
@@ -340,7 +416,7 @@ class PlaylistImporter(
         val localMatcher = withContext(Dispatchers.Default) { LocalMatcher(local) }
         var made = 0
         var imported = 0
-        for (playlist in playlists) {
+        for ((index, playlist) in playlists.withIndex()) {
             val credits = HashMap<String, ImportedCredits>()
             val songs = withContext(Dispatchers.Default) {
                 val picked = LinkedHashMap<String, Song>()
@@ -375,9 +451,13 @@ class PlaylistImporter(
                 }
                 picked.values.toList()
             }
-            if (songs.isEmpty()) continue
+            if (songs.isEmpty()) {
+                task.done(index)
+                continue
+            }
 
             val result = repository.importPlaylist(playlist.name, songs, credits)
+            task.done(index)
             val byId = songs.associateBy { it.id }
             result.leftOut.forEach {
                 skip(if (byId[it]?.origin == Origin.LOCAL) ImportSkip.NOT_ON_DEVICE else ImportSkip.ID_TAKEN)
@@ -436,6 +516,76 @@ class PlaylistImporter(
 
     private companion object {
         const val TAG = "PlaylistImport"
+    }
+}
+
+/**
+ * The placeholders of one import in [PlaylistImporter.importing]: one for the file while it is
+ * read, then one per playlist ([playlists]). Each leaves once its playlist is made or left out
+ * ([done]), the rest on [close]. Called from one coroutine at a time.
+ */
+class ImportTask internal constructor(
+    private val importing: MutableStateFlow<List<ImportingPlaylist>>,
+    private val nextKey: AtomicLong,
+    names: List<String>,
+    step: ImportStep,
+) : AutoCloseable {
+
+    @Volatile
+    private var keys: List<Long> = emptyList()
+
+    @Volatile
+    private var names: List<String> = names
+
+    init {
+        val entries = names.map { ImportingPlaylist(nextKey.getAndIncrement(), it, step) }
+        keys = entries.map { it.key }
+        importing.update { entries + it }
+    }
+
+    /**
+     * Shows [names], one placeholder each in the order of the file, in place of the ones
+     * shown, at the step of the first. The first keeps its key, the others are new. Nothing
+     * changes when they are shown already.
+     */
+    fun playlists(names: List<String>) {
+        if (names == this.names) return
+        this.names = names
+        val old = keys
+        val newKeys = names.indices.map { i ->
+            if (i == 0 && old.isNotEmpty()) old[0] else nextKey.getAndIncrement()
+        }
+        keys = newKeys
+        importing.update { list ->
+            val at = list.indexOfFirst { it.key in old }
+            val step = list.getOrNull(at)?.step ?: ImportStep.SAVING
+            val rest = list.filter { it.key !in old }
+            val entries = names.mapIndexed { i, name -> ImportingPlaylist(newKeys[i], name, step) }
+            if (at < 0)
+                entries + rest
+            else
+                rest.take(at) + entries + rest.drop(at)
+        }
+    }
+
+    /** Shows [step] on every placeholder still shown. */
+    fun step(step: ImportStep) {
+        val current = keys
+        importing.update { list ->
+            list.map { if (it.key in current) it.copy(step = step) else it }
+        }
+    }
+
+    /** Takes away the placeholder of the playlist at [index], it was made or left out. */
+    fun done(index: Int) {
+        val key = keys.getOrNull(index) ?: return
+        importing.update { list -> list.filter { it.key != key } }
+    }
+
+    /** Takes away the placeholders still shown. */
+    override fun close() {
+        val current = keys
+        importing.update { list -> list.filter { it.key !in current } }
     }
 }
 

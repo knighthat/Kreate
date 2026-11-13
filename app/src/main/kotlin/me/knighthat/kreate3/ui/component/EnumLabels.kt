@@ -36,6 +36,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.database.model.ReleaseType
 import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.playlist.ImportStep
 import me.knighthat.kreate3.provider.youtube.PlaylistPrivacy
 import me.knighthat.kreate3.ui.screen.account.HistoryRangePreset
 import me.knighthat.kreate3.ui.screen.account.StatisticsPeriod
@@ -207,6 +208,17 @@ val DownloadStage.labelRes: Int
         DownloadStage.QUEUED -> R.string.constant_download_stage_queued
         DownloadStage.PAUSED -> R.string.constant_download_stage_paused
         DownloadStage.FAILED -> R.string.constant_download_stage_failed
+    }
+
+/** What an import of a playlist file is doing, under its placeholder's name. */
+@get:StringRes
+val ImportStep.labelRes: Int
+    get() = when (this) {
+        ImportStep.READING -> R.string.constant_import_step_reading
+        ImportStep.WAITING -> R.string.constant_import_step_waiting
+        ImportStep.LOOKING_UP -> R.string.constant_import_step_looking_up
+        ImportStep.SEARCHING -> R.string.constant_import_step_searching
+        ImportStep.SAVING -> R.string.constant_import_step_saving
     }
 
 /** How good a song of YouTube is, what each quality means there. */

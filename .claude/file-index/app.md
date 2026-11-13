@@ -100,7 +100,10 @@ Root
   device songs matched by
   `LocalMatcher` (id + title, else unique title / closest length), OpenSubsonic only stored ones
   or covers of the server set now), `PlaylistImportReport` with `ImportSkip` reasons,
-  `importMessage`/`importFailedMessage`. Used by the home Playlists tab sheet's "Import from file"
+  `importMessage`/`importFailedMessage`; `importing` (`ImportingPlaylist`s not made yet with their
+  `ImportStep`, the Playlists tab's pinned placeholders), `startImport(uri)` → `ImportTask`
+  (one import's placeholders: file name while reading, then one per playlist; steps, done, close).
+  Used by the home Playlists tab sheet's "Import from file"
   entry.
 
 notification/
