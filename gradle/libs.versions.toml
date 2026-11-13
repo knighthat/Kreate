@@ -32,7 +32,7 @@ ktor = "3.6.0"
 # A JitPack tag, bumped by hand
 innertubex = "v0.9.1"
 media3 = "1.11.1"
-navigation3 = "1.2.0"
+navigation3 = "1.2.1"
 robolectric = "4.17"
 reorderable = "3.1.0"
 vico = "3.3.1"
