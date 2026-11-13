@@ -23,7 +23,10 @@ package me.knighthat.kreate3.constant
  * artist pages.
  */
 enum class QueueAction {
-    /** Replaces the queue with the songs, in the list's order, and plays them. */
+    /**
+     * Replaces the queue with the songs, in the list's order, and plays them with shuffling and
+     * repeating off.
+     */
     PLAY,
 
     /** Like [PLAY], in a random order. */

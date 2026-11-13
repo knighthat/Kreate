@@ -64,7 +64,8 @@ import me.knighthat.kreate3.preferences.Preferences
 import org.koin.compose.koinInject
 
 /**
- * Does [action] with the songs of [songs] that can be played.
+ * Does [action] with the songs of [songs] that can be played. Play and Shuffle start the list
+ * with shuffling and repeating off, see [PlaybackController.resetModes].
  *
  * @return what to tell the user, with an Undo button for songs added to the queue, `null` when
  * the player shows the result
@@ -88,8 +89,16 @@ fun PlaybackController.queue(
         else -> state.value.index + 1
     }
     when (action) {
-        QueueAction.PLAY -> play(playable)
-        QueueAction.SHUFFLE -> play(playable.shuffled())
+        QueueAction.PLAY -> {
+            resetModes()
+            play(playable)
+        }
+
+        QueueAction.SHUFFLE -> {
+            resetModes()
+            play(playable.shuffled())
+        }
+
         QueueAction.ENQUEUE, QueueAction.PLAY_NEXT -> add(playable, start)
     }
     val text = when (action) {
@@ -258,7 +267,8 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
  * Like [rememberQueueActions], for a list that shows only some of the songs, like the top songs
  * of an artist. Play and Shuffle start at once with a random song of [shown], then the rest of
  * what [songs] gives follows it, in its order or a random one, unless the queue was changed
- * meanwhile. The other actions wait for [songs].
+ * meanwhile. Both turn shuffling and repeating off, see [PlaybackController.resetModes]. The
+ * other actions wait for [songs].
  *
  * @param songs every song, `null` when they can't be had, the song started then plays alone
  */
@@ -283,7 +293,10 @@ fun rememberQuickQueueActions(
                     .filter { it.mediaMetadata.isPlayable == true }
                     .takeIf { action == QueueAction.PLAY || action == QueueAction.SHUFFLE }
                     ?.randomOrNull()
-                first?.let { playback.play(listOf(it)) }
+                first?.let {
+                    playback.resetModes()
+                    playback.play(listOf(it))
+                }
 
                 val all = currentSongs()
                 if (all == null) {

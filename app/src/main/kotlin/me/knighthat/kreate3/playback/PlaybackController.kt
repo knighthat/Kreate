@@ -192,6 +192,9 @@ interface PlaybackController {
      */
     fun cycleRepeat()
 
+    /** Turns shuffling off and the [RepeatMode] to [RepeatMode.OFF], like before starting a list. */
+    fun resetModes()
+
     /** Stops playing and empties the queue, nothing is left to resume. */
     fun stop()
 

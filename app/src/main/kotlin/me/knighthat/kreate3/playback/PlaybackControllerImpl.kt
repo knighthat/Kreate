@@ -160,6 +160,11 @@ class PlaybackControllerImpl(
         it.repeatMode = it.repeatMode.toRepeatMode().next.toPlayerMode()
     }
 
+    override fun resetModes() = run("reset shuffle and repeat") {
+        it.shuffleModeEnabled = false
+        it.repeatMode = Player.REPEAT_MODE_OFF
+    }
+
     override fun stop() {
         // A radio still looking would queue its songs again
         radioSearch?.cancel()

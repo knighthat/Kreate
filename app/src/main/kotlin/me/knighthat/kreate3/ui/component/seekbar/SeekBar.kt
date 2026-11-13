@@ -186,6 +186,7 @@ private class PreviewController(
 
     override fun toggleShuffle() = Unit
     override fun cycleRepeat() = Unit
+    override fun resetModes() = Unit
     override fun stop() = Unit
     override fun startSleepTimer(duration: Duration?) = Unit
     override fun changeSleepTimer(action: SleepTimerAction) = Unit
