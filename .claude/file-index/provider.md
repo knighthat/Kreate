@@ -33,7 +33,11 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   100 ids a request, a 404 or 500 splits the request in halves to drop unknown ids;
   `lookUpSongs(ids)` = `get_queue` batches of 1000, never split, one visitor-id retry, one refused
   batch → `null`; answers paired by position → `SongLookup`
-  Found/Unplayable, unknown ids left out), `InnerTube.kt`
+  Found/Unplayable, unknown ids left out; `isPlayable(id)`
+  = one `get_queue` (`unplayableText` or 404/500 → `false`); `replacementOf` = one songs search,
+  length ±2 s, folded title equal, holding the old one or sharing half the shorter one's words
+  (`TitleMatch`), artist id only a tiebreak; each result logged at
+  `d`), `InnerTube.kt`
   (HTTP +
   `YouTubeSession` + `YouTubeException`; `stream` delegates to `YouTubeStreams.kt`, the innertubex
   extractor: signed-out and session extractors, `StreamQuality.audioQuality`, Original = session +

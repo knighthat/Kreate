@@ -20,7 +20,9 @@ package me.knighthat.kreate3.constant
 
 /**
  * What the player does when a song fails to play, or loads for too long. Trying again happens
- * once per song.
+ * once per song. Before trying a YouTube song YouTube says is unavailable again, the player checks
+ * it: one YouTube published again under another id plays in its place, one gone for good fails
+ * as if tried again (`PlaybackRecovery`).
  */
 enum class PlaybackFailureAction(val retries: Boolean, val skips: Boolean) {
     /** Plays the next song. */

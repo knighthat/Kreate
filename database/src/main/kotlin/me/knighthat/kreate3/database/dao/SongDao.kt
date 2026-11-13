@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.ArtistEntity
 import me.knighthat.kreate3.database.entity.SongArtistMapEntity
 import me.knighthat.kreate3.database.entity.SongEntity
+import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.model.Origin
 
 @Dao
@@ -114,6 +115,60 @@ internal interface SongDao {
 
     @Query("DELETE FROM song WHERE id = :id")
     suspend fun delete(id: String)
+
+    /** Every user's library row of the song [songId]. */
+    @Query("SELECT * FROM user_song WHERE song_id = :songId")
+    suspend fun libraryRows(songId: String): List<UserSongEntity>
+
+    /** Whether any user has the song [songId] downloaded. */
+    @Query(
+        """
+        SELECT EXISTS (
+            SELECT 1 FROM user_song
+            WHERE song_id = :songId
+            AND downloaded_at IS NOT NULL
+        )
+        """
+    )
+    suspend fun isDownloaded(songId: String): Boolean
+
+    /** Moves [from]'s places in playlists to [to], except in playlists that already hold [to]. */
+    @Query(
+        """
+        UPDATE OR IGNORE song_playlist_map
+        SET song_id = :to
+        WHERE song_id = :from
+        """
+    )
+    suspend fun movePlaylistPlaces(from: String, to: String)
+
+    @Query(
+        """
+        UPDATE playback_history
+        SET song_id = :to
+        WHERE song_id = :from
+        """
+    )
+    suspend fun movePlays(from: String, to: String)
+
+    @Query(
+        """
+        UPDATE persistent_queue
+        SET song_id = :to
+        WHERE song_id = :from
+        """
+    )
+    suspend fun moveQueued(from: String, to: String)
+
+    /** Moves [from]'s lyrics to [to], except from a source [to] has lyrics of already. */
+    @Query(
+        """
+        UPDATE OR IGNORE lyrics
+        SET song_id = :to
+        WHERE song_id = :from
+        """
+    )
+    suspend fun moveLyrics(from: String, to: String)
 }
 
 /** A song with its album's shared name, year and cover. */

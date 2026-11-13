@@ -118,6 +118,54 @@ internal class RemoteCatalogRepositoryImpl(
         }
     }
 
+    override suspend fun replaceSong(oldId: String, song: RemoteSong): SongReplacement {
+        val origin = song.song.origin
+        require(origin != Origin.LOCAL) { "${song.song.id} is a song of the device" }
+        requireOrigin(origin, listOf(song).origins())
+        val newId = song.song.id
+        require(newId != oldId) { "$oldId can't replace itself" }
+
+        return database.inTransaction {
+            val old = songDao.get(oldId) ?: return@inTransaction SongReplacement.NOT_STORED
+            require(old.origin == origin) { "$oldId is a song of ${old.origin}" }
+            if (songDao.isDownloaded(oldId)) return@inTransaction SongReplacement.DOWNLOADED
+
+            val now = clock.now()
+            storeCatalog(origin, now, listOf(song))
+
+            val kept = songDao.libraryRows(newId).associateBy { it.userId }
+            userSongDao.upsertAll(songDao.libraryRows(oldId).map { moved ->
+                val own = kept[moved.userId]
+                if (own == null) {
+                    // The old album's order means nothing on the new song's album
+                    moved.copy(
+                        songId = newId,
+                        albumPosition = null,
+                        downloadedAt = null,
+                        updatedAt = now,
+                    )
+                } else {
+                    own.copy(
+                        name = own.name ?: moved.name,
+                        artists = own.artists ?: moved.artists,
+                        thumbnail = own.thumbnail ?: moved.thumbnail,
+                        likedAt = own.likedAt ?: moved.likedAt,
+                        musicBrainzId = own.musicBrainzId ?: moved.musicBrainzId,
+                        createdAt = minOf(own.createdAt, moved.createdAt),
+                        updatedAt = now,
+                    )
+                }
+            })
+            songDao.movePlaylistPlaces(oldId, newId)
+            songDao.movePlays(oldId, newId)
+            songDao.moveQueued(oldId, newId)
+            songDao.moveLyrics(oldId, newId)
+            // What is left of it goes with it: formats, artist links, the rows not moved
+            songDao.delete(oldId)
+            SongReplacement.MOVED
+        }
+    }
+
     /**
      * Upserts [incoming], songs [library] holds, with what they point at and likes each in the
      * user's library, see [syncLikedSongs].

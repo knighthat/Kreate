@@ -20,6 +20,7 @@ package me.knighthat.kreate3.provider.youtube
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,7 +47,10 @@ import me.knighthat.kreate3.provider.youtube.YouTubeItem.PlaylistItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.SongItem
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import java.text.Normalizer
 import java.util.Locale
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Whether [cookies], a `Cookie` header of youtube.com, are of a signed in session, like the ones
@@ -421,6 +425,134 @@ class YouTubeProvider internal constructor(
         val byId = entries.toMap()
         return ids.mapNotNull { id -> byId[id]?.let { id to it } }.toMap()
     }
+
+    /**
+     * Whether YouTube still plays [songId], asked with one [InnerTube.queueOf] request. A song
+     * YouTube took down, or published again under another id, is in the answer as unplayable
+     * ("[Video blocked in country]"), an id it doesn't know fails it (404, or 500): neither plays.
+     *
+     * @throws YouTubeException when YouTube can't be reached or refuses for another reason
+     */
+    suspend fun isPlayable(songId: String): Boolean {
+        val response = try {
+            innerTube.queueOf(listOf(songId))
+        } catch (e: YouTubeException) {
+            if (e.status != NOT_FOUND && e.status != INTERNAL_ERROR) throw e
+            Logger.i(tag = TAG) { "The queue doesn't know $songId (${e.status}), it doesn't play" }
+            return false
+        }
+        val plays = parser.playsInQueue(response, songId)
+        Logger.i(tag = TAG) {
+            if (plays) "The queue has $songId as a song that plays"
+            else "The queue has $songId as unplayable, or not at all"
+        }
+        return plays
+    }
+
+    /**
+     * The song YouTube published in place of [songId], which no longer plays (see [isPlayable]),
+     * found with one search of [title] and [artists] among songs, hyphens left out of the words
+     * searched (YouTube takes "-word" as "without word"). Albums and artists are often changed on
+     * re-publishing, so the length decides: a result fits when it is as long as [duration] give or
+     * take [REPLACEMENT_LENGTH_SLACK] and its title shares words with [title], at least half of the
+     * shorter title's (see [TitleMatch]). Titles are compared [folded], so "sister's noise (Version
+     * 2022)" is the same as "sister's noise -version 2022-". Of those that fit, the closest title
+     * goes first, then the nearest length, then one credited to one of [artistIds], then YouTube's
+     * order.
+     *
+     * @param artists the artists' names as shown, only searched with
+     * @param artistIds only break ties, may be empty
+     * @return `null` when no result fits
+     * @throws YouTubeException when YouTube can't be reached or refuses
+     */
+    suspend fun replacementOf(
+        songId: String,
+        title: String,
+        artists: String?,
+        artistIds: Collection<String>,
+        duration: Duration,
+    ): SongItem? {
+        val words = folded(title)
+        if (words.isEmpty()) {
+            Logger.i(tag = TAG) { "No search for the song in place of $songId: no words in its title" }
+            return null
+        }
+
+        // A word starting with "-" leaves results with it out, "LEVEL5 -judgelight-" finds nothing
+        val query = listOfNotNull(title, artists?.takeIf { it.isNotBlank() })
+            .joinToString(" ")
+            .replace('-', ' ')
+        val results = search(query, YouTubeSearchFilter.SONGS).items.filterIsInstance<SongItem>()
+        Logger.d(tag = TAG) {
+            "Searched for the song in place of $songId (${duration.inWholeSeconds} s, " +
+                    "${artistIds.size} artist ids): ${results.size} songs"
+        }
+
+        class Fit(val item: SongItem, val title: TitleMatch, val off: Duration, val credited: Boolean)
+
+        val fitting = results.mapNotNull { item ->
+            val song = item.song.song
+            val match = song.name?.let { titleMatch(title, words, it) }
+            val off = song.duration?.let { (it - duration).absoluteValue }
+            val credited = item.song.artists.any { it.id in artistIds }
+            val misses = listOfNotNull(
+                "the same id".takeIf { song.id == songId },
+                "no length".takeIf { off == null },
+                "${off?.inWholeSeconds} s off".takeIf { off != null && off > REPLACEMENT_LENGTH_SLACK },
+                "another title".takeIf { match == null },
+            )
+            Logger.d(tag = TAG) {
+                if (misses.isEmpty())
+                    "${song.id} fits: title ${match!!.text}, ${off!!.inWholeSeconds} s off, " +
+                            if (credited) "same artist" else "other artists"
+                else
+                    "${song.id} doesn't fit: ${misses.joinToString()}"
+            }
+            if (misses.isEmpty()) Fit(item, match!!, off!!, credited) else null
+        }
+        // Sorting keeps the order of equal ones, YouTube's
+        val found = fitting
+            .sortedWith(compareBy({ it.title }, { it.off }, { !it.credited }))
+            .firstOrNull()
+            ?.item
+        Logger.i(tag = TAG) {
+            if (found == null)
+                "No song fits in place of $songId among ${results.size} results"
+            else
+                "${found.song.song.id} is the song in place of $songId, of ${fitting.size} that fit"
+        }
+        return found
+    }
+
+    /**
+     * How [name] is to [title], whose [folded] form is [words]; `null` when they share fewer than
+     * half of the shorter one's words.
+     */
+    private fun titleMatch(title: String, words: String, name: String): TitleMatch? {
+        val folded = folded(name)
+        if (name == title) return TitleMatch.AS_WRITTEN
+        if (folded == words) return TitleMatch.FOLDED
+        if (" $folded ".contains(" $words ")) return TitleMatch.HOLDING
+        val mine = words.split(' ').toSet()
+        val theirs = folded.split(' ').filter { it.isNotEmpty() }.toSet()
+        if (theirs.isEmpty()) return null
+        val shared = mine.count { it in theirs }
+        // At least half, rounded up, of the shorter title's words
+        val needed = (minOf(mine.size, theirs.size) + 1) / 2
+        return if (shared >= needed) TitleMatch.SHARING else null
+    }
+
+    /**
+     * [title] as words to compare: its compatibility forms (full-width letters become plain ones),
+     * in lower case, with anything but letters and digits between words, like "-version 2022-"
+     * and "(Version 2022)" both becoming "version 2022".
+     */
+    private fun folded(title: String): String =
+        Normalizer.normalize(title, Normalizer.Form.NFKC)
+            .lowercase(Locale.ROOT)
+            .split(NOT_WORD)
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
 
     /** @return `null` when YouTube doesn't know the album */
     suspend fun albumPage(albumId: String): YouTubeAlbumPage? =
@@ -841,6 +973,19 @@ class YouTubeProvider internal constructor(
 
         /** Requests a search of one kind may send for [Provider.search]. */
         const val SEARCH_PAGES = 3
+
+        /**
+         * How much the length of the song published in place of another may differ from its,
+         * see [replacementOf]. YouTube's lengths are whole seconds and differ by one between
+         * uploads of the same recording.
+         */
+        val REPLACEMENT_LENGTH_SLACK = 2.seconds
+
+        const val TAG = "YouTubeProvider"
+
+
+        /** What isn't part of a word of a title, see [folded]. */
+        val NOT_WORD = Regex("[^\\p{L}\\p{M}\\p{N}]+")
 
         /** Requests [allPlaylistSongs] may send, about 100 songs each. */
         const val PLAYLIST_PAGES = 50

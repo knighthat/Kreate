@@ -60,12 +60,15 @@ internal val Locale.youTubeGl: String
  * @property status HTTP status of the answer, `null` when there was none
  * @property signedOut whether it failed because it needs a signed in user and there is none, or
  * the session the user signed in to has ended
+ * @property unavailable whether YouTube says the song asked for is unavailable, like one taken
+ * down or published again under another id, see [YouTubeProvider.isPlayable]
  */
 class YouTubeException(
     message: String,
     val status: Int? = null,
     cause: Throwable? = null,
     val signedOut: Boolean = false,
+    val unavailable: Boolean = false,
 ) : Exception(message, cause)
 
 /**

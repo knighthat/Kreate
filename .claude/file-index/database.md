@@ -64,7 +64,8 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,
   `updateDownloaders`),
   `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
-  `RemoteItem`; liked-song sync from servers), `PlaylistImport`
+  `RemoteItem`; liked-song sync from servers; `replaceSong` moves an old id's rows to the song
+  published in its place, `SongReplacement`), `PlaylistImport`
   (`ImportedPlaylist`, `ImportedCredits`; `importPlaylist` makes one local playlist from a file's
   songs in one transaction, stored songs kept as they are, new remote ones stored from the file
   with its album/artists (`ImportedCredits`, rows inserted only when missing) and a bare

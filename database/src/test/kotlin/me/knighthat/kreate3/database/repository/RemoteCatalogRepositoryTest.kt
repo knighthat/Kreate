@@ -23,10 +23,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
+import me.knighthat.kreate3.database.entity.LyricsEntity
+import me.knighthat.kreate3.database.entity.PersistentQueueEntity
+import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
+import me.knighthat.kreate3.database.entity.SongFormatEntity
+import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
+import me.knighthat.kreate3.database.entity.UserPlaylistEntity
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -371,5 +379,117 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
             runBlocking { repository.saveQueuedSong(song("s1", origin = Origin.LOCAL)) }
         }
         assertNull(database.songDao().get("s1"))
+    }
+
+    private val youTube = Origin.YOUTUBE
+    private val added = Instant.parse("2023-01-01T00:00:00Z")
+
+    private fun youTubeSong(id: String, album: Album? = null, artists: List<Artist> = emptyList()) =
+        RemoteSong(Song(id, youTube, id, albumId = album?.id), album, artists, null)
+
+    /** The old song [id] in the user's library with what hangs off it. */
+    private suspend fun replacedSong(id: String): Long {
+        addSong(id, youTube, albumId = null)
+        database.userSongDao().upsert(
+            UserSongEntity(
+                USER, id, name = "Mine", likedAt = star, albumPosition = 3,
+                musicBrainzId = "mb", createdAt = added, updatedAt = added,
+            )
+        )
+        val playlist = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "p",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity(id, playlist, 4))
+        database.playbackHistoryDao().insert(
+            PlaybackHistoryEntity(
+                songId = id,
+                userId = USER,
+                timeSpent = 1.hours,
+                createdAt = EPOCH
+            )
+        )
+        database.persistentQueueDao().replace(USER, listOf(PersistentQueueEntity(USER, 0, id)))
+        database.lyricsDao().upsert(
+            LyricsEntity(id, LyricsProvider.LRCLIB, "la", LyricsSync.NONE, null, EPOCH, EPOCH)
+        )
+        database.songFormatDao()
+            .upsert(SongFormatEntity(id, "251", "audio/webm", createdAt = EPOCH, updatedAt = EPOCH))
+        return playlist
+    }
+
+    @Test
+    fun everythingKeptOfAReplacedSongMovesToTheNewOne() = runBlocking {
+        val playlist = replacedSong("old")
+
+        val result = repository.replaceSong(
+            "old", youTubeSong("new", Album("a2", youTube, "a2"), listOf(Artist("r", youTube, "r")))
+        )
+
+        assertEquals(SongReplacement.MOVED, result)
+        assertNull(database.songDao().get("old"))
+        assertEquals("a2", database.songDao().get("new")?.albumId)
+        val row = database.userSongDao().get(USER, "new")!!
+        assertEquals("Mine", row.name)
+        assertEquals(star, row.likedAt)
+        assertEquals("mb", row.musicBrainzId)
+        assertEquals(added, row.createdAt)
+        // The old album's order is left behind
+        assertNull(row.albumPosition)
+        assertEquals(4, database.userPlaylistDao().position(playlist, "new"))
+        assertEquals(listOf("new"), database.playbackHistoryDao().all(USER).map { it.songId })
+        assertEquals(listOf("new"), database.persistentQueueDao().list(USER).map { it.songId })
+        assertNotNull(database.lyricsDao().get("new", LyricsProvider.LRCLIB))
+        // The formats were of the old file
+        assertNull(database.songFormatDao().get("new", "251"))
+    }
+
+    @Test
+    fun theNewSongsOwnRowWinsAndTheOldOneFillsIn() = runBlocking {
+        val playlist = replacedSong("old")
+        addSong("new", youTube)
+        database.userSongDao().upsert(
+            UserSongEntity(
+                USER,
+                "new",
+                name = "Theirs",
+                createdAt = added + 5.hours,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("new", playlist, 9))
+
+        repository.replaceSong("old", youTubeSong("new"))
+
+        val row = database.userSongDao().get(USER, "new")!!
+        assertEquals("Theirs", row.name)
+        assertEquals(star, row.likedAt)
+        assertEquals("mb", row.musicBrainzId)
+        assertEquals(added, row.createdAt)
+        // One place in the playlist, the new song's own
+        assertEquals(listOf(9), database.userPlaylistDao().songLinks(playlist).map { it.position })
+    }
+
+    @Test
+    fun aDownloadedSongIsLeftAsItIs() = runBlocking {
+        replacedSong("old")
+        val row = database.userSongDao().get(USER, "old")!!
+        database.userSongDao().upsert(row.copy(downloadedAt = EPOCH))
+
+        assertEquals(SongReplacement.DOWNLOADED, repository.replaceSong("old", youTubeSong("new")))
+        assertNotNull(database.songDao().get("old"))
+        assertNull(database.songDao().get("new"))
+        assertEquals(listOf("old"), database.playbackHistoryDao().all(USER).map { it.songId })
+    }
+
+    @Test
+    fun aSongThatIsNotStoredHasNothingToMove() = runBlocking {
+        assertEquals(SongReplacement.NOT_STORED, repository.replaceSong("old", youTubeSong("new")))
+        assertNull(database.songDao().get("new"))
     }
 }

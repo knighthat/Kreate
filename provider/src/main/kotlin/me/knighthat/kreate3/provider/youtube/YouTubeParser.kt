@@ -652,6 +652,27 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
             id to (song?.let(SongLookup::Found) ?: SongLookup.Unplayable)
         }
 
+    /**
+     * Whether the answer to [InnerTube.queueOf] has [songId] as a song that plays. One that
+     * doesn't comes with an `unplayableText`, like "[Video blocked in country]", and without a
+     * title, length or cover of its own.
+     */
+    fun playsInQueue(response: JsonElement?, songId: String): Boolean {
+        val renderer = response.path("queueDatas").asArray.orEmpty()
+            .map { it.path("content") }
+            .firstNotNullOfOrNull { content ->
+                (content.path("playlistPanelVideoRenderer")
+                    ?: content.path(
+                        "playlistPanelVideoWrapperRenderer",
+                        "primaryRenderer",
+                        "playlistPanelVideoRenderer",
+                    ))
+                    ?.takeIf { it.path("videoId").asString == songId }
+            }
+            ?: return false
+        return renderer.path("unplayableText") == null && renderer.path("title").text() != null
+    }
+
     private fun watchTabs(response: JsonElement?): JsonElement? =
         response.path(
             "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer",

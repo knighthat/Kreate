@@ -14,7 +14,12 @@ open items are at the end.
   (chunked-only clients) are refused up front.
 - OpenSubsonic streams read through `OpenSubsonicProvider.streamClient()` (trusts the pinned
   self-signed cert). A server song's address is reused for seeks for 1 h (`SERVER_ADDRESS_LIFE`).
-- Failures map to `ERROR_CODE_SOURCE_OFF` / `ERROR_CODE_NOT_PLAYABLE` (`PlaybackErrors.kt`).
+- Failures map to `ERROR_CODE_SOURCE_OFF` / `ERROR_CODE_NOT_PLAYABLE` (`PlaybackErrors.kt`), and
+  to `ERROR_CODE_UNAVAILABLE` when innertubex says `UNAVAILABLE` (`YouTubeException.unavailable`,
+  thrown by `YouTubeStreams.stream`); `PlaybackRecovery` then checks for a song published in its
+  place, see `.claude/docs/youtube-song-lookup.md`. Media3 retries a failed load (a
+  `DataSourceException` of any custom reason) until the stall limit, so the player error never
+  came; `SongLoadErrorPolicy` makes that one code fail at once (seen on the emulator 2026-11-11).
 - A failed or stalled song is handled by `PlaybackRecovery` (Player settings → Queue: "When a song
   fails", default skip; "Give up loading after", default 15 s, 0 = off). Without the stall limit a
   slow server leaves the player buffering for minutes: OkHttp waits 15 s to connect and 30 s per
