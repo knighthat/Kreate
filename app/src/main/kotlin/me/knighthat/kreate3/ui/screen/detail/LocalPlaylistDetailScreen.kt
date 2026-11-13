@@ -173,6 +173,7 @@ fun LocalPlaylistDetailScreen(
                     )
                 }
             },
+            exportId = viewModel.playlistId,
             modifier = modifier,
             contentPadding = contentPadding,
         )
@@ -189,6 +190,7 @@ fun LocalPlaylistDetailScreen(
  * @param onEdit opens the screen to change the playlist's name, picture and pin
  * @param canRemove whether songs can be taken out, not of a monthly playlist
  * @param onDelete deletes the playlist, once the user confirmed
+ * @param exportId the database id of the playlist its menu exports to a file, `null` for none
  */
 @Composable
 private fun LocalPlaylistDetailContent(
@@ -211,6 +213,7 @@ private fun LocalPlaylistDetailContent(
     onModeChange: (CoverEditMode) -> Unit,
     onMoveSong: (song: MediaItem, after: MediaItem?) -> Unit,
     onRemoveSong: (song: MediaItem) -> Unit,
+    exportId: Long? = null,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -266,6 +269,7 @@ private fun LocalPlaylistDetailContent(
                 onEdit = onEdit,
                 onDelete = { confirmDelete = true },
                 onModeChange = onModeChange,
+                exportId = exportId,
             )
         },
     ) {

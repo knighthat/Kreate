@@ -20,9 +20,12 @@ package me.knighthat.kreate3.database.repository
 
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
+import me.knighthat.kreate3.database.dao.AlbumDao
+import me.knighthat.kreate3.database.dao.ArtistDao
 import me.knighthat.kreate3.database.dao.SongDao
 import me.knighthat.kreate3.database.dao.UserPlaylistDao
 import me.knighthat.kreate3.database.dao.UserSongDao
+import me.knighthat.kreate3.database.entity.SongArtistMapEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
 import me.knighthat.kreate3.database.entity.UserSongEntity
@@ -39,6 +42,8 @@ internal class PlaylistImportRepositoryImpl(
     private val songDao: SongDao,
     private val userSongDao: UserSongDao,
     private val playlistDao: UserPlaylistDao,
+    private val albumDao: AlbumDao,
+    private val artistDao: ArtistDao,
     activeUser: ActiveUser,
     private val clock: Clock,
 ) : PlaylistImportRepository {
@@ -50,7 +55,11 @@ internal class PlaylistImportRepositoryImpl(
             .filter { it.unavailableSince == null }
             .map { it.toModel() }
 
-    override suspend fun importPlaylist(name: String, songs: List<Song>): ImportedPlaylist {
+    override suspend fun importPlaylist(
+        name: String,
+        songs: List<Song>,
+        credits: Map<String, ImportedCredits>,
+    ): ImportedPlaylist {
         val userId = scope.requireId()
         return database.inTransaction {
             val now = clock.now()
@@ -79,7 +88,19 @@ internal class PlaylistImportRepositoryImpl(
                     }
 
                     else -> {
-                        songDao.upsert(song.copy(unavailableSince = null).toEntity(now, now))
+                        val credit = credits[song.id]
+                        // The album first, the song points at it
+                        val album = credit?.album
+                        if (album != null) albumDao.insertAll(listOf(album.toEntity(now, now)))
+                        songDao.upsert(
+                            song.copy(albumId = album?.id, unavailableSince = null)
+                                .toEntity(now, now)
+                        )
+                        val artists = credit?.artists.orEmpty().distinctBy { it.id }
+                        if (artists.isNotEmpty()) {
+                            artistDao.insertAll(artists.map { it.toEntity(now, now) })
+                            songDao.linkAll(artists.map { SongArtistMapEntity(song.id, it.id) })
+                        }
                         userSongDao.insertAll(
                             listOf(
                                 UserSongEntity(

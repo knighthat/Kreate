@@ -344,6 +344,14 @@ internal fun CollectionMenuContent(
     val share = rememberLinkShare(title, kind.shareKind) {
         shareLink(kind, item, title, openSubsonic)
     }
+    // Only the app's own playlists are exported
+    val exportId = if (kind == CollectionKind.PLAYLIST && origin == Origin.LOCAL)
+        item.mediaId.toLongOrNull()
+    else
+        null
+    val export = exportId?.let {
+        rememberPlaylistExport(playlistId = it, name = title, onDone = { close {} })
+    }
 
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -455,6 +463,13 @@ internal fun CollectionMenuContent(
                         close { openRoute(edit) }
                     }
             }
+            if (export != null)
+                MenuRow(
+                    icon = R.drawable.upload,
+                    label = stringResource(R.string.semantic_export_playlist),
+                    loading = export.loading,
+                    enabled = waiting == null,
+                ) { export.start() }
             if (kind == CollectionKind.PLAYLIST && origin == Origin.LOCAL)
                 MenuRow(R.drawable.delete, stringResource(R.string.semantic_delete_playlist)) {
                     confirmDelete = true

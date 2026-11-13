@@ -24,6 +24,12 @@ source/ (app-side glue for sources)
 - `SongStore.kt` — `SongStore.store(songId, origin)` (Koin single): makes sure a song is in the
   `song` table before the user keeps something about it (playlist, reaction); one fetched live is
   fetched with `songDetails` and stored with `savePlayedSong` (added to the library).
+- `PlaylistFiles.kt` — `ExportedSong` (a song as it goes in an exported file: `song` row values),
+  `PlaylistFiles.writeCsv` (`PlaylistCsvColumns.HEADER`, `origin` = enum name, empty
+  `playlist_remote_id`, RFC 4180 quoting, CRLF, leaves out unchecked origins).
+- `PlaylistExportSongs.kt` — `PlaylistExportSongs.of(playlistId)`: an app playlist's songs to
+  export, disliked left out, via `listOfPlaylist` + `SongRepository.sourceValues` (no user
+  overrides).
 - `ArtistPictures.kt` — `ArtistPictures.fillMissing` (Koin single): asks each shown stored artist
   without a picture (not device ones) its source's `Provider.artist` once per run, in the
   background, and stores the picture; artists stored from song credits come without one. Statistics

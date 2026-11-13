@@ -15,7 +15,7 @@ Tests mirror the main paths under `src/test/`.
   downloader's cache move), `LoudnessNormalizerTest`,
   `PlaybackErrorsTest`, `ShuffledOrderTest`, `KreateShuffleOrderTest`, source/`CoverCacheTest`,
   `LoudnessMeterTest`,
-  `MediaStoreScannerTest`, `CoverFilesTest`,
+  `MediaStoreScannerTest`, `CoverFilesTest`, `PlaylistFilesTest` (CSV writer),
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`,
   ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`, `UndislikedMessageTest`,

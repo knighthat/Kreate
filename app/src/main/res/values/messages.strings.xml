@@ -54,6 +54,8 @@
     <string name="error_details">Couldn\'t get details from %1$s</string>
     <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
     <string name="error_collection_songs">Couldn\'t get the songs of %1$s</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="error_export_playlist">Couldn\'t export %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
     <string name="error_nothing_to_play">Nothing to play</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
@@ -157,7 +159,7 @@
     <string name="error_reason_unknown">something went wrong</string>
     <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file gives no id for the song -->
     <string name="error_reason_import_no_id">no song id</string>
-    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names a music source this app doesn't know -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names no music source for the songs, or one this app doesn't know -->
     <string name="error_reason_import_unknown_source">unknown source</string>
     <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were files on a device and this device's library doesn't have them -->
     <string name="error_reason_import_not_on_device">not on this device</string>
@@ -171,8 +173,14 @@
     <string name="error_reason_import_gone">no longer on %1$s</string>
     <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
     <string name="error_import_playlists">Couldn\'t import playlists: %1$s</string>
-    <!-- %1$s is a list of column names separated by commas, e.g. "MediaId, Title" (never translated). The picked file isn't a playlist file of this app or its old version -->
-    <string name="error_import_playlists_missing_columns">Not a playlist file, it lacks the columns %1$s</string>
+    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. The lines error_import_columns_* follow below it -->
+    <string name="error_import_playlists_bad_columns">Not a playlist file</string>
+    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: the file lacks these columns -->
+    <string name="error_import_columns_missing">Missing columns: %1$s</string>
+    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: the file has each of these columns more than once -->
+    <string name="error_import_columns_repeated">Repeated columns: %1$s</string>
+    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: playlist files have no such columns -->
+    <string name="error_import_columns_unknown">Unknown columns: %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <string name="error_server_not_configured">Sign in to %1$s in %2$s settings</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
@@ -222,6 +230,10 @@
     <string name="snackbar_playlist_import_not_looked_up">One or more songs were removed or made private on %1$s, so none were looked up. They were imported as the file has them.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source couldn't be reached (e.g. the connection dropped) to look the songs up again, so they went in as the file has them -->
     <string name="snackbar_playlist_import_not_looked_up_unreachable">Couldn\'t reach %1$s, so no songs were looked up. They were imported as the file has them.</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="snackbar_playlist_exported">Exported %1$s</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="snackbar_playlist_export_empty">%1$s has no songs to export</string>
     <string name="snackbar_removed_from_dislike">Removed from dislike</string>
     <string name="snackbar_removed_from_like">Removed from likes</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->

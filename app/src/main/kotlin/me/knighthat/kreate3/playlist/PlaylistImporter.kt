@@ -27,7 +27,10 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.repository.ImportedCredits
 import me.knighthat.kreate3.database.repository.PlaylistImportRepository
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
@@ -52,6 +55,12 @@ import kotlin.time.Duration.Companion.seconds
  * @property artists the file's text for its artists, `null` when it has none
  * @property duration its length, `null` when unknown
  * @property thumbnail address of its cover, `null` when the file has none
+ * @property artistIds ids of the credited artists at the song's origin, in the order of the names
+ * in [artists]; empty when the file has none
+ * @property albumId id of its album at the song's origin, `null` when the file has none
+ * @property albumName `null` when the file has none
+ * @property albumYear `null` when unknown
+ * @property albumPosition its place on the album, `null` when unknown
  * @property fromOldApp whether the file is the old Kreate app's, which doesn't name sources
  */
 data class PlaylistSong(
@@ -61,6 +70,11 @@ data class PlaylistSong(
     val artists: String? = null,
     val duration: Duration? = null,
     val thumbnail: String? = null,
+    val artistIds: List<String> = emptyList(),
+    val albumId: String? = null,
+    val albumName: String? = null,
+    val albumYear: Int? = null,
+    val albumPosition: Int? = null,
     val fromOldApp: Boolean = false,
 )
 
@@ -72,7 +86,7 @@ enum class ImportSkip {
     /** The file gives no id. */
     NO_ID,
 
-    /** The file names a source this app doesn't know. */
+    /** The file names no source, or one this app doesn't know. */
     UNKNOWN_SOURCE,
 
     /** A device song the library doesn't have. */
@@ -124,8 +138,9 @@ enum class NotLookedUp {
  * Makes the active user's local playlists out of playlist files:
  *
  * - YouTube songs are stored from the file's title, length and cover, like a live song added
- *   to a playlist, without artists: a file has no artist ids, they come with the song's next
- *   fetch. One stored already is kept as it is.
+ *   to a playlist, with the file's album and artists when it has their ids (this app's files do,
+ *   the old app's don't: their artists come with the song's next fetch). One stored already is
+ *   kept as it is.
  * - Or, when the user asks to look them up again and YouTube answers, its answer decides (see
  *   [lookUpYouTube]): a song it plays goes in with its current details, one it doesn't play as
  *   the file has it, one missing from its answer is left out.
@@ -135,7 +150,8 @@ enum class NotLookedUp {
  *   have it. Others are skipped, the scan stores device songs. A song of the old app's file goes
  *   in only by its id (with the same title when the file has one).
  * - OpenSubsonic songs go in when stored, or when their cover is an address of the server set
- *   now, which shows they are from that server; they are stored from the file then.
+ *   now, which shows they are from that server; they are stored from the file then, album and
+ *   artists like YouTube songs.
  * - A song in the same playlist twice goes in once. A playlist with nothing to hold isn't made.
  *
  * Every playlist made is new, also when one has the same name.
@@ -152,7 +168,7 @@ class PlaylistImporter(
      * The playlists of the CSV file at [uri], see [parsePlaylistCsv]. Songs without a playlist
      * name go to one named after the file.
      *
-     * @throws MissingColumnsException when the file isn't a playlist CSV
+     * @throws InvalidHeaderException when the file isn't a playlist CSV
      * @throws java.io.IOException when the file can't be read
      */
     suspend fun readCsv(uri: Uri): List<PlaylistToImport> = withContext(Dispatchers.IO) {
@@ -246,6 +262,7 @@ class PlaylistImporter(
         var made = 0
         var imported = 0
         for (playlist in playlists) {
+            val credits = HashMap<String, ImportedCredits>()
             val songs = withContext(Dispatchers.Default) {
                 val picked = LinkedHashMap<String, Song>()
                 for (song in playlist.songs) {
@@ -267,7 +284,9 @@ class PlaylistImporter(
                                     ?.let(openSubsonic::isCoverOfServer) != true ->
                             null.also { skip(ImportSkip.NOT_ON_SERVER) }
 
-                        else -> song.toModel(origin)
+                        else -> song.toModel(origin).also { model ->
+                            song.credits(origin)?.let { credits[model.id] = it }
+                        }
                     } ?: continue
 
                     if (kept.id in picked)
@@ -279,7 +298,7 @@ class PlaylistImporter(
             }
             if (songs.isEmpty()) continue
 
-            val result = repository.importPlaylist(playlist.name, songs)
+            val result = repository.importPlaylist(playlist.name, songs, credits)
             val byId = songs.associateBy { it.id }
             result.leftOut.forEach {
                 skip(if (byId[it]?.origin == Origin.LOCAL) ImportSkip.NOT_ON_DEVICE else ImportSkip.ID_TAKEN)
@@ -311,7 +330,30 @@ class PlaylistImporter(
         name = title,
         thumbnail = thumbnail?.toUri(),
         duration = duration,
+        albumPosition = albumPosition,
     )
+
+    /**
+     * The album and artists the file gives the song, `null` for none. The artists' names pair
+     * with their ids by place; when their counts differ (a name holding the separator) the
+     * artists are stored without names, their next fetch names them.
+     */
+    private fun PlaylistSong.credits(origin: Origin): ImportedCredits? {
+        val album = albumId?.let { Album(it, origin, name = albumName, year = albumYear) }
+        val names = artists?.split(PlaylistCsvColumns.ARTIST_SEPARATOR)?.map(String::trim)
+        val paired = names?.size == artistIds.size
+        val credited = artistIds.mapIndexed { index, artistId ->
+            Artist(
+                artistId,
+                origin,
+                name = if (paired) names[index].takeIf(String::isNotEmpty) else null,
+            )
+        }
+        return if (album == null && credited.isEmpty())
+            null
+        else
+            ImportedCredits(album, credited)
+    }
 
     private companion object {
         const val TAG = "PlaylistImport"
@@ -392,12 +434,21 @@ fun importMessage(resources: Resources, report: PlaylistImportReport): Message {
 
 /** What to tell the user when an import failed with [error]. */
 fun importFailedMessage(resources: Resources, error: Throwable): Message {
-    val text = if (error is MissingColumnsException)
-        resources.getString(
-            R.string.error_import_playlists_missing_columns,
-            error.columns.joinToString(", "),
-        )
-    else
+    val text = if (error is InvalidHeaderException) {
+        val lines = mutableListOf(resources.getString(R.string.error_import_playlists_bad_columns))
+        fun add(columns: List<String>, line: Int) {
+            // A blank name would show as nothing at all
+            if (columns.isNotEmpty())
+                lines += resources.getString(
+                    line,
+                    columns.joinToString(", ") { it.ifBlank { "\"\"" } },
+                )
+        }
+        add(error.missing, R.string.error_import_columns_missing)
+        add(error.repeated, R.string.error_import_columns_repeated)
+        add(error.unknown, R.string.error_import_columns_unknown)
+        lines.joinToString("\n")
+    } else
         resources.getString(
             R.string.error_import_playlists,
             error.localizedMessage ?: resources.getString(R.string.error_reason_unknown),

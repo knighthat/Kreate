@@ -32,6 +32,8 @@ import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.database.model.SourceArtist
+import me.knighthat.kreate3.database.model.SourceSong
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
@@ -59,6 +61,25 @@ internal class SongRepositoryImpl(
 
     override fun artistsOf(songId: String): Flow<List<Artist>> =
         songDao.artistsOf(songId).map { it.map(ArtistEntity::toModel) }
+
+    override suspend fun sourceValues(songIds: List<String>): List<SourceSong> {
+        // Far below SQLite's limit of variables in a query, whatever version the device has
+        val chunks = songIds.distinct().chunked(SOURCE_VALUES_CHUNK)
+        val found = chunks.flatMap { songDao.sourceValues(it) }.associateBy { it.song.id }
+        val artists = chunks.flatMap { songDao.sourceArtists(it) }
+            .groupBy({ it.songId }) { SourceArtist(it.artistId, it.artistName) }
+        return songIds.mapNotNull { id ->
+            found[id]?.let {
+                SourceSong(
+                    song = it.song.toModel(),
+                    artists = artists[id].orEmpty(),
+                    albumName = it.albumName,
+                    albumYear = it.albumYear,
+                    albumThumbnail = it.albumThumbnail,
+                )
+            }
+        }
+    }
 
     override suspend fun linkArtist(songId: String, artistId: String) =
         songDao.link(SongArtistMapEntity(songId, artistId))
@@ -106,3 +127,6 @@ internal class SongRepositoryImpl(
         }
     }
 }
+
+/** How many ids [SongRepositoryImpl.sourceValues] asks for in one query. */
+private const val SOURCE_VALUES_CHUNK = 500

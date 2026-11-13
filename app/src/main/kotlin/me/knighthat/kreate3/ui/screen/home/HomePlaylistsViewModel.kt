@@ -167,6 +167,9 @@ class HomePlaylistsViewModel internal constructor(
      */
     fun importFile(uri: Uri) {
         scope.launch {
+            // The file picker just closed: the screen may not show messages again yet, and a
+            // quick answer (a wrong file, a small import) would go to the system or be dropped
+            notifier.awaitScreen()
             val playlists = try {
                 importer.readCsv(uri)
             } catch (e: CancellationException) {

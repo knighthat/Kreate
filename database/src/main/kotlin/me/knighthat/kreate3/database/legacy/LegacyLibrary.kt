@@ -222,7 +222,8 @@ internal fun SQLiteConnection.readLegacyLibrary(): LegacyLibrary {
         ).mapNotNull {
             LegacyAlbum(
                 id = it.text("id") ?: return@mapNotNull null,
-                title = it.text("title"),
+                // The old app stored a missing title as the text "null"
+                title = it.text("title")?.takeUnless { title -> title == "null" },
                 thumbnail = it.text("thumbnail_url"),
                 year = it.text("year"),
                 artists = it.text("artists"),

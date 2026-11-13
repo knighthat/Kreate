@@ -23,6 +23,7 @@ import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.database.model.SourceSong
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.Origin
 
@@ -52,6 +53,12 @@ interface SongRepository {
     suspend fun delete(songId: String)
 
     fun artistsOf(songId: String): Flow<List<Artist>>
+
+    /**
+     * The stored songs of [songIds] as their sources gave them, without any user's overrides, in
+     * the order of [songIds]. Ids not stored are left out.
+     */
+    suspend fun sourceValues(songIds: List<String>): List<SourceSong>
 
     /**
      * Credits the artist on the song. Both must be saved first.

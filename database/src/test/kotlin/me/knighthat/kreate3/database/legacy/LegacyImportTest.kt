@@ -256,6 +256,20 @@ internal class LegacyImportTest {
     }
 
     @Test
+    fun albumTitledNullHasNoName() {
+        val file = legacy("data.db") {
+            execSQL("INSERT INTO albums VALUES ('al', 'null', NULL, NULL, NULL, NULL, NULL, NULL, 1), ('al2', 'Null', NULL, NULL, NULL, NULL, NULL, NULL, 1)")
+        }
+
+        import(LegacyProfile("default", "Default", file))
+
+        assertEquals(
+            listOf(listOf("al", null), listOf("al2", "Null")),
+            rows("SELECT id, name FROM album ORDER BY id"),
+        )
+    }
+
+    @Test
     fun namesAPlaylistThatHasNoName() {
         val file = legacy("data.db") {
             execSQL("INSERT INTO playlists VALUES ('Kept', NULL, 1, 0, 1, 0, 0), ('modified:', NULL, 1, 0, 2, 0, 0)")

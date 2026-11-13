@@ -36,6 +36,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   playlist + its `covers` JSON, for `PlaylistRepository.all`).
 - model/ — public models mirroring entities/views (`Origin`/`LyricsSync` now come from `:model`);
   `ReleaseType.kt` (album/EP/single, read from the source, never stored);
+  `SourceSong.kt` (a song with its credited artists' ids and shared names in credit order
+  (`SourceArtist`) and its album's name, year and cover, no user overrides:
+  `SongRepository.sourceValues(ids)`, `SongDao.sourceValues`/`sourceArtists`, for playlist export);
   `LocalSong.kt` (+`LocalAlbum`/`LocalArtist` scan results), `QueuedSong.kt` (a saved-queue row; not
   the playback `QueuedSong` in `DataSourceResolver.kt`), `PeriodPlay.kt` (`PlayPeriod`,
   `PeriodPlay` = a play
@@ -62,8 +65,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   `updateDownloaders`),
   `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
   `RemoteItem`; liked-song sync from servers), `PlaylistImport`
-  (`ImportedPlaylist`; `importPlaylist` makes one local playlist from a file's songs in one
-  transaction, stored songs kept as they are, new remote ones stored from the file without artists
-  and with a bare `user_song` row, `storedSongs(origin)` for matching). Helpers: `Mappers.kt`
+  (`ImportedPlaylist`, `ImportedCredits`; `importPlaylist` makes one local playlist from a file's
+  songs in one transaction, stored songs kept as they are, new remote ones stored from the file
+  with its album/artists (`ImportedCredits`, rows inserted only when missing) and a bare
+  `user_song` row, `storedSongs(origin)` for matching). Helpers: `Mappers.kt`
   (entity↔model),
   `OriginFilter.kt` (SQL WHERE by origins), `SearchPattern.kt` (escaped LIKE).

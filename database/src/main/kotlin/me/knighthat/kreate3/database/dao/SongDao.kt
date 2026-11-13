@@ -18,8 +18,11 @@
 
 package me.knighthat.kreate3.database.dao
 
+import android.net.Uri
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -69,6 +72,33 @@ internal interface SongDao {
     )
     fun artistsOf(songId: String): Flow<List<ArtistEntity>>
 
+    /** The songs of [ids] with their album's shared values, in no defined order. */
+    @Query(
+        """
+        SELECT
+            s.*,
+            al.name AS album_name,
+            al.year AS album_year,
+            al.thumbnail AS album_thumbnail
+        FROM song s
+        LEFT JOIN album al ON al.id = s.album_id
+        WHERE s.id IN (:ids)
+        """,
+    )
+    suspend fun sourceValues(ids: List<String>): List<SourceSongRow>
+
+    /** The artists credited on the songs of [ids] with their shared names, in credit order. */
+    @Query(
+        """
+        SELECT m.song_id, ar.id AS artist_id, ar.name AS artist_name
+        FROM song_artist_map m
+        JOIN artist ar ON ar.id = m.artist_id
+        WHERE m.song_id IN (:ids)
+        ORDER BY m.rowid
+        """,
+    )
+    suspend fun sourceArtists(ids: List<String>): List<SourceArtistRow>
+
     /**
      * Inserts or updates in place. Never replaces, a replace would delete the row first
      * and cascade to everything that points at it.
@@ -85,3 +115,25 @@ internal interface SongDao {
     @Query("DELETE FROM song WHERE id = :id")
     suspend fun delete(id: String)
 }
+
+/** A song with its album's shared name, year and cover. */
+internal data class SourceSongRow(
+    @Embedded
+    val song: SongEntity,
+    @ColumnInfo(name = "album_name")
+    val albumName: String?,
+    @ColumnInfo(name = "album_year")
+    val albumYear: Int?,
+    @ColumnInfo(name = "album_thumbnail")
+    val albumThumbnail: Uri?,
+)
+
+/** An artist credited on a song, with its shared name. */
+internal data class SourceArtistRow(
+    @ColumnInfo(name = "song_id")
+    val songId: String,
+    @ColumnInfo(name = "artist_id")
+    val artistId: String,
+    @ColumnInfo(name = "artist_name")
+    val artistName: String?,
+)

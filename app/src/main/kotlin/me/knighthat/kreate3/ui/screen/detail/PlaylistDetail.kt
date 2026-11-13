@@ -120,6 +120,7 @@ import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberPlaylistExport
 import me.knighthat.kreate3.ui.component.songThumbnailModels
 
 /** Share of the screen's width the framed cover takes. */
@@ -527,8 +528,8 @@ internal fun List<MediaItem>.songCovers(providers: Providers): List<Any> =
 
 /**
  * The sheet of a playlist's ⋮ button: Play next, Add to queue and Share as buttons, then for a
- * playlist of the app the switches that move or take out its songs as rows, at most one on, and
- * a row that deletes the playlist.
+ * playlist of the app the switches that move or take out its songs as rows, at most one on, a
+ * row that exports the playlist to a file and one that deletes it.
  *
  * @param onAction runs a [QueueAction] with the playlist's songs, `null` while there are none
  * @param share gives a link to the playlist, `null` turns Share off
@@ -537,6 +538,9 @@ internal fun List<MediaItem>.songCovers(providers: Providers): List<Any> =
  * @param canEdit whether the switches can be used
  * @param canRemove whether songs can be taken out, `false` for a monthly playlist: no such row
  * @param onDelete asks to delete the playlist, `null` for a playlist that can't be: no row
+ * @param exportId the database id of the app's playlist to export to a CSV file, `null` for no
+ * row (playlists of a source aren't exported); the sheet stays with a spinner on the row while
+ * its songs are fetched and closes once the file is written or given up
  * @param isSaved whether the playlist is in the account's library, `null` hides the button
  * @param canDelete whether the user may delete it, the row is grayed out otherwise
  * @param busy for a playlist of a server, whose edits are sent when the user turns the mode off:
@@ -561,6 +565,7 @@ fun PlaylistMenu(
     canDelete: Boolean = true,
     onModeChange: (CoverEditMode) -> Unit = {},
     busy: Boolean? = null,
+    exportId: Long? = null,
 ) {
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
@@ -597,62 +602,92 @@ fun PlaylistMenu(
                     // A link of the server can take a moment, the sheet stays until it is there
                 ) { linkShare.share { close {} } }
         },
-        entries = if (mode == null) null else { close ->
-            val unlocked = mode == CoverEditMode.REORDER
-            val removing = mode == CoverEditMode.REMOVE
-            val waiting = busy == true
-            if (onEdit != null)
+        entries = if (mode == null && exportId == null) null else { close ->
+            if (mode != null)
+                PlaylistEditEntries(
+                    close, mode, canEdit, canRemove, onEdit, onModeChange, busy,
+                )
+            if (exportId != null) {
+                val exporting = rememberPlaylistExport(
+                    playlistId = exportId,
+                    name = name,
+                    onDone = { close {} },
+                )
                 ConfigEntry(
-                    icon = R.drawable.edit,
-                    label = stringResource(R.string.semantic_edit_playlist),
-                    enabled = !waiting,
-                ) { close { onEdit() } }
-            // The row tapped last, it shows the spinner while the page waits
-            var tapped by remember { mutableStateOf<CoverEditMode?>(null) }
-            if (busy != null) {
-                // A mode on or off is the end of what the tap asked for
-                var shown by remember { mutableStateOf(mode) }
-                LaunchedEffect(mode) {
-                    if (shown != mode) close {}
-                    shown = mode
-                }
+                    icon = R.drawable.upload,
+                    label = stringResource(R.string.semantic_export_playlist),
+                    enabled = busy != true,
+                    loading = exporting.loading,
+                ) { exporting.start() }
             }
-            ConfigEntry(
-                icon = if (unlocked) R.drawable.lock_open else R.drawable.lock,
-                label = if (unlocked)
-                    stringResource(R.string.semantic_lock_the_order)
-                else
-                    stringResource(R.string.semantic_unlock_to_move_songs),
-                enabled = canEdit && !waiting,
-                loading = waiting && tapped == CoverEditMode.REORDER,
-            ) {
-                val target = if (unlocked) CoverEditMode.NONE else CoverEditMode.REORDER
-                tapped = CoverEditMode.REORDER
-                // The edits of a server's playlist are sent or fetched first, the sheet waits
-                if (busy != null) onModeChange(target) else close { onModeChange(target) }
-            }
-            if (canRemove)
-                ConfigEntry(
-                    icon = R.drawable.playlist_remove,
-                    label = if (removing)
-                        stringResource(R.string.semantic_stop_removing_songs)
-                    else
-                        stringResource(R.string.semantic_remove_songs),
-                    enabled = canEdit && !waiting,
-                    loading = waiting && tapped == CoverEditMode.REMOVE,
-                ) {
-                    val target = if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE
-                    tapped = CoverEditMode.REMOVE
-                    if (busy != null) onModeChange(target) else close { onModeChange(target) }
-                }
-            if (onDelete != null)
+            if (mode != null && onDelete != null)
                 ConfigEntry(
                     icon = R.drawable.delete,
                     label = stringResource(R.string.semantic_delete_playlist),
-                    enabled = canDelete && !waiting,
+                    enabled = canDelete && busy != true,
                 ) { close { onDelete() } }
         },
     )
+}
+
+/** The rows of [PlaylistMenu] that edit the playlist, see its parameters. */
+@Composable
+private fun PlaylistEditEntries(
+    close: (then: () -> Unit) -> Unit,
+    mode: CoverEditMode,
+    canEdit: Boolean,
+    canRemove: Boolean,
+    onEdit: (() -> Unit)?,
+    onModeChange: (CoverEditMode) -> Unit,
+    busy: Boolean?,
+) {
+    val unlocked = mode == CoverEditMode.REORDER
+    val removing = mode == CoverEditMode.REMOVE
+    val waiting = busy == true
+    if (onEdit != null)
+        ConfigEntry(
+            icon = R.drawable.edit,
+            label = stringResource(R.string.semantic_edit_playlist),
+            enabled = !waiting,
+        ) { close { onEdit() } }
+    // The row tapped last, it shows the spinner while the page waits
+    var tapped by remember { mutableStateOf<CoverEditMode?>(null) }
+    if (busy != null) {
+        // A mode on or off is the end of what the tap asked for
+        var shown by remember { mutableStateOf(mode) }
+        LaunchedEffect(mode) {
+            if (shown != mode) close {}
+            shown = mode
+        }
+    }
+    ConfigEntry(
+        icon = if (unlocked) R.drawable.lock_open else R.drawable.lock,
+        label = if (unlocked)
+            stringResource(R.string.semantic_lock_the_order)
+        else
+            stringResource(R.string.semantic_unlock_to_move_songs),
+        enabled = canEdit && !waiting,
+        loading = waiting && tapped == CoverEditMode.REORDER,
+    ) {
+        val target = if (unlocked) CoverEditMode.NONE else CoverEditMode.REORDER
+        tapped = CoverEditMode.REORDER
+        // The edits of a server's playlist are sent or fetched first, the sheet waits
+        if (busy != null) onModeChange(target) else close { onModeChange(target) }
+    }
+    if (canRemove)
+        ConfigEntry(
+            icon = R.drawable.playlist_remove,
+            label = if (removing)
+                stringResource(R.string.semantic_stop_removing_songs)
+            else
+                stringResource(R.string.semantic_remove_songs),
+            enabled = canEdit && !waiting,
+            loading = waiting && tapped == CoverEditMode.REMOVE,
+        ) {
+            val target = if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE
+            tapped = CoverEditMode.REMOVE
+            if (busy != null) onModeChange(target) else close { onModeChange(target) }
+        }
 }
 
 /** What a playlist with no songs shows in place of them. */

@@ -152,8 +152,10 @@ ui/screen/
   see-through, then the blurred cover under a scrim with name + count · length once the name scrolls
   under; pages wrapped in `CoverTheme` (picture, else first song cover); the app's playlist counts
   every song again when its paging refreshes (`totals`). `PlaylistMenu`: Play next / Add to queue /
-  Share buttons, move / remove switches (remove not for monthly playlists) and Delete playlist (asks
-  first, monthly ones too) as rows for the app's playlists. `EmptyPlaylist`. Used by
+  Share buttons, move / remove switches (remove not for monthly playlists), Export playlist (the
+  app's
+  playlists only, `exportId`, spinner while its songs load) and Delete playlist (asks first, monthly
+  ones too) as rows for the app's playlists. `EmptyPlaylist`. Used by
   the three playlist screens). OpenSubsonic playlists reorder and remove songs on the page
   (`arranging` in the view
   model) and send the edits once, on turning the mode off or from the leave dialog

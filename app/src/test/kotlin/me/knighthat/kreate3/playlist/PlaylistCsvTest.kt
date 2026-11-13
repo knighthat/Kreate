@@ -65,26 +65,92 @@ class PlaylistCsvTest {
     fun newFileTakesTheOriginColumn() {
         val rows = parse(
             """
-            PlaylistBrowseId,PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl,Origin
-            ,Mix,abc,One,A,10,,OPEN_SUBSONIC
-            ,Mix,123,Two,B,10,,youtube
-            ,Mix,x,Three,C,10,,LOCAL
-            ,Mix,y,Four,D,10,,SPOTIFY
-            ,Mix,456,Five,E,10,,
+            playlist_remote_id,playlist_name,song_id,name,artists,artist_ids,album_id,album_name,album_year,album_position,duration,thumbnail,origin
+            ,Mix,abc,One,"A, B",a1|a2,al1,Album,2020,3,10,https://example.com/a.jpg,OPEN_SUBSONIC
+            ,Mix,123,Two,B,,,,0,0,10,,youtube
+            ,Mix,x,Three,C,,,,,,10,,LOCAL
+            ,Mix,y,Four,D,,,,,,10,,SPOTIFY
+            ,Mix,456,Five,E,,,,,,10,,
             """.trimIndent()
         )
 
+        // No origin or an unknown one: null, the import skips the song
         assertEquals(
-            listOf(Origin.OPEN_SUBSONIC, Origin.YOUTUBE, Origin.LOCAL, null, Origin.LOCAL),
+            listOf(Origin.OPEN_SUBSONIC, Origin.YOUTUBE, Origin.LOCAL, null, null),
             rows.map { it.song.origin },
+        )
+        assertEquals(
+            PlaylistFileRow(
+                "Mix",
+                PlaylistSong(
+                    id = "abc",
+                    origin = Origin.OPEN_SUBSONIC,
+                    title = "One",
+                    artists = "A, B",
+                    duration = 10.seconds,
+                    thumbnail = "https://example.com/a.jpg",
+                    artistIds = listOf("a1", "a2"),
+                    albumId = "al1",
+                    albumName = "Album",
+                    albumYear = 2020,
+                    albumPosition = 3,
+                ),
+            ),
+            rows[0],
+        )
+        // 0 is unknown
+        assertNull(rows[1].song.albumYear)
+        assertNull(rows[1].song.albumPosition)
+        assertEquals(emptyList<String>(), rows[1].song.artistIds)
+    }
+
+    @Test
+    fun missingRepeatedAndUnknownColumnsFail() {
+        val error = assertThrows(InvalidHeaderException::class.java) {
+            parse(
+                "playlist_remote_id,playlist_name,song_id,NAME,name,artists,artist_ids," +
+                        "album_id,album_name,album_year,duration,thumbnail,origin,Extra,\n"
+            )
+        }
+
+        assertEquals(listOf("album_position"), error.missing)
+        assertEquals(listOf("NAME"), error.repeated)
+        assertEquals(listOf("Extra", ""), error.unknown)
+    }
+
+    @Test
+    fun oldAppColumnsWithAnOriginFail() {
+        val error = assertThrows(InvalidHeaderException::class.java) {
+            parse(
+                "PlaylistBrowseId,PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl," +
+                        "Origin\n,Mix,123,One,A,10,,YOUTUBE\n"
+            )
+        }
+
+        assertEquals(emptyList<String>(), error.missing)
+        assertEquals(listOf("Origin"), error.unknown)
+    }
+
+    @Test
+    fun missingNewHeadersAreNamed() {
+        val error = assertThrows(InvalidHeaderException::class.java) {
+            parse("playlist_name,song_id,name,origin\nList,id1,One,LOCAL\n")
+        }
+
+        assertEquals(
+            listOf(
+                "playlist_remote_id", "artists", "artist_ids", "album_id", "album_name",
+                "album_year", "album_position", "duration", "thumbnail",
+            ),
+            error.missing,
         )
     }
 
     @Test
     fun columnsComeInAnyOrderAndCase() {
         val rows = parse(
-            "﻿title,Duration,ThumbnailUrl,MEDIAID,Artists,PlaylistName,Extra\n" +
-                    "One,1:05,,id1,,List,ignored\n"
+            "﻿title,Duration,ThumbnailUrl,MEDIAID,Artists,PlaylistName,playlistbrowseid\n" +
+                    "One,1:05,,id1,,List,\n"
         )
 
         val song = rows.single().song
@@ -115,9 +181,9 @@ class PlaylistCsvTest {
     @Test
     fun quotedFieldsKeepCommasQuotesAndLineBreaks() {
         val rows = parse(
-            "PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl\r\n" +
-                    "\"Rock, Roll\",id1,\"He said \"\"hi\"\"\",\"A, B\",10,\r\n" +
-                    "List,id2,\"Two\nlines\",,10,\r\n"
+            "PlaylistBrowseId,PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl\r\n" +
+                    ",\"Rock, Roll\",id1,\"He said \"\"hi\"\"\",\"A, B\",10,\r\n" +
+                    ",List,id2,\"Two\nlines\",,10,\r\n"
         )
 
         assertEquals(2, rows.size)
@@ -130,7 +196,7 @@ class PlaylistCsvTest {
     @Test
     fun emptyLinesAndShortRowsAreFine() {
         val rows = parse(
-            "PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl\n\n,id1\n\n"
+            "PlaylistBrowseId,PlaylistName,MediaId,Title,Artists,Duration,ThumbnailUrl\n\n,,id1\n\n"
         )
 
         val row = rows.single()
@@ -141,18 +207,21 @@ class PlaylistCsvTest {
 
     @Test
     fun missingHeadersAreNamed() {
-        val error = assertThrows(MissingColumnsException::class.java) {
+        val error = assertThrows(InvalidHeaderException::class.java) {
             parse("PlaylistName,MediaId,Title\nList,id1,One\n")
         }
 
-        assertEquals(listOf("Artists", "Duration", "ThumbnailUrl"), error.columns)
+        assertEquals(
+            listOf("PlaylistBrowseId", "Artists", "Duration", "ThumbnailUrl"),
+            error.missing,
+        )
     }
 
     @Test
     fun emptyFileHasNoHeaders() {
-        val error = assertThrows(MissingColumnsException::class.java) { parse("") }
+        val error = assertThrows(InvalidHeaderException::class.java) { parse("") }
 
-        assertEquals(PlaylistCsvColumns.REQUIRED, error.columns)
+        assertEquals(PlaylistCsvColumns.HEADER, error.missing)
     }
 
     @Test

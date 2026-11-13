@@ -66,6 +66,11 @@ ui/component/ (shared composables; each file that draws something ends with its 
   (album, artist), Go to
   artist (s) (album), Edit (playlists too: the app's, or the source's `EditOnlinePlaylist`), Delete
   playlist (local only, asks)).
+- `PlaylistExport.kt` — `rememberPlaylistExport(playlistId, name, onDone)` → `PlaylistExport`
+  (`loading`, `start`): an app playlist to CSV; fetches the songs (`PlaylistExportSongs`), dialog
+  with a checkbox per origin (all checked, an origin without songs grayed out and unchecked), SAF
+  `CreateDocument` (type from the extension, so the name keeps it), writes on the app scope,
+  snackbar. Used by `CollectionMenu` (app playlists) and the app playlist page's menu.
 - `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
   `add` on the global scope with an Added/Already in/Couldn't message; a song not in the
   `song` table is stored first (`SongStore`). The song's own source's playlists it may add to

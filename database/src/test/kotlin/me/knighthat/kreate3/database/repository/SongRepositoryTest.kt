@@ -18,11 +18,16 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
+import me.knighthat.kreate3.database.entity.AlbumEntity
+import me.knighthat.kreate3.database.entity.UserArtistEntity
+import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.database.model.SourceArtist
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.model.Origin
@@ -171,6 +176,56 @@ internal class SongRepositoryTest : DatabaseTest() {
         repository.unlinkArtist("s1", "r2")
 
         assertEquals(listOf("r1"), repository.artistsOf("s1").first().map { it.id })
+    }
+
+    @Test
+    fun sourceValuesSkipTheUsersOverridesAndFollowTheGivenOrder() = runBlocking {
+        addUser()
+        addArtist("a1", name = "Shared artist")
+        addArtist("a0", name = null)
+        database.albumDao().upsert(
+            AlbumEntity(
+                "al1",
+                Origin.LOCAL,
+                "Album",
+                thumbnail = Uri.parse("https://example.com/album.jpg"),
+                year = 2020,
+                createdAt = EPOCH,
+                updatedAt = EPOCH,
+            )
+        )
+        // Credited a1 first, though a0 sorts before it
+        addSong("s1", name = "Shared title", albumId = "al1", artists = listOf("a1", "a0"))
+        addSong("s2", name = "Second")
+        database.userSongDao().upsert(
+            UserSongEntity(
+                userId = USER,
+                songId = "s1",
+                name = "My title",
+                artists = listOf("My artist"),
+                thumbnail = Uri.parse("file:///mine.jpg"),
+                createdAt = EPOCH,
+                updatedAt = EPOCH,
+            )
+        )
+        database.userArtistDao().upsert(
+            UserArtistEntity(USER, "a1", name = "My name", createdAt = EPOCH, updatedAt = EPOCH)
+        )
+
+        val found = repository.sourceValues(listOf("s2", "missing", "s1"))
+
+        assertEquals(listOf("s2", "s1"), found.map { it.song.id })
+        val first = found.last()
+        assertEquals("Shared title", first.song.name)
+        assertEquals(
+            listOf(SourceArtist("a1", "Shared artist"), SourceArtist("a0", null)),
+            first.artists
+        )
+        assertEquals("Album", first.albumName)
+        assertEquals(2020, first.albumYear)
+        assertEquals("https://example.com/album.jpg", first.thumbnail.toString())
+        assertEquals(emptyList<SourceArtist>(), found.first().artists)
+        assertEquals(null, found.first().albumName)
     }
 
     private companion object {
