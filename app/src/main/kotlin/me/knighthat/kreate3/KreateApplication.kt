@@ -64,6 +64,9 @@ import me.knighthat.kreate3.presence.presenceModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.recognition.ShazamSongRecognizer
+import me.knighthat.kreate3.recognition.SongRecognizer
+import me.knighthat.kreate3.shazam.shazamModule
 import me.knighthat.kreate3.source.ArtistPictures
 import me.knighthat.kreate3.source.CoverFiles
 import me.knighthat.kreate3.source.DeviceReactions
@@ -248,11 +251,14 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     // Recordings and their releases, for the song details page
                     single { MusicBrainz(get(), get()) }
                     single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }
+                    // Hold the Songs tab to name a song, see SongRecognitionViewModel
+                    single<SongRecognizer> { ShazamSongRecognizer(androidContext(), get()) }
                 },
                 databaseModule,
                 preferencesModule,
                 providerModule,
                 lyricsModule,
+                shazamModule,
                 networkModule,
                 presenceModule(setupCompletedFile().exists()),
                 playbackModule,

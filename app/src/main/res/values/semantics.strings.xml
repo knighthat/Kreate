@@ -102,4 +102,6 @@
     <string name="semantic_unfollow">Unfollow</string>
     <string name="semantic_app_crashed">Kreate stopped</string>
     <string name="semantic_selected">Selected</string>
+    <!-- A button that listens to the song playing nearby while held -->
+    <string name="semantic_recognize_song">Hold to recognize the song</string>
 </resources>

@@ -41,6 +41,8 @@
     <string name="action_create">Create</string>
     <string name="action_try_again">Try again</string>
     <string name="action_retry">Retry</string>
+    <string name="action_show_matches">Show matches</string>
+    <string name="action_view_on">View on %1$s</string>
     <string name="action_undo">Undo</string>
     <string name="action_reload">Reload</string>
     <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
@@ -56,6 +58,7 @@
     <string name="action_reset">Reset</string>
     <string name="action_choose_image">Choose image</string>
     <string name="menu_edit">Edit</string>
+    <string name="menu_recognize_song">Recognize song</string>
     <string name="menu_remove_imported_lyrics">Remove imported lyrics</string>
     <string name="action_use_original">Use original</string>
     <string name="action_clear">Clear</string>

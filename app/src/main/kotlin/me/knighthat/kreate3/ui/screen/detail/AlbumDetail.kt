@@ -658,7 +658,7 @@ fun AlbumMenu(
             ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
             if (onOpenArtist != null)
                 ConfigEntry(
-                    R.drawable.artist,
+                    R.drawable.mic,
                     pluralStringResource(R.plurals.menu_go_to_artist, 1)
                         .replaceFirstChar { it.uppercase() },
                 ) { close(onOpenArtist) }

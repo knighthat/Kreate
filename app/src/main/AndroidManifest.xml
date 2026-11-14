@@ -23,6 +23,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Naming the song playing around the phone, only while a hold listens -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- Keeps playing with the app in the background -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

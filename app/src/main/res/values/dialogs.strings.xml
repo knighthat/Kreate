@@ -121,4 +121,15 @@
     <string name="dialog_body_old_app_downloads">Found %1$s of your library downloaded in the old app. Download again?</string>
     <!-- %1$s is Discord -->
     <string name="dialog_body_sign_out_of_discord">Your %1$s profile stops showing what you play. You can sign in again any time.</string>
+    <!-- Naming the song playing nearby from what the microphone heard -->
+    <string name="dialog_title_recognize_song">Recognize song</string>
+    <string name="dialog_body_recognize_song_identifying">Identifying the song…</string>
+    <string name="dialog_body_recognize_song_no_match">No match found. Try again closer to the music</string>
+    <string name="dialog_body_recognize_song_not_on_youtube">Couldn\'t find it on YouTube</string>
+    <string name="dialog_body_recognize_song_failed">Couldn\'t look up the song, check the connection</string>
+    <!-- Under a big microphone button that listens while held -->
+    <string name="dialog_body_recognize_song_hold">Hold the button while the song plays for at least %1$s</string>
+    <string name="dialog_body_recognize_song_listening">Listening…</string>
+    <!-- %1$s is a counted plural, e.g. "8 seconds". The button was let go too early -->
+    <string name="dialog_body_recognize_song_too_short">Too short to recognize, hold for at least %1$s</string>
 </resources>

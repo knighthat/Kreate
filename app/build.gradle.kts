@@ -250,6 +250,7 @@ dependencies {
     implementation(project(":provider"))
     implementation(project(":lyrics"))
     implementation(project(":discord"))
+    implementation(project(":shazam"))
 
     // Core
     implementation(libs.androidx.core.ktx)

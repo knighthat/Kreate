@@ -129,7 +129,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `enabled`, `indicatorTop`); used by `HomeScaffold`, the live detail screens
   (`LiveDetailViewModel.RefreshOnPull`), `YouTubeMoreScreen` and `SearchResultsScreen`.
 - `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
-  and the search results tabs; drops labels under `LocalIconOnly`.
+  and the search results tabs; drops labels under `LocalIconOnly`. `itemModifier`/`iconOverlay`
+  per tab (the home bar's Songs hold, see `recognition/`).
 - `Messages.kt` — `LocalNotifier`/`LocalMessageHost` (provided in `KreateApp`), `ShowMessages` (
   collects only while STARTED, read from `currentStateFlow` — not repeatOnLifecycle, lint flags it
   since `KreateActivity` calls setContent in onStart; newest replaces current), `MessageHost` (the

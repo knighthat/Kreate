@@ -211,7 +211,7 @@ fun ArtistDetailScaffold(
                     minCachedSize = pictureSide,
                     placeholder = {
                         Icon(
-                            painterResource(R.drawable.artist),
+                            painterResource(R.drawable.mic),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(PLACEHOLDER_SIZE),

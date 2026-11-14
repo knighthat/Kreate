@@ -111,7 +111,8 @@ ui/screen/
 - home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'; the
   toolbar's `ConfigButton` opens the tab's `sheet`),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
-  all/shuffle/play next/add to queue + show disliked, cached only, downloaded only (`SongFilters`,
+  all/shuffle/play next/add to queue + a Recognize song entry (`onRecognize`, the dialog from
+  `KreateApp`) + show disliked, cached only, downloaded only (`SongFilters`,
   cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
   `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist; list entries
@@ -266,6 +267,23 @@ ui/screen/
   `BUTTON_BAR_HEIGHT`) shows each page's buttons, fading with the pager; queue list state and mode
   are hoisted into `FullPlayer`; the mode resets to NONE whenever the pager's current page leaves
   the queue (`.claude/rules/player.md`: leaving a page resets its buttons).
+- recognition/ — song recognition: `SongRecognitionViewModel.kt`
+  (`RecognitionState` Idle/Listening/Identifying/Found/Failed/Ready; `listen`/`stop` from a hold,
+  under `MIN_LISTEN` 8 s too short (snackbar from the tab, red text in the dialog), `MAX_LISTEN`
+  16 s stops on its own; `retry` turns Failed or Found into the hold button; `open` shows the hold
+  button from the Songs tab sheet's Recognize song entry),
+  `SongRecognition.kt` (`rememberListen`: listens, or asks for RECORD_AUDIO; a denial at the prompt
+  posts a snackbar, one without a prompt opens the app's settings; `rememberHoldToListen`: long
+  press + haptic, eats the release so the tab
+  isn't tapped; `ListenOverlay`: persistent `PlainTooltip` bubble above the Songs tab's icon with
+  a small `ListenRing`; a big one in the dialog; the ring draws the `ZONES` red 0–8 s, yellow
+  8–12 s, green 12–16 s, dim until reached; `SongRecognitionDialog`, closable only once a result is
+  in; Found shows the explicit badge and Play (`play`: first playable YouTube song for
+  `searchQuery`, played like a search-result tap per `SEARCH_SONGS_TAP_RADIO`, spinner while
+  searching, `notFound` line when none), Show matches (closes, opens YouTube song search results of
+  `searchQuery`), View on Shazam (`rememberOpenLink`, stays open), Retry (to the hold button),
+  Close). Wired in
+  `KreateApp` through `TabBar`'s `itemModifier`/`iconOverlay`.
 - search/ — `SearchScreen.kt` + `SearchViewModel.kt` (input, history, YouTube/server suggestions;
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.

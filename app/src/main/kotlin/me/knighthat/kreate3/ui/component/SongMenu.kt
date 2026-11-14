@@ -724,7 +724,7 @@ private fun SongMenuActions(
         MenuRow(R.drawable.album, stringResource(R.string.menu_go_to_album), enabled = false) {}
     if (navigator != null && (artists.isNotEmpty() || lookup.needed))
         MenuRow(
-            icon = R.drawable.artist,
+            icon = R.drawable.mic,
             label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size.coerceAtLeast(1))
                 .replaceFirstChar { it.uppercase() },
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
@@ -756,7 +756,7 @@ private fun SongMenuActions(
         }
     else if (navigator != null && noArtist)
         MenuRow(
-            icon = R.drawable.artist,
+            icon = R.drawable.mic,
             label = pluralStringResource(R.plurals.menu_go_to_artist, 1)
                 .replaceFirstChar { it.uppercase() },
             enabled = false,
@@ -827,7 +827,7 @@ internal fun ArtistPicker(
         )
     }
     artists.forEach { artist ->
-        MenuRow(R.drawable.artist, artist.name ?: stringResource(R.string.status_unknown_artist)) {
+        MenuRow(R.drawable.mic, artist.name ?: stringResource(R.string.status_unknown_artist)) {
             close { openRoute(artist.route) }
         }
     }

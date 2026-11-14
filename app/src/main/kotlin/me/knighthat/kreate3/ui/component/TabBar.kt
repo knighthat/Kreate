@@ -35,12 +35,17 @@ import me.knighthat.kreate3.ui.navigation.Tab
 /**
  * One button for each [Tab], the home screens' bar and the search results' tabs. With
  * [LocalIconOnly], only the icons show.
+ *
+ * @param itemModifier added to a tab's button, like a hold gesture
+ * @param iconOverlay drawn in a tab's icon, for a popup anchored to it
  */
 @Composable
 fun TabBar(
     selected: Tab,
     onSelect: (Tab) -> Unit,
     modifier: Modifier = Modifier,
+    itemModifier: (Tab) -> Modifier = { Modifier },
+    iconOverlay: @Composable (Tab) -> Unit = {},
 ) {
     val iconOnly = LocalIconOnly.current
     NavigationBar(modifier) {
@@ -54,8 +59,10 @@ fun TabBar(
                         painterResource(it.icon),
                         contentDescription = if (iconOnly) stringResource(it.title) else null,
                     )
+                    iconOverlay(it)
                 },
                 label = if (iconOnly) null else ({ Text(stringResource(it.title)) }),
+                modifier = itemModifier(it),
             )
         }
     }

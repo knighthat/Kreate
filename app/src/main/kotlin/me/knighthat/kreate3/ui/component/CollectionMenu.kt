@@ -421,7 +421,7 @@ internal fun CollectionMenuContent(
                 }
             if (navigator != null && kind == CollectionKind.ALBUM)
                 MenuRow(
-                    icon = R.drawable.artist,
+                    icon = R.drawable.mic,
                     label = pluralStringResource(R.plurals.menu_go_to_artist, 1)
                         .replaceFirstChar { it.uppercase() },
                     loading = waiting === FindingArtists,

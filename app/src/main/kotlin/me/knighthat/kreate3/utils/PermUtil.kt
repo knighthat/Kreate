@@ -74,3 +74,9 @@ fun Context.hasNotificationPermission(): Boolean =
  * @return Whether user has granted app permission to read music on the device
  */
 fun Context.hasAudioPermission(): Boolean = isPermissionGranted(AUDIO_PERMISSION)
+
+/**
+ * @return Whether user has granted app permission to listen to the microphone, for naming songs
+ */
+fun Context.hasMicrophonePermission(): Boolean =
+    isPermissionGranted(Manifest.permission.RECORD_AUDIO)

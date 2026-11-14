@@ -184,6 +184,16 @@ notification/
   `notify(id, n)` (no-op without POST_NOTIFICATIONS); `SystemNotifications.post(Message)` (action
   button dropped).
 
+recognition/
+
+- `SongRecognizer.kt` — `SongRecognizer` (start/cancel/`finish(heard)` → `RecognizedSong?`, Koin
+  single) and `RecognizedSong` (title, artist, album, cover, `explicit`, `pageUrl`, `searchQuery`).
+- `ShazamSongRecognizer.kt` — the bound `SongRecognizer`: records the microphone (`AudioRecord`,
+  16 kHz mono 16-bit, 44.1 kHz when 16 kHz isn't offered, 20 s at most) on a thread of its own,
+  `finish` hands the raw PCM and the app's locale to `:shazam`'s `Shazam` (the search query is
+  the `q` of Shazam's YouTube Music search, else title + artist); a microphone that
+  couldn't start throws on `finish`.
+
 download/
 
 - `LegacyDownloads.kt` — songs the old Kreate app had downloaded (Koin single): the id list kept in

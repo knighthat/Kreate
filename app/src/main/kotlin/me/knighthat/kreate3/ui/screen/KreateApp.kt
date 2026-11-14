@@ -187,6 +187,11 @@ import me.knighthat.kreate3.ui.screen.player.PictureInPictureView
 import me.knighthat.kreate3.ui.screen.player.PlayerSheet
 import me.knighthat.kreate3.ui.screen.player.PlayerSheetValue
 import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
+import me.knighthat.kreate3.ui.screen.recognition.ListenOverlay
+import me.knighthat.kreate3.ui.screen.recognition.SongRecognitionDialog
+import me.knighthat.kreate3.ui.screen.recognition.SongRecognitionViewModel
+import me.knighthat.kreate3.ui.screen.recognition.rememberHoldToListen
+import me.knighthat.kreate3.ui.screen.recognition.rememberListen
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
 import me.knighthat.kreate3.ui.screen.settings.ProxyEditorScreen
@@ -212,6 +217,7 @@ import me.knighthat.kreate3.ui.theme.fontFamilyOf
 import me.knighthat.kreate3.ui.theme.interFontFamily
 import me.knighthat.kreate3.ui.theme.rememberInstalledFont
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -310,6 +316,9 @@ fun KreateApp(
         hasTabBar || (currentRoute?.hasMiniPlayer == true && playing.hasMiniPlayer)
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
     val songMenu = remember { SongMenuHost() }
+    // Holding the Songs tab names the song playing nearby
+    val recognition = koinViewModel<SongRecognitionViewModel>()
+    val holdSongs = rememberHoldToListen(rememberListen(recognition), recognition::stop)
 
     KreateTheme(
         themeMode = themeMode,
@@ -339,6 +348,10 @@ fun KreateApp(
             LocalNavigator provides navigator,
             LocalSongMenuHost provides songMenu,
         ) {
+            // Inside, for the notifier of the links it opens
+            SongRecognitionDialog(recognition) { query ->
+                topLevel.push(SearchResults(query, Origin.YOUTUBE, Tab.SONGS))
+            }
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
                     bottomBar = {
@@ -348,6 +361,12 @@ fun KreateApp(
                                 TabBar(
                                     selected = topLevel.currentTab,
                                     onSelect = topLevel::switchTab,
+                                    itemModifier = {
+                                        if (it == Tab.SONGS) holdSongs else Modifier
+                                    },
+                                    iconOverlay = {
+                                        if (it == Tab.SONGS) ListenOverlay(recognition)
+                                    },
                                 )
                             }
 
@@ -404,6 +423,7 @@ fun KreateApp(
                                             { topLevel.push(Search) },
                                             { topLevel.push(Account) },
                                             { topLevel.push(Settings) },
+                                            recognition::open,
                                             paddingModifier,
                                             contentPadding,
                                         )

@@ -51,6 +51,7 @@ import me.knighthat.kreate3.ui.screen.home.HomeAlbumsViewModel
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsViewModel
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsViewModel
 import me.knighthat.kreate3.ui.screen.home.HomeSongsViewModel
+import me.knighthat.kreate3.ui.screen.recognition.SongRecognitionViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchResultsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchViewModel
 import me.knighthat.kreate3.ui.screen.settings.about.OpenSourceLicensesViewModel
@@ -106,4 +107,5 @@ val viewModelModule = module {
     viewModelOf(::BackupViewModel)
     viewModelOf(::LegacyDownloadsViewModel)
     viewModelOf(::OpenSourceLicensesViewModel)
+    viewModelOf(::SongRecognitionViewModel)
 }

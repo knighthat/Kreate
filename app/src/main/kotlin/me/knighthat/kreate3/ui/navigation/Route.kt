@@ -597,7 +597,7 @@ enum class Tab(
     ),
     ARTISTS(
         Artists, R.string.tab_artists, R.plurals.unit_artist,
-        R.string.screen_search_results_status_none_artists, R.drawable.artist
+        R.string.screen_search_results_status_none_artists, R.drawable.mic
     ),
     PLAYLISTS(
         Playlists, R.string.tab_playlists, R.plurals.unit_playlist,

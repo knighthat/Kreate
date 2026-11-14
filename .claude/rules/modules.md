@@ -12,7 +12,8 @@ Shape: `:model` (pure Kotlin/JVM, no deps) ← `:database`, `:preferences`, `:ly
 `:model`; `:database` and `:preferences` don't know each other (`ProfileUserSync` in `:app` bridges
 them). `:discord` (Discord's Rich Presence) depends on no module; `:app` keeps the tokens and hands
 it a
-client and the access token.
+client and the access token. `:shazam` (naming songs) depends on no module either; `:app` records
+the microphone and hands it raw PCM.
 
 - Keep modules independent: a module depends only on `:model` plus libraries unless it truly can't
   work without another. Don't add `project(":x")` to reach one or two types.

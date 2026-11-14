@@ -37,6 +37,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
 import me.knighthat.kreate3.ui.component.LabeledIconButton
@@ -50,12 +51,15 @@ import org.koin.androidx.compose.koinViewModel
 
 /**
  * Every song in the library, one per row.
+ *
+ * @param onRecognize opens song recognition's dialog, from the sheet
  */
 @Composable
 fun HomeSongsScreen(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
+    onRecognize: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomeSongsViewModel = koinViewModel(),
@@ -83,6 +87,7 @@ fun HomeSongsScreen(
         onSearch = onSearch,
         onProfile = onProfile,
         onSettings = onSettings,
+        onRecognize = onRecognize,
         refreshing = pulling,
         onRefresh = viewModel::pull,
         modifier = modifier,
@@ -103,6 +108,7 @@ private fun HomeSongsContent(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
+    onRecognize: () -> Unit,
     refreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
@@ -120,7 +126,7 @@ private fun HomeSongsContent(
         onSettings = onSettings,
         refreshing = refreshing,
         onRefresh = onRefresh,
-        sheet = { onDismiss -> SongsSheet(filters, onFilter, onAction, onDismiss) },
+        sheet = { onDismiss -> SongsSheet(filters, onFilter, onAction, onRecognize, onDismiss) },
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -137,7 +143,7 @@ private fun HomeSongsContent(
 }
 
 /**
- * The quick actions on every song shown, then what the tab shows. Cached only and Downloaded only
+ * The quick actions on every song shown, recognizing a song, then what the tab shows. Cached only and Downloaded only
  * exclude each other, turning one on turns the other off.
  */
 @Composable
@@ -145,6 +151,7 @@ private fun SongsSheet(
     filters: SongFilters,
     onFilter: ((SongFilters) -> SongFilters) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onRecognize: () -> Unit,
     onDismiss: () -> Unit,
 ) = ConfigSheet(
     onDismiss = onDismiss,
@@ -168,23 +175,29 @@ private fun SongsSheet(
             close { onAction(QueueAction.ENQUEUE) }
         }
     },
-) {
-    ConfigToggle(
-        R.drawable.thumb_down,
-        stringResource(R.string.menu_show_disliked),
-        filters.withDisliked,
-    ) { onFilter { it.copy(withDisliked = !it.withDisliked) } }
-    ConfigToggle(
-        R.drawable.cloud_done,
-        stringResource(R.string.menu_cached_only),
-        filters.cachedOnly,
-    ) { onFilter { it.copy(cachedOnly = !it.cachedOnly, downloadedOnly = false) } }
-    ConfigToggle(
-        R.drawable.downloaded,
-        stringResource(R.string.menu_downloaded_only),
-        filters.downloadedOnly,
-    ) { onFilter { it.copy(downloadedOnly = !it.downloadedOnly, cachedOnly = false) } }
-}
+    entries = { close ->
+        ConfigEntry(R.drawable.mic, stringResource(R.string.menu_recognize_song)) {
+            close(onRecognize)
+        }
+    },
+    options = {
+        ConfigToggle(
+            R.drawable.thumb_down,
+            stringResource(R.string.menu_show_disliked),
+            filters.withDisliked,
+        ) { onFilter { it.copy(withDisliked = !it.withDisliked) } }
+        ConfigToggle(
+            R.drawable.cloud_done,
+            stringResource(R.string.menu_cached_only),
+            filters.cachedOnly,
+        ) { onFilter { it.copy(cachedOnly = !it.cachedOnly, downloadedOnly = false) } }
+        ConfigToggle(
+            R.drawable.downloaded,
+            stringResource(R.string.menu_downloaded_only),
+            filters.downloadedOnly,
+        ) { onFilter { it.copy(downloadedOnly = !it.downloadedOnly, cachedOnly = false) } }
+    },
+)
 
 @ScreenPreviews
 @Composable
@@ -202,6 +215,7 @@ private fun HomeSongsPreview() = PreviewTheme {
         onSearch = {},
         onProfile = {},
         onSettings = {},
+        onRecognize = {},
         refreshing = false,
         onRefresh = {},
     )
