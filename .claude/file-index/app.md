@@ -136,7 +136,9 @@ Root
   in a row → `NOT_SEARCHED`, no match → `NO_MATCH`), `tracksToMatch` (the dialog's count),
   `PlaylistImportReport` with `ImportSkip` reasons,
   `importMessage`/`importFailedMessage`; `importing` (`ImportingPlaylist`s not made yet with their
-  `ImportStep`, the Playlists tab's pinned placeholders), `startImport(uri)` → `ImportTask`
+  `ImportStep`, the Playlists tab's pinned placeholders; `PlaylistImportReport.outcomes` =
+  per-playlist `PlaylistOutcome` with `FailedSong`s for the notifications), `startImport(uri)` →
+  `ImportTask`
   (one import's placeholders: file name while reading, then one per playlist; steps, done, close).
   Used by the home Playlists tab sheet's "Import from file"
   entry.
@@ -147,7 +149,8 @@ notification/
   action, `channel`), `post()` from any code. With no collector (app not started) a message with a
   channel goes to `SystemNotifications`, one without is dropped.
 - `AppChannel.kt` — notification channels (PLAYBACK default importance, OTHER default (one-off
-  notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, SLEEP_TIMER low +
+  notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, PLAYLIST_IMPORT low,
+  SLEEP_TIMER low +
   `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`); the brief foreground
   notification of playback resumption goes to OTHER with `setSilent(true)`, the old `resume` channel
   is deleted at start; message ids 2000+ordinal,
@@ -157,6 +160,14 @@ notification/
   analyzed/total"; failed songs as group children 3100+, max 40, summary subText is the group
   header). `clearStale()` at app start drops ongoing progress left by a killed process. Called from
   `LocalMusicWorker`/`LoudnessWorker`.
+- `PlaylistImportNotifications.kt` — PLAYLIST_IMPORT channel (low) (Koin single, fed by
+  `ImportTask`): one ongoing progress notification per import (7000, tag per import id: the names,
+  the step or "Searching x of y" with a determinate bar, ≤1 count update/s), then one result per
+  playlist (7001, tag per placeholder key): "imported successfully" with "All N songs were found on
+  YouTube Music" (every song looked up or searched) or "were imported", else "imported with
+  errors"/"couldn't be imported" as a group summary whose subText (the only text shown) is that
+  title, each song not imported a child (7002, max 20, playlist name as subText, reason as text);
+  `clearStale()` at app start. The import's snackbar has no channel, so no OTHER notification.
 - `DownloadNotifications.kt` — DOWNLOADS channel, three groups (downloading 6000 = the download
   service's foreground summary, downloaded 6001, failed 6002); one child per song tagged with its
   download id (6010/6011/6012) with its cover (`smallCover`, loaded on the global scope), max 12 per

@@ -123,6 +123,18 @@ Seen on API 36 building downloads (`DownloadNotifications`, `SongDownloadService
   requirements unmet (Wi-Fi only) it stays foreground and waits; once nothing runs (all paused) it
   stops itself. Its `addDownload` on an existing id replaces the request (new `customCacheKey`
   wins) and queues it again; the old key's bytes stay in the cache.
+
+Seen on API 36 building playlist import results (`PlaylistImportNotifications`, 2026-11-14):
+
+- A group summary's title and text never show from Android 7 on, only its subText, in the
+  group's header line next to the app name, cut with "…" when long. Put what the group is about (the
+  playlist and how it went) in the subText.
+- A group with one child shows only that child, no header: the child must name what it belongs to
+  itself (the playlist's name as its subText).
+- Separate notifications of the app (not in a group) are bundled by the system on its own once
+  two or more show, under "Kreate" with a count.
+- A progress notification collapsed shows its title and bar, not its text; the text shows once
+  expanded.
 - A read-only `CacheDataSource` (no write sink) never writes the cache: hole spans are released,
   content metadata is only written while writing, and `NoOpCacheEvictor` needs no span touches.
 - Starting a non-exported service from a notification button works from the background (the tap

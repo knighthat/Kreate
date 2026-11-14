@@ -52,6 +52,7 @@ import me.knighthat.kreate3.musicbrainz.MusicBrainz
 import me.knighthat.kreate3.notification.DownloadNotifications
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.notification.PlaylistImportNotifications
 import me.knighthat.kreate3.notification.SystemNotifications
 import me.knighthat.kreate3.notification.createNotificationChannels
 import me.knighthat.kreate3.playback.PlaybackLifecycle
@@ -184,6 +185,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         // A scan's progress left by a killed process, before the work starts again
         LocalScanNotifications(this).clearStale()
         DownloadNotifications(this).clearStale()
+        PlaylistImportNotifications(this).clearStale()
 
         startKoin {
             androidContext(this@KreateApplication)
@@ -228,7 +230,18 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single { SongStore(get(), get(), get(), get()) }
                     // Local playlists made out of playlist files
                     single { BatchSearches(get()) }
-                    single { PlaylistImporter(androidContext(), get(), get(), get(), get(), get()) }
+                    single { PlaylistImportNotifications(androidContext()) }
+                    single {
+                        PlaylistImporter(
+                            androidContext(),
+                            get(),
+                            get(),
+                            get(),
+                            get(),
+                            get(),
+                            get()
+                        )
+                    }
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     // Pictures of artists stored from song credits, which carry none
                     single { ArtistPictures(get(), get(), get()) }

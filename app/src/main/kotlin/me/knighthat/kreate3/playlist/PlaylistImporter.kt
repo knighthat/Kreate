@@ -44,6 +44,7 @@ import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
+import me.knighthat.kreate3.notification.PlaylistImportNotifications
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.SongLookup
 import me.knighthat.kreate3.provider.youtube.YouTubeException
@@ -185,6 +186,7 @@ enum class ImportSkip {
  * @property skipped how many songs were left out, for each reason
  * @property notLookedUp why the YouTube songs the user asked to look up went in as the file has
  * them instead, `null` when they were looked up or not asked to be
+ * @property outcomes how each playlist of the file went, in the order of the file
  */
 data class PlaylistImportReport(
     val rows: Int,
@@ -192,7 +194,32 @@ data class PlaylistImportReport(
     val imported: Int,
     val skipped: Map<ImportSkip, Int>,
     val notLookedUp: NotLookedUp? = null,
+    val outcomes: List<PlaylistOutcome> = emptyList(),
 )
+
+/**
+ * How one playlist of a file went.
+ *
+ * @property name the playlist's name
+ * @property imported how many songs went into it; with none it wasn't made
+ * @property failed the songs that didn't go in, in the order of the file; a song in the playlist
+ * twice isn't one, it goes in once
+ * @property fromYouTube whether every song of it is one of YouTube looked up or searched for (an
+ * Exportify file's, or a file's YouTube songs looked up again)
+ */
+data class PlaylistOutcome(
+    val name: String,
+    val imported: Int,
+    val failed: List<FailedSong>,
+    val fromYouTube: Boolean,
+)
+
+/**
+ * A song of a file that didn't go into its playlist.
+ *
+ * @property title its title, its id when the file has none
+ */
+data class FailedSong(val title: String, val reason: ImportSkip)
 
 /** Why a lookup the user asked for didn't happen, see [PlaylistImporter.importPlaylists]. */
 enum class NotLookedUp {
@@ -236,6 +263,7 @@ class PlaylistImporter(
     private val youTube: YouTubeProvider,
     private val catalog: RemoteCatalogRepository,
     private val searches: BatchSearches,
+    private val notifications: PlaylistImportNotifications,
 ) {
 
     private val nextKey = AtomicLong()
@@ -255,7 +283,7 @@ class PlaylistImporter(
     suspend fun startImport(uri: Uri): ImportTask {
         val name = withContext(Dispatchers.IO) { fileName(uri) }
             ?: context.getString(R.string.status_unknown_file)
-        return ImportTask(_importing, nextKey, listOf(name), ImportStep.READING)
+        return ImportTask(_importing, nextKey, listOf(name), ImportStep.READING, notifications)
     }
 
     /**
@@ -533,11 +561,12 @@ class PlaylistImporter(
             _importing,
             nextKey,
             playlists.map { it.name },
-            ImportStep.SAVING
+            ImportStep.SAVING,
+            notifications,
         ),
     ): PlaylistImportReport = task.use {
         task.playlists(playlists.map { it.name })
-        makePlaylists(playlists, lookUp, task)
+        makePlaylists(playlists, lookUp, task).also { task.report(it.outcomes) }
     }
 
     /** [importPlaylists], telling [task] what it does and each playlist made or left out. */
@@ -547,7 +576,14 @@ class PlaylistImporter(
         task: ImportTask,
     ): PlaylistImportReport {
         val skipped = sortedMapOf<ImportSkip, Int>()
-        fun skip(reason: ImportSkip) = skipped.merge(reason, 1, Int::plus)
+        // The songs of the playlist being made that didn't go in
+        var failed = ArrayList<FailedSong>()
+        fun skip(reason: ImportSkip, title: String?, id: String) {
+            skipped.merge(reason, 1, Int::plus)
+            if (reason != ImportSkip.DUPLICATE) failed += FailedSong(title ?: id, reason)
+        }
+
+        fun skip(reason: ImportSkip, song: PlaylistSong) = skip(reason, song.title, song.id)
         var notLookedUp: NotLookedUp? = null
         val looked = if (!lookUp)
             null
@@ -577,7 +613,12 @@ class PlaylistImporter(
         val localMatcher = withContext(Dispatchers.Default) { LocalMatcher(local) }
         var made = 0
         var imported = 0
+        val outcomes = ArrayList<PlaylistOutcome>()
         for ((index, playlist) in playlists.withIndex()) {
+            failed = ArrayList()
+            val fromYouTube = playlist.songs.all {
+                it.matchOnYouTube || looked != null && it.origin == Origin.YOUTUBE
+            }
             val credits = HashMap<String, ImportedCredits>()
             val songs = withContext(Dispatchers.Default) {
                 val picked = LinkedHashMap<String, Song>()
@@ -591,26 +632,27 @@ class PlaylistImporter(
                                     if (key in matches.notSearched)
                                         ImportSkip.NOT_SEARCHED
                                     else
-                                        ImportSkip.NO_MATCH
+                                        ImportSkip.NO_MATCH,
+                                    song,
                                 )
                             }
                         }
 
-                        song.id.isEmpty() -> null.also { skip(ImportSkip.NO_ID) }
-                        origin == null -> null.also { skip(ImportSkip.UNKNOWN_SOURCE) }
+                        song.id.isEmpty() -> null.also { skip(ImportSkip.NO_ID, song) }
+                        origin == null -> null.also { skip(ImportSkip.UNKNOWN_SOURCE, song) }
                         origin == Origin.YOUTUBE && looked != null && song.id in looked ->
-                            looked[song.id]?.song ?: null.also { skip(ImportSkip.GONE) }
+                            looked[song.id]?.song ?: null.also { skip(ImportSkip.GONE, song) }
 
                         origin == Origin.LOCAL -> (if (song.fromOldApp) localMatcher.matchId(song) else localMatcher.match(
                             song
                         ))
-                            ?: null.also { skip(ImportSkip.NOT_ON_DEVICE) }
+                            ?: null.also { skip(ImportSkip.NOT_ON_DEVICE, song) }
 
                         origin == Origin.OPEN_SUBSONIC &&
                                 song.id !in openSubsonicIds &&
                                 song.thumbnail?.toUri()
                                     ?.let(openSubsonic::isCoverOfServer) != true ->
-                            null.also { skip(ImportSkip.NOT_ON_SERVER) }
+                            null.also { skip(ImportSkip.NOT_ON_SERVER, song) }
 
                         else -> song.toModel(origin).also { model ->
                             song.credits(origin)?.let { credits[model.id] = it }
@@ -618,7 +660,7 @@ class PlaylistImporter(
                     } ?: continue
 
                     if (kept.id in picked)
-                        skip(ImportSkip.DUPLICATE)
+                        skip(ImportSkip.DUPLICATE, song)
                     else
                         picked[kept.id] = kept
                 }
@@ -626,6 +668,7 @@ class PlaylistImporter(
             }
             if (songs.isEmpty()) {
                 task.done(index)
+                outcomes += PlaylistOutcome(playlist.name, 0, failed, fromYouTube)
                 continue
             }
 
@@ -633,15 +676,21 @@ class PlaylistImporter(
             task.done(index)
             val byId = songs.associateBy { it.id }
             result.leftOut.forEach {
-                skip(if (byId[it]?.origin == Origin.LOCAL) ImportSkip.NOT_ON_DEVICE else ImportSkip.ID_TAKEN)
+                val song = byId[it]
+                skip(
+                    if (song?.origin == Origin.LOCAL) ImportSkip.NOT_ON_DEVICE else ImportSkip.ID_TAKEN,
+                    song?.name,
+                    it,
+                )
             }
             if (result.playlistId != null) made++
             imported += result.added
+            outcomes += PlaylistOutcome(playlist.name, result.added, failed, fromYouTube)
         }
 
         val rows = playlists.sumOf { it.songs.size }
         Logger.i(tag = TAG) { "Imported $imported of $rows songs into $made playlists, skipped $skipped" }
-        return PlaylistImportReport(rows, made, imported, skipped, notLookedUp)
+        return PlaylistImportReport(rows, made, imported, skipped, notLookedUp, outcomes)
     }
 
     /** The file's name without its extension, `null` when the provider doesn't say. */
@@ -714,6 +763,7 @@ class ImportTask internal constructor(
     private val nextKey: AtomicLong,
     names: List<String>,
     step: ImportStep,
+    private val notifications: PlaylistImportNotifications? = null,
 ) : AutoCloseable {
 
     @Volatile
@@ -722,10 +772,21 @@ class ImportTask internal constructor(
     @Volatile
     private var names: List<String> = names
 
+    @Volatile
+    private var step: ImportStep = step
+
+    @Volatile
+    private var searched: SearchCount? = null
+
+    /** Tells this import's progress notification from other imports'. */
+    private val id: Long
+
     init {
         val entries = names.map { ImportingPlaylist(nextKey.getAndIncrement(), it, step) }
         keys = entries.map { it.key }
+        id = keys.firstOrNull() ?: nextKey.getAndIncrement()
         importing.update { entries + it }
+        notifyProgress()
     }
 
     /**
@@ -751,21 +812,35 @@ class ImportTask internal constructor(
             else
                 rest.take(at) + entries + rest.drop(at)
         }
+        notifyProgress()
     }
 
     /** Shows [step] on every placeholder still shown, with [searched] (see [ImportingPlaylist]). */
     fun step(step: ImportStep, searched: SearchCount? = null) {
+        this.step = step
+        this.searched = searched
         val current = keys
         importing.update { list ->
             list.map { if (it.key in current) it.copy(step = step, searched = searched) else it }
         }
+        notifyProgress()
     }
 
     /** Shows [searched] on every placeholder still shown, at the step they are at. */
     fun searched(searched: SearchCount) {
+        this.searched = searched
         val current = keys
         importing.update { list ->
             list.map { if (it.key in current) it.copy(searched = searched) else it }
+        }
+        notifyProgress()
+    }
+
+    /** Shows how each playlist went, [outcomes] in the order of the file, see [PlaylistOutcome]. */
+    fun report(outcomes: List<PlaylistOutcome>) {
+        val current = keys
+        outcomes.forEachIndexed { index, outcome ->
+            current.getOrNull(index)?.let { notifications?.result(it, outcome) }
         }
     }
 
@@ -775,11 +850,14 @@ class ImportTask internal constructor(
         importing.update { list -> list.filter { it.key != key } }
     }
 
-    /** Takes away the placeholders still shown. */
+    /** Takes away the placeholders still shown and the progress notification. */
     override fun close() {
         val current = keys
         importing.update { list -> list.filter { it.key !in current } }
+        notifications?.cancelProgress(id)
     }
+
+    private fun notifyProgress() = notifications?.progress(id, names, step, searched)
 }
 
 /** Finds a file's device song among the device songs of the library, see [PlaylistImporter]. */
@@ -850,7 +928,8 @@ fun importMessage(resources: Resources, report: PlaylistImportReport): Message {
         text = lines.joinToString("\n"),
         duration = MessageDuration.LONG,
         dismissable = true,
-        channel = AppChannel.OTHER,
+        // The import's own notifications tell it while the app isn't on screen
+        channel = null,
     )
 }
 
@@ -872,7 +951,8 @@ fun importFailedMessage(resources: Resources, error: Throwable): Message {
     )
 }
 
-private fun ImportSkip.text(resources: Resources): String = when (this) {
+/** Why songs were skipped, a lowercase fragment. */
+internal fun ImportSkip.text(resources: Resources): String = when (this) {
     ImportSkip.NO_ID -> resources.getString(R.string.error_reason_import_no_id)
     ImportSkip.UNKNOWN_SOURCE -> resources.getString(R.string.error_reason_import_unknown_source)
     ImportSkip.NOT_ON_DEVICE -> resources.getString(R.string.error_reason_import_not_on_device)
