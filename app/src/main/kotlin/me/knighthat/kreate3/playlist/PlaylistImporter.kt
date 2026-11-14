@@ -48,6 +48,7 @@ import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.SongLookup
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.youtube.BatchSearches
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -200,6 +201,7 @@ class PlaylistImporter(
     private val openSubsonic: OpenSubsonicProvider,
     private val youTube: YouTubeProvider,
     private val catalog: RemoteCatalogRepository,
+    private val searches: BatchSearches,
 ) {
 
     private val nextKey = AtomicLong()
@@ -243,7 +245,8 @@ class PlaylistImporter(
      * [YouTubeProvider.lookUpSongs]). Every song YouTube plays is stored like a played one, a song
      * already stored keeps its row. A song YouTube doesn't play (taken down or published again) is
      * left out of the answer and goes in as the file has it: searching for its new upload is put
-     * off. A song missing from YouTube's answer is searched for with [replacementOf].
+     * off. A song missing from YouTube's answer is searched for with [replacementOf], paced by
+     * [BatchSearches].
      *
      * @return the song each YouTube id goes in as, `null` for one left out; `null` when YouTube
      * refused the lookup (nothing is stored then)
@@ -277,14 +280,15 @@ class PlaylistImporter(
                     "${songs.size - found.size} don't, ${found.count { it.value == null }} unknown"
         }
 
-        if (found.any { it.value == null }) task.step(ImportStep.SEARCHING)
-        // One search each, one after the other
-        for (song in songs) {
-            if (song.id !in found || found[song.id] != null) continue
-            when (val inPlace = replacementOf(song)) {
+        val missing = songs.filter { it.id in found && found[it.id] == null }
+        if (missing.isNotEmpty()) task.step(ImportStep.SEARCHING)
+        // One search each, paced: there can be thousands
+        searches.searchAll(missing, ::replacementOf).forEachIndexed { index, inPlace ->
+            val id = missing[index].id
+            when (inPlace) {
                 null -> {}
-                InPlace.Downloaded -> found.remove(song.id)
-                is InPlace.Replaced -> found[song.id] = inPlace.song
+                InPlace.Downloaded -> found.remove(id)
+                is InPlace.Replaced -> found[id] = inPlace.song
             }
         }
 

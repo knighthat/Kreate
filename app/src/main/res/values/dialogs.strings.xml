@@ -44,6 +44,8 @@
     <string name="dialog_title_look_up_songs">Look up songs again?</string>
     <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Skip" (action_skip) imports the songs as the file has them -->
     <string name="dialog_body_look_up_songs">The file has %1$s from %2$s. Looking them up brings their current titles and artists. Skip to import them as the file has them.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_look_up_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds". Songs that source no longer has are searched for one by one, which takes this long at most -->
+    <string name="dialog_body_look_up_songs_1">Takes up to about %1$s if every song has to be searched for again.</string>
     <string name="dialog_title_export_playlist">Export playlist</string>
     <!-- Heading over a checkbox per music source; unchecked sources' songs are left out of the file, a source the playlist has no songs of is grayed out -->
     <string name="dialog_body_export_playlist_origins">Include songs from</string>

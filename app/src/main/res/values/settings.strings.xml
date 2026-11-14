@@ -153,6 +153,10 @@
     <string name="setting_description_read_timeout">Time a server may go quiet mid-answer</string>
     <string name="setting_title_retries">Retries</string>
     <string name="setting_description_retries">Requests that got a server error are sent again</string>
+    <!-- Title of a slider: how many song searches may start in a second when many songs are searched one after another -->
+    <string name="setting_title_searches_per_second">Searches per second</string>
+    <!-- "an import's" = the songs of a playlist file being imported; "at once" = without waiting its turn -->
+    <string name="setting_description_searches_per_second">Paces searches of many songs, like an import\'s. One song goes at once</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Configure" is a verb (imperative), the title of a row that opens that source's settings -->
     <string name="setting_title_configure_source">Configure %1$s</string>
 

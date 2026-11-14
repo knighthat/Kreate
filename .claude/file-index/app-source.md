@@ -60,3 +60,8 @@ source/ (app-side glue for sources)
 - youtube/`YouTubeSearch.kt` — `searchYouTube` paging, `YouTubeItem.toMediaItem`, `.tab`, artwork
   sizing.
 - youtube/`YouTubeBrowse.kt` — `browseYouTube` paging for "See more" pages.
+- youtube/`BatchSearches.kt` — `BatchSearches` (Koin single): paces searches of many songs
+  (`searchAll`: a worker on the app scope, batches take turns, one at a time, at most
+  `YOUTUBE_SEARCHES_PER_SECOND` starting a second); single searches skip it; batches queue in call
+  order. `searchTime` (the
+  look-up dialog's estimate), `searchesPerSecond`.

@@ -65,6 +65,10 @@
         <item quantity="one">song</item>
         <item quantity="other">songs</item>
     </plurals>
+    <plurals name="unit_search">
+        <item quantity="one">search</item>
+        <item quantity="other">searches</item>
+    </plurals>
     <plurals name="unit_album">
         <item quantity="one">album</item>
         <item quantity="other">albums</item>

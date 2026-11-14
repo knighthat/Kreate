@@ -18,9 +18,14 @@
 
 package me.knighthat.kreate3.ui.screen.home
 
+import android.content.res.Resources
+import android.icu.text.MeasureFormat
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,7 +43,9 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -55,6 +62,8 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playlist.ImportStep
 import me.knighthat.kreate3.playlist.ImportingPlaylist
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.source.youtube.searchTime
 import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
@@ -67,6 +76,8 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewPlaylists
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 
 private const val PLAYLIST_ITEM_SIZE = 220
@@ -104,7 +115,15 @@ fun HomePlaylistsScreen(
     }
     val pendingImport by viewModel.pendingImport.collectAsStateWithLifecycle()
     val importing by viewModel.importing.collectAsStateWithLifecycle()
-    pendingImport?.let { LookUpSongsDialog(it.youTubeSongs, viewModel::answerLookUp) }
+    val searchesPerSecond by Preferences.YOUTUBE_SEARCHES_PER_SECOND.state
+        .collectAsStateWithLifecycle()
+    pendingImport?.let {
+        LookUpSongsDialog(
+            songs = it.youTubeSongs,
+            searchTime = searchTime(it.youTubeSongs, searchesPerSecond),
+            onAnswer = viewModel::answerLookUp,
+        )
+    }
 
     // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -144,29 +163,63 @@ fun HomePlaylistsScreen(
 
 /**
  * Asks whether to look the [songs] YouTube songs of a playlist file up again before importing.
- * [onAnswer] gets `true` to look them up, `false` to import them as they are, `null` when the
- * dialog is dismissed.
+ * [onAnswer] gets `true` to look them up, `false` to import them as they are, `null` to drop the
+ * import (Cancel, or the dialog dismissed).
+ *
+ * @param searchTime how long the lookup takes at most: when YouTube no longer has any of [songs],
+ * each is searched for, paced by `BatchSearches`
  */
 @Composable
-private fun LookUpSongsDialog(songs: Int, onAnswer: (Boolean?) -> Unit) = AlertDialog(
+private fun LookUpSongsDialog(
+    songs: Int,
+    searchTime: Duration,
+    onAnswer: (Boolean?) -> Unit,
+) = AlertDialog(
     onDismissRequest = { onAnswer(null) },
     title = { Text(stringResource(R.string.dialog_title_look_up_songs)) },
     text = {
+        val resources = LocalResources.current
         Text(
             stringResource(
                 R.string.dialog_body_look_up_songs,
                 pluralStringResource(R.plurals.song, songs, songs),
                 stringResource(R.string.source_ytm),
+            ) + "\n\n" + stringResource(
+                R.string.dialog_body_look_up_songs_1,
+                resources.roughLength(searchTime),
             )
         )
     },
+    // One under the other, like the old app's downloads dialog
     confirmButton = {
-        TextButton(onClick = { onAnswer(true) }) { Text(stringResource(R.string.action_look_up)) }
-    },
-    dismissButton = {
-        TextButton(onClick = { onAnswer(false) }) { Text(stringResource(R.string.action_skip)) }
+        Column(horizontalAlignment = Alignment.End) {
+            TextButton(onClick = { onAnswer(true) }) {
+                Text(stringResource(R.string.action_look_up))
+            }
+            TextButton(onClick = { onAnswer(false) }) { Text(stringResource(R.string.action_skip)) }
+            TextButton(onClick = { onAnswer(null) }) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
     },
 )
+
+/**
+ * `30 seconds`, `4 minutes`, `1 hour, 5 minutes`: [length] in the locale's own words, rounded up
+ * to whole seconds under a minute and to whole minutes from there.
+ */
+private fun Resources.roughLength(length: Duration): String {
+    val seconds = length.inWholeSeconds + if (length.inWholeMilliseconds % 1000 > 0) 1 else 0
+    val shown = if (seconds < 60)
+        listOf(Measure(seconds.coerceAtLeast(1), MeasureUnit.SECOND))
+    else
+        ((seconds + 59) / 60).minutes.toComponents { hours, minutes, _, _ ->
+            listOf(Measure(hours, MeasureUnit.HOUR), Measure(minutes, MeasureUnit.MINUTE))
+                .filter { it.number.toLong() > 0 }
+        }
+    return MeasureFormat.getInstance(configuration.locales[0], MeasureFormat.FormatWidth.WIDE)
+        .formatMeasures(*shown.toTypedArray())
+}
 
 /**
  * @param importing the playlists of files not made yet, above all the others

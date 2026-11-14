@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.PlaybackLogin
@@ -51,6 +52,7 @@ import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.youTubeLabelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.LibrarySyncSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
@@ -81,6 +83,7 @@ fun YouTubeSettingsScreen(
     val pageId by viewModel.pageId.collectFlowAsState()
     val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
     val region by Preferences.YOUTUBE_REGION.collectAsStateWithLifecycle()
+    val searchesPerSecond by Preferences.YOUTUBE_SEARCHES_PER_SECOND.collectAsStateWithLifecycle()
     val playbackLogin by Preferences.YOUTUBE_PLAYBACK_LOGIN.collectAsStateWithLifecycle()
     val wifiQuality by Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM.collectAsStateWithLifecycle()
     val mobileQuality by Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM.collectAsStateWithLifecycle()
@@ -97,6 +100,7 @@ fun YouTubeSettingsScreen(
         channels = channels,
         pageId = pageId,
         region = region,
+        searchesPerSecond = searchesPerSecond,
         playbackLogin = playbackLogin,
         playbackLoginLocked = original,
         onEnabledChange = viewModel::setEnabled,
@@ -126,6 +130,7 @@ fun YouTubeSettingsScreen(
 /**
  * @param pageId page id of the channel acted as now, empty for the account's own
  * @param region country code of the catalog, empty for the device's region
+ * @param searchesPerSecond how many searches of many songs may start in a second
  * @param playbackLogin whether the songs to play are found in the session
  * @param playbackLoginLocked while Original is picked, [playbackLogin] is set to Always and can't
  * be changed
@@ -140,6 +145,7 @@ private fun YouTubeSettingsContent(
     channels: List<YouTubeChannel>,
     pageId: String,
     region: String,
+    searchesPerSecond: Int,
     playbackLogin: PlaybackLogin,
     playbackLoginLocked: Boolean,
     onEnabledChange: (Boolean) -> Unit,
@@ -286,6 +292,17 @@ private fun YouTubeSettingsContent(
         SettingsSection(stringResource(R.string.setting_title_region))
         RegionSetting(region)
 
+        // Searches of many songs wait their turn, see BatchSearches
+        SettingsSection(stringResource(R.string.setting_header_requests))
+        CountSetting(
+            title = stringResource(R.string.setting_title_searches_per_second),
+            value = searchesPerSecond,
+            range = 1..5,
+            unit = { pluralStringResource(R.plurals.unit_search, it) },
+            summary = stringResource(R.string.setting_description_searches_per_second),
+            onSelect = { Preferences.YOUTUBE_SEARCHES_PER_SECOND.update(it) },
+        )
+
         // YouTube plays signed out too, only Original needs the account
         SettingsSection(stringResource(R.string.setting_header_playback))
         quality(enabled && account is YouTubeAccountState.SignedIn)
@@ -365,6 +382,7 @@ private fun YouTubeSettingsPreview() = PreviewTheme {
         channels = emptyList(),
         pageId = "",
         region = "VN",
+        searchesPerSecond = 2,
         playbackLogin = PlaybackLogin.ALWAYS,
         playbackLoginLocked = true,
         onEnabledChange = {},

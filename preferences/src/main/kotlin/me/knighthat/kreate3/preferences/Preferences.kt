@@ -388,6 +388,13 @@ object Preferences : KoinComponent {
     val YOUTUBE_REGION by lazy { string("youtube_region", "") }
 
     /**
+     * How many YouTube searches may start in a second when many songs are searched for, one after
+     * another (an import's songs YouTube no longer has). 2 by default. Read by `BatchSearches` in
+     * `:app` before each search; a single search isn't held back.
+     */
+    val YOUTUBE_SEARCHES_PER_SECOND by lazy { int("youtube_searches_per_second", 2) }
+
+    /**
      * How good the YouTube songs streamed on Wi-Fi and other networks that aren't metered are,
      * while nobody is signed in or [YOUTUBE_ACCOUNT_ENABLED] is off. [StreamQuality.HIGH] by
      * default. [StreamQuality.ORIGINAL] isn't offered, it plays as [StreamQuality.HIGH].

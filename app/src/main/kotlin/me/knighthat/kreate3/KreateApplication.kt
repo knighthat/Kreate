@@ -73,6 +73,7 @@ import me.knighthat.kreate3.source.SourceNetworkClient
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
 import me.knighthat.kreate3.source.local.LocalCoverKeyer
 import me.knighthat.kreate3.source.opensubsonic.OpenSubsonicCoverFetcher
+import me.knighthat.kreate3.source.youtube.BatchSearches
 import me.knighthat.kreate3.source.youtube.YouTubeLyricsSource
 import me.knighthat.kreate3.ui.navigation.RouteResults
 import me.knighthat.kreate3.ui.screen.player.PictureInPicture
@@ -226,7 +227,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     // Stores songs fetched live once the user keeps something about them
                     single { SongStore(get(), get(), get(), get()) }
                     // Local playlists made out of playlist files
-                    single { PlaylistImporter(androidContext(), get(), get(), get(), get()) }
+                    single { BatchSearches(get()) }
+                    single { PlaylistImporter(androidContext(), get(), get(), get(), get(), get()) }
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     // Pictures of artists stored from song credits, which carry none
                     single { ArtistPictures(get(), get(), get()) }
