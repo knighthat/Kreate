@@ -47,5 +47,5 @@ paths:
   directory and open it there, like `GlobalPreferenceStorageTest`.
 - `ProfileUserSyncTest` timing out in `start()` is a regression (a real race was fixed), not a
   flake.
-- QuickJS can't load in JVM tests (`UnsatisfiedLinkError` → `YouTubeException`), so YouTube cipher
-  paths only run on a device; provider tests lack Robolectric (`Uri` is stubbed).
+- Provider tests lack Robolectric (`Uri` is stubbed). YouTube cipher paths (innertubex's
+  Kotlin-only QuackJS) need YouTube's player script, so they only run against the real service.

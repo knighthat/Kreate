@@ -181,10 +181,6 @@ internal class YouTubeStreams(
         } catch (e: Exception) {
             Logger.w(e, TAG) { "Couldn't find what to play for $videoId" }
             throw YouTubeException("Couldn't find what to play on YouTube", cause = e)
-        } catch (e: UnsatisfiedLinkError) {
-            // QuickJS, which deciphers addresses, isn't built for every device
-            Logger.e(e, TAG) { "The library to decipher addresses isn't available on this device" }
-            throw YouTubeException("Couldn't decipher what to play on YouTube", cause = e)
         }
         val stream = extracted?.toYouTubeStream()
         // Never the address or the headers: they carry tokens
