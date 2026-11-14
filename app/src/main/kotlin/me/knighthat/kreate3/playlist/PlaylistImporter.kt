@@ -101,14 +101,14 @@ data class PlaylistToImport(val name: String, val songs: List<PlaylistSong>)
 
 /** What an import of a playlist file is doing, in order. */
 enum class ImportStep {
-    /** Reading the file. */
+    /**
+     * Reading the file, and again while its YouTube songs are looked up again after [WAITING]:
+     * to the user that is still reading it.
+     */
     READING,
 
     /** Waiting for the user to say whether to look its YouTube songs up again. */
     WAITING,
-
-    /** Looking its YouTube songs up again. */
-    LOOKING_UP,
 
     /**
      * Searching for the new uploads of YouTube songs the lookup didn't know, or for the YouTube
@@ -300,7 +300,8 @@ class PlaylistImporter(
             .toList()
         if (songs.isEmpty()) return emptyMap()
 
-        task.step(ImportStep.LOOKING_UP)
+        // Shown as reading the file, only a search for replaced songs gets its own step
+        task.step(ImportStep.READING)
         val lookups = youTube.lookUpSongs(songs.map { it.id }) ?: run {
             Logger.w(tag = TAG) { "YouTube refused to look up ${songs.size} songs, they go in as the file has them" }
             return null

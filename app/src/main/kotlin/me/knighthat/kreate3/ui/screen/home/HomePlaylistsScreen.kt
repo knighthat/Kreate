@@ -69,6 +69,7 @@ import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playlist.ImportStep
 import me.knighthat.kreate3.playlist.ImportingPlaylist
+import me.knighthat.kreate3.playlist.SearchCount
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.source.youtube.searchTime
 import me.knighthat.kreate3.ui.component.ConfigEntry
@@ -424,7 +425,9 @@ private fun HomePlaylistsContent(
 private fun HomePlaylistsPreview() = PreviewTheme {
     HomePlaylistsContent(
         playlists = flowOf(PagingData.from(previewPlaylists())).collectAsLazyPagingItems(),
-        importing = listOf(ImportingPlaylist(0, "Imported mix", ImportStep.LOOKING_UP)),
+        importing = listOf(
+            ImportingPlaylist(0, "Imported mix", ImportStep.SEARCHING, SearchCount(3, 12))
+        ),
         live = previewPlaylists(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),

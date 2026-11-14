@@ -86,7 +86,6 @@
     <string name="constant_download_stage_failed">Failed</string>
     <string name="constant_import_step_reading">Reading the file</string>
     <string name="constant_import_step_waiting">Waiting for your answer</string>
-    <string name="constant_import_step_looking_up">Looking up song info</string>
     <string name="constant_import_step_searching">Searching for missing songs</string>
     <string name="constant_import_step_saving">Saving the playlist</string>
     <string name="constant_lyrics_sync_word">Word by word</string>

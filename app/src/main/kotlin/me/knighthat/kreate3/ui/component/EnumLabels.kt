@@ -220,7 +220,6 @@ val ImportStep.labelRes: Int
     get() = when (this) {
         ImportStep.READING -> R.string.constant_import_step_reading
         ImportStep.WAITING -> R.string.constant_import_step_waiting
-        ImportStep.LOOKING_UP -> R.string.constant_import_step_looking_up
         ImportStep.SEARCHING -> R.string.constant_import_step_searching
         ImportStep.SAVING -> R.string.constant_import_step_saving
     }

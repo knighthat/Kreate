@@ -319,7 +319,7 @@ private fun PlaylistItemPreview() = PreviewTheme {
             }
             PlaylistItem(withCovers(focus, 1), onClick = {})
             PlaylistItem(withCovers(gym, GRID_COVERS), onClick = {})
-            ImportingPlaylistItem("Road trip", ImportStep.LOOKING_UP)
+            ImportingPlaylistItem("Road trip", ImportStep.READING)
             ImportingPlaylistItem("Drum & Bass", ImportStep.SEARCHING, SearchCount(120, 1722))
         }
     }
