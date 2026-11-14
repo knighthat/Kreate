@@ -48,6 +48,7 @@ import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.SongLookup
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.provider.youtube.foldedWords
 import me.knighthat.kreate3.source.youtube.BatchSearches
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.Duration
@@ -70,6 +71,12 @@ import kotlin.time.Duration.Companion.seconds
  * @property albumYear `null` when unknown
  * @property albumPosition its place on the album, `null` when unknown
  * @property fromOldApp whether the file is the old Kreate app's, which doesn't name sources
+ * @property matchOnYouTube whether it is a track of another service (an Exportify file's, [id]
+ * is its Spotify address then), which goes in as the YouTube song matching its [title],
+ * [artistNames] and [duration]
+ * @property artistNames the names of its artists one by one, empty when the file has them only
+ * in [artists]
+ * @property isrc its recording's ISRC, `null` when the file has none
  */
 data class PlaylistSong(
     val id: String,
@@ -84,6 +91,9 @@ data class PlaylistSong(
     val albumYear: Int? = null,
     val albumPosition: Int? = null,
     val fromOldApp: Boolean = false,
+    val matchOnYouTube: Boolean = false,
+    val artistNames: List<String> = emptyList(),
+    val isrc: String? = null,
 )
 
 /** A playlist to make out of a file: its [name] and its [songs] in order. */
@@ -100,7 +110,10 @@ enum class ImportStep {
     /** Looking its YouTube songs up again. */
     LOOKING_UP,
 
-    /** Searching for the new uploads of YouTube songs the lookup didn't know. */
+    /**
+     * Searching for the new uploads of YouTube songs the lookup didn't know, or for the YouTube
+     * songs of another service's tracks, see [ImportingPlaylist.searched].
+     */
     SEARCHING,
 
     /** Storing the songs and making the playlist. */
@@ -114,8 +127,18 @@ enum class ImportStep {
  * has a larger one than any before it
  * @property name the name the file gives it; the file's own name while it is read
  * @property step what its import is doing
+ * @property searched while [step] is [ImportStep.SEARCHING], how many of the songs to search for
+ * are done, `null` before the searching has a count
  */
-data class ImportingPlaylist(val key: Long, val name: String, val step: ImportStep)
+data class ImportingPlaylist(
+    val key: Long,
+    val name: String,
+    val step: ImportStep,
+    val searched: SearchCount? = null,
+)
+
+/** How many of [total] songs to search for are [done]. */
+data class SearchCount(val done: Int, val total: Int)
 
 /** Why a song of a file wasn't imported. */
 enum class ImportSkip {
@@ -142,6 +165,15 @@ enum class ImportSkip {
      * in its place.
      */
     GONE,
+
+    /** A track of another service with no YouTube song matching it. */
+    NO_MATCH,
+
+    /**
+     * A track of another service not searched for: YouTube couldn't be reached, or turned the
+     * app away, before its turn.
+     */
+    NOT_SEARCHED,
 }
 
 /**
@@ -191,6 +223,8 @@ enum class NotLookedUp {
  * - OpenSubsonic songs go in when stored, or when their cover is an address of the server set
  *   now, which shows they are from that server; they are stored from the file then, album and
  *   artists like YouTube songs.
+ * - Tracks of another service (an Exportify file's) go in as the YouTube song matching them, see
+ *   [matchTracks]; one without a match is left out.
  * - A song in the same playlist twice goes in once. A playlist with nothing to hold isn't made.
  *
  * Every playlist made is new, also when one has the same name.
@@ -226,7 +260,8 @@ class PlaylistImporter(
 
     /**
      * The playlists of the CSV file at [uri], see [parsePlaylistCsv]. Songs without a playlist
-     * name go to one named after the file.
+     * name go to one named after the file; an Exportify file's after its playlist
+     * ([exportifyPlaylistName]).
      *
      * @throws InvalidHeaderException when the file isn't a playlist CSV
      * @throws java.io.IOException when the file can't be read
@@ -236,7 +271,9 @@ class PlaylistImporter(
             ?.bufferedReader()
             ?.use(::parsePlaylistCsv)
             ?: throw java.io.FileNotFoundException("Can't open $uri")
-        groupPlaylistRows(rows, fileName(uri))
+        val name = fileName(uri)
+        val exportify = rows.isNotEmpty() && rows.all { it.song.matchOnYouTube }
+        groupPlaylistRows(rows, if (exportify) exportifyPlaylistName(name) ?: name else name)
     }
 
     /**
@@ -281,9 +318,12 @@ class PlaylistImporter(
         }
 
         val missing = songs.filter { it.id in found && found[it.id] == null }
-        if (missing.isNotEmpty()) task.step(ImportStep.SEARCHING)
+        if (missing.isNotEmpty()) task.step(ImportStep.SEARCHING, SearchCount(0, missing.size))
         // One search each, paced: there can be thousands
-        searches.searchAll(missing, ::replacementOf).forEachIndexed { index, inPlace ->
+        var searched = 0
+        searches.searchAll(missing) { song ->
+            replacementOf(song).also { task.searched(SearchCount(++searched, missing.size)) }
+        }.forEachIndexed { index, inPlace ->
             val id = missing[index].id
             when (inPlace) {
                 null -> {}
@@ -297,6 +337,120 @@ class PlaylistImporter(
         }
         return found
     }
+
+    /**
+     * The YouTube song of each track of another service in [playlists]
+     * ([PlaylistSong.matchOnYouTube]): a stored YouTube song with the same title ([foldedWords])
+     * and about the same length when it is the only one, else the one
+     * [YouTubeProvider.songMatching] finds, one search each, paced by [BatchSearches]. Tracks of
+     * the same recording (the same ISRC, else the same title, artists and length) are matched
+     * once. Every song found by a search is stored like a played one.
+     *
+     * A track without a title or length has no match. The searching stops when YouTube can't be
+     * reached, turns the app away (429), or refuses [MAX_FAILURES_IN_A_ROW] searches in a row; the
+     * tracks not searched for yet are [TrackMatches.notSearched] then.
+     */
+    private suspend fun matchTracks(
+        playlists: List<PlaylistToImport>,
+        task: ImportTask,
+    ): TrackMatches {
+        val tracks = playlists.asSequence()
+            .flatMap { it.songs }
+            .filter { it.matchOnYouTube }
+            .distinctBy { it.trackKey() }
+            .toList()
+        if (tracks.isEmpty()) return TrackMatches(emptyMap(), emptySet())
+
+        val found = HashMap<String, Song>()
+        val toSearch = withContext(Dispatchers.Default) {
+            val stored = repository.storedSongs(Origin.YOUTUBE)
+                .filter { it.name != null && it.duration != null }
+                .groupBy { foldedWords(it.name!!) }
+            tracks.filter { track ->
+                val key = track.trackKey()
+                val title = track.title ?: return@filter false
+                val length = track.duration ?: return@filter false
+                val same = stored[foldedWords(title)].orEmpty()
+                    .filter { (it.duration!! - length).absoluteValue <= TRACK_LENGTH_SLACK }
+                if (same.size == 1) found[key] = same.single()
+                same.size != 1
+            }
+        }
+        Logger.i(tag = TAG) {
+            "${tracks.size} tracks to match: ${found.size} in the library, " +
+                    "${toSearch.size} to search"
+        }
+
+        val notSearched = HashSet<String>()
+        if (toSearch.isNotEmpty()) {
+            task.step(ImportStep.SEARCHING, SearchCount(0, toSearch.size))
+            val remotes = HashMap<String, RemoteSong>()
+            var searched = 0
+            var failures = 0
+            try {
+                searches.searchAll(toSearch) { track ->
+                    val match = try {
+                        youTube.songMatching(track.title!!, track.artistNames, track.duration!!)
+                            .also { failures = 0 }
+                    } catch (e: YouTubeException) {
+                        failures++
+                        Logger.w(e, TAG) { "Couldn't search for a track's song" }
+                        val stop = e.status == null || e.status == TOO_MANY_REQUESTS ||
+                                failures >= MAX_FAILURES_IN_A_ROW
+                        if (stop) throw SearchStopped(e)
+                        null
+                    }
+                    match?.let { remotes[track.trackKey()] = it.song }
+                    task.searched(SearchCount(++searched, toSearch.size))
+                }
+            } catch (e: SearchStopped) {
+                toSearch.drop(searched).mapTo(notSearched) { it.trackKey() }
+                Logger.w(e.cause, TAG) {
+                    "Stopped searching, ${notSearched.size} tracks not searched"
+                }
+            }
+
+            remotes.values.distinctBy { it.song.id }.forEach { remote ->
+                if (!catalog.addToLibrary(remote.song.id)) catalog.savePlayedSong(remote)
+            }
+            remotes.forEach { (key, remote) -> found[key] = remote.song }
+            Logger.i(tag = TAG) {
+                "Searched ${toSearch.size - notSearched.size} tracks, ${remotes.size} matched"
+            }
+        }
+        return TrackMatches(found, notSearched)
+    }
+
+    /**
+     * How many tracks of another service [playlists] have to match, a recording once: the most
+     * [matchTracks] searches for.
+     */
+    fun tracksToMatch(playlists: List<PlaylistToImport>): Int =
+        playlists.asSequence()
+            .flatMap { it.songs }
+            .filter { it.matchOnYouTube }
+            .distinctBy { it.trackKey() }
+            .count()
+
+    /**
+     * What [matchTracks] found, by [trackKey].
+     *
+     * @property found the song each track goes in as; one missing has no match
+     * @property notSearched the tracks not searched for
+     */
+    private class TrackMatches(val found: Map<String, Song>, val notSearched: Set<String>)
+
+    /** Stops [matchTracks]'s searching, [cause] is the last failure. */
+    private class SearchStopped(cause: YouTubeException) : Exception(cause)
+
+    /**
+     * What tells a track of another service from the others: its ISRC, else its title, artists
+     * and length.
+     */
+    private fun PlaylistSong.trackKey(): String =
+        isrc?.let { "isrc:$it" }
+            ?: listOf(foldedWords(title.orEmpty()), foldedWords(artists.orEmpty()), duration)
+                .joinToString("|")
 
     /**
      * The song YouTube published in place of [song], which its lookup left out, found with
@@ -408,6 +562,8 @@ class PlaylistImporter(
             null
         }
 
+        val matches = matchTracks(playlists, task)
+
         task.step(ImportStep.SAVING)
         val origins = playlists.flatMap { it.songs }.mapNotNullTo(HashSet()) { it.origin }
         val local =
@@ -427,6 +583,18 @@ class PlaylistImporter(
                 for (song in playlist.songs) {
                     val origin = song.origin
                     val kept = when {
+                        song.matchOnYouTube -> {
+                            val key = song.trackKey()
+                            matches.found[key] ?: null.also {
+                                skip(
+                                    if (key in matches.notSearched)
+                                        ImportSkip.NOT_SEARCHED
+                                    else
+                                        ImportSkip.NO_MATCH
+                                )
+                            }
+                        }
+
                         song.id.isEmpty() -> null.also { skip(ImportSkip.NO_ID) }
                         origin == null -> null.also { skip(ImportSkip.UNKNOWN_SOURCE) }
                         origin == Origin.YOUTUBE && looked != null && song.id in looked ->
@@ -520,6 +688,18 @@ class PlaylistImporter(
 
     private companion object {
         const val TAG = "PlaylistImport"
+
+        /** YouTube turning the app away for sending too much. */
+        const val TOO_MANY_REQUESTS = 429
+
+        /** Refused searches in a row that stop [matchTracks]. */
+        const val MAX_FAILURES_IN_A_ROW = 5
+
+        /**
+         * How much a stored song's length may differ from a track's, see [matchTracks]: other
+         * services' lengths are milliseconds, YouTube's whole seconds.
+         */
+        val TRACK_LENGTH_SLACK = 2.seconds
     }
 }
 
@@ -572,11 +752,19 @@ class ImportTask internal constructor(
         }
     }
 
-    /** Shows [step] on every placeholder still shown. */
-    fun step(step: ImportStep) {
+    /** Shows [step] on every placeholder still shown, with [searched] (see [ImportingPlaylist]). */
+    fun step(step: ImportStep, searched: SearchCount? = null) {
         val current = keys
         importing.update { list ->
-            list.map { if (it.key in current) it.copy(step = step) else it }
+            list.map { if (it.key in current) it.copy(step = step, searched = searched) else it }
+        }
+    }
+
+    /** Shows [searched] on every placeholder still shown, at the step they are at. */
+    fun searched(searched: SearchCount) {
+        val current = keys
+        importing.update { list ->
+            list.map { if (it.key in current) it.copy(searched = searched) else it }
         }
     }
 
@@ -696,6 +884,16 @@ private fun ImportSkip.text(resources: Resources): String = when (this) {
     ImportSkip.DUPLICATE -> resources.getString(R.string.error_reason_import_duplicate)
     ImportSkip.GONE -> resources.getString(
         R.string.error_reason_import_gone,
+        resources.getString(R.string.source_ytm),
+    )
+
+    ImportSkip.NO_MATCH -> resources.getString(
+        R.string.error_reason_import_no_match,
+        resources.getString(R.string.source_ytm),
+    )
+
+    ImportSkip.NOT_SEARCHED -> resources.getString(
+        R.string.error_reason_import_not_searched,
         resources.getString(R.string.source_ytm),
     )
 }

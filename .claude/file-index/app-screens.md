@@ -116,7 +116,10 @@ ui/screen/
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
   `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist; list entries
   "Import from file" (a
-  CSV picked with SAF, "Look up songs again?" dialog when it has YouTube songs (`pendingImport`),
+  CSV picked with SAF, "Look up songs again?" dialog when it has YouTube songs, "Search for the
+  songs?" (playlist name field, Search/Cancel stacked; `answerSearch`) when it is an Exportify file
+  (`pendingImport`, both with a
+  `searchTime` estimate),
   `PlaylistImporter` on the app scope, result as a message); + monthly only
   (grayed out unless local playlists exist and show); filters live in the view model, kept while the
   tab is in the back stack),

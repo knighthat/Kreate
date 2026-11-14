@@ -36,4 +36,6 @@
     <string name="status_couldnt_load_playlists">Couldn\'t load the playlists</string>
     <string name="status_playlist_empty">This playlist has no songs</string>
     <string name="status_nothing_played">Nothing played yet</string>
+    <!-- Under a playlist being imported: %1$s songs of %2$s have been searched for on YouTube Music so far, both numbers formatted, e.g. "Searching 120 of 1,722" -->
+    <string name="status_import_searched">Searching %1$s of %2$s</string>
 </resources>

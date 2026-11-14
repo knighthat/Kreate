@@ -24,6 +24,7 @@ import com.jsoizo.kotlincsv.reader.InsufficientFieldsRowBehaviour
 import me.knighthat.kreate3.model.Origin
 import java.io.Reader
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -88,6 +89,32 @@ internal object LegacyCsvColumns {
 }
 
 /**
+ * Columns of the CSV files Exportify (exportify.app) writes of a Spotify playlist, read on import
+ * only. Exportify adds columns now and then (audio features, genres), so only these are read and
+ * any others are left alone.
+ */
+internal object ExportifyCsvColumns {
+    /** `spotify:track:<id>`, or `spotify:local:…` for a file of the user's. */
+    const val TRACK_URI = "Track URI"
+    const val TRACK_NAME = "Track Name"
+
+    /** The artists' names joined by [ARTIST_SEPARATOR]. */
+    const val ARTIST_NAMES = "Artist Name(s)"
+    const val DURATION_MS = "Duration (ms)"
+    const val ALBUM_NAME = "Album Name"
+
+    /** `2019-07-26`, sometimes only the year. */
+    const val RELEASE_DATE = "Release Date"
+    const val ISRC = "ISRC"
+
+    /** How [ARTIST_NAMES] are joined; a name like "Camo & Krooked" is one artist. */
+    const val ARTIST_SEPARATOR = ";"
+
+    /** The columns that make a file an Exportify one, it must have all of them. */
+    val REQUIRED = listOf(TRACK_URI, TRACK_NAME, ARTIST_NAMES, DURATION_MS)
+}
+
+/**
  * The header of a playlist file isn't one this app reads: it lacks columns, has one more than
  * once, or has columns no playlist file has.
  *
@@ -120,9 +147,12 @@ data class PlaylistFileRow(val playlistName: String?, val song: PlaylistSong)
  * Reads a playlist CSV file: a header row, then a song a row. Columns may come in any order and
  * names are matched without regard to case. Empty rows are skipped.
  *
- * A file has exactly this app's columns ([PlaylistCsvColumns.HEADER]) or the old Kreate app's
- * ([LegacyCsvColumns.HEADER]): which kind is the one its header has more of, this app's on a tie,
- * and a header lacking one of its columns, having one twice or having any other fails.
+ * A file with every one of [ExportifyCsvColumns.REQUIRED] is an Exportify file of a Spotify
+ * playlist: its tracks are [PlaylistSong.matchOnYouTube], with no playlist name, and only the
+ * columns of [ExportifyCsvColumns] are read. Any other file has exactly this app's columns
+ * ([PlaylistCsvColumns.HEADER]) or the old Kreate app's ([LegacyCsvColumns.HEADER]): which kind
+ * is the one its header has more of, this app's on a tie, and a header lacking one of its
+ * columns, having one twice or having any other fails.
  * The old app's files don't say where a song is from: an id of digits only is a device song (the
  * media index's id), anything else a YouTube video, and the songs are marked
  * [PlaylistSong.fromOldApp]. In this app's files a song whose `origin` is empty or names no known
@@ -140,7 +170,9 @@ fun parsePlaylistCsv(reader: Reader): List<PlaylistFileRow> {
     // A byte order mark sticks to the first name
     val names = records.next().map { it.removePrefix("\uFEFF").trim() }
     val header = names.mapIndexed { index, name -> name.lowercase() to index }.toMap()
-    val legacy = checkHeader(names)
+    val present = names.mapTo(HashSet()) { it.lowercase() }
+    val exportify = ExportifyCsvColumns.REQUIRED.all { it.lowercase() in present }
+    val legacy = !exportify && checkHeader(names)
 
     fun List<String>.cell(column: String): String? =
         header[column.lowercase()]?.let { getOrNull(it) }?.trim()?.takeIf(String::isNotEmpty)
@@ -149,7 +181,34 @@ fun parsePlaylistCsv(reader: Reader): List<PlaylistFileRow> {
     for (record in records) {
         if (record.all(String::isBlank)) continue
 
-        rows += if (legacy) {
+        rows += if (exportify) {
+            val artists = record.cell(ExportifyCsvColumns.ARTIST_NAMES)
+                ?.split(ExportifyCsvColumns.ARTIST_SEPARATOR)
+                ?.map(String::trim)
+                ?.filter(String::isNotEmpty)
+                .orEmpty()
+            PlaylistFileRow(
+                playlistName = null,
+                song = PlaylistSong(
+                    id = record.cell(ExportifyCsvColumns.TRACK_URI).orEmpty(),
+                    origin = null,
+                    title = record.cell(ExportifyCsvColumns.TRACK_NAME),
+                    artists = artists.joinToString(PlaylistCsvColumns.ARTIST_SEPARATOR)
+                        .takeIf(String::isNotEmpty),
+                    duration = record.cell(ExportifyCsvColumns.DURATION_MS)
+                        ?.toLongOrNull()
+                        ?.takeIf { it > 0 }
+                        ?.milliseconds,
+                    albumName = record.cell(ExportifyCsvColumns.ALBUM_NAME),
+                    albumYear = record.cell(ExportifyCsvColumns.RELEASE_DATE)
+                        ?.take(4)
+                        .positiveInt(),
+                    matchOnYouTube = true,
+                    artistNames = artists,
+                    isrc = record.cell(ExportifyCsvColumns.ISRC),
+                ),
+            )
+        } else if (legacy) {
             val id = record.cell(LegacyCsvColumns.MEDIA_ID).orEmpty()
             PlaylistFileRow(
                 playlistName = record.cell(LegacyCsvColumns.PLAYLIST_NAME),
@@ -193,6 +252,20 @@ fun parsePlaylistCsv(reader: Reader): List<PlaylistFileRow> {
     }
     return rows
 }
+
+/**
+ * The name of the playlist of an Exportify file named [fileName] (without its extension):
+ * Exportify writes the playlist's name with `_` for spaces, and a name like "Mix - 258 songs" has
+ * its count taken off. `null` when [fileName] is.
+ */
+fun exportifyPlaylistName(fileName: String?): String? = fileName
+    ?.replace('_', ' ')
+    ?.replace(SONG_COUNT_SUFFIX, "")
+    ?.trim()
+    ?.takeIf(String::isNotEmpty)
+
+/** " - 258 songs" at the end of an Exportify file's name. */
+private val SONG_COUNT_SUFFIX = Regex("\\s+-\\s+\\d+\\s+songs?$", RegexOption.IGNORE_CASE)
 
 /**
  * Groups [rows] into playlists, in the order their names first show up. Rows without a name go

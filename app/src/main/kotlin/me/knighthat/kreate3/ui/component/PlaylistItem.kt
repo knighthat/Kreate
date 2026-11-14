@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
+import android.icu.text.NumberFormat
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import androidx.media3.common.MediaMetadata
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playlist.ImportStep
+import me.knighthat.kreate3.playlist.SearchCount
 
 /** How many covers make a grid, fewer show the first one alone. */
 internal const val GRID_COVERS = 4
@@ -152,17 +154,35 @@ private fun PlaylistRow(
 /**
  * A playlist called [name] that a file import hasn't made yet: its name over what the import is
  * doing ([step]), with a spinning ring for a cover. Tapping it does nothing.
+ *
+ * @param searched while searching, how many songs are done of how many, shown in place of the
+ * step's name
  */
 @Composable
-fun ImportingPlaylistItem(name: String, step: ImportStep, modifier: Modifier = Modifier) {
+fun ImportingPlaylistItem(
+    name: String,
+    step: ImportStep,
+    searched: SearchCount? = null,
+    modifier: Modifier = Modifier,
+) {
     val resources = LocalResources.current
-    val item = remember(name, step, resources) {
+    val item = remember(name, step, searched, resources) {
+        val status = if (step == ImportStep.SEARCHING && searched != null) {
+            val numbers = NumberFormat.getIntegerInstance(resources.configuration.locales[0])
+            resources.getString(
+                R.string.status_import_searched,
+                numbers.format(searched.done),
+                numbers.format(searched.total),
+            )
+        } else {
+            resources.getString(step.labelRes)
+        }
         MediaItem.Builder()
             .setMediaId(name)
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(name)
-                    .setSubtitle(resources.getString(step.labelRes))
+                    .setSubtitle(status)
                     .setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
                     .build()
             )
@@ -300,6 +320,7 @@ private fun PlaylistItemPreview() = PreviewTheme {
             PlaylistItem(withCovers(focus, 1), onClick = {})
             PlaylistItem(withCovers(gym, GRID_COVERS), onClick = {})
             ImportingPlaylistItem("Road trip", ImportStep.LOOKING_UP)
+            ImportingPlaylistItem("Drum & Bass", ImportStep.SEARCHING, SearchCount(120, 1722))
         }
     }
 }

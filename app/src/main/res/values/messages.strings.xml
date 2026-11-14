@@ -178,6 +178,10 @@
     <string name="error_reason_import_duplicate">already in the playlist</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were looked up again and the source no longer has them -->
     <string name="error_reason_import_gone">no longer on %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": tracks of another service's playlist (e.g. Spotify) for which no song with the same title, artist and length was found on that source -->
+    <string name="error_reason_import_no_match">no match on %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": the source couldn't be reached, or refused, before these tracks were searched for -->
+    <string name="error_reason_import_not_searched">not searched, %1$s couldn\'t be reached</string>
     <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
     <string name="error_import_playlists">Couldn\'t import playlists: %1$s</string>
     <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. Shown alone, the wrong columns only go to the app log -->

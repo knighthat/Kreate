@@ -28,26 +28,33 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -118,11 +125,19 @@ fun HomePlaylistsScreen(
     val searchesPerSecond by Preferences.YOUTUBE_SEARCHES_PER_SECOND.state
         .collectAsStateWithLifecycle()
     pendingImport?.let {
-        LookUpSongsDialog(
-            songs = it.youTubeSongs,
-            searchTime = searchTime(it.youTubeSongs, searchesPerSecond),
-            onAnswer = viewModel::answerLookUp,
-        )
+        if (it.tracks > 0)
+            SearchSongsDialog(
+                songs = it.tracks,
+                name = it.playlists.singleOrNull()?.name,
+                searchTime = searchTime(it.tracks, searchesPerSecond),
+                onAnswer = viewModel::answerSearch,
+            )
+        else
+            LookUpSongsDialog(
+                songs = it.youTubeSongs,
+                searchTime = searchTime(it.youTubeSongs, searchesPerSecond),
+                onAnswer = viewModel::answerLookUp,
+            )
     }
 
     // Each visit to the tab, the items of the external sources are fetched again
@@ -203,6 +218,72 @@ private fun LookUpSongsDialog(
         }
     },
 )
+
+/**
+ * Asks whether to search YouTube for the [songs] tracks of another service's playlist file (an
+ * Exportify one), which go in only as the songs found, with the playlist's [name] to change
+ * first (not focused until tapped; Search is off while it is blank). [onAnswer] gets the name to
+ * search, `null` to drop the import (Cancel, or the dialog dismissed).
+ *
+ * @param name the name the file gives its one playlist, `null` for a file of several (no field
+ * then: [onAnswer] gets an empty name, which keeps theirs)
+ * @param searchTime how long the searching takes at most: tracks already in the library aren't
+ * searched for
+ */
+@Composable
+private fun SearchSongsDialog(
+    songs: Int,
+    name: String?,
+    searchTime: Duration,
+    onAnswer: (String?) -> Unit,
+) {
+    var draft by rememberSaveable { mutableStateOf(name.orEmpty()) }
+    val canSearch = name == null || draft.isNotBlank()
+
+    AlertDialog(
+        onDismissRequest = { onAnswer(null) },
+        title = { Text(stringResource(R.string.dialog_title_search_songs)) },
+        text = {
+            val resources = LocalResources.current
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(
+                    stringResource(
+                        R.string.dialog_body_search_songs,
+                        pluralStringResource(R.plurals.song, songs, songs),
+                        stringResource(R.string.source_ytm),
+                    ) + "\n\n" + stringResource(
+                        R.string.dialog_body_search_songs_1,
+                        resources.roughLength(searchTime),
+                    )
+                )
+                if (name != null)
+                    OutlinedTextField(
+                        value = draft,
+                        onValueChange = { draft = it },
+                        label = { Text(stringResource(R.string.name)) },
+                        singleLine = true,
+                        isError = draft.isBlank(),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Done,
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+            }
+        },
+        // One under the other, like the look-up dialog's
+        confirmButton = {
+            Column(horizontalAlignment = Alignment.End) {
+                TextButton(onClick = { onAnswer(draft) }, enabled = canSearch) {
+                    Text(stringResource(R.string.action_search))
+                }
+                TextButton(onClick = { onAnswer(null) }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        },
+    )
+}
 
 /**
  * `30 seconds`, `4 minutes`, `1 hour, 5 minutes`: [length] in the locale's own words, rounded up
@@ -326,7 +407,7 @@ private fun HomePlaylistsContent(
                 .padding(horizontal = 12.dp),
         ) {
             items(importing, key = { "importing:${it.key}" }) {
-                ImportingPlaylistItem(it.name, it.step)
+                ImportingPlaylistItem(it.name, it.step, it.searched)
             }
             items(count = playlists.itemCount, key = playlists.itemKey { it.mediaId }) { index ->
                 playlists[index]?.let { PlaylistItem(it, onClick = { onOpen(it) }) }

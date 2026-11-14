@@ -37,6 +37,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Collections
 import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class YouTubeProviderTest {
@@ -454,6 +455,85 @@ class YouTubeProviderTest {
 
         assertNull(provider.replacementOf("x", " - ", "fripSide", fripSide, 265.seconds))
         assertTrue(requests.isEmpty())
+    }
+
+    @Test
+    fun aTrackMatchesTheSongOfItsTitleArtistAndLength() = runBlocking {
+        val provider = replacements()
+
+        val found = provider.songMatching("BLACKFOX", listOf("fripSide"), 265_400.milliseconds)
+
+        assertEquals("hekAwcwLXc4", found?.song?.song?.id)
+        assertEquals("BLACKFOX fripSide", requests.single().json().string("query"))
+    }
+
+    @Test
+    fun aTrackTitleWithItsVersionAfterAHyphenMatchesItInBrackets() = runBlocking {
+        // "Title - Version" of other services, "Title (Version)" on YouTube
+        assertEquals(
+            "oKFhG1vSzA8",
+            replacements().songMatching("BLACKFOX - Version 2022", listOf("fripSide"), 266.seconds)
+                ?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun aTrackOfOtherArtistsMatchesOnlyTheSameTitle() = runBlocking {
+        val provider = replacements()
+
+        // The name written another way, the title the same
+        assertEquals(
+            "hekAwcwLXc4",
+            provider.songMatching(
+                "BLACKFOX",
+                listOf("フリップサイド"),
+                265.seconds
+            )?.song?.song?.id,
+        )
+        // Only sharing words with the title, it is another song of another artist
+        assertNull(provider.songMatching("Last Place", listOf("someone"), (5 * 60 + 16).seconds))
+        assertEquals(
+            "U40ADKsaQzI",
+            provider.songMatching("Last Place", listOf("fripSide"), (5 * 60 + 16).seconds)
+                ?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun aTrackMatchesOnlyTheSameVersion() = runBlocking {
+        val provider = replacements()
+
+        // The plain BLACKFOX shares the word, the same length, but isn't the instrumental
+        assertNull(
+            provider.songMatching(
+                "BLACKFOX - Instrumental",
+                listOf("fripSide"),
+                265.seconds
+            )
+        )
+        // The 2022 version goes in, not the plain one nearer in length
+        assertEquals(
+            "oKFhG1vSzA8",
+            provider.songMatching("BLACKFOX - Version 2022", listOf("fripSide"), 265.seconds)
+                ?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun anArtistNameHoldingAnotherIsTheSameArtist() = runBlocking {
+        assertEquals(
+            "U40ADKsaQzI",
+            replacements().songMatching(
+                "Last Place", listOf("fripSide & someone"), (5 * 60 + 16).seconds,
+            )?.song?.song?.id,
+        )
+    }
+
+    @Test
+    fun aTrackMatchesOnlyASongOfItsLength() = runBlocking {
+        assertNull(
+            replacements().songMatching("BLACKFOX", listOf("fripSide"), (4 * 60 + 29).seconds)
+        )
     }
 
     @Test

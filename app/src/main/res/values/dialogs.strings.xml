@@ -46,6 +46,12 @@
     <string name="dialog_body_look_up_songs">The file has %1$s from %2$s. Looking them up brings their current titles and artists. Skip to import them as the file has them.</string>
     <!-- Second paragraph of the dialog, under dialog_body_look_up_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds". Songs that source no longer has are searched for one by one, which takes this long at most -->
     <string name="dialog_body_look_up_songs_1">Takes up to about %1$s if every song has to be searched for again.</string>
+    <!-- Asked before importing a playlist file of another service (an Exportify file of a Spotify playlist), whose songs must be searched for on YouTube Music -->
+    <string name="dialog_title_search_songs">Search for the songs?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Another service" = another music app, e.g. Spotify -->
+    <string name="dialog_body_search_songs">The file has %1$s from another service. Each one is searched for on %2$s and goes in as the song matching its title, artists and length. Songs without a match are left out.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_search_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds"; songs already in the library aren't searched for, so it can be shorter -->
+    <string name="dialog_body_search_songs_1">Takes up to about %1$s.</string>
     <string name="dialog_title_export_playlist">Export playlist</string>
     <!-- Heading over a checkbox per music source; unchecked sources' songs are left out of the file, a source the playlist has no songs of is grayed out -->
     <string name="dialog_body_export_playlist_origins">Include songs from</string>

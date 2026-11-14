@@ -525,6 +525,90 @@ class YouTubeProvider internal constructor(
     }
 
     /**
+     * The YouTube song that is [title] by [artists], [duration] long, like a track of a playlist
+     * of another service, found with one search of [title] and [artists] among songs, hyphens left
+     * out like in [replacementOf]. A result fits when it is as long as [duration] give or take
+     * [REPLACEMENT_LENGTH_SLACK] and its title shares words with [title] (see [TitleMatch]); one
+     * credited to none of [artists] fits only with the same title, folded, since names are often
+     * written another way (in another script, or as a band and its members). A result naming
+     * another version than [title] doesn't fit: one of [VERSION_WORDS] in one title only
+     * ("Horizon (Instrumental)" isn't "Horizon (ft. Notelle)"). Of those that fit, one credited
+     * to one of [artists] goes first, then the closest title, the nearest length, then YouTube's
+     * order. Titles and artists are compared [folded], a name holding another's words is it
+     * ("Camo & Krooked" is "Camo").
+     *
+     * @return `null` when no result fits, or [title] has no words (nothing is searched then)
+     * @throws YouTubeException when YouTube can't be reached or refuses
+     */
+    suspend fun songMatching(title: String, artists: List<String>, duration: Duration): SongItem? {
+        val words = folded(title)
+        if (words.isEmpty()) {
+            Logger.i(tag = TAG) { "No search for a song to match: no words in its title" }
+            return null
+        }
+
+        val query = (listOf(title) + artists.filter { it.isNotBlank() })
+            .joinToString(" ")
+            .replace('-', ' ')
+        val results = search(query, YouTubeSearchFilter.SONGS).items.filterIsInstance<SongItem>()
+        val names = artists.map(::folded).filter { it.isNotEmpty() }
+        val versions = words.split(' ').filterTo(HashSet()) { it in VERSION_WORDS }
+
+        class Fit(
+            val item: SongItem,
+            val title: TitleMatch,
+            val off: Duration,
+            val credited: Boolean
+        )
+
+        val fitting = results.mapNotNull { item ->
+            val song = item.song.song
+            val match = song.name?.let { titleMatch(title, words, it) }
+            val otherVersion = song.name
+                ?.let {
+                    folded(it).split(' ').filterTo(HashSet()) { word -> word in VERSION_WORDS }
+                }
+                ?.let { it != versions } == true
+            val off = song.duration?.let { (it - duration).absoluteValue }
+            val credited = item.song.artists.any { artist ->
+                val name = artist.name?.let(::folded).orEmpty()
+                name.isNotEmpty() &&
+                        names.any { " $name ".contains(" $it ") || " $it ".contains(" $name ") }
+            }
+            val misses = listOfNotNull(
+                "no length".takeIf { off == null },
+                "${off?.inWholeSeconds} s off".takeIf { off != null && off > REPLACEMENT_LENGTH_SLACK },
+                "another title".takeIf { match == null },
+                "another version".takeIf { otherVersion },
+                "other artists, another title".takeIf {
+                    match != null && !credited && match > TitleMatch.FOLDED
+                },
+            )
+            Logger.d(tag = TAG) {
+                if (misses.isEmpty())
+                    "${song.id} fits: title ${match!!.text}, ${off!!.inWholeSeconds} s off, " +
+                            if (credited) "same artist" else "other artists"
+                else
+                    "${song.id} doesn't fit: ${misses.joinToString()}"
+            }
+            if (misses.isEmpty()) Fit(item, match!!, off!!, credited) else null
+        }
+        // Sorting keeps the order of equal ones, YouTube's
+        val found = fitting
+            .sortedWith(compareBy({ !it.credited }, { it.title }, { it.off }))
+            .firstOrNull()
+            ?.item
+        Logger.i(tag = TAG) {
+            if (found == null)
+                "No song of ${results.size} results matches a ${duration.inWholeSeconds} s track"
+            else
+                "${found.song.song.id} matches a ${duration.inWholeSeconds} s track, " +
+                        "of ${fitting.size} that fit"
+        }
+        return found
+    }
+
+    /**
      * How [name] is to [title], whose [folded] form is [words]; `null` when they share fewer than
      * half of the shorter one's words.
      */
@@ -542,17 +626,8 @@ class YouTubeProvider internal constructor(
         return if (shared >= needed) TitleMatch.SHARING else null
     }
 
-    /**
-     * [title] as words to compare: its compatibility forms (full-width letters become plain ones),
-     * in lower case, with anything but letters and digits between words, like "-version 2022-"
-     * and "(Version 2022)" both becoming "version 2022".
-     */
-    private fun folded(title: String): String =
-        Normalizer.normalize(title, Normalizer.Form.NFKC)
-            .lowercase(Locale.ROOT)
-            .split(NOT_WORD)
-            .filter { it.isNotEmpty() }
-            .joinToString(" ")
+    /** [title] as [foldedWords]. */
+    private fun folded(title: String): String = foldedWords(title)
 
     /** @return `null` when YouTube doesn't know the album */
     suspend fun albumPage(albumId: String): YouTubeAlbumPage? =
@@ -983,9 +1058,17 @@ class YouTubeProvider internal constructor(
 
         const val TAG = "YouTubeProvider"
 
+        /**
+         * Folded words that name a version of a song, see [songMatching]. "Mix" and "original"
+         * aren't: other services write "Original Mix" where YouTube writes nothing; nor is
+         * "remaster", a remaster is the song the user wants.
+         */
+        val VERSION_WORDS = setOf(
+            "instrumental", "remix", "live", "acoustic", "karaoke", "edit", "vip", "extended",
+            "cover", "sped", "slowed", "nightcore", "demo", "version",
+        )
 
-        /** What isn't part of a word of a title, see [folded]. */
-        val NOT_WORD = Regex("[^\\p{L}\\p{M}\\p{N}]+")
+
 
         /** Requests [allPlaylistSongs] may send, about 100 songs each. */
         const val PLAYLIST_PAGES = 50
@@ -1013,3 +1096,22 @@ class LibraryIds(val ids: Set<String>, val complete: Boolean)
 
 /** A page of the library, see [YouTubeProvider.libraryAlbumIds]. */
 private class LibraryItems(val items: List<YouTubeItem>, val complete: Boolean)
+
+/** What isn't part of a word of a title, see [foldedWords]. */
+private val NOT_WORD = Regex("[^\\p{L}\\p{M}\\p{N}]+")
+
+/**
+ * [text] as words to compare, the way [YouTubeProvider] compares titles and names when it matches
+ * songs: its compatibility forms (full-width letters become plain ones), in lower case, with
+ * anything but letters and digits between words, like "-version 2022-" and "(Version 2022)" both
+ * becoming "version 2022"; "ft" and "featuring" are "feat".
+ */
+fun foldedWords(text: String): String =
+    Normalizer.normalize(text, Normalizer.Form.NFKC)
+        .lowercase(Locale.ROOT)
+        .split(NOT_WORD)
+        .filter { it.isNotEmpty() }
+        .joinToString(" ") { if (it in FEATURING) "feat" else it }
+
+/** How titles name a featured artist, see [foldedWords]. */
+private val FEATURING = setOf("ft", "featuring")

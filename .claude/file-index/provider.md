@@ -34,7 +34,11 @@ Paths are relative to `provider/src/main/kotlin/me/knighthat/kreate3/`; checked 
   `lookUpSongs(ids)` = `get_queue` batches of 1000, never split, one visitor-id retry, one refused
   batch → `null`; answers paired by position → `SongLookup`
   Found/Unplayable, unknown ids left out; `isPlayable(id)`
-  = one `get_queue` (`unplayableText` or 404/500 → `false`); `replacementOf` = one songs search,
+  = one `get_queue` (`unplayableText` or 404/500 → `false`); `songMatching` = one songs search for
+  another service's track (length ±2 s, `TitleMatch`, the
+  same `VERSION_WORDS` (instrumental, remix, live, …), a result of other artists only with the
+  same folded title, credited ones first); `foldedWords` (top level) = the folding both use ("ft",
+  "featuring" → "feat"); `replacementOf` = one songs search,
   length ±2 s, folded title equal, holding the old one or sharing half the shorter one's words
   (`TitleMatch`), artist id only a tiebreak; each result logged at
   `d`), `InnerTube.kt`

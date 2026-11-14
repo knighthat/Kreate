@@ -299,4 +299,52 @@ class PlaylistCsvTest {
             readCsv(StringReader("\uFEFFa,\"b, c\",\"d\ne\",\r\n\nx,y\nx,y,z,w,v")).toList(),
         )
     }
+
+    @Test
+    fun exportifyFileIsReadAsTracksToMatch() {
+        // Exportify's header: more columns than read, a byte order mark, some cells empty
+        val rows = parse(
+            "\uFEFFTrack URI,ISRC,Track Name,Album Name,Artist Name(s),Release Date,Duration (ms),Popularity,Genres,Tempo\n" +
+                    "spotify:track:5cRD,GBUM71903244,\"Solar System\",\"Solar System / Siren\",\"Sub Focus\",2019-07-26,288000,64,\"drum and bass\",173.97\n" +
+                    "spotify:track:3RN6,,\"Redemption, Part 2\",Redemption,\"Camo & Krooked;Mefjus\",2026,285257,53,,175\n"
+        )
+
+        assertEquals(2, rows.size)
+        assertNull(rows[0].playlistName)
+        assertEquals(
+            PlaylistSong(
+                id = "spotify:track:5cRD",
+                origin = null,
+                title = "Solar System",
+                artists = "Sub Focus",
+                duration = 288.seconds,
+                albumName = "Solar System / Siren",
+                albumYear = 2019,
+                matchOnYouTube = true,
+                artistNames = listOf("Sub Focus"),
+                isrc = "GBUM71903244",
+            ),
+            rows[0].song,
+        )
+        val second = rows[1].song
+        // "Camo & Krooked" is one artist, only ";" splits
+        assertEquals(listOf("Camo & Krooked", "Mefjus"), second.artistNames)
+        assertEquals("Camo & Krooked, Mefjus", second.artists)
+        assertEquals("Redemption, Part 2", second.title)
+        assertEquals(2026, second.albumYear)
+        assertEquals(285_257L, second.duration?.inWholeMilliseconds)
+        assertNull(second.isrc)
+    }
+
+    @Test
+    fun exportifyFileNamesGiveThePlaylistName() {
+        assertEquals("Drum and Bass 2026", exportifyPlaylistName("Drum_and_Bass_2026 - 258 songs"))
+        assertEquals(
+            "Drum & Bass 2026 Liquicity",
+            exportifyPlaylistName("Drum_&_Bass_2026_Liquicity")
+        )
+        assertEquals("Japan", exportifyPlaylistName("Japan - 1 song"))
+        assertNull(exportifyPlaylistName("_"))
+        assertNull(exportifyPlaylistName(null))
+    }
 }

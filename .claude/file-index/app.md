@@ -108,7 +108,10 @@ Root
   `stageWithoutRollback`
   build `kreate.db` with `LegacyImport` and a profile list, through `Backup.stageBuilt`. Not wired
   to any screen yet. Rules in `.claude/rules/backup.md`.
-- playlist/`PlaylistCsv.kt` — `PlaylistCsvColumns` (this app's snake_case columns, `HEADER` the
+- playlist/`PlaylistCsv.kt` — `ExportifyCsvColumns` (Spotify playlists exported by Exportify: a
+  header with its four `REQUIRED` columns makes the file one, other columns ignored, artists split
+  by `;`, rows are `matchOnYouTube` tracks without a playlist name; `exportifyPlaylistName` from
+  the file name), `PlaylistCsvColumns` (this app's snake_case columns, `HEADER` the
   export writes; unlike the old app's on purpose so it rejects these files), `LegacyCsvColumns`
   (old Kreate's, import only); reads both kinds (`parsePlaylistCsv`: the kind whose columns the
   header has more of, this app's on a tie; columns in any order, case ignored; a missing,
@@ -126,7 +129,12 @@ Root
   out as `GONE`);
   device songs matched by
   `LocalMatcher` (id + title, else unique title / closest length), OpenSubsonic only stored ones
-  or covers of the server set now), `PlaylistImportReport` with `ImportSkip` reasons,
+  or covers of the server set now), Exportify tracks matched by `matchTracks` (one per ISRC, else
+  title/artists/length: the
+  only stored YouTube song of that folded title within 2 s, else `songMatching` through
+  `BatchSearches` with a `SearchCount` on the placeholders; stops on unreachable, 429 or 5 refusals
+  in a row → `NOT_SEARCHED`, no match → `NO_MATCH`), `tracksToMatch` (the dialog's count),
+  `PlaylistImportReport` with `ImportSkip` reasons,
   `importMessage`/`importFailedMessage`; `importing` (`ImportingPlaylist`s not made yet with their
   `ImportStep`, the Playlists tab's pinned placeholders), `startImport(uri)` → `ImportTask`
   (one import's placeholders: file name while reading, then one per playlist; steps, done, close).

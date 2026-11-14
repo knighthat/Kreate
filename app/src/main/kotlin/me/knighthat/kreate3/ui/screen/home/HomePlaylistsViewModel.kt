@@ -176,9 +176,9 @@ class HomePlaylistsViewModel internal constructor(
     }
 
     /**
-     * Reads the playlist file at [uri]. When it has YouTube songs and the device is online it waits
-     * in [pendingImport] for [answerLookUp], otherwise its local playlists are made right away,
-     * from the file's values. It runs on the app's scope, leaving the tab doesn't stop it; it shows
+     * Reads the playlist file at [uri]. When it has YouTube songs and the device is online, or
+     * tracks of another service to search for, it waits in [pendingImport] for [answerLookUp],
+     * otherwise its local playlists are made right away, from the file's values. It runs on the app's scope, leaving the tab doesn't stop it; it shows
      * in [importing] meanwhile, and the user is told how it went.
      */
     fun importFile(uri: Uri) {
@@ -203,11 +203,13 @@ class HomePlaylistsViewModel internal constructor(
                 .filter { it.origin == Origin.YOUTUBE && it.id.isNotEmpty() }
                 .distinctBy { it.id }
                 .count()
+            // Tracks of another service go in only once searched for, offline too it's asked
+            val tracks = importer.tracksToMatch(playlists)
             // Offline there's nothing to look up with, the file goes in as it is
-            if (youTubeSongs > 0 && context.isOnline()) {
+            if (tracks > 0 || youTubeSongs > 0 && context.isOnline()) {
                 task.playlists(playlists.map { it.name })
                 task.step(ImportStep.WAITING)
-                pendingImports.update { it + PendingImport(playlists, youTubeSongs, task) }
+                pendingImports.update { it + PendingImport(playlists, youTubeSongs, tracks, task) }
             } else {
                 import(playlists, lookUp = false, task)
             }
@@ -225,6 +227,26 @@ class HomePlaylistsViewModel internal constructor(
             pending.task.close()
         else
             scope.launch { import(pending.playlists, lookUp, pending.task) }
+    }
+
+    /**
+     * The answer to [pendingImport] when it has tracks to search for ([PendingImport.tracks]):
+     * `null` drops the import, a name searches for them into a playlist of that name (ends
+     * trimmed). The tracks of an Exportify file are one playlist; a file of several keeps their
+     * names.
+     */
+    fun answerSearch(name: String?) {
+        val pending = pendingImports.value.firstOrNull() ?: return
+        pendingImports.update { it - pending }
+        if (name == null) {
+            pending.task.close()
+            return
+        }
+        val playlists = pending.playlists.singleOrNull()
+            ?.let { listOf(it.copy(name = name.trim())) }
+            ?: pending.playlists
+        pending.task.playlists(playlists.map { it.name })
+        scope.launch { import(playlists, lookUp = false, pending.task) }
     }
 
     private suspend fun import(
@@ -258,10 +280,13 @@ class HomePlaylistsViewModel internal constructor(
  *
  * @property playlists what the file holds
  * @property youTubeSongs how many different YouTube songs it has
+ * @property tracks how many tracks of another service it has to search for, see
+ * [PlaylistImporter.tracksToMatch]; asked about instead of the YouTube songs when there are some
  * @property task its placeholders, closed when the import is dropped
  */
 class PendingImport(
     val playlists: List<PlaylistToImport>,
     val youTubeSongs: Int,
+    val tracks: Int,
     val task: ImportTask,
 )
