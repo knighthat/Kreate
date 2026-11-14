@@ -180,14 +180,8 @@
     <string name="error_reason_import_gone">no longer on %1$s</string>
     <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
     <string name="error_import_playlists">Couldn\'t import playlists: %1$s</string>
-    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. The lines error_import_columns_* follow below it -->
+    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. Shown alone, the wrong columns only go to the app log -->
     <string name="error_import_playlists_bad_columns">Not a playlist file</string>
-    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: the file lacks these columns -->
-    <string name="error_import_columns_missing">Missing columns: %1$s</string>
-    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: the file has each of these columns more than once -->
-    <string name="error_import_columns_repeated">Repeated columns: %1$s</string>
-    <!-- %1$s is a list of column names separated by commas, e.g. "song_id, name" (never translated). Shown under error_import_playlists_bad_columns: playlist files have no such columns -->
-    <string name="error_import_columns_unknown">Unknown columns: %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <string name="error_server_not_configured">Sign in to %1$s in %2$s settings</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->

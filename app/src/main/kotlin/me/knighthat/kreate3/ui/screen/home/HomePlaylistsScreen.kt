@@ -234,7 +234,7 @@ private fun HomePlaylistsContent(
                 entries = { close ->
                     ConfigEntry(
                         R.drawable.upload,
-                        stringResource(R.string.menu_import_playlists),
+                        stringResource(R.string.menu_import_from_file),
                     ) { close(onImport) }
                 },
                 options = {

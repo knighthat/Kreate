@@ -163,7 +163,7 @@ internal fun LyricsButtons(
             }
             HorizontalDivider()
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.menu_import_lyrics_file)) },
+                text = { Text(stringResource(R.string.menu_import_from_file)) },
                 leadingIcon = {
                     Icon(
                         painterResource(R.drawable.insert_drive_file),

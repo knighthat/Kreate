@@ -56,8 +56,6 @@
     <string name="action_reset">Reset</string>
     <string name="action_choose_image">Choose image</string>
     <string name="menu_edit">Edit</string>
-    <!-- In the lyrics' Change source menu: pick a lyrics file (LRC, TTML, text) on the device for this song -->
-    <string name="menu_import_lyrics_file">Import from file…</string>
     <string name="menu_remove_imported_lyrics">Remove imported lyrics</string>
     <string name="action_use_original">Use original</string>
     <string name="action_clear">Clear</string>
@@ -125,6 +123,6 @@
     <string name="action_select">Select</string>
     <string name="action_clear_all">Clear all</string>
     <string name="action_select_all">Select all</string>
-    <!-- Makes playlists out of a playlist file the user picks, e.g. one exported from this app or its old version -->
-    <string name="menu_import_playlists">Import from file</string>
+    <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
+    <string name="menu_import_from_file">Import from file</string>
 </resources>

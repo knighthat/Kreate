@@ -100,8 +100,12 @@ class InvalidHeaderException(
     val repeated: List<String> = emptyList(),
     val unknown: List<String> = emptyList(),
 ) : IllegalArgumentException(
-    "Missing columns: ${missing.joinToString()}; repeated: ${repeated.joinToString()}; " +
-            "unknown: ${unknown.joinToString()}"
+    listOf("missing" to missing, "repeated" to repeated, "unknown" to unknown)
+        .filter { (_, columns) -> columns.isNotEmpty() }
+        // A blank name would show as nothing at all
+        .joinToString("; ", prefix = "Not a playlist file, ") { (kind, columns) ->
+            "$kind columns: " + columns.joinToString { it.ifBlank { "\"\"" } }
+        }
 )
 
 /**

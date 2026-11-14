@@ -663,21 +663,10 @@ fun importMessage(resources: Resources, report: PlaylistImportReport): Message {
 
 /** What to tell the user when an import failed with [error]. */
 fun importFailedMessage(resources: Resources, error: Throwable): Message {
-    val text = if (error is InvalidHeaderException) {
-        val lines = mutableListOf(resources.getString(R.string.error_import_playlists_bad_columns))
-        fun add(columns: List<String>, line: Int) {
-            // A blank name would show as nothing at all
-            if (columns.isNotEmpty())
-                lines += resources.getString(
-                    line,
-                    columns.joinToString(", ") { it.ifBlank { "\"\"" } },
-                )
-        }
-        add(error.missing, R.string.error_import_columns_missing)
-        add(error.repeated, R.string.error_import_columns_repeated)
-        add(error.unknown, R.string.error_import_columns_unknown)
-        lines.joinToString("\n")
-    } else
+    // Which columns are wrong only helps a bug report, the log has them
+    val text = if (error is InvalidHeaderException)
+        resources.getString(R.string.error_import_playlists_bad_columns)
+    else
         resources.getString(
             R.string.error_import_playlists,
             error.localizedMessage ?: resources.getString(R.string.error_reason_unknown),
