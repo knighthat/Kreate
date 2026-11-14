@@ -38,6 +38,8 @@
     <string name="source_better_lyrics" translatable="false">Better Lyrics</string>
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
+    <!-- Shown as a lyrics source, next to LRCLIB etc.: lyrics the user imported from a file on the device for one song -->
+    <string name="source_lyrics_file">Imported file</string>
     <string name="source_musicbrainz" translatable="false">MusicBrainz</string>
 
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->

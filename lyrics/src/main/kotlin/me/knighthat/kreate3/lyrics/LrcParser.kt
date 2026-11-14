@@ -26,8 +26,12 @@ import kotlin.time.Duration.Companion.seconds
 /** A line's time, `[01:02.34]`; the fraction may have 1 to 3 digits, or be missing. */
 private val LINE_TIME = Regex("""\[(\d+):(\d{1,2})(?:[.:](\d{1,3}))?]""")
 
-/** A word's time in enhanced LRC, `<01:02.34>`. */
-private val WORD_TIME = Regex("""<(\d+):(\d{1,2})(?:[.:](\d{1,3}))?>""")
+/**
+ * A word's time in enhanced LRC, `<01:02.34>`. Some editors write it like a line's time,
+ * `[01:02.34]`, after the line's own: inside a line it can only time a word.
+ */
+private val WORD_TIME =
+    Regex("""<(\d+):(\d{1,2})(?:[.:](\d{1,3}))?>|\[(\d+):(\d{1,2})(?:[.:](\d{1,3}))?]""")
 
 private val SPACES = Regex("""\s+""")
 
@@ -36,7 +40,9 @@ private val OFFSET = Regex("""^\s*\[offset:\s*([+-]?\d+)\s*]\s*$""", RegexOption
 
 /** "5", "50" and "500" all are half a second. */
 private fun MatchResult.time(): Duration {
-    val (minutes, seconds, fraction) = destructured
+    // A word's time is in the groups of the brackets it was written with
+    val groups = groupValues.drop(1).chunked(3).first { it[0].isNotEmpty() }
+    val (minutes, seconds, fraction) = groups
     val millis = fraction.padEnd(3, '0').take(3).toInt()
     return minutes.toInt().minutes + seconds.toInt().seconds + millis.milliseconds
 }
@@ -47,6 +53,7 @@ private fun MatchResult.time(): Duration {
  * ```
  * [00:12.00]Is this the real life?
  * [00:12.00]<00:12.00>Is <00:12.40>this <00:12.80>the <00:13.20>real <00:13.90>life?<00:14.60>
+ * [00:12.00]Is [00:12.40]this [00:12.80]the [00:13.20]real [00:13.90]life?[00:14.60]
  * ```
  *
  * Tags like `[ar:…]` are skipped, a line with several times is sung at each of them.
@@ -72,7 +79,9 @@ internal fun parseLrc(text: String): SyncedLyrics? {
         }
         if (starts.isEmpty()) continue
 
-        for (start in starts) {
+        // A first word timed in brackets right after the line's own time reads as a second time
+        // of the line; a line is never sung twice at the same time
+        for (start in starts.distinct()) {
             val words = words(rest, start)
             val lineText = if (words.isEmpty())
                 WORD_TIME.replace(rest, "").trim()

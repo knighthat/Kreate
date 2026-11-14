@@ -43,6 +43,8 @@
     <string name="action_retry">Retry</string>
     <string name="action_undo">Undo</string>
     <string name="action_reload">Reload</string>
+    <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
+    <string name="action_import_lyrics_file">Import from file</string>
     <string name="action_account_switch">Switch</string>
     <string name="action_delete">Delete</string>
     <string name="action_add">Add</string>
@@ -54,6 +56,9 @@
     <string name="action_reset">Reset</string>
     <string name="action_choose_image">Choose image</string>
     <string name="menu_edit">Edit</string>
+    <!-- In the lyrics' Change source menu: pick a lyrics file (LRC, TTML, text) on the device for this song -->
+    <string name="menu_import_lyrics_file">Import from file…</string>
+    <string name="menu_remove_imported_lyrics">Remove imported lyrics</string>
     <string name="action_use_original">Use original</string>
     <string name="action_clear">Clear</string>
     <string name="action_undislike">Undislike</string>

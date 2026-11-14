@@ -94,6 +94,9 @@ interface SongRepository {
     /** Removes the lyrics of the song from every source. */
     suspend fun deleteLyrics(songId: String)
 
+    /** Removes the lyrics of the song from [source], nothing when there are none. */
+    suspend fun deleteLyrics(songId: String, source: LyricsProvider)
+
     /** The room the text of every stored lyrics takes, in bytes, again when it changes. */
     fun lyricsBytes(): Flow<Long>
 }

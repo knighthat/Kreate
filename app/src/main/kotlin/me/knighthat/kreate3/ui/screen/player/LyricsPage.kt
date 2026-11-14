@@ -195,6 +195,15 @@ internal class LyricsControls {
     /** How finely [shown] is drawn, `null` as it loaded. */
     var sync by mutableStateOf<LyricsSync?>(null)
 
+    /** Goes up each time the stored lyrics changed under the page, which loads them again. */
+    var revision by mutableIntStateOf(0)
+        private set
+
+    /** Loads the lyrics again, the stored ones changed. */
+    fun reload() {
+        revision++
+    }
+
     /** Back to the usual lyrics, drawn as they load. */
     fun reset() {
         request = null
@@ -238,6 +247,8 @@ internal fun MediaItem.lyricsQuery(): LyricsQuery? {
  * Lyrics of the song of [query] from one source: the one [request] picked, the one of the settings
  * otherwise.
  *
+ * 0. Lyrics the user imported from a file ([LyricsProvider.FILE]) come before any source's, even
+ *    when the settings say to always fetch, unless [request] picked a source or typed words.
  * 1. The [stored] ones of that source, whatever their timing, unless [remote] asks to fetch them
  *    again or the settings say to always fetch.
  * 2. Otherwise the ones that source finds, [LyricsState.Unavailable] when it has none.
@@ -258,8 +269,15 @@ internal suspend fun loadLyrics(
     stored: suspend (LyricsProvider) -> Lyrics?,
     save: (Lyrics) -> Unit,
 ): LyricsState {
-    val source = finder.source(request?.provider ?: settings.source) ?: finder.sources.first()
     val search = request?.takeIf { it.isSearch }
+    val picked = request?.provider
+    if (search == null && (picked == null || picked == LyricsProvider.FILE)) {
+        stored(LyricsProvider.FILE)?.let { return it.toState(finder, settings) }
+        // Removed since they were picked
+        if (picked == LyricsProvider.FILE) return LyricsState.Missing
+    }
+
+    val source = finder.source(picked ?: settings.source) ?: finder.sources.first()
     if (search == null && !remote && !settings.alwaysLive)
         stored(source.provider)?.let { return it.toState(finder, settings) }
 
@@ -316,7 +334,14 @@ internal fun LyricsPage(
     // Set by the buttons that fetch again, for the next load alone
     var fetchAgain by remember(item.mediaId) { mutableStateOf(false) }
     val request = controls.request
-    val state by produceState<LyricsState>(LyricsState.Loading, item.mediaId, attempt, request) {
+    val revision = controls.revision
+    val state by produceState<LyricsState>(
+        LyricsState.Loading,
+        item.mediaId,
+        attempt,
+        request,
+        revision,
+    ) {
         val remote = fetchAgain
         fetchAgain = false
         value = LyricsState.Loading
@@ -334,7 +359,17 @@ internal fun LyricsPage(
             }
         }
         value = if (query == null) {
-            LyricsState.Missing
+            // Nothing to look up, the user may still have imported some
+            songs.lyricsOf(item.mediaId, LyricsProvider.FILE).first()
+                ?.let {
+                    shown(
+                        it.lyrics,
+                        finder.nameOf(it.source),
+                        it.credit,
+                        LyricsSettings.current()
+                    )
+                }
+                ?: LyricsState.Missing
         } else {
             loadLyrics(
                 query = query,
@@ -358,6 +393,7 @@ internal fun LyricsPage(
     val scaled = remember(density, textSize) {
         Density(density.density, density.fontScale * textSize / 100f)
     }
+    val import = rememberLyricsImport(item, controls)
     CompositionLocalProvider(LocalDensity provides scaled) {
         LyricsPageContent(
             state = state,
@@ -370,6 +406,7 @@ internal fun LyricsPage(
                 fetchAgain = true
                 attempt++
             },
+            onImport = import,
             modifier = modifier,
         )
     }
@@ -388,6 +425,7 @@ private fun LyricsPageContent(
     controller: PlaybackController,
     contentPadding: PaddingValues,
     onFetchAgain: () -> Unit,
+    onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val song = LocalResources.current.itemName(songTitle, R.string.snackbar_this_song)
@@ -442,12 +480,10 @@ private fun LyricsPageContent(
             ) {
                 when (shown) {
                     LyricsState.Loading -> CircularProgressIndicator()
-                    LyricsState.Missing -> Message(
-                        stringResource(
-                            R.string.screen_lyrics_status_missing,
-                            song
-                        )
-                    )
+                    LyricsState.Missing -> {
+                        Message(stringResource(R.string.screen_lyrics_status_missing, song))
+                        ImportButton(onImport)
+                    }
                     is LyricsState.Unavailable -> {
                         Message(
                             stringResource(
@@ -474,6 +510,7 @@ private fun LyricsPageContent(
                             },
                         )
                         Button(onClick = onFetchAgain) { Text(stringResource(R.string.action_reload)) }
+                        ImportButton(onImport)
                     }
 
                     else -> {
@@ -484,6 +521,12 @@ private fun LyricsPageContent(
             }
         }
     }
+}
+
+/** Imports lyrics from a file, offered where no source had any. */
+@Composable
+private fun ImportButton(onImport: () -> Unit) = TextButton(onClick = onImport) {
+    Text(stringResource(R.string.action_import_lyrics_file))
 }
 
 @Composable

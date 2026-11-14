@@ -507,7 +507,9 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         bufferToStart = 1,
         keepPlayed = false,
         lyricsSource = LyricsProvider.LRCLIB,
-        lyricsSources = LyricsProvider.entries.associateWith { stringResource(it.sourceRes) },
+        lyricsSources = LyricsProvider.entries
+            .filter { it != LyricsProvider.FILE }
+            .associateWith { stringResource(it.sourceRes) },
         lyricsSync = LyricsSync.WORD,
         lyricsAlwaysLive = false,
         lyricsTextSize = 100,

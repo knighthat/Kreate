@@ -241,8 +241,13 @@ ui/screen/
   tabs, the app's is under the sheet), `LyricsPage.kt` (`loadLyrics`,
   rules in `.claude/rules/lyrics.md`; `LyricsRequest`/`loadRequested` for bar picks,
   `LyricsControls` hoisted per song in `FullPlayer`, text scaled via `LocalDensity.fontScale` ×
-  `LYRICS_TEXT_SIZE`), `LyricsButtons.kt` (lyrics bar: source menu, search dialog, timing menu, text
-  size stepper, copy), `PlayerButtons.kt` (Player page bar: EQ = system effect panel via
+  `LYRICS_TEXT_SIZE`), `LyricsButtons.kt` (lyrics bar: source menu with the imported file's row,
+  Import from file… and
+  Remove imported lyrics, search dialog, timing menu, text size stepper, copy), `LyricsImport.kt`
+  (`rememberLyricsImport`: file picker → `importLyricsFile` stores the file as
+  `LyricsProvider.FILE` lyrics, file name as credit; `decodeLyricsFile` BOM/UTF-8/legacy charset of
+  the device language, 2 MB cap, NUL = not text; `removeImportedLyrics`), `PlayerButtons.kt` (Player
+  page bar: EQ = system effect panel via
   StartActivityForResult, sleep timer menu with countdown, more button opening the song menu via
   `SongMenuHost.openPlaying`), `QueuePage.kt` (`PlaybackController.queue`,
   rows in `shuffledOrder` while shuffled (queue order while its size lags), tap → `jumpTo` and

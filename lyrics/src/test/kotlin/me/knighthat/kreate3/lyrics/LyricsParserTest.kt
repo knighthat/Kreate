@@ -82,6 +82,26 @@ class LyricsParserTest {
     }
 
     @Test
+    fun enhancedLrcWithBracketedWordTimesHasItsWords() {
+        val lyrics = synced("[00:12.00][00:12.00]Is [00:12.40]this [00:12.80]real?[00:13.50]")
+        val line = lyrics.lines.single()
+
+        assertEquals(LyricsSync.WORD, lyrics.sync)
+        assertEquals("Is this real?", line.text)
+        assertEquals(listOf("Is ", "this ", "real?"), line.words.map { it.text })
+        assertEquals(listOf(12.seconds, 12.4.seconds, 12.8.seconds), line.words.map { it.start })
+        assertEquals(13.5.seconds, line.end)
+    }
+
+    @Test
+    fun plainTextWithBracketedSectionNamesStaysPlain() {
+        val lyrics = parse("[Verse 1]\nFirst line\n[Chorus]\nSecond line")
+
+        assertEquals(LyricsSync.NONE, lyrics.sync)
+        assertEquals("[Verse 1]\nFirst line\n[Chorus]\nSecond line", lyrics.text)
+    }
+
+    @Test
     fun lrcOffsetShowsTheLyricsEarlier() {
         val lyrics = synced("[offset:+500]\n[00:02.00]<00:02.00>la <00:03.00>la")
 

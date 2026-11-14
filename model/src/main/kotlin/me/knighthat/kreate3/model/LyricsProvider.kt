@@ -23,7 +23,7 @@ package me.knighthat.kreate3.model
  * a value.
  *
  * The order is the one sources are asked in when every source is searched: the ones that time
- * lyrics per word first, so a search stops sooner.
+ * lyrics per word first, so a search stops sooner. [FILE] has no source and is never asked.
  */
 enum class LyricsProvider {
     /** The server of the Better Lyrics extension: Apple Music's lyrics, mostly per word. */
@@ -37,4 +37,10 @@ enum class LyricsProvider {
 
     /** YouTube Music, for its own songs: plain. */
     YOUTUBE,
+
+    /**
+     * A file the user imported for the song: plain text, LRC, enhanced LRC or TTML. Not a source
+     * that is asked, the lyrics are only ever stored.
+     */
+    FILE,
 }

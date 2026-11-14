@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -51,16 +52,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.lyrics.LyricsFinder
+import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Preferences
@@ -69,7 +76,7 @@ import me.knighthat.kreate3.ui.component.Tooltip
 import org.koin.compose.koinInject
 
 /**
- * The buttons of [LyricsPage]: lyrics of another source, a search of every source with other
+ * The buttons of [LyricsPage]: lyrics of another source or imported from a file, a search of every source with other
  * words, how finely the lyrics are timed, how large their text is, and copying them. Those that
  * change the lyrics shown are in the primary color while they do.
  */
@@ -80,6 +87,8 @@ internal fun LyricsButtons(
     modifier: Modifier = Modifier,
     finder: LyricsFinder = koinInject(),
     notifier: Notifier = koinInject(),
+    songs: SongRepository = koinInject(),
+    appScope: CoroutineScope = koinInject(),
 ) = Row(
     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     verticalAlignment = Alignment.CenterVertically,
@@ -94,19 +103,26 @@ internal fun LyricsButtons(
     val scope = rememberCoroutineScope()
     var menu by remember { mutableStateOf<LyricsMenu?>(null) }
     var searching by remember { mutableStateOf(false) }
+    val resources = LocalResources.current
+    val import = rememberLyricsImport(item, controls)
+    val imported by remember(item.mediaId) {
+        songs.lyricsOf(item.mediaId, LyricsProvider.FILE).map { it != null }
+    }.collectAsStateWithLifecycle(false)
 
     Box {
         ModeButton(
             icon = R.drawable.swap_horiz,
             description = stringResource(R.string.semantic_change_source),
             isOn = request?.provider != null,
-            enabled = searchable,
+            // Importing a file needs no lookup
+            enabled = true,
             onClick = { menu = LyricsMenu.SOURCE },
         )
         DropdownMenu(expanded = menu == LyricsMenu.SOURCE, onDismissRequest = { menu = null }) {
             finder.sources.forEach { source ->
                 DropdownMenuItem(
                     text = { Text(source.name) },
+                    enabled = searchable,
                     // Room for the check on every row, the names line up
                     leadingIcon = {
                         if (shown?.source == source.name) {
@@ -125,6 +141,54 @@ internal fun LyricsButtons(
                     },
                 )
             }
+            if (imported) {
+                val fileName = stringResource(R.string.source_lyrics_file)
+                DropdownMenuItem(
+                    text = { Text(fileName) },
+                    leadingIcon = {
+                        if (shown?.source == fileName) {
+                            Icon(
+                                painterResource(R.drawable.check),
+                                contentDescription = stringResource(R.string.semantic_shown)
+                            )
+                        } else {
+                            Spacer(Modifier.size(24.dp))
+                        }
+                    },
+                    onClick = {
+                        menu = null
+                        controls.request = LyricsRequest(provider = LyricsProvider.FILE)
+                    },
+                )
+            }
+            HorizontalDivider()
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.menu_import_lyrics_file)) },
+                leadingIcon = {
+                    Icon(
+                        painterResource(R.drawable.insert_drive_file),
+                        contentDescription = null
+                    )
+                },
+                onClick = {
+                    menu = null
+                    import()
+                },
+            )
+            if (imported)
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.menu_remove_imported_lyrics)) },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(R.drawable.delete),
+                            contentDescription = null
+                        )
+                    },
+                    onClick = {
+                        menu = null
+                        removeImportedLyrics(item, controls, resources, songs, notifier, appScope)
+                    },
+                )
         }
     }
     ModeButton(

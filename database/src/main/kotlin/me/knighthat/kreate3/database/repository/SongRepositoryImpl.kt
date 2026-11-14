@@ -115,6 +115,9 @@ internal class SongRepositoryImpl(
 
     override suspend fun deleteLyrics(songId: String) = lyricsDao.delete(songId)
 
+    override suspend fun deleteLyrics(songId: String, source: LyricsProvider) =
+        lyricsDao.delete(songId, source)
+
     override fun lyricsBytes(): Flow<Long> = lyricsDao.bytes()
 
     override suspend fun update(songId: String, transform: (Song) -> Song) {

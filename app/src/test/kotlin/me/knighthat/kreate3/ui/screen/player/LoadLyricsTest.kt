@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.player
 
+import android.content.Context
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.lyrics.FoundLyrics
@@ -33,7 +34,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import java.io.IOException
 
 // For android.util.Log
@@ -278,4 +283,69 @@ class LoadLyricsTest {
             ),
         )
     }
+
+    // <editor-fold desc="Imported file">
+    /** Names [LyricsProvider.FILE], which has no source, from the app's strings. */
+    private fun <T> withApp(block: () -> T): T {
+        startKoin {
+            modules(module { single<Context> { RuntimeEnvironment.getApplication() } })
+        }
+        return try {
+            block()
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun importedLyricsComeBeforeTheChosenSourceEvenWhenAlwaysLive() = withApp {
+        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
+
+        val state = load(
+            LyricsFinder(listOf(chosenSource)),
+            settings(alwaysLive = true),
+            stored = listOf(stored(chosen), stored(LyricsProvider.FILE, LyricsSync.LINE)),
+        )
+
+        assertEquals("${LyricsProvider.FILE} stored", (state as LyricsState.Found).text)
+        assertEquals("Imported file", state.source)
+        assertEquals(0, chosenSource.asked)
+        assertTrue(saved.isEmpty())
+    }
+
+    @Test
+    fun aPickedSourceShowsItsLyricsOverTheImportedOnes() {
+        val state = load(
+            LyricsFinder(listOf(FakeSource(chosen), FakeSource(other))),
+            request = LyricsRequest(provider = other),
+            stored = listOf(stored(LyricsProvider.FILE), stored(other)),
+        )
+
+        assertEquals("$other stored", (state as LyricsState.Found).text)
+    }
+
+    @Test
+    fun aSearchSkipsTheImportedLyrics() {
+        val state = load(
+            LyricsFinder(listOf(FakeSource(chosen, LyricsSync.LINE))),
+            request = LyricsRequest(title = "Typed"),
+            stored = listOf(stored(LyricsProvider.FILE)),
+        )
+
+        assertEquals("$chosen lyrics", (state as LyricsState.Found).text)
+    }
+
+    @Test
+    fun pickedImportedLyricsThatWereRemovedAreMissing() {
+        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
+
+        val state = load(
+            LyricsFinder(listOf(chosenSource)),
+            request = LyricsRequest(provider = LyricsProvider.FILE),
+        )
+
+        assertEquals(LyricsState.Missing, state)
+        assertEquals(0, chosenSource.asked)
+    }
+    // </editor-fold>
 }

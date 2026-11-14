@@ -48,6 +48,13 @@
     <string name="error_playlist_changed_on_server">The playlist changed on the server, your changes weren\'t saved</string>
     <string name="error_queue_every_song">Couldn\'t get all songs</string>
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
+    <string name="error_lyrics_file_unreadable">Couldn\'t read the file</string>
+    <string name="error_lyrics_file_too_large">The file is too large to be lyrics</string>
+    <!-- The picked file is a song, a picture etc., not a text file -->
+    <string name="error_lyrics_file_not_text">The file isn\'t a text file</string>
+    <string name="error_lyrics_file_empty">No lyrics found in the file</string>
+    <string name="error_lyrics_import">Couldn\'t save the lyrics</string>
+    <string name="error_remove_imported_lyrics">Couldn\'t remove the imported lyrics</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <string name="error_unreachable">Can\'t reach %1$s</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
@@ -257,6 +264,10 @@
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
     <string name="snackbar_will_play_next">Will play %1$s next</string>
     <string name="snackbar_lyrics_copied">Lyrics copied</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_lyrics_imported">Lyrics imported for %1$s</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_imported_lyrics_removed">Removed the imported lyrics of %1$s</string>
     <string name="snackbar_turn_shuffle_off">Turn shuffle off to move songs</string>
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
     <string name="snackbar_added_to_playlist">Added to %1$s</string>

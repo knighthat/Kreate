@@ -12,13 +12,16 @@ The `lyrics` table has one row per (song_id, source). Lyrics are stored raw and 
 
 Loading rules (`loadLyrics` in `LyricsPage.kt`); don't change them without asking:
 
+0. Lyrics imported from a file (`LyricsProvider.FILE`, `LyricsImport.kt`) show before any source's,
+   even with `LYRICS_ALWAYS_LIVE`, unless a source was picked from the bar or words were typed.
+   `FILE` is never a `LyricsSource`, never in the settings' source list, and only ever stored.
 1. Opening the page: if the DB has a row for the source from settings (`LYRICS_SOURCE`), show it
    whatever its timing; else fetch from that source.
 2. Changing source from the bar: same check for the picked source.
 
 - No lyrics from a source: "<source> has no lyrics for this song." + "Press Change source below to
   pick another source." + a **Reload** button that fetches that source again, skipping the DB.
-- `LYRICS_ALWAYS_LIVE` neither reads nor writes the DB.
+- `LYRICS_ALWAYS_LIVE` neither reads nor writes the DB for sources (imported lyrics still show).
 
 Judgment calls the maintainer hasn't confirmed (ask once, the next time this area changes): a
 fetch replaces that source's row; Retry also skips the DB; typed-word search asks every source and

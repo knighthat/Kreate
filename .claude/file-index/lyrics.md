@@ -14,7 +14,8 @@ Depends only on `:model` (api) plus Ktor/serialization/Koin.
   text, `words`, `background`) / `LyricsWord`; `coarsenedTo(sync)`.
 - `LyricsParser.kt` — main-safe `parseLyrics(text)` sniffs the format (`<` TTML, `{` LyricsPlus,
   LRC, else plain; unreadable → plain), `parseClock`, `withEnds`. `LrcParser.kt` (LRC + enhanced
-  LRC, offset, multi-time lines), `TtmlParser.kt` (SAX, namespace-aware: p/span, x-bg backing lines,
+  LRC with `<…>` or inline `[…]` word times, offset, multi-time lines), `TtmlParser.kt` (SAX,
+  namespace-aware: p/span, x-bg backing lines,
   itunes:timing), `LyricsPlusParser.kt` (syllabus, isBackground).
 - `LyricsFinder.kt` — asks sources in order, never in parallel; `find(query, wanted, exclude)` stops
   at `wanted` sync, else most finely timed; `LyricsException` when nothing found and a source

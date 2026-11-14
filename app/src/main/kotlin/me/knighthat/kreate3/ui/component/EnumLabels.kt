@@ -59,6 +59,7 @@ val LyricsProvider.sourceRes: Int
         LyricsProvider.LYRICS_PLUS -> R.string.source_lyrics_plus
         LyricsProvider.LRCLIB -> R.string.source_lrclib
         LyricsProvider.YOUTUBE -> R.string.source_ytm
+        LyricsProvider.FILE -> R.string.source_lyrics_file
     }
 
 @get:StringRes

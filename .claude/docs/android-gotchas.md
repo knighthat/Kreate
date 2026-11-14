@@ -210,3 +210,11 @@ field the Compose compiler adds for stability. It happened twice; a `--rerun-tas
 - Made a top-level class (state passed in), an incremental build of the same kind ran fine.
 - A class held by a class of another file, in `:app`, is better top-level than `inner`.
 - Seen that crash anyway: a clean build is the first thing to try, before suspecting the code.
+
+## Text files of unknown encoding
+
+`android.icu.text.CharsetDetector` (and the rest of ICU's charset detection) isn't in the public
+SDK: code using it doesn't compile. A user's text file (lyrics, playlists) is read as: byte order
+mark → UTF-8/UTF-16; else a strict UTF-8 decode (`CodingErrorAction.REPORT`); else the legacy
+encoding of the device's language (`legacyCharset` in `LyricsImport.kt`), else Windows-1252, which
+reads any byte. Guessing from the bytes alone mixes up Chinese, Japanese and Korean.
