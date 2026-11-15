@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.theme
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -28,12 +29,14 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.core.view.WindowCompat
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
@@ -393,6 +396,17 @@ fun KreateTheme(
         }
 
         else -> staticColorScheme(darkTheme, contrastLevel)
+    }
+
+    // Edge-to-edge picks the bar icons from the system's mode, a theme forced to dark or light
+    // (Pitch black on a light phone) would get unreadable icons
+    val window = LocalActivity.current?.window
+    SideEffect {
+        if (window == null) return@SideEffect
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !darkTheme
+            isAppearanceLightNavigationBars = !darkTheme
+        }
     }
 
     CompositionLocalProvider(LocalChartColors provides chartColors(darkTheme)) {
