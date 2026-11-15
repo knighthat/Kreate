@@ -23,16 +23,16 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.utils.IS_ANDROID_13_AND_UP
 
 /** Whether a notification would show, Android 13 and later ask the user first. */
 internal fun Context.canPostNotifications(): Boolean =
     NotificationManagerCompat.from(this).areNotificationsEnabled()
-            && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+            && (!IS_ANDROID_13_AND_UP
             || ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
             == PackageManager.PERMISSION_GRANTED)
 

@@ -20,11 +20,11 @@ package me.knighthat.kreate3.source.local
 
 import android.content.ContentResolver
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import me.knighthat.kreate3.database.model.LocalAlbum
 import me.knighthat.kreate3.database.model.LocalArtist
 import me.knighthat.kreate3.database.model.LocalSong
+import me.knighthat.kreate3.utils.IS_ANDROID_10_AND_UP
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -107,7 +107,7 @@ class MediaStoreScanner(private val resolver: ContentResolver) {
 
     // Volumes exist since Android 10, they include storage the device can add, like an SD card
     private fun collection(): Uri =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        if (IS_ANDROID_10_AND_UP)
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         else
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

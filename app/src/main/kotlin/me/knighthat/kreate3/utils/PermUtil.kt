@@ -23,7 +23,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -38,7 +37,7 @@ private tailrec fun Context.findActivity(): Activity = when (this) {
  * Permission needed to read the music on the device, it depends on the Android version.
  */
 val AUDIO_PERMISSION: String =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+    if (IS_ANDROID_13_AND_UP)
         Manifest.permission.READ_MEDIA_AUDIO
     else
         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -68,7 +67,7 @@ fun Context.shouldShowRequestPermissionRationale(permission: String): Boolean =
  */
 fun Context.hasNotificationPermission(): Boolean =
     // Before Android 13 notifications don't need a permission
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || isPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)
+    !IS_ANDROID_13_AND_UP || isPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)
 
 /**
  * @return Whether user has granted app permission to read music on the device

@@ -21,7 +21,6 @@ package me.knighthat.kreate3.ui.screen.settings.general
 import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
-import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -81,6 +80,7 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
 import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
+import me.knighthat.kreate3.utils.IS_ANDROID_11_AND_UP
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlow
@@ -350,7 +350,7 @@ private fun GeneralSettingsContent(
         )
 
         // The window needs Android 11, older versions don't get the setting
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (IS_ANDROID_11_AND_UP) {
             SettingsSection(stringResource(R.string.setting_header_picture_in_picture))
             SwitchSetting(
                 title = stringResource(R.string.setting_header_picture_in_picture),

@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.theme
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.ui.component.memoryCacheKey
 import me.knighthat.kreate3.ui.component.rememberSongThumbnails
+import me.knighthat.kreate3.utils.IS_ANDROID_8_AND_UP
 import kotlin.math.roundToInt
 
 private const val SAMPLE_SIZE = 48
@@ -143,5 +143,5 @@ private suspend fun load(context: Context, loader: ImageLoader, model: Any): Ima
 
 /** Whether this is a hardware bitmap, whose pixels can't be read or drawn on a software canvas. */
 private fun Image.isHardware(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+    IS_ANDROID_8_AND_UP &&
             (this as? BitmapImage)?.bitmap?.config == Bitmap.Config.HARDWARE

@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.player
 
 import android.content.ClipData
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,6 +72,7 @@ import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.Tooltip
+import me.knighthat.kreate3.utils.IS_ANDROID_13_AND_UP
 import org.koin.compose.koinInject
 
 /**
@@ -261,7 +261,7 @@ internal fun LyricsButtons(
                 clipboard.setClipEntry(ClipData.newPlainText("Lyrics", text).toClipEntry())
             }
             // Newer versions show what was copied themselves
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) notifier.post(lyricsCopied)
+            if (!IS_ANDROID_13_AND_UP) notifier.post(lyricsCopied)
         },
     )
 

@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Build
 import android.os.Parcel
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
@@ -72,6 +71,7 @@ import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.utils.IS_ANDROID_9_AND_UP
 import kotlin.time.Clock
 
 /** Where a song of a server or YouTube is kept on the device, see [SongDownloads.songs]. */
@@ -800,7 +800,7 @@ private fun Context.batteryLow(): Flow<Boolean> = callbackFlow {
 
 /** Whether this [Intent.ACTION_BATTERY_CHANGED] says the battery is low. */
 private fun Intent.isLow(): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+    if (IS_ANDROID_9_AND_UP)
         return getBooleanExtra(BatteryManager.EXTRA_BATTERY_LOW, false)
     val level = getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
     val scale = getIntExtra(BatteryManager.EXTRA_SCALE, -1)

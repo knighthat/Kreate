@@ -20,8 +20,8 @@ package me.knighthat.kreate3.font
 
 import android.content.Context
 import android.graphics.Typeface
-import android.os.Build
 import me.knighthat.kreate3.preferences.Profile
+import me.knighthat.kreate3.utils.IS_ANDROID_8_AND_UP
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -161,7 +161,7 @@ class FontFiles(context: Context) {
 
     /** Whether the system loads [file] as a font, which a check of its header can't tell. */
     private fun loads(file: File): Boolean = try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (IS_ANDROID_8_AND_UP)
             Typeface.Builder(file).build() != null
         else
             Typeface.createFromFile(file) != null

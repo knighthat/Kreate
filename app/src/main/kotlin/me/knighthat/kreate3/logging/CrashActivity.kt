@@ -23,7 +23,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.widget.Toast
@@ -71,6 +70,8 @@ import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
+import me.knighthat.kreate3.utils.IS_ANDROID_13_AND_UP
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -112,7 +113,7 @@ class CrashActivity : ComponentActivity() {
         val clipboard = getSystemService(ClipboardManager::class.java)
         clipboard.setPrimaryClip(ClipData.newPlainText("Kreate crash log", log))
         // Android 13+ shows its own confirmation
-        if (Build.VERSION.SDK_INT < 33)
+        if (!IS_ANDROID_13_AND_UP)
             Toast.makeText(this, R.string.snackbar_log_copied, Toast.LENGTH_SHORT).show()
     }
 
@@ -155,7 +156,7 @@ private fun CrashTheme(content: @Composable () -> Unit) {
     val dark = isSystemInDarkTheme()
     val context = LocalContext.current
     val colors: ColorScheme = when {
-        Build.VERSION.SDK_INT >= 31 ->
+        IS_ANDROID_12_AND_UP ->
             if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 
         dark -> darkColorScheme()

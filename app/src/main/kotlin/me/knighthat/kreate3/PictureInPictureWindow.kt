@@ -35,6 +35,7 @@ import androidx.annotation.StringRes
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.ui.screen.player.LYRICS_WINDOW_HEIGHT
 import me.knighthat.kreate3.ui.screen.player.LYRICS_WINDOW_WIDTH
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
 
 /** What the buttons of the picture-in-picture window ask for. */
 internal enum class PictureInPictureCommand(
@@ -74,7 +75,7 @@ internal fun Context.pictureInPictureParams(
             listOf(PictureInPictureCommand.PREVIOUS, middle, PictureInPictureCommand.NEXT)
                 .map { remoteAction(it) }
         )
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    if (IS_ANDROID_12_AND_UP)
         builder.setAutoEnterEnabled(autoEnter)
     return builder.build()
 }

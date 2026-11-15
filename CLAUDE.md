@@ -33,6 +33,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
   `withContext(Dispatchers.Default)` (a custom `PagingSource.load` too, Paging calls it on the
   collector's thread); long CPU work in the background runs on threads at
   `THREAD_PRIORITY_BACKGROUND`.
+- Android version checks use `IS_ANDROID_<n>_AND_UP` from `utils/AndroidVersion.kt` (`!` for
+  below), not `Build.VERSION.SDK_INT`; add a missing version there.
 - Rules load from `.claude/rules/` by the paths they cover; `.claude/rule-index.md` lists which
   rule or doc covers a topic. Check it before work no loaded rule covers (builds, planning, a new
   area), and read only the rule or doc it names. Read `.claude/docs/` when a rule points there.

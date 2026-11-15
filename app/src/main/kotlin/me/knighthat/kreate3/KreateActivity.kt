@@ -74,6 +74,8 @@ import me.knighthat.kreate3.ui.screen.KreateApp
 import me.knighthat.kreate3.ui.screen.SetupWizardScreen
 import me.knighthat.kreate3.ui.screen.player.PictureInPicture
 import me.knighthat.kreate3.ui.screen.setupCompletedFile
+import me.knighthat.kreate3.utils.IS_ANDROID_11_AND_UP
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -179,7 +181,7 @@ class KreateActivity : ComponentActivity() {
         // to set up. A screen asking meanwhile waits for these instead of making its own.
         lifecycleScope.launch(Dispatchers.Default) { get<Providers>() }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) watchPictureInPicture()
+        if (IS_ANDROID_11_AND_UP) watchPictureInPicture()
 
         lifecycleScope.launch {
             Preferences.awaitLoaded()
@@ -265,7 +267,7 @@ class KreateActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        if (isSetup && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (isSetup && IS_ANDROID_11_AND_UP) {
             // The window may have been closed while the app was stopped
             get<PictureInPicture>().isActive = isInPictureInPictureMode
             val receiver = PictureInPictureReceiver(get())
@@ -381,7 +383,7 @@ class KreateActivity : ComponentActivity() {
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         // Android 12 and up opens it by itself, see pictureInPictureParams
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R)
+        if (IS_ANDROID_11_AND_UP && !IS_ANDROID_12_AND_UP)
             pictureInPictureParams?.let { enterPictureInPictureMode(it) }
     }
 

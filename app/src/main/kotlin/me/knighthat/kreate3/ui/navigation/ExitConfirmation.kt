@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.navigation
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.PredictiveBackHandler
@@ -40,6 +39,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.utils.IS_ANDROID_10_AND_UP
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
 import kotlin.time.Duration.Companion.seconds
 
 /** Value of the system's navigation mode when the user goes back with a swipe. */
@@ -50,7 +51,7 @@ private const val NAVIGATION_MODE_GESTURAL = 2
  * the back event itself doesn't say, before predictive back.
  */
 private fun Context.usesGestureNavigation(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && try {
+    IS_ANDROID_10_AND_UP && try {
         Settings.Secure.getInt(contentResolver, "navigation_mode", 0) == NAVIGATION_MODE_GESTURAL
     } catch (_: Exception) {
         false
@@ -61,7 +62,7 @@ private fun Context.usesGestureNavigation(): Boolean =
  * Android 12 the task only moves to the back, before that the activity finishes.
  */
 private fun Activity.exit() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !moveTaskToBack(false)) finish()
+    if (!IS_ANDROID_12_AND_UP || !moveTaskToBack(false)) finish()
 }
 
 /**

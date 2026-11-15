@@ -24,7 +24,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -55,6 +54,7 @@ import me.knighthat.kreate3.notification.DownloadNotifications.Companion.MAX_SHO
 import me.knighthat.kreate3.notification.DownloadNotifications.Companion.RECENT_MS
 import me.knighthat.kreate3.notification.DownloadNotifications.Companion.SUMMARY_DELAY_MS
 import me.knighthat.kreate3.playback.PlaybackService
+import me.knighthat.kreate3.utils.IS_ANDROID_8_AND_UP
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -462,7 +462,7 @@ class DownloadNotifications(
     )
 
     private fun foregroundService(intent: Intent, requestCode: Int = 0): PendingIntent =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (IS_ANDROID_8_AND_UP)
             PendingIntent.getForegroundService(context, requestCode, intent, PENDING_FLAGS)
         else
             PendingIntent.getService(context, requestCode, intent, PENDING_FLAGS)

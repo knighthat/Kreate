@@ -24,7 +24,6 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.os.Build
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.core.app.ServiceCompat
@@ -77,6 +76,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.utils.IS_ANDROID_10_AND_UP
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -717,7 +717,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 this,
                 id,
                 notification,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                if (IS_ANDROID_10_AND_UP)
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
                 else
                     0,

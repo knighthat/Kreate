@@ -21,7 +21,6 @@ package me.knighthat.kreate3
 import android.app.LocaleManager
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import android.os.LocaleList
 import androidx.annotation.RequiresApi
 import androidx.core.content.edit
@@ -33,6 +32,7 @@ import me.knighthat.kreate3.AppLanguage.FILE
 import me.knighthat.kreate3.AppLanguage.displayName
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.ProfileManager
+import me.knighthat.kreate3.utils.IS_ANDROID_13_AND_UP
 import java.text.Collator
 import java.util.Locale
 
@@ -94,7 +94,7 @@ object AppLanguage {
                 Preferences.awaitProfile(profileId)
 
                 val shown = shown(context)
-                if (Build.VERSION.SDK_INT >= 33 && system(context) != shown) {
+                if (IS_ANDROID_13_AND_UP && system(context) != shown) {
                     takeFromSystem(context)
                     return@collectLatest
                 }
@@ -108,7 +108,7 @@ object AppLanguage {
      * configuration changes. Android 13+ only, older versions have no such setting.
      */
     fun takeFromSystem(context: Context) {
-        if (Build.VERSION.SDK_INT < 33) return
+        if (!IS_ANDROID_13_AND_UP) return
         val tag = system(context)
         if (tag == shown(context)) return
 
@@ -121,7 +121,7 @@ object AppLanguage {
      * services. Android 13+ does this itself, [base] is returned as is there.
      */
     fun wrap(base: Context): Context {
-        if (Build.VERSION.SDK_INT >= 33) return base
+        if (IS_ANDROID_13_AND_UP) return base
         val tag = shown(base).ifEmpty { return base }
         val locale = Locale.forLanguageTag(tag)
 
@@ -147,7 +147,7 @@ object AppLanguage {
 
     private fun show(context: Context, scope: CoroutineScope, tag: String) {
         remember(context, tag)
-        if (Build.VERSION.SDK_INT >= 33) {
+        if (IS_ANDROID_13_AND_UP) {
             context.getSystemService(LocaleManager::class.java).applicationLocales =
                 if (tag.isEmpty()) LocaleList.getEmptyLocaleList() else LocaleList.forLanguageTags(
                     tag

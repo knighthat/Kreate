@@ -22,7 +22,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
@@ -36,6 +35,7 @@ import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.toMediaItem
+import me.knighthat.kreate3.utils.IS_ANDROID_10_AND_UP
 import me.knighthat.kreate3.utils.hasAudioPermission
 import java.io.File
 import java.io.IOException
@@ -237,7 +237,7 @@ class OpenedFiles(
     }
 
     private fun collection(): Uri =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        if (IS_ANDROID_10_AND_UP)
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         else
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

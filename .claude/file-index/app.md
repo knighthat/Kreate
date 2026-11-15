@@ -276,7 +276,8 @@ auto/ (Android Auto, browsed through `PlaybackService`)
 preferences/`PreferenceDsl.kt` — `Preference<T>`/`Secret` `.collectAsStateWithLifecycle()` for
 Compose.
 
-utils/ — `PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
+utils/ — `AndroidVersion.kt` (`IS_ANDROID_<n>_AND_UP` version checks lint reads as SDK_INT checks),
+`PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
 `Modifier.verticalScrollbar`).
 
 English texts: `res/values/*.strings.xml` by kind (`common` app name, sources, units; `statuses`;

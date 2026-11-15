@@ -18,11 +18,11 @@
 
 package me.knighthat.kreate3.logging
 
-import android.os.Build
 import android.os.SystemClock
 import androidx.work.ListenableWorker
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
 
 /**
  * Runs [work] of a background task and logs how it went under [tag]: that it started and on which
@@ -41,7 +41,7 @@ internal suspend fun ListenableWorker.logged(
         return result
     } catch (e: CancellationException) {
         Logger.i(tag = tag) {
-            val reason = if (Build.VERSION.SDK_INT >= 31) ", reason code $stopReason" else ""
+            val reason = if (IS_ANDROID_12_AND_UP) ", reason code $stopReason" else ""
             "Stopped after ${SystemClock.elapsedRealtime() - start} ms$reason"
         }
         throw e

@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.font.FontFamily
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.utils.IS_ANDROID_12_AND_UP
 import com.materialkolor.dynamicColorScheme as seededColorScheme
 
 @Composable
@@ -387,7 +387,7 @@ fun KreateTheme(
             staticColorScheme(darkTheme = true, contrastLevel).pitchBlack(contrastLevel)
 
         // Dynamic color is available on Android 12+, it has no contrast levels
-        dynamicColor && contrastLevel == ContrastLevel.NORMAL && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && contrastLevel == ContrastLevel.NORMAL && IS_ANDROID_12_AND_UP -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

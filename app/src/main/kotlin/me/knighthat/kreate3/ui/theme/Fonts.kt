@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3.ui.theme
 
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,6 +37,7 @@ import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.utils.IS_ANDROID_8_AND_UP
 import org.koin.compose.koinInject
 import java.io.File
 
@@ -77,7 +77,7 @@ fun rememberInstalledFont(slot: FontSlot): InstalledFont? {
  */
 @OptIn(ExperimentalTextApi::class)
 fun fontFamilyOf(file: File): FontFamily =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Sfnt.isVariable(file)) {
+    if (IS_ANDROID_8_AND_UP && Sfnt.isVariable(file)) {
         FontFamily(
             weights.map { weight ->
                 Font(
