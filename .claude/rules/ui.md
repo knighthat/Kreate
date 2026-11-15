@@ -74,6 +74,12 @@ charts: `.claude/docs/charts.md`.
   that can't apply right now is grayed out (`enabled = false`), not hidden (Playlists' Monthly
   only).
 
+## Navigation
+
+- Screens open with `TopLevelBackStack.push` (`Navigator.open`), which goes back to a page the tab
+  already has open instead of stacking a copy (maintainer, 2026-11-15). A route carrying what only
+  shows while its page loads (name, picture) overrides `Route.screen` to leave it out.
+
 ## Menus and hints
 
 - A tap on an album, artist or playlist doesn't ripple (cards with `indication = null`, rows with

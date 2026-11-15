@@ -173,7 +173,8 @@ ui/navigation/
   (`OPENED_NAME`/`OPENED_PICTURE`, read as `OpenedItem`).
 - `Navigator.kt` (2026-10-20) — `Navigator(current, open)` + `LocalNavigator`, provided by
   KreateApp, for opening screens from components that don't own the back stack (song menu).
-- `TopLevelBackStack.kt` — one back stack per Tab.
+- `TopLevelBackStack.kt` — one back stack per Tab; `push` goes back to a page the tab already has
+  open (`Route.screen`: detail routes without the name/picture they were opened with).
 - `RouteViewModel.kt` — `routeExtras`: route args → ViewModel `SavedStateHandle`.
 - `RouteResults.kt` — pages opened for an answer like an activity result: `rememberRouteResult`
   (key saved, `RouteLauncher.launch(input)`, answer delivered once the opener is back),

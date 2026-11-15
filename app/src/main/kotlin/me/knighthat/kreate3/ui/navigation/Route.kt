@@ -41,6 +41,13 @@ sealed interface Route : NavKey {
      * What the screen's ViewModel reads from its `SavedStateHandle`, see [routeViewModel].
      */
     val arguments: Bundle get() = Bundle.EMPTY
+
+    /**
+     * Which page this is: two routes with the same screen show the same page, see
+     * [TopLevelBackStack.push]. The route itself unless it carries what is only shown while the
+     * page loads, like the name and picture it was opened with.
+     */
+    val screen: Any get() = this
 }
 
 @Serializable
@@ -287,6 +294,8 @@ data class LocalAlbum(
 
     override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
 
+    override val screen: Any get() = copy(name = null, picture = null)
+
     companion object {
         const val ID = "albumId"
     }
@@ -306,6 +315,8 @@ data class LocalArtist(
 ) : Route {
 
     override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 
     companion object {
         const val ID = "artistId"
@@ -392,6 +403,8 @@ data class OpenSubsonicAlbum(
 ) : Route {
 
     override val arguments: Bundle get() = openedArguments(LocalAlbum.ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 }
 
 /**
@@ -405,6 +418,8 @@ data class OpenSubsonicArtist(
 ) : Route {
 
     override val arguments: Bundle get() = openedArguments(LocalArtist.ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 }
 
 /**
@@ -449,6 +464,8 @@ data class YouTubeAlbum(
 ) : Route {
 
     override val arguments: Bundle get() = openedArguments(LocalAlbum.ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 }
 
 /**
@@ -462,6 +479,8 @@ data class YouTubeArtist(
 ) : Route {
 
     override val arguments: Bundle get() = openedArguments(LocalArtist.ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 }
 
 /**

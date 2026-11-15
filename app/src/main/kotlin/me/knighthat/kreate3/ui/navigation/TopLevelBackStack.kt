@@ -50,8 +50,20 @@ class TopLevelBackStack internal constructor(
         this.tab.value = tab
     }
 
+    /**
+     * Opens [route] in the current tab. A page the tab already has open ([Route.screen]), like
+     * the artist of an album opened from that artist's page, is gone back to instead of opened
+     * again, so going back never passes the same page twice.
+     */
     fun push(route: Route) {
-        stacks.getValue(currentTab).add(route)
+        val stack = stacks.getValue(currentTab)
+        val open = stack.indexOfLast { (it as? Route)?.screen == route.screen }
+        if (open == -1) {
+            stack.add(route)
+        } else {
+            // One change, the screens above it leave together
+            stack.subList(open + 1, stack.size).clear()
+        }
     }
 
     fun pop() {

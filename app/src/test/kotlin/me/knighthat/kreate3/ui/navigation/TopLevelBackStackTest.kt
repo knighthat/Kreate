@@ -86,6 +86,66 @@ class TopLevelBackStackTest {
     }
 
     @Test
+    fun aPageAlreadyOpenIsGoneBackTo() {
+        stack.switchTab(Tab.ARTISTS)
+        stack.push(LocalArtist("r1", "Artist", "picture"))
+        stack.push(LocalAlbum("a1", "Album", "cover"))
+
+        // Opened from the album's page, which knows only the id
+        stack.push(LocalArtist("r1"))
+
+        assertEquals(
+            listOf(Songs, Artists, LocalArtist("r1", "Artist", "picture")),
+            stack.backStack
+        )
+    }
+
+    @Test
+    fun anAlbumOpenedAgainLeavesEverythingAboveIt() {
+        stack.switchTab(Tab.ALBUMS)
+        stack.push(YouTubeAlbum("a1", "Album"))
+        stack.push(YouTubeArtist("r1", "Artist"))
+        stack.push(YouTubeAlbum("a2", "Other"))
+
+        stack.push(YouTubeAlbum("a1"))
+
+        assertEquals(listOf(Songs, Albums, YouTubeAlbum("a1", "Album")), stack.backStack)
+    }
+
+    @Test
+    fun theOpenPageOpenedAgainStays() {
+        stack.switchTab(Tab.ALBUMS)
+        stack.push(LocalAlbum("a1"))
+
+        stack.push(LocalAlbum("a1", "Album"))
+
+        assertEquals(listOf(Songs, Albums, LocalAlbum("a1")), stack.backStack)
+    }
+
+    @Test
+    fun theSameIdFromAnotherSourceIsAnotherPage() {
+        stack.switchTab(Tab.ARTISTS)
+        stack.push(LocalArtist("r1"))
+
+        stack.push(OpenSubsonicArtist("r1"))
+
+        assertEquals(
+            listOf(Songs, Artists, LocalArtist("r1"), OpenSubsonicArtist("r1")),
+            stack.backStack,
+        )
+    }
+
+    @Test
+    fun aPageOpenInAnotherTabOpensAgain() {
+        stack.push(LocalArtist("r1"))
+        stack.switchTab(Tab.ALBUMS)
+
+        stack.push(LocalArtist("r1"))
+
+        assertEquals(listOf(Songs, LocalArtist("r1"), Albums, LocalArtist("r1")), stack.backStack)
+    }
+
+    @Test
     fun theStartTabHasItsOwnHistory() {
         stack.push(Search)
         stack.switchTab(Tab.ALBUMS)

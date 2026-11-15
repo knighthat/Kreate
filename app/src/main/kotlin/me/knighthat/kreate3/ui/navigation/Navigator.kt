@@ -28,7 +28,7 @@ import androidx.compose.runtime.compositionLocalOf
 class Navigator(
     /** The screen on top of the back stack, `null` when it isn't a [Route]. */
     val current: Route?,
-    /** Puts [Route] on top of the back stack. */
+    /** Opens [Route], see [TopLevelBackStack.push]. */
     val open: (Route) -> Unit,
 )
 
