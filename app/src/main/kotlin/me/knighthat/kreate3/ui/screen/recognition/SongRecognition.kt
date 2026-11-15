@@ -92,6 +92,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.recognition.RecognizedSong
 import me.knighthat.kreate3.ui.component.ComponentPreviews
 import me.knighthat.kreate3.ui.component.ExplicitBadge
@@ -157,6 +158,7 @@ fun SongRecognitionDialog(viewModel: SongRecognitionViewModel, onShowMatches: (S
 
 /**
  * Starts listening, or asks for the microphone first. Once it's allowed, the next hold listens.
+ * While song recognition is off in settings ([Preferences.SHAZAM_ENABLED]) it only says so.
  * A denial from the prompt says why it's needed; one without a prompt (denied for good before)
  * opens the app's settings, the only place left to allow it.
  */
@@ -177,7 +179,9 @@ fun rememberListen(viewModel: SongRecognitionViewModel): () -> Unit {
     }
     return remember(viewModel, ask, context) {
         {
-            if (context.hasMicrophonePermission()) {
+            if (!Preferences.SHAZAM_ENABLED.value) {
+                viewModel.disabled()
+            } else if (context.hasMicrophonePermission()) {
                 viewModel.listen()
             } else {
                 askedAt = SystemClock.elapsedRealtime()

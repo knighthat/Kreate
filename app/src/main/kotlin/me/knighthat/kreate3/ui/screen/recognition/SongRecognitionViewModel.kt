@@ -178,6 +178,11 @@ class SongRecognitionViewModel(
         notifier.post(context.getString(R.string.snackbar_recognize_song_no_microphone))
     }
 
+    /** Song recognition is off ([Preferences.SHAZAM_ENABLED]): says so instead of listening. */
+    fun disabled() {
+        notifier.post(context.getString(R.string.snackbar_recognize_song_disabled))
+    }
+
     /** Turns the dialog with a result into the button to hold. */
     fun retry() {
         val current = _state.value

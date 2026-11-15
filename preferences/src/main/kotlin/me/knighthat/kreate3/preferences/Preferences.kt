@@ -645,6 +645,15 @@ object Preferences : KoinComponent {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Song recognition">
+    /**
+     * Whether holding the Songs tab, or the Recognize song entry of its sheet, sends what the
+     * microphone hears to Shazam to name the song. On by default. While it's off, the entry is
+     * grayed out and a hold only says so. Read by `HomeSongsScreen` and `rememberListen`.
+     */
+    val SHAZAM_ENABLED by lazy { boolean("shazam_enabled", true) }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Discord">
     /**
      * Whether the app shows on the user's Discord profile what they listen to and browse, once

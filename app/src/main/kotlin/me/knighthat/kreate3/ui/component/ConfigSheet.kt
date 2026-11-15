@@ -118,6 +118,7 @@ private fun ConfigSheetContent(
  * An action of a [ConfigSheet] as a row, for the ones used less than its buttons. Unless
  * [enabled], the row is grayed out and can't be tapped.
  *
+ * @param summary a line under the label, e.g. why the action can't be used
  * @param loading a spinner in place of the icon, while the action is under way
  * @param onLongClick what a long press does, nothing when `null`
  */
@@ -127,11 +128,13 @@ fun ConfigEntry(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean = true,
+    summary: String? = null,
     loading: Boolean = false,
     onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit,
 ) = ListItem(
     headlineContent = { Text(label) },
+    supportingContent = summary?.let { { Text(it) } },
     leadingContent = {
         if (loading)
             CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(24.dp))

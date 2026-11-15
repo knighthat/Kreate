@@ -377,6 +377,10 @@
     <string name="setting_description_public_playlist">Other users of the server can see it</string>
     <string name="setting_title_playlist_privacy">Who can see it</string>
     <string name="setting_header_integrations">Integrations</string>
+    <!-- %1$s is Shazam, the song recognition service -->
+    <string name="setting_title_shazam_enabled">Recognize songs with %1$s</string>
+    <!-- %1$s is Shazam. Holding the Songs tab at the bottom of the library listens to the song playing nearby -->
+    <string name="setting_description_shazam_enabled">Hold the Songs tab to send what the microphone hears to %1$s</string>
     <!-- Main switch of the Discord page; "activity" = what the user plays and browses, shown on their Discord profile -->
     <string name="setting_title_discord_enabled">Show activity on %1$s</string>
     <!-- %1$s is Discord. Text under the main switch while it is on -->

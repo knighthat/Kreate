@@ -112,7 +112,8 @@ ui/screen/
   toolbar's `ConfigButton` opens the tab's `sheet`, `actions` sit before it),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
   all/shuffle/play next/add to queue + a Recognize song entry (`onRecognize`, the dialog from
-  `KreateApp`) + show disliked, cached only, downloaded only (`SongFilters`,
+  `KreateApp`; grayed with "Disabled in settings" while `SHAZAM_ENABLED` is off) + show disliked,
+  cached only, downloaded only (`SongFilters`,
   cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
   `isBookmarked`/`isFollowed`); Playlists open random, play random (new playlist is a
@@ -296,7 +297,9 @@ ui/screen/
   under `MIN_LISTEN` 8 s too short (snackbar from the tab, red text in the dialog), `MAX_LISTEN`
   16 s stops on its own; `retry` turns Failed or Found into the hold button; `open` shows the hold
   button from the Songs tab sheet's Recognize song entry),
-  `SongRecognition.kt` (`rememberListen`: listens, or asks for RECORD_AUDIO; a denial at the prompt
+  `SongRecognition.kt` (`rememberListen`: a "Disabled in settings" snackbar while `SHAZAM_ENABLED`
+  is off, else
+  listens, or asks for RECORD_AUDIO; a denial at the prompt
   posts a snackbar, one without a prompt opens the app's settings; `rememberHoldToListen`: long
   press + haptic, eats the release so the tab
   isn't tapped; `ListenOverlay`: persistent `PlainTooltip` bubble above the Songs tab's icon with
@@ -360,7 +363,8 @@ ui/screen/
     `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
     `OpenSubsonicServer`, nothing asked there; Integrations: "Configure Discord" with
-    `DiscordAccountState.summary`), `network/discord/DiscordSettingsScreen.kt` (main switch, account
+    `DiscordAccountState.summary`, the Shazam switch `SHAZAM_ENABLED`),
+    `network/discord/DiscordSettingsScreen.kt` (main switch, account
     row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches, largest
     cover `PixelSetting` filled from 1024, Wi-Fi / mobile size `SliderSetting`s on
     `DiscordCovers.sizes`), `network/youtube/` (`YouTubeSettingsScreen.kt`

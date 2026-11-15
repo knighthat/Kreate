@@ -68,6 +68,7 @@ fun HomeSongsScreen(
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
+    val recognitionEnabled by Preferences.SHAZAM_ENABLED.state.collectAsStateWithLifecycle()
 
     // Each visit to the tab, the songs liked on YouTube are brought up to date
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -88,6 +89,7 @@ fun HomeSongsScreen(
         onProfile = onProfile,
         onSettings = onSettings,
         onRecognize = onRecognize,
+        recognitionEnabled = recognitionEnabled,
         refreshing = pulling,
         onRefresh = viewModel::pull,
         modifier = modifier,
@@ -109,6 +111,7 @@ private fun HomeSongsContent(
     onProfile: () -> Unit,
     onSettings: () -> Unit,
     onRecognize: () -> Unit,
+    recognitionEnabled: Boolean,
     refreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
@@ -126,7 +129,9 @@ private fun HomeSongsContent(
         onSettings = onSettings,
         refreshing = refreshing,
         onRefresh = onRefresh,
-        sheet = { onDismiss -> SongsSheet(filters, onFilter, onAction, onRecognize, onDismiss) },
+        sheet = { onDismiss ->
+            SongsSheet(filters, onFilter, onAction, onRecognize, recognitionEnabled, onDismiss)
+        },
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -145,6 +150,9 @@ private fun HomeSongsContent(
 /**
  * The quick actions on every song shown, recognizing a song, then what the tab shows. Cached only and Downloaded only
  * exclude each other, turning one on turns the other off.
+ *
+ * @param recognitionEnabled [Preferences.SHAZAM_ENABLED]; while off, Recognize song is grayed out
+ * and says it's disabled in settings
  */
 @Composable
 private fun SongsSheet(
@@ -152,6 +160,7 @@ private fun SongsSheet(
     onFilter: ((SongFilters) -> SongFilters) -> Unit,
     onAction: (QueueAction) -> Unit,
     onRecognize: () -> Unit,
+    recognitionEnabled: Boolean,
     onDismiss: () -> Unit,
 ) = ConfigSheet(
     onDismiss = onDismiss,
@@ -176,9 +185,15 @@ private fun SongsSheet(
         }
     },
     entries = { close ->
-        ConfigEntry(R.drawable.mic, stringResource(R.string.menu_recognize_song)) {
-            close(onRecognize)
-        }
+        ConfigEntry(
+            R.drawable.mic,
+            stringResource(R.string.menu_recognize_song),
+            enabled = recognitionEnabled,
+            summary = if (recognitionEnabled)
+                null
+            else
+                stringResource(R.string.status_disabled_in_settings),
+        ) { close(onRecognize) }
     },
     options = {
         ConfigToggle(
@@ -216,6 +231,7 @@ private fun HomeSongsPreview() = PreviewTheme {
         onProfile = {},
         onSettings = {},
         onRecognize = {},
+        recognitionEnabled = true,
         refreshing = false,
         onRefresh = {},
     )

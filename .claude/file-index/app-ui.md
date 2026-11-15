@@ -36,7 +36,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `ConfigSheet.kt` — `ConfigSheet` (a screen's options: a row of `LabeledIconButton` actions given
   `close`, then `entries` and options under a divider; opens on its content,
   `skipPartiallyExpanded`), `ConfigToggle` (row with a trailing `Switch`), `ConfigEntry` (an action,
-  optional long press,
+  optional long press and `summary` line,
   as a row, given `close` like the buttons; the artist menu's). Used by the home tabs.
 - `BlurredCover.kt` — `Blur` (sample size + radius) and `BlurredCover` (a few pixels of a cover
   stretched and blurred, blurred on every Android version), for the full player and artist pages.

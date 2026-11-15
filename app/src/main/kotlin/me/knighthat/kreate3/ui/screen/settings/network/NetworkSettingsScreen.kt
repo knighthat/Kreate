@@ -51,6 +51,7 @@ import me.knighthat.kreate3.ui.screen.settings.SecondSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -152,6 +153,7 @@ fun NetworkSettingsScreen(
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
     val discordEnabled by Preferences.DISCORD_ENABLED.collectAsStateWithLifecycle()
     val discordAccount by discord.state.collectFlowAsState()
+    val shazamEnabled by Preferences.SHAZAM_ENABLED.collectAsStateWithLifecycle()
 
     NetworkSettingsContent(
         connectTimeout = connectTimeout,
@@ -164,6 +166,8 @@ fun NetworkSettingsScreen(
         server = server,
         serverName = openSubsonicName(),
         discord = if (discordEnabled) discordAccount.summary() else stringResource(R.string.status_off),
+        shazamEnabled = shazamEnabled,
+        onShazamEnabled = { Preferences.SHAZAM_ENABLED.update(it) },
         onBack = onBack,
         onOpen = onOpen,
         modifier = modifier,
@@ -186,6 +190,7 @@ fun NetworkSettingsScreen(
  * @param url the OpenSubsonic server's address, empty while there is none
  * @param serverName what the server is called, see [openSubsonicName]
  * @param discord the status of Discord's presence, see [DiscordAccountState.summary]
+ * @param shazamEnabled whether song recognition may send what the microphone hears to Shazam
  * @param proxy the app's proxy, see [ProxySettings]
  */
 @Composable
@@ -200,6 +205,8 @@ private fun NetworkSettingsContent(
     server: CheckState,
     serverName: String,
     discord: String,
+    shazamEnabled: Boolean,
+    onShazamEnabled: (Boolean) -> Unit,
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
@@ -270,6 +277,18 @@ private fun NetworkSettingsContent(
             summary = discord,
             onClick = { onOpen(DiscordSettings) },
         )
+        SwitchSetting(
+            title = stringResource(
+                R.string.setting_title_shazam_enabled,
+                stringResource(R.string.shazam)
+            ),
+            checked = shazamEnabled,
+            onCheckedChange = onShazamEnabled,
+            summary = stringResource(
+                R.string.setting_description_shazam_enabled,
+                stringResource(R.string.shazam)
+            ),
+        )
     }
 }
 
@@ -295,6 +314,8 @@ private fun NetworkSettingsPreview() = PreviewTheme {
         ),
         serverName = "Navidrome",
         discord = "Signed in as neoncoast",
+        shazamEnabled = true,
+        onShazamEnabled = {},
         onBack = {},
         onOpen = {},
         proxy = { PreviewProxySettings(source = null) },

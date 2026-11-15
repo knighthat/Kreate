@@ -66,6 +66,7 @@
     <string name="pb">%1$s PB</string>
     <string name="lufs" translatable="false">%1$s LUFS</string>
     <string name="discord" translatable="false">Discord</string>
+    <string name="shazam" translatable="false">Shazam</string>
     <string name="litterbox" translatable="false">litterbox</string>
     <string name="pixel_symbol" translatable="false">px</string>
 </resources>
