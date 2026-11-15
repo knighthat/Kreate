@@ -125,6 +125,8 @@ fun DetailHeader(
  * a tap shows all of it or the first lines again. "More" only shows when the text is longer.
  *
  * @param color of the text, [linkColor] of "More", for a description on a colored header
+ * @param onExpandedChange gets whether all of it shows after each tap, for a page that changes
+ * around it
  */
 @Composable
 fun DetailDescription(
@@ -132,6 +134,7 @@ fun DetailDescription(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     linkColor: Color = MaterialTheme.colorScheme.primary,
+    onExpandedChange: (Boolean) -> Unit = {},
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var overflows by remember { mutableStateOf(false) }
@@ -186,6 +189,7 @@ fun DetailDescription(
                 } else {
                     expanded = !expanded
                 }
+                onExpandedChange(expanded)
             }
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {

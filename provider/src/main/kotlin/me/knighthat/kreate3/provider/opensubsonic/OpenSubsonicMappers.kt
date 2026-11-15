@@ -54,35 +54,54 @@ private val HTML_BREAK = Regex("""(?i)<br\s*/?>|</p>""")
 private val HTML_TAG = Regex("""<[^>]*>""")
 
 private const val TAG = "OpenSubsonicMappers"
-private val HTML_NUMBER = Regex("""&#(\d+);""")
+
+/** A character by its number: `&#39;` or `&#x27;`. */
+private val HTML_NUMBER = Regex("""&#([xX]?)([0-9a-fA-F]+);""")
 private val BLANK_LINES = Regex("""\n{3,}""")
 
 /**
- * The plain text of [html], like the notes Last.fm gives a server: tags dropped, a new line for
- * `<br>` and each paragraph, the common entities decoded. A link keeps its text, like "Read more
- * on Last.fm", which credits the text.
- *
- * @return `null` when nothing but blanks is left
+ * Most times the entities of a text are decoded again, for text escaped over and over on its way
+ * (Last.fm's biographies come as `&amp;amp;amp;quot;`), so a broken one can't loop for long.
  */
-internal fun htmlToText(html: String): String? =
-    html.replace(HTML_BREAK, "\n")
-        .replace(HTML_TAG, "")
-        .replace(HTML_NUMBER) { match ->
-            match.groupValues[1].toIntOrNull()?.takeIf(Character::isValidCodePoint)
-                ?.let { String(Character.toChars(it)) }.orEmpty()
-        }
+private const val ENTITY_PASSES = 8
+
+/** [text] with its entities decoded once: numbered ones and the common named ones. */
+private fun decodeEntities(text: String): String =
+    text.replace(HTML_NUMBER) { match ->
+        val (hex, digits) = match.destructured
+        digits.toIntOrNull(if (hex.isEmpty()) 10 else 16)
+            ?.takeIf(Character::isValidCodePoint)
+            ?.let { String(Character.toChars(it)) }
+            ?: match.value
+    }
         .replace("&nbsp;", " ")
         .replace("&lt;", "<")
         .replace("&gt;", ">")
         .replace("&quot;", "\"")
         .replace("&apos;", "'")
-        // Last, so an escaped entity stays as it is written
+        // Last, so one pass decodes one level of escaping
         .replace("&amp;", "&")
-        .lines()
+
+/**
+ * The plain text of [html], like the notes Last.fm gives a server: tags dropped, a new line for
+ * `<br>` and each paragraph, the entities decoded, again and again while the text was escaped
+ * more than once. A link keeps its text, like "Read more on Last.fm", which credits the text.
+ *
+ * @return `null` when nothing but blanks is left
+ */
+internal fun htmlToText(html: String): String? {
+    var text = html.replace(HTML_BREAK, "\n").replace(HTML_TAG, "")
+    for (pass in 1..ENTITY_PASSES) {
+        val decoded = decodeEntities(text)
+        if (decoded == text) break
+        text = decoded
+    }
+    return text.lines()
         .joinToString("\n") { it.trim() }
         .replace(BLANK_LINES, "\n\n")
         .trim()
         .ifEmpty { null }
+}
 
 /** When the item was starred, `null` when it isn't or the date can't be read. */
 /** The item's id, `null` (logged) when the server sent none: the item is then left out. */

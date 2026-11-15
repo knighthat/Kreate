@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,9 +43,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -68,6 +72,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,8 +85,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -106,6 +113,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
@@ -125,6 +133,8 @@ import me.knighthat.kreate3.ui.component.Tooltip
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.rememberSongThumbnails
 import me.knighthat.kreate3.ui.component.seekbar.SeekBar
+import me.knighthat.kreate3.ui.screen.detail.headerPaneWidth
+import me.knighthat.kreate3.ui.screen.detail.isSideBySide
 import org.koin.compose.koinInject
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -198,6 +208,21 @@ private enum class PlayerTab(@param:StringRes val label: Int) {
     PLAYER(R.string.tab_player),
     QUEUE(R.string.tab_queue),
 }
+
+/** Pages beside the song playing on a wide window, which shows it in a pane of its own. */
+private val WIDE_TABS = listOf(PlayerTab.LYRICS, PlayerTab.QUEUE)
+
+/** Room around what the pane of a wide player holds. */
+private val PANE_PADDING = 24.dp
+
+/**
+ * About how tall everything under the cover in the pane of a wide player is: the name, the seek
+ * bar and the playback buttons.
+ */
+private val PANE_CONTROLS_HEIGHT = 240.dp
+
+/** A cover smaller than this is left out of the pane, it would only be a stamp. */
+private val PANE_MIN_COVER = 120.dp
 
 /** Where the full player stands. */
 enum class PlayerSheetValue {
@@ -390,8 +415,13 @@ fun PlayerSheet(
 /**
  * The full player: [PlayerTab.PLAYER] with the song playing in the middle, its lyrics on the
  * left and the queue on the right, as pages to swipe between or pick with the tabs at the
- * bottom, the buttons of the page shown under them. It always opens on the player. The song's cover blurred stays
- * behind every page, more covered by the color away from the player so the text reads.
+ * bottom, the buttons of the page shown under them. It always opens on the player. The song's
+ * cover blurred stays behind every page, more covered by the color away from the player so the
+ * text reads.
+ *
+ * On a wide window (see [isSideBySide]) the song playing stays in a pane at the start, its cover
+ * whole, and the lyrics and the queue are the pages beside it, opening on the queue. The blurred
+ * cover fills the whole player there, with no fade into the color.
  *
  * @param index where [item] is in the queue, `-1` when unknown
  */
@@ -404,195 +434,96 @@ private fun FullPlayer(
     isShuffled: Boolean,
     controller: PlaybackController,
     modifier: Modifier = Modifier,
-) {
-    val background = MaterialTheme.colorScheme.surface
-    val covers = rememberSongThumbnails(item, HEADER_ARTWORK)
-    // Made again each time the player opens, the player is composed only while open
-    val pagerState = rememberPagerState(initialPage = PlayerTab.PLAYER.ordinal) {
-        PlayerTab.entries.size
-    }
-    val scope = rememberCoroutineScope()
-    val shuffledOrder by controller.shuffledOrder.collectAsStateWithLifecycle()
-    // Where the song playing shows in the queue's list, which follows the shuffled order
-    val currentRow = shuffledOrder?.indexOf(index)?.takeIf { it >= 0 } ?: index
-    val latestCurrentRow by rememberUpdatedState(currentRow)
-    // Out here for the buttons under the tabs, the page itself goes when swiped away
-    val queueList =
-        rememberLazyListState(initialFirstVisibleItemIndex = (currentRow - 1).coerceAtLeast(0))
-    // Another order puts the song playing elsewhere in the list, it goes back to it
-    LaunchedEffect(shuffledOrder != null) {
-        queueList.requestScrollToItem((latestCurrentRow - 1).coerceAtLeast(0))
-    }
-    var queueMode by remember { mutableStateOf(CoverEditMode.NONE) }
-    val lyricsControls = remember(item.mediaId) { LyricsControls() }
-    val latestLyricsControls by rememberUpdatedState(lyricsControls)
-    // The buttons of a page turn back off once another page is shown
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (page != PlayerTab.QUEUE.ordinal) queueMode = CoverEditMode.NONE
-            if (page != PlayerTab.LYRICS.ordinal) latestLyricsControls.reset()
+) = Surface(color = MaterialTheme.colorScheme.surface, modifier = modifier.fillMaxSize()) {
+    // Not straight in the surface, which would stretch every layer to its whole size
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val wide = isSideBySide(maxWidth, maxHeight)
+        val paneWidth = headerPaneWidth(maxWidth)
+        val coverHeight = maxHeight * COVER_HEIGHT
+        val tabs = if (wide) WIDE_TABS else PlayerTab.entries
+        val covers = rememberSongThumbnails(item, HEADER_ARTWORK)
+        // Made again each time the player opens, the player is composed only while open, and
+        // when the window turns wide or narrow, which have their own pages
+        val pagerState = key(wide) {
+            rememberPagerState(
+                initialPage = tabs.indexOf(if (wide) PlayerTab.QUEUE else PlayerTab.PLAYER)
+            ) { tabs.size }
         }
-    }
-    // What the picture-in-picture window shows follows the page, see PictureInPicture
-    val pip = koinInject<PictureInPicture>()
-    val onLyricsPage by remember(pagerState) {
-        derivedStateOf { pagerState.currentPage == PlayerTab.LYRICS.ordinal }
-    }
-    val syncedLyrics = lyricsControls.shown?.content as? SyncedLyrics
-    LaunchedEffect(pip, onLyricsPage, syncedLyrics) {
-        pip.onLyricsPage = onLyricsPage
-        pip.lyrics = syncedLyrics.takeIf { onLyricsPage }
-    }
-    DisposableEffect(pip) {
-        onDispose {
-            pip.onLyricsPage = false
-            pip.lyrics = null
+        val scope = rememberCoroutineScope()
+        val shuffledOrder by controller.shuffledOrder.collectAsStateWithLifecycle()
+        // Where the song playing shows in the queue's list, which follows the shuffled order
+        val currentRow = shuffledOrder?.indexOf(index)?.takeIf { it >= 0 } ?: index
+        val latestCurrentRow by rememberUpdatedState(currentRow)
+        // Out here for the buttons under the tabs, the page itself goes when swiped away
+        val queueList =
+            rememberLazyListState(initialFirstVisibleItemIndex = (currentRow - 1).coerceAtLeast(0))
+        // Another order puts the song playing elsewhere in the list, it goes back to it
+        LaunchedEffect(shuffledOrder != null) {
+            queueList.requestScrollToItem((latestCurrentRow - 1).coerceAtLeast(0))
         }
-    }
-    // Songs can't be moved while shuffled, like when shuffle is turned on from the notification
-    LaunchedEffect(isShuffled) {
-        if (isShuffled && queueMode == CoverEditMode.REORDER) queueMode = CoverEditMode.NONE
-    }
-    val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    // Under the status bar and above the tabs, the lists scroll behind both
-    val pagePadding = PaddingValues(
-        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-        bottom = navigationBarHeight + BOTTOM_BAR_HEIGHT,
-    )
-
-    Surface(color = background, modifier = modifier.fillMaxSize()) {
-        // Not straight in the surface, which would stretch every layer to its whole size
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val coverHeight = maxHeight * COVER_HEIGHT
-
-            // From top to bottom, the sides are cut
-            BlurredCover(covers, HEAVY_BLUR, Modifier.matchParentSize())
-            // Its lower part fades into the color, where the buttons are
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        Brush.verticalGradient(
-                            *easedStops(BACKGROUND_FADE_START, rising = true, color = background)
-                        )
-                    ),
-            )
-            // Read while drawing, it follows the finger between the pages
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .drawBehind {
-                        val away = pagerState.distanceTo(PlayerTab.PLAYER)
-                        drawRect(background.copy(alpha = PAGE_SCRIM_ALPHA * away))
-                    },
-            )
-
-            HorizontalPager(state = pagerState, modifier = Modifier.matchParentSize()) { page ->
-                when (PlayerTab.entries[page]) {
-                    PlayerTab.PLAYER -> NowPlayingPage(
-                        item = item,
-                        covers = covers,
-                        isPlaying = isPlaying,
-                        repeatMode = repeatMode,
-                        isShuffled = isShuffled,
-                        controller = controller,
-                        coverHeight = coverHeight,
-                    )
-
-                    PlayerTab.LYRICS -> LyricsPage(
-                        item = item,
-                        isPlaying = isPlaying,
-                        controller = controller,
-                        controls = lyricsControls,
-                        contentPadding = pagePadding,
-                    )
-                    PlayerTab.QUEUE -> QueuePage(
-                        controller = controller,
-                        currentIndex = index,
-                        mode = queueMode,
-                        listState = queueList,
-                        contentPadding = pagePadding,
-                    )
-                }
+        var queueMode by remember { mutableStateOf(CoverEditMode.NONE) }
+        val lyricsControls = remember(item.mediaId) { LyricsControls() }
+        val latestLyricsControls by rememberUpdatedState(lyricsControls)
+        // The buttons of a page turn back off once another page is shown
+        LaunchedEffect(pagerState, tabs) {
+            snapshotFlow { tabs[pagerState.currentPage] }.collect { tab ->
+                if (tab != PlayerTab.QUEUE) queueMode = CoverEditMode.NONE
+                if (tab != PlayerTab.LYRICS) latestLyricsControls.reset()
             }
-
-            // Keeps the status bar readable on a light cover
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(SHADE_HEIGHT)
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(background.copy(alpha = SHADE_ALPHA), Color.Transparent)
-                        )
-                    ),
-            )
-            // The lyrics and the queue fade out above the tabs, solid color behind them
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(SHADE_HEIGHT + BUTTON_BAR_HEIGHT + navigationBarHeight)
-                    .drawBehind {
-                        drawRect(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, background),
-                                endY = (SHADE_HEIGHT - TAB_BAR_HEIGHT).toPx(),
-                            )
-                        )
-                    },
-            )
-            SecondaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                containerColor = Color.Transparent,
-                indicator = {
-                    // The row places them at its bottom, they fill the height to draw at the top
-                    val atTop = Modifier
-                        .fillMaxHeight()
-                        .wrapContentHeight(Alignment.Top)
-                    // A track across every tab, given one tab's width it overflows to the end
-                    TabRowDefaults.SecondaryIndicator(
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        modifier = Modifier
-                            .tabIndicatorLayout { measurable, constraints, tabPositions ->
-                                val width = tabPositions.lastOrNull()?.right?.roundToPx() ?: 0
-                                val placeable = measurable.measure(
-                                    constraints.copy(minWidth = width, maxWidth = width)
-                                )
-                                layout(constraints.maxWidth, placeable.height) {
-                                    placeable.place(0, 0)
-                                }
-                            }
-                            .then(atTop),
-                    )
-                    // The selected tab's part of it
-                    TabRowDefaults.SecondaryIndicator(
-                        Modifier
-                            .tabIndicatorOffset(pagerState.currentPage, matchContentSize = false)
-                            .then(atTop)
-                    )
-                },
-                divider = {},
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = BUTTON_BAR_HEIGHT)
-                    .height(TAB_BAR_HEIGHT)
-            ) {
-                CompositionLocalProvider(LocalRippleConfiguration provides null) {
-                    PlayerTab.entries.forEach { tab ->
-                        Tab(
-                            selected = pagerState.currentPage == tab.ordinal,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(tab.ordinal) } },
-                            text = { Text(stringResource(tab.label)) },
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+        }
+        // What the picture-in-picture window shows follows the page, see PictureInPicture
+        val pip = koinInject<PictureInPicture>()
+        val onLyricsPage by remember(pagerState, tabs) {
+            derivedStateOf { tabs[pagerState.currentPage] == PlayerTab.LYRICS }
+        }
+        val syncedLyrics = lyricsControls.shown?.content as? SyncedLyrics
+        LaunchedEffect(pip, onLyricsPage, syncedLyrics) {
+            pip.onLyricsPage = onLyricsPage
+            pip.lyrics = syncedLyrics.takeIf { onLyricsPage }
+        }
+        DisposableEffect(pip) {
+            onDispose {
+                pip.onLyricsPage = false
+                pip.lyrics = null
             }
+        }
+        // Songs can't be moved while shuffled, like when shuffle is turned on from the notification
+        LaunchedEffect(isShuffled) {
+            if (isShuffled && queueMode == CoverEditMode.REORDER) queueMode = CoverEditMode.NONE
+        }
+        val page: @Composable (PlayerTab, PaddingValues) -> Unit = { tab, padding ->
+            when (tab) {
+                PlayerTab.PLAYER -> NowPlayingPage(
+                    item = item,
+                    covers = covers,
+                    isPlaying = isPlaying,
+                    repeatMode = repeatMode,
+                    isShuffled = isShuffled,
+                    controller = controller,
+                    coverHeight = coverHeight,
+                )
+
+                PlayerTab.LYRICS -> LyricsPage(
+                    item = item,
+                    isPlaying = isPlaying,
+                    controller = controller,
+                    controls = lyricsControls,
+                    contentPadding = padding,
+                )
+
+                PlayerTab.QUEUE -> QueuePage(
+                    controller = controller,
+                    currentIndex = index,
+                    mode = queueMode,
+                    listState = queueList,
+                    contentPadding = padding,
+                )
+            }
+        }
+        val pageButtons: @Composable (Modifier) -> Unit = { buttonsModifier ->
             PageButtons(
                 pagerState = pagerState,
+                tabs = tabs,
                 item = item,
                 controller = controller,
                 lyricsControls = lyricsControls,
@@ -604,19 +535,269 @@ private fun FullPlayer(
                         queueList.animateScrollToItem((currentRow - 1).coerceAtLeast(0))
                     }
                 },
+                modifier = buttonsModifier,
+            )
+        }
+
+        if (wide) {
+            HorizontalPlayer(
+                pagerState = pagerState,
+                tabs = tabs,
+                covers = covers,
+                paneWidth = paneWidth,
+                nowPlaying = { paneModifier ->
+                    NowPlayingPane(
+                        item = item,
+                        covers = covers,
+                        isPlaying = isPlaying,
+                        repeatMode = repeatMode,
+                        isShuffled = isShuffled,
+                        controller = controller,
+                        modifier = paneModifier,
+                    )
+                },
+                page = page,
+                pageButtons = pageButtons,
+            )
+        } else {
+            VerticalPlayer(
+                pagerState = pagerState,
+                tabs = tabs,
+                covers = covers,
+                page = page,
+                pageButtons = pageButtons,
+            )
+        }
+        // The app's messages show under the sheet, these show over the player, above the tabs
+        MessageHost(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(bottom = BUTTON_BAR_HEIGHT + TAB_BAR_HEIGHT)
+        )
+    }
+}
+
+/**
+ * The full player on an upright window: every page in the pager, the song's cover blurred behind
+ * them fading into the color at the bottom, the tabs and the page's buttons over the bottom of the
+ * lists, see [FullPlayer].
+ *
+ * @param page draws a page, given the room it leaves around its list
+ * @param pageButtons draws the bar of the page shown, given where it goes
+ */
+@Composable
+private fun VerticalPlayer(
+    pagerState: PagerState,
+    tabs: List<PlayerTab>,
+    covers: List<Any>,
+    page: @Composable (PlayerTab, PaddingValues) -> Unit,
+    pageButtons: @Composable (Modifier) -> Unit,
+) = Box(Modifier.fillMaxSize()) {
+    val background = MaterialTheme.colorScheme.surface
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+    // From top to bottom, the sides are cut
+    BlurredCover(covers, HEAVY_BLUR, Modifier.matchParentSize())
+    // Its lower part fades into the color, where the buttons are
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .background(
+                Brush.verticalGradient(
+                    *easedStops(BACKGROUND_FADE_START, rising = true, color = background)
+                )
+            ),
+    )
+    // Read while drawing, it follows the finger between the pages
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .drawBehind {
+                val away = pagerState.distanceTo(PlayerTab.PLAYER, tabs)
+                drawRect(background.copy(alpha = PAGE_SCRIM_ALPHA * away))
+            },
+    )
+
+    // Under the status bar and above the tabs, the lists scroll behind both
+    val pagePadding = PaddingValues(
+        top = statusBarHeight,
+        bottom = navigationBarHeight + BOTTOM_BAR_HEIGHT,
+    )
+    HorizontalPager(state = pagerState, modifier = Modifier.matchParentSize()) { index ->
+        page(tabs[index], pagePadding)
+    }
+
+    // Keeps the status bar readable on a light cover
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(SHADE_HEIGHT)
+            .background(
+                Brush.verticalGradient(
+                    listOf(background.copy(alpha = SHADE_ALPHA), Color.Transparent)
+                )
+            ),
+    )
+    // The lyrics and the queue fade out above the tabs, solid color behind them
+    Box(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .height(SHADE_HEIGHT + BUTTON_BAR_HEIGHT + navigationBarHeight)
+            .drawBehind {
+                drawRect(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, background),
+                        endY = (SHADE_HEIGHT - TAB_BAR_HEIGHT).toPx(),
+                    )
+                )
+            },
+    )
+    PlayerTabRow(
+        pagerState = pagerState,
+        tabs = tabs,
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(bottom = BUTTON_BAR_HEIGHT)
+            .height(TAB_BAR_HEIGHT),
+    )
+    pageButtons(
+        Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .height(BUTTON_BAR_HEIGHT)
+    )
+}
+
+/**
+ * The full player on a wide window ([isSideBySide]): the song playing in a pane at the start
+ * ([nowPlaying]), the lyrics and the queue beside it with their tabs and buttons under them, all
+ * over the song's cover blurred, with no fade into the color, see [FullPlayer].
+ *
+ * @param paneWidth how wide the song's pane is
+ * @param nowPlaying draws the song's pane, given its size and room
+ * @param page draws a page, given the room it leaves around its list
+ * @param pageButtons draws the bar of the page shown, given where it goes
+ */
+@Composable
+private fun HorizontalPlayer(
+    pagerState: PagerState,
+    tabs: List<PlayerTab>,
+    covers: List<Any>,
+    paneWidth: Dp,
+    nowPlaying: @Composable (Modifier) -> Unit,
+    page: @Composable (PlayerTab, PaddingValues) -> Unit,
+    pageButtons: @Composable (Modifier) -> Unit,
+) = Box(Modifier.fillMaxSize()) {
+    val background = MaterialTheme.colorScheme.surface
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
+    BlurredCover(covers, HEAVY_BLUR, Modifier.matchParentSize())
+    Row(Modifier.fillMaxSize()) {
+        nowPlaying(
+            Modifier
+                .width(paneWidth)
+                .fillMaxHeight()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical)
+                )
+        )
+        // The color over the cover behind the lyrics and the queue, so their text reads
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .background(background.copy(alpha = PAGE_SCRIM_ALPHA))
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing
+                        .only(WindowInsetsSides.End + WindowInsetsSides.Bottom)
+                )
+        ) {
+            // The lists end above the tabs, nothing scrolls behind them
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .weight(1f)
                     .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .height(BUTTON_BAR_HEIGHT),
+                    .clipToBounds(),
+            ) { index ->
+                page(tabs[index], PaddingValues(top = statusBarHeight, bottom = 24.dp))
+            }
+            PlayerTabRow(
+                pagerState = pagerState,
+                tabs = tabs,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(TAB_BAR_HEIGHT),
             )
-            // The app's messages show under the sheet, these show over the player, above the tabs
-            MessageHost(
+            pageButtons(
                 Modifier
-                    .align(Alignment.BottomCenter)
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = BUTTON_BAR_HEIGHT + TAB_BAR_HEIGHT)
+                    .fillMaxWidth()
+                    .height(BUTTON_BAR_HEIGHT)
             )
+        }
+    }
+}
+
+/**
+ * The tabs of the player's [tabs], with a track across all of them on top and the selected one's
+ * part of it.
+ */
+@Composable
+private fun PlayerTabRow(
+    pagerState: PagerState,
+    tabs: List<PlayerTab>,
+    modifier: Modifier = Modifier,
+) {
+    val scope = rememberCoroutineScope()
+
+    SecondaryTabRow(
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = Color.Transparent,
+        indicator = {
+            // The row places them at its bottom, they fill the height to draw at the top
+            val atTop = Modifier
+                .fillMaxHeight()
+                .wrapContentHeight(Alignment.Top)
+            // A track across every tab, given one tab's width it overflows to the end
+            TabRowDefaults.SecondaryIndicator(
+                color = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier
+                    .tabIndicatorLayout { measurable, constraints, tabPositions ->
+                        val width = tabPositions.lastOrNull()?.right?.roundToPx() ?: 0
+                        val placeable = measurable.measure(
+                            constraints.copy(minWidth = width, maxWidth = width)
+                        )
+                        layout(constraints.maxWidth, placeable.height) {
+                            placeable.place(0, 0)
+                        }
+                    }
+                    .then(atTop),
+            )
+            // The selected tab's part of it
+            TabRowDefaults.SecondaryIndicator(
+                Modifier
+                    .tabIndicatorOffset(pagerState.currentPage, matchContentSize = false)
+                    .then(atTop)
+            )
+        },
+        divider = {},
+        modifier = modifier,
+    ) {
+        CompositionLocalProvider(LocalRippleConfiguration provides null) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                    text = { Text(stringResource(tab.label)) },
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
@@ -624,10 +805,13 @@ private fun FullPlayer(
 /**
  * The bar under the tabs, with the buttons of the page shown. They fade in and out with the
  * finger between the pages.
+ *
+ * @param tabs the pages of the pager, in its order
  */
 @Composable
 private fun PageButtons(
     pagerState: PagerState,
+    tabs: List<PlayerTab>,
     item: MediaItem,
     controller: PlaybackController,
     lyricsControls: LyricsControls,
@@ -638,21 +822,21 @@ private fun PageButtons(
     modifier: Modifier = Modifier,
 ) = Box(contentAlignment = Alignment.Center, modifier = modifier) {
     // Composed only while some of their page shows, no one taps buttons that can't be seen
-    val playerShown by remember(pagerState) {
-        derivedStateOf { pagerState.distanceTo(PlayerTab.PLAYER) < 1f }
+    val playerShown by remember(pagerState, tabs) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.PLAYER, tabs) < 1f }
     }
-    val lyricsShown by remember(pagerState) {
-        derivedStateOf { pagerState.distanceTo(PlayerTab.LYRICS) < 1f }
+    val lyricsShown by remember(pagerState, tabs) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.LYRICS, tabs) < 1f }
     }
-    val queueShown by remember(pagerState) {
-        derivedStateOf { pagerState.distanceTo(PlayerTab.QUEUE) < 1f }
+    val queueShown by remember(pagerState, tabs) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.QUEUE, tabs) < 1f }
     }
     if (playerShown)
         PlayerButtons(
             item = item,
             controller = controller,
             modifier = Modifier.graphicsLayer {
-                alpha = 1f - pagerState.distanceTo(PlayerTab.PLAYER)
+                alpha = 1f - pagerState.distanceTo(PlayerTab.PLAYER, tabs)
             },
         )
     if (lyricsShown)
@@ -660,7 +844,7 @@ private fun PageButtons(
             item = item,
             controls = lyricsControls,
             modifier = Modifier.graphicsLayer {
-                alpha = 1f - pagerState.distanceTo(PlayerTab.LYRICS)
+                alpha = 1f - pagerState.distanceTo(PlayerTab.LYRICS, tabs)
             },
         )
     if (queueShown)
@@ -671,14 +855,20 @@ private fun PageButtons(
             onModeChange = onQueueModeChange,
             onLocate = onLocate,
             modifier = Modifier.graphicsLayer {
-                alpha = 1f - pagerState.distanceTo(PlayerTab.QUEUE)
+                alpha = 1f - pagerState.distanceTo(PlayerTab.QUEUE, tabs)
             },
         )
 }
 
-/** How many pages [tab] is from the page shown, up to `1`. It changes with the finger. */
-private fun PagerState.distanceTo(tab: PlayerTab): Float =
-    abs(currentPage + currentPageOffsetFraction - tab.ordinal).coerceAtMost(1f)
+/**
+ * How many pages [tab] is from the page shown, up to `1`, `1` when [tabs] doesn't have it. It
+ * changes with the finger.
+ */
+private fun PagerState.distanceTo(tab: PlayerTab, tabs: List<PlayerTab>): Float {
+    val page = tabs.indexOf(tab)
+    if (page < 0) return 1f
+    return abs(currentPage + currentPageOffsetFraction - page).coerceAtMost(1f)
+}
 
 /**
  * The song playing, large: its cover across the top [COVER_HEIGHT] of the player, fading out
@@ -695,145 +885,223 @@ private fun NowPlayingPage(
     isShuffled: Boolean,
     controller: PlaybackController,
     coverHeight: Dp,
+) = Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(coverHeight)
+            // Its bottom turns see-through, so it dissolves into the blurred cover
+            .mask { Brush.verticalGradient(*easedStops(1f - COVER_FADE, rising = false)) },
+    ) {
+        // Fills the height, the sides are cut
+        Thumbnail(
+            models = covers,
+            shape = RectangleShape,
+            modifier = Modifier.matchParentSize(),
+            // A list's small cover in memory only stands in while the sharp one loads
+            minCachedSize = coverHeight,
+        )
+        // The same cover blurred over it, more and more of it as the cover fades out
+        BlurredCover(
+            models = covers,
+            blur = COVER_BLUR,
+            modifier = Modifier
+                .matchParentSize()
+                .mask {
+                    Brush.verticalGradient(*easedStops(1f - COVER_FADE, rising = true))
+                },
+        )
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = coverHeight)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(bottom = BOTTOM_BAR_HEIGHT)
+            .padding(horizontal = 24.dp),
+    ) {
+        NowPlayingInfo(item, isPlaying, controller)
+        Spacer(Modifier.weight(1f))
+        PlaybackControls(isPlaying, repeatMode, isShuffled, controller)
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+/**
+ * The song playing in the pane of a wide player: its cover whole, its name between the dislike
+ * and like buttons, the seek bar and the playback buttons, centered in the pane's height, and the
+ * player's own buttons at the bottom, level with the buttons of the pages beside it. A pane too
+ * short for the cover leaves it out, the blurred cover shows it behind.
+ */
+@Composable
+private fun NowPlayingPane(
+    item: MediaItem,
+    covers: List<Any>,
+    isPlaying: Boolean,
+    repeatMode: RepeatMode,
+    isShuffled: Boolean,
+    controller: PlaybackController,
+    modifier: Modifier = Modifier,
+) = Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+    BoxWithConstraints(
+        Modifier
+            .weight(1f)
+            .fillMaxWidth()
+    ) {
+        val cover = min(
+            maxWidth - PANE_PADDING * 2,
+            maxHeight - PANE_PADDING * 2 - PANE_CONTROLS_HEIGHT,
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(PANE_PADDING),
+        ) {
+            if (cover >= PANE_MIN_COVER) {
+                val shape = MaterialTheme.shapes.large
+                Thumbnail(
+                    models = covers,
+                    shape = shape,
+                    modifier = Modifier
+                        .size(cover)
+                        .shadow(24.dp, shape),
+                    // A list's small cover in memory only stands in while the sharp one loads
+                    minCachedSize = cover,
+                )
+                Spacer(Modifier.height(24.dp))
+            }
+            NowPlayingInfo(item, isPlaying, controller)
+            Spacer(Modifier.height(8.dp))
+            PlaybackControls(isPlaying, repeatMode, isShuffled, controller)
+        }
+    }
+    // Where the pages beside it have theirs, under their tabs
+    PlayerButtons(
+        item = item,
+        controller = controller,
+        modifier = Modifier.height(BUTTON_BAR_HEIGHT),
+    )
+}
+
+/**
+ * The song playing's name and artists between the dislike and like buttons, its badges and the
+ * seek bar under them.
+ */
+@Composable
+private fun NowPlayingInfo(
+    item: MediaItem,
+    isPlaying: Boolean,
+    controller: PlaybackController,
 ) {
     val metadata = item.mediaMetadata
     val reaction = rememberSongReaction(item)
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(coverHeight)
-                // Its bottom turns see-through, so it dissolves into the blurred cover
-                .mask { Brush.verticalGradient(*easedStops(1f - COVER_FADE, rising = false)) },
-        ) {
-            // Fills the height, the sides are cut
-            Thumbnail(
-                models = covers,
-                shape = RectangleShape,
-                modifier = Modifier.matchParentSize(),
-                // A list's small cover in memory only stands in while the sharp one loads
-                minCachedSize = coverHeight,
-            )
-            // The same cover blurred over it, more and more of it as the cover fades out
-            BlurredCover(
-                models = covers,
-                blur = COVER_BLUR,
-                modifier = Modifier
-                    .matchParentSize()
-                    .mask {
-                        Brush.verticalGradient(*easedStops(1f - COVER_FADE, rising = true))
-                    },
-            )
-        }
-
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        ReactionButton(
+            isSet = reaction.reaction == Reaction.DISLIKED,
+            enabled = reaction.reaction != null,
+            setIcon = R.drawable.thumb_down,
+            unsetIcon = R.drawable.thumb_down_outline,
+            description = stringResource(R.string.semantic_dislike),
+            setDescription = stringResource(R.string.semantic_remove_dislike),
+            // Also takes it out of the queue
+            onClick = reaction.toggleDislike,
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = coverHeight)
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(bottom = BOTTOM_BAR_HEIGHT)
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.weight(1f),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ReactionButton(
-                    isSet = reaction.reaction == Reaction.DISLIKED,
-                    enabled = reaction.reaction != null,
-                    setIcon = R.drawable.thumb_down,
-                    unsetIcon = R.drawable.thumb_down_outline,
-                    description = stringResource(R.string.semantic_dislike),
-                    setDescription = stringResource(R.string.semantic_remove_dislike),
-                    // Also takes it out of the queue
-                    onClick = reaction.toggleDislike,
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(
-                        text = metadata.title?.toString().orEmpty(),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = (metadata.artist ?: metadata.subtitle)?.toString().orEmpty(),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                ReactionButton(
-                    isSet = reaction.reaction == Reaction.LIKED,
-                    enabled = reaction.reaction != null,
-                    setIcon = R.drawable.thumb_up,
-                    unsetIcon = R.drawable.thumb_up_outline,
-                    description = stringResource(R.string.semantic_like),
-                    setDescription = stringResource(R.string.semantic_remove_like),
-                    onClick = reaction.toggleLike,
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-            // Close above the bar, the like buttons show the user's reaction already
-            ItemBadges(
-                item = item,
-                showReactions = false,
-                size = BADGE_SIZE,
-                modifier = Modifier.overlapBelow(BADGES_OVERLAP),
+            Text(
+                text = metadata.title?.toString().orEmpty(),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            SeekBar(item, isPlaying, controller)
-
-            Spacer(Modifier.weight(1f))
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                ModeButton(
-                    icon = R.drawable.shuffle,
-                    description = if (isShuffled) stringResource(R.string.semantic_shuffle_on) else stringResource(
-                        R.string.semantic_shuffle_off
-                    ),
-                    isOn = isShuffled,
-                    onClick = controller::toggleShuffle,
-                )
-                ControlButton(
-                    R.drawable.skip_previous,
-                    stringResource(R.string.semantic_previous),
-                    controller::previous
-                )
-                ControlButton(
-                    icon = if (isPlaying) R.drawable.pause else R.drawable.play_arrow,
-                    description = if (isPlaying) stringResource(R.string.semantic_pause) else stringResource(
-                        R.string.semantic_play
-                    ),
-                    onClick = controller::togglePlay,
-                    iconSize = 56.dp,
-                )
-                ControlButton(
-                    R.drawable.skip_next,
-                    stringResource(R.string.semantic_skip_next),
-                    controller::next
-                )
-                ModeButton(
-                    icon = if (repeatMode == RepeatMode.ONE) R.drawable.repeat_one else R.drawable.repeat,
-                    description = when (repeatMode) {
-                        RepeatMode.OFF -> stringResource(R.string.semantic_repeat_off)
-                        RepeatMode.ONE -> stringResource(R.string.semantic_repeat_one)
-                        RepeatMode.ALL -> stringResource(R.string.semantic_repeat_all)
-                    },
-                    isOn = repeatMode != RepeatMode.OFF,
-                    onClick = controller::cycleRepeat,
-                )
-            }
-            Spacer(Modifier.weight(1f))
+            Text(
+                text = (metadata.artist ?: metadata.subtitle)?.toString().orEmpty(),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
+        ReactionButton(
+            isSet = reaction.reaction == Reaction.LIKED,
+            enabled = reaction.reaction != null,
+            setIcon = R.drawable.thumb_up,
+            unsetIcon = R.drawable.thumb_up_outline,
+            description = stringResource(R.string.semantic_like),
+            setDescription = stringResource(R.string.semantic_remove_like),
+            onClick = reaction.toggleLike,
+        )
     }
+    Spacer(Modifier.height(16.dp))
+    // Close above the bar, the like buttons show the user's reaction already
+    ItemBadges(
+        item = item,
+        showReactions = false,
+        size = BADGE_SIZE,
+        modifier = Modifier.overlapBelow(BADGES_OVERLAP),
+    )
+    SeekBar(item, isPlaying, controller)
+}
+
+/** The buttons to shuffle, go back, play or pause, skip and repeat, spread across the width. */
+@Composable
+private fun PlaybackControls(
+    isPlaying: Boolean,
+    repeatMode: RepeatMode,
+    isShuffled: Boolean,
+    controller: PlaybackController,
+) = Row(
+    horizontalArrangement = Arrangement.SpaceEvenly,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.fillMaxWidth(),
+) {
+    ModeButton(
+        icon = R.drawable.shuffle,
+        description = if (isShuffled) stringResource(R.string.semantic_shuffle_on) else stringResource(
+            R.string.semantic_shuffle_off
+        ),
+        isOn = isShuffled,
+        onClick = controller::toggleShuffle,
+    )
+    ControlButton(
+        R.drawable.skip_previous,
+        stringResource(R.string.semantic_previous),
+        controller::previous
+    )
+    ControlButton(
+        icon = if (isPlaying) R.drawable.pause else R.drawable.play_arrow,
+        description = if (isPlaying) stringResource(R.string.semantic_pause) else stringResource(
+            R.string.semantic_play
+        ),
+        onClick = controller::togglePlay,
+        iconSize = 56.dp,
+    )
+    ControlButton(
+        R.drawable.skip_next,
+        stringResource(R.string.semantic_skip_next),
+        controller::next
+    )
+    ModeButton(
+        icon = if (repeatMode == RepeatMode.ONE) R.drawable.repeat_one else R.drawable.repeat,
+        description = when (repeatMode) {
+            RepeatMode.OFF -> stringResource(R.string.semantic_repeat_off)
+            RepeatMode.ONE -> stringResource(R.string.semantic_repeat_one)
+            RepeatMode.ALL -> stringResource(R.string.semantic_repeat_all)
+        },
+        isOn = repeatMode != RepeatMode.OFF,
+        onClick = controller::cycleRepeat,
+    )
 }
 
 /**

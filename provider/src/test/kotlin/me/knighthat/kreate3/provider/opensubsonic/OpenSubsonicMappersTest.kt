@@ -225,7 +225,11 @@ class OpenSubsonicMappersTest {
                         "<p></p><p></p><a href=\"https://www.last.fm/music/x\">Read more on Last.fm</a> "
             ),
         )
-        assertEquals("&lt;", htmlToText("&amp;lt;"))
+        // Escaped over and over on its way, like Last.fm's biographies
+        assertEquals("\"Girls\"", htmlToText("&amp;amp;amp;quot;Girls&amp;amp;amp;quot;"))
+        assertEquals("It's <3", htmlToText("It&#x27;s &amp;lt;3"))
+        // A number that is no character stays as it is
+        assertEquals("&#99999999;", htmlToText("&#99999999;"))
         assertNull(htmlToText(" <a href=\"x\"></a> "))
     }
 }

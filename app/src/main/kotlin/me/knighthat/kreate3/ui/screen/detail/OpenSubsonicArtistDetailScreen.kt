@@ -45,7 +45,6 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
-import me.knighthat.kreate3.ui.component.TextPlaceholder
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQuickQueueActions
@@ -153,6 +152,8 @@ private fun OpenSubsonicArtistDetailContent(
         thumbnail = artist?.thumbnail ?: opened.picture,
         standIn = opened.picture,
         origin = Origin.OPEN_SUBSONIC,
+        description = (description as? LiveState.Ready)?.value,
+        descriptionLoading = description !is LiveState.Ready && state !is LiveState.Failed,
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
@@ -175,13 +176,6 @@ private fun OpenSubsonicArtistDetailContent(
         if (state is LiveState.Failed) {
             item(key = "status") { LiveStatus(state, onRetry, Modifier.fillMaxWidth()) }
             return@ArtistDetailScaffold
-        }
-        when (description) {
-            is LiveState.Ready -> description.value?.let {
-                item(key = "description") { DetailDescription(it) }
-            }
-
-            else -> item(key = "description") { TextPlaceholder() }
         }
         if (artist == null) {
             item(key = "albums") {

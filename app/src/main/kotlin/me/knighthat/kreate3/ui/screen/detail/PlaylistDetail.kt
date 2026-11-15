@@ -23,6 +23,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -62,6 +63,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
@@ -145,6 +147,9 @@ private val FRAMED_BADGE_SIZE = 18.dp
 /** Edge of the playlist icon on a cover with nothing to show. */
 private val PLACEHOLDER_ICON_SIZE = 72.dp
 
+/** How much of the page's color tones the blurred picture filling the header pane. */
+private const val PANE_FIELD_ALPHA = 0.55f
+
 /**
  * The frame of a playlist's page: its cover as an object, a large rounded square with a shadow,
  * standing on a heavily blurred copy of itself that fades into the page. Under it the name, the
@@ -222,7 +227,110 @@ fun PlaylistDetailScaffold(
                 }
             }
         }
-    val background = MaterialTheme.colorScheme.surfaceDim
+    val playlist = PlaylistContent(
+        name = name,
+        models = models,
+        songCovers = songCovers,
+        owner = owner,
+        summary = summary,
+        origin = origin,
+        buttons = buttons,
+    )
+    val actions: @Composable RowScope.() -> Unit = {
+        PlaylistOrderButton(
+            reversed = reversed,
+            onClick = { onToggleOrder?.invoke() },
+            enabled = onToggleOrder != null,
+        )
+        if (menu != null) MoreSheetButton({ menuOpen = true })
+    }
+    // Beside the list the queue's actions are buttons of the bar, the ⋮ sheet leaves them out
+    val wideActions: @Composable RowScope.() -> Unit = {
+        ListPaneQueueButtons(onAction)
+        PlaylistOrderButton(
+            reversed = reversed,
+            onClick = { onToggleOrder?.invoke() },
+            enabled = onToggleOrder != null,
+        )
+        if (menu != null) MoreSheetButton({ menuOpen = true })
+    }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceDim,
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+        modifier = modifier,
+    ) { insets ->
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val sideBySide = isSideBySide(maxWidth, maxHeight)
+            if (sideBySide) {
+                HorizontalPlaylistLayout(
+                    playlist = playlist,
+                    width = maxWidth,
+                    height = maxHeight,
+                    insets = insets,
+                    contentPadding = contentPadding,
+                    listState = listState,
+                    onBack = onBack,
+                    actions = wideActions,
+                    content = content,
+                )
+            } else {
+                VerticalPlaylistLayout(
+                    playlist = playlist,
+                    insets = insets,
+                    contentPadding = contentPadding,
+                    listState = listState,
+                    onBack = onBack,
+                    actions = actions,
+                    content = content,
+                )
+            }
+
+            if (menuOpen && menu != null)
+                CompositionLocalProvider(LocalQueueButtonsInBar provides sideBySide) {
+                    menu { menuOpen = false }
+                }
+        }
+    }
+}
+
+/**
+ * What a playlist's page shows above its songs, the same in both layouts, see
+ * [PlaylistDetailScaffold].
+ */
+@Immutable
+private class PlaylistContent(
+    val name: String,
+    val models: List<Any>,
+    val songCovers: List<Any>,
+    val owner: String?,
+    val summary: List<String>,
+    val origin: Origin?,
+    val buttons: List<PlaylistHeaderButton>,
+) {
+    /** The pictures the blurred field behind the header is made of. */
+    val field: List<Any>
+        get() = models.ifEmpty { songCovers.take(1) }
+}
+
+/**
+ * The playlist page on an upright window: the header is the list's first item, the bar takes the
+ * cover blurred and the name once it scrolled under, see [PlaylistDetailScaffold].
+ *
+ * @param insets what the system bars and the cutout take, from the scaffold
+ * @param actions the buttons at the end of the bar
+ */
+@Composable
+private fun VerticalPlaylistLayout(
+    playlist: PlaylistContent,
+    insets: PaddingValues,
+    contentPadding: PaddingValues,
+    listState: LazyListState,
+    onBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    content: LazyListScope.() -> Unit,
+) = Box(Modifier.fillMaxSize()) {
     val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
             TopAppBarDefaults.TopAppBarExpandedHeight
     val barHeightPx = with(LocalDensity.current) { barHeight.roundToPx() }
@@ -236,52 +344,138 @@ fun PlaylistDetailScaffold(
         }
     }
 
-    Scaffold(
-        containerColor = background,
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
-            .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
-        modifier = modifier,
-    ) { insets ->
-        Box(Modifier.fillMaxSize()) {
+    LazyColumn(
+        state = listState,
+        contentPadding = contentPadding + PaddingValues(
+            start = insets.calculateStartPadding(direction),
+            end = insets.calculateEndPadding(direction),
+            bottom = insets.calculateBottomPadding(),
+        ),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        item(key = "header") {
+            FramedHeader(
+                name = playlist.name,
+                models = playlist.models,
+                songCovers = playlist.songCovers,
+                owner = playlist.owner,
+                summary = playlist.summary,
+                origin = playlist.origin,
+                topPadding = barHeight,
+                buttons = playlist.buttons,
+                onNameBottom = { nameBottom = it },
+            )
+        }
+        content()
+    }
+
+    FramedTopBar(
+        name = playlist.name,
+        summary = playlist.summary,
+        models = playlist.field,
+        collapsed = collapsed,
+        onBack = onBack,
+        actions = actions,
+    )
+}
+
+/**
+ * The playlist page on a wide window ([isSideBySide]), laid out like an album's: the cover and the
+ * owner in a pane at the start on the blurred picture, its bar naming the playlist with its
+ * source, song count and length, the list beside it under its own bar, see
+ * [PlaylistDetailScaffold]. The header's two buttons are left out, the list's bar has the queue's.
+ *
+ * @param width the page's width, [height] its height
+ * @param insets what the system bars and the cutout take, from the scaffold
+ * @param actions the buttons at the end of the list's bar
+ */
+@Composable
+private fun HorizontalPlaylistLayout(
+    playlist: PlaylistContent,
+    width: Dp,
+    height: Dp,
+    insets: PaddingValues,
+    contentPadding: PaddingValues,
+    listState: LazyListState,
+    onBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    content: LazyListScope.() -> Unit,
+) {
+    val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+            TopAppBarDefaults.TopAppBarExpandedHeight
+    val direction = LocalLayoutDirection.current
+    val paneWidth = headerPaneWidth(width)
+    val start = insets.calculateStartPadding(direction)
+    val background = MaterialTheme.colorScheme.surfaceDim
+
+    SidePanes(
+        paneWidth = paneWidth,
+        header = {
+            // The blurred picture fills the pane, toned toward the page for the texts
+            BlurredCover(
+                models = playlist.field,
+                blur = FIELD_BLUR,
+                modifier = Modifier
+                    .matchParentSize()
+                    .clipToBounds()
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(background.copy(alpha = PANE_FIELD_ALPHA))
+                    },
+            )
+            HeaderPaneColumn(
+                paneHeight = height,
+                padding = PaddingValues(
+                    start = start + HEADER_PANE_PADDING,
+                    top = barHeight,
+                    end = HEADER_PANE_PADDING,
+                    bottom = insets.calculateBottomPadding() +
+                            contentPadding.calculateBottomPadding() + 16.dp,
+                ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                PlaylistCover(
+                    models = playlist.models,
+                    songCovers = playlist.songCovers,
+                    coverSize = Modifier.size(headerPaneCover(paneWidth - start, height)),
+                )
+                playlist.owner?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                }
+            }
+            HeaderPaneBar(
+                onBack = onBack,
+                color = MaterialTheme.colorScheme.onSurface,
+                title = {
+                    HeaderPaneTitle(
+                        name = playlist.name,
+                        origin = playlist.origin,
+                        details = playlist.summary.joinToString(" · "),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+            )
+        },
+        list = {
+            ListPaneBar(actions = actions)
             LazyColumn(
                 state = listState,
                 contentPadding = contentPadding + PaddingValues(
-                    start = insets.calculateStartPadding(direction),
                     end = insets.calculateEndPadding(direction),
                     bottom = insets.calculateBottomPadding(),
                 ),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                item(key = "header") {
-                    FramedHeader(
-                        name = name,
-                        models = models,
-                        songCovers = songCovers,
-                        owner = owner,
-                        summary = summary,
-                        origin = origin,
-                        topPadding = barHeight,
-                        buttons = buttons,
-                        onNameBottom = { nameBottom = it },
-                    )
-                }
-                content()
-            }
-
-            FramedTopBar(
-                name = name,
-                summary = summary,
-                models = models.ifEmpty { songCovers.take(1) },
-                collapsed = collapsed,
-                onBack = onBack,
-                onMore = if (menu != null) ({ menuOpen = true }) else null,
-                reversed = reversed,
-                onToggleOrder = onToggleOrder,
+                modifier = Modifier.weight(1f),
+                content = content,
             )
-        }
-    }
-
-    if (menuOpen && menu != null) menu { menuOpen = false }
+        },
+    )
 }
 
 @Composable
@@ -327,61 +521,108 @@ private fun FramedHeader(
             .fillMaxWidth()
             .padding(top = topPadding + 8.dp, bottom = 12.dp, start = 24.dp, end = 24.dp),
     ) {
-        val shape = MaterialTheme.shapes.large
-        val cover = Modifier
-            .fillMaxWidth(FRAMED_COVER_WIDTH)
-            .aspectRatio(1f)
-            .shadow(24.dp, shape)
-        when {
-            models.isNotEmpty() -> Thumbnail(models, shape, cover)
-            songCovers.size >= GRID_COVERS -> CoverGrid(songCovers, cover, shape)
-            else -> Thumbnail(
-                models = songCovers.take(1),
-                shape = shape,
-                modifier = cover,
-                placeholder = {
-                    Icon(
-                        painterResource(R.drawable.queue_music),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(PLACEHOLDER_ICON_SIZE),
-                    )
-                },
-            )
-        }
-        Spacer(Modifier.height(16.dp))
-        origin?.let { OriginBadge(it, FRAMED_BADGE_SIZE) }
-        Text(
-            name,
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.onGloballyPositioned {
+        FramedHeaderContent(
+            name = name,
+            models = models,
+            songCovers = songCovers,
+            owner = owner,
+            summary = summary,
+            origin = origin,
+            buttons = buttons,
+            coverSize = Modifier
+                .fillMaxWidth(FRAMED_COVER_WIDTH)
+                .aspectRatio(1f),
+            onNameBottom = onNameBottom,
+        )
+    }
+}
+
+/**
+ * The cover, name, owner, [summary] and buttons of a playlist's header, over the page or in the
+ * pane beside its list.
+ *
+ * @param coverSize the cover's size
+ * @param onNameBottom gets where the name ends in the column, `null` when nothing needs it
+ */
+@Composable
+private fun FramedHeaderContent(
+    name: String,
+    models: List<Any>,
+    songCovers: List<Any>,
+    owner: String?,
+    summary: List<String>,
+    origin: Origin?,
+    buttons: List<PlaylistHeaderButton>,
+    coverSize: Modifier,
+    onNameBottom: ((Int) -> Unit)? = null,
+) {
+    PlaylistCover(models, songCovers, coverSize)
+    Spacer(Modifier.height(16.dp))
+    origin?.let { OriginBadge(it, FRAMED_BADGE_SIZE) }
+    Text(
+        name,
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        modifier = if (onNameBottom != null) {
+            Modifier.onGloballyPositioned {
                 onNameBottom((it.positionInParent().y + it.size.height).toInt())
+            }
+        } else {
+            Modifier
+        },
+    )
+    owner?.let {
+        Text(
+            it,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+    summary.forEach {
+        Text(
+            it,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    Spacer(Modifier.height(8.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        buttons.forEachIndexed { index, button -> HeaderButton(button, filled = index == 0) }
+    }
+}
+
+/**
+ * The playlist's picture, else a 2 × 2 grid of its [songCovers], the first alone with fewer, a
+ * playlist icon with none, in a shadow.
+ *
+ * @param coverSize the cover's size
+ */
+@Composable
+private fun PlaylistCover(models: List<Any>, songCovers: List<Any>, coverSize: Modifier) {
+    val shape = MaterialTheme.shapes.large
+    val cover = coverSize.shadow(24.dp, shape)
+
+    when {
+        models.isNotEmpty() -> Thumbnail(models, shape, cover)
+        songCovers.size >= GRID_COVERS -> CoverGrid(songCovers, cover, shape)
+        else -> Thumbnail(
+            models = songCovers.take(1),
+            shape = shape,
+            modifier = cover,
+            placeholder = {
+                Icon(
+                    painterResource(R.drawable.queue_music),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(PLACEHOLDER_ICON_SIZE),
+                )
             },
         )
-        owner?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        summary.forEach {
-            Text(
-                it,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            buttons.forEachIndexed { index, button -> HeaderButton(button, filled = index == 0) }
-        }
     }
 }
 
@@ -456,6 +697,7 @@ val LocalPlaylistButtons =
  * cover blurred behind it under a scrim, with the [name] and [summary]. Its buttons stay light.
  *
  * @param models the pictures the header's field is of
+ * @param actions the buttons at the end of the bar
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -465,9 +707,7 @@ private fun FramedTopBar(
     models: List<Any>,
     collapsed: Boolean,
     onBack: () -> Unit,
-    onMore: (() -> Unit)?,
-    reversed: Boolean,
-    onToggleOrder: (() -> Unit)?,
+    actions: @Composable RowScope.() -> Unit,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     val shown by animateFloatAsState(if (collapsed) 1f else 0f, label = "playlist bar")
 
@@ -501,14 +741,7 @@ private fun FramedTopBar(
                 }
             },
             navigationIcon = { BackButton(onBack) },
-            actions = {
-                PlaylistOrderButton(
-                    reversed = reversed,
-                    onClick = { onToggleOrder?.invoke() },
-                    enabled = onToggleOrder != null,
-                )
-                onMore?.let { MoreSheetButton(it) }
-            },
+            actions = actions,
             // Light on the shade over the header, then on the scrim
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,
@@ -544,6 +777,9 @@ internal fun List<MediaItem>.songCovers(providers: Providers): List<Any> =
  * The sheet of a playlist's ⋮ button: Play next, Add to queue and Share as buttons, then for a
  * playlist of the app the switches that move or take out its songs as rows, at most one on, a
  * row that exports the playlist to a file and one that deletes it.
+ *
+ * Opened from a wide page, which has the queue's actions as buttons of its bar
+ * ([LocalQueueButtonsInBar]), it leaves them out.
  *
  * @param onAction runs a [QueueAction] with the playlist's songs, `null` while there are none
  * @param share gives a link to the playlist, `null` turns Share off
@@ -584,20 +820,24 @@ fun PlaylistMenu(
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
     }
+    // The page's bar has them already
+    val inBar = LocalQueueButtonsInBar.current
 
     ConfigSheet(
         onDismiss = onDismiss,
         actions = { close ->
-            LabeledIconButton(
-                icon = R.drawable.queue_play_next,
-                label = stringResource(R.string.menu_shortcut_play_next),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.PLAY_NEXT) } }
-            LabeledIconButton(
-                icon = R.drawable.playlist_add,
-                label = stringResource(R.string.menu_shortcut_add_to_queue),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
+            if (!inBar) {
+                LabeledIconButton(
+                    icon = R.drawable.queue_play_next,
+                    label = stringResource(R.string.menu_shortcut_play_next),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.PLAY_NEXT) } }
+                LabeledIconButton(
+                    icon = R.drawable.playlist_add,
+                    label = stringResource(R.string.menu_shortcut_add_to_queue),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
+            }
             if (isSaved != null)
                 LabeledIconToggle(
                     isSet = isSaved,

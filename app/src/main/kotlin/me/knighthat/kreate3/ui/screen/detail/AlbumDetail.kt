@@ -20,13 +20,16 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -37,6 +40,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -52,6 +56,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -59,6 +64,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
@@ -155,13 +161,13 @@ private val TINTED_BADGE_SIZE = 16.dp
 /**
  * The frame of an album's page: no picture behind anything, the header is filled with a dark
  * shade of the cover's main color instead, fading into the page at its bottom. The cover sits at
- * the start with the badges, the overline, name, [artists] (a tap opens them), year and [summary]
- * beside it, the [description] under them. The bar has the [action] button and the ⋮ sheet.
+ * the start with the badges, the overline (the kind of release), name, [artists] (a tap opens
+ * them), year and [summary] beside it, the [description] under them. The bar has the [action] button and the ⋮ sheet.
  *
  * The header stays at the top and the list starts under it, its rows going on up behind the
  * fade. Scrolling up first shrinks the header, the list going up with its bottom: the cover gets
- * small, the badges, overline, name and description fade out, until only the cover, artists, year
- * and [summary] are left under the bar, which shows the name with the badges under it. Only then
+ * small, the badges, name and description fade out, the overline coming down over the name, until
+ * only the cover, overline, artists, year and [summary] are left under the bar, which shows the name with the badges under it. Only then
  * does the list scroll, even a list too short to scroll at all; scrolling down, the header grows
  * again once the list is back at its top.
  *
@@ -217,11 +223,117 @@ fun AlbumDetailScaffold(
     val picture = rememberSharedPicture(albumPictureKey(albumId), MaterialTheme.shapes.medium)
     // Everything but the cover, shown once it landed, see pictureFirst
     val contents = rememberContentsAfterPicture()
-    val seed = tint.takeIf { it != Color.Unspecified } ?: MaterialTheme.colorScheme.primary
-    val shade by animateColorAsState(
-        remember(seed) { Color(Hct.fromInt(seed.toArgb()).withTone(TINT_TONE).toInt()) },
-        label = "album tint",
+    val shade = rememberCoverShade(tint)
+    val album = AlbumContent(
+        name = name,
+        covers = covers,
+        cover = picture.modifier,
+        contents = contents,
+        artists = artists,
+        year = year,
+        summary = summary,
+        origin = origin,
+        isExplicit = isExplicit,
+        description = description,
+        releaseType = releaseType,
+        shade = shade,
+        onOpenArtist = onOpenArtist,
     )
+    val actions: @Composable RowScope.() -> Unit = {
+        action?.let {
+            QueueActionButton(it, { onAction?.invoke(it) }, enabled = onAction != null)
+        }
+        if (menu != null) MoreSheetButton({ menuOpen = true })
+    }
+    // Beside the list the queue's actions are buttons of the bar, the ⋮ sheet leaves them out
+    val wideActions: @Composable RowScope.() -> Unit = {
+        ListPaneQueueButtons(onAction)
+        if (menu != null) MoreSheetButton({ menuOpen = true })
+    }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceDim,
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+        modifier = modifier,
+    ) { insets ->
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val sideBySide = isSideBySide(maxWidth, maxHeight)
+            if (sideBySide) {
+                HorizontalAlbumLayout(
+                    album = album,
+                    width = maxWidth,
+                    height = maxHeight,
+                    insets = insets,
+                    contentPadding = contentPadding,
+                    listState = listState,
+                    onBack = onBack,
+                    actions = wideActions,
+                    content = content,
+                )
+            } else {
+                VerticalAlbumLayout(
+                    album = album,
+                    insets = insets,
+                    contentPadding = contentPadding,
+                    listState = listState,
+                    onBack = onBack,
+                    actions = actions,
+                    content = content,
+                )
+            }
+
+            if (menuOpen && menu != null)
+                CompositionLocalProvider(LocalQueueButtonsInBar provides sideBySide) {
+                    menu { menuOpen = false }
+                }
+        }
+    }
+}
+
+/**
+ * What an album's page shows above its songs, the same in both layouts, see
+ * [AlbumDetailScaffold].
+ *
+ * @property cover the shared cover's modifier, the cover clips itself
+ * @property contents fades everything but the cover in after it, see
+ * [rememberContentsAfterPicture]
+ * @property shade the color the header is filled with
+ */
+@Immutable
+private class AlbumContent(
+    val name: String,
+    val covers: List<Any>,
+    val cover: Modifier,
+    val contents: Modifier,
+    val artists: String?,
+    val year: Int?,
+    val summary: String?,
+    val origin: Origin?,
+    val isExplicit: Boolean,
+    val description: String?,
+    val releaseType: ReleaseType?,
+    val shade: Color,
+    val onOpenArtist: (() -> Unit)?,
+)
+
+/**
+ * The album page on an upright window: the header pinned at the top, shrinking as the list goes
+ * up behind it, see [AlbumDetailScaffold].
+ *
+ * @param insets what the system bars and the cutout take, from the scaffold
+ * @param actions the buttons at the end of the bar
+ */
+@Composable
+private fun VerticalAlbumLayout(
+    album: AlbumContent,
+    insets: PaddingValues,
+    contentPadding: PaddingValues,
+    listState: LazyListState,
+    onBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    content: LazyListScope.() -> Unit,
+) {
     val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
             TopAppBarDefaults.TopAppBarExpandedHeight
     val direction = LocalLayoutDirection.current
@@ -259,101 +371,236 @@ fun AlbumDetailScaffold(
         }
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.surfaceDim,
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
-            .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
-        modifier = modifier,
-    ) { insets ->
-        Box(
-            Modifier
+    Box(
+        Modifier
+            .fillMaxSize()
+            .nestedScroll(shrinking)
+    ) {
+        LazyColumn(
+            state = listState,
+            contentPadding = contentPadding + PaddingValues(
+                start = insets.calculateStartPadding(direction),
+                top = with(density) { heights.expanded.toDp() },
+                end = insets.calculateEndPadding(direction),
+                bottom = insets.calculateBottomPadding(),
+            ),
+            modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(shrinking)
-        ) {
+                // Up with the header's bottom, taller by as much so it still reaches the end
+                .layout { measurable, constraints ->
+                    val up = shrunk.roundToInt()
+                    val placeable = measurable.measure(
+                        constraints.copy(
+                            minHeight = constraints.maxHeight + up,
+                            maxHeight = constraints.maxHeight + up,
+                        )
+                    )
+                    layout(constraints.maxWidth, constraints.maxHeight) {
+                        placeable.place(0, -up)
+                    }
+                }
+                .then(album.contents)
+                // Rows dissolve around the header's bottom instead of showing through its
+                // fade higher up. In the list's own coordinates, which the layout above moved
+                // up by what the header shrank by, that bottom stays where the padding put it
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                .drawWithContent {
+                    drawContent()
+                    val bottom = heights.expanded.toFloat()
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            1f to Color.Black,
+                            startY = bottom - LIST_FADE_ABOVE.toPx(),
+                            endY = bottom + LIST_FADE_BELOW.toPx(),
+                        ),
+                        blendMode = BlendMode.DstIn,
+                    )
+                },
+            content = content,
+        )
+
+        TintedHeader(
+            name = album.name,
+            models = album.covers,
+            cover = album.cover,
+            artists = album.artists,
+            year = album.year,
+            summary = album.summary,
+            origin = album.origin,
+            isExplicit = album.isExplicit,
+            description = album.description,
+            releaseType = album.releaseType,
+            shade = album.shade,
+            topPadding = barHeight,
+            collapse = collapse,
+            onOpenArtist = album.onOpenArtist,
+            onHeights = { heights = it },
+            contents = album.contents,
+            // Dragged, it scrolls like the list, so it shrinks the header the same way
+            modifier = Modifier.scrollable(
+                listState,
+                Orientation.Vertical,
+                reverseDirection = true,
+            ),
+        )
+
+        TintedTopBar(
+            name = album.name,
+            origin = album.origin,
+            isExplicit = album.isExplicit,
+            collapse = collapse,
+            onBack = onBack,
+            actions = actions,
+            modifier = album.contents,
+        )
+    }
+}
+
+/**
+ * The album page on a wide window ([isSideBySide]): the header in a pane at the start, filled
+ * with the shade, its bar naming the album with its song count and length under it, the list
+ * beside it under its own bar, see [AlbumDetailScaffold].
+ *
+ * @param width the page's width, [height] its height
+ * @param insets what the system bars and the cutout take, from the scaffold
+ * @param actions the buttons at the end of the list's bar
+ */
+@Composable
+private fun HorizontalAlbumLayout(
+    album: AlbumContent,
+    width: Dp,
+    height: Dp,
+    insets: PaddingValues,
+    contentPadding: PaddingValues,
+    listState: LazyListState,
+    onBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    content: LazyListScope.() -> Unit,
+) {
+    val barHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+            TopAppBarDefaults.TopAppBarExpandedHeight
+    val direction = LocalLayoutDirection.current
+    val paneWidth = headerPaneWidth(width)
+    val start = insets.calculateStartPadding(direction)
+
+    SidePanes(
+        paneWidth = paneWidth,
+        header = {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .then(album.contents)
+                    .background(album.shade)
+            )
+            HeaderPaneColumn(
+                paneHeight = height,
+                padding = PaddingValues(
+                    start = start + HEADER_PANE_PADDING,
+                    top = barHeight,
+                    end = HEADER_PANE_PADDING,
+                    bottom = insets.calculateBottomPadding() +
+                            contentPadding.calculateBottomPadding() + 16.dp,
+                ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                PaneAlbumHeader(
+                    models = album.covers,
+                    cover = Modifier
+                        .size(headerPaneCover(paneWidth - start, height))
+                        .then(album.cover),
+                    artists = album.artists,
+                    year = album.year,
+                    isExplicit = album.isExplicit,
+                    description = album.description,
+                    onOpenArtist = album.onOpenArtist,
+                    contents = album.contents,
+                )
+            }
+            HeaderPaneBar(
+                onBack = onBack,
+                color = Color.White,
+                modifier = album.contents,
+                title = {
+                    val kind = album.releaseType?.let { stringResource(it.labelRes) }
+                        ?: pluralStringResource(R.plurals.unit_album, 1)
+                    HeaderPaneTitle(
+                        name = album.name,
+                        origin = album.origin,
+                        details = listOfNotNull(kind, album.summary).joinToString(" · "),
+                        color = Color.White.copy(alpha = TINTED_SECONDARY_ALPHA),
+                    )
+                },
+            )
+        },
+        list = {
+            ListPaneBar(album.contents, actions)
             LazyColumn(
                 state = listState,
                 contentPadding = contentPadding + PaddingValues(
-                    start = insets.calculateStartPadding(direction),
-                    top = with(density) { heights.expanded.toDp() },
                     end = insets.calculateEndPadding(direction),
                     bottom = insets.calculateBottomPadding(),
                 ),
                 modifier = Modifier
-                    .fillMaxSize()
-                    // Up with the header's bottom, taller by as much so it still reaches the end
-                    .layout { measurable, constraints ->
-                        val up = shrunk.roundToInt()
-                        val placeable = measurable.measure(
-                            constraints.copy(
-                                minHeight = constraints.maxHeight + up,
-                                maxHeight = constraints.maxHeight + up,
-                            )
-                        )
-                        layout(constraints.maxWidth, constraints.maxHeight) {
-                            placeable.place(0, -up)
-                        }
-                    }
-                    .then(contents)
-                    // Rows dissolve around the header's bottom instead of showing through its
-                    // fade higher up. In the list's own coordinates, which the layout above moved
-                    // up by what the header shrank by, that bottom stays where the padding put it
-                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                    .drawWithContent {
-                        drawContent()
-                        val bottom = heights.expanded.toFloat()
-                        drawRect(
-                            brush = Brush.verticalGradient(
-                                0f to Color.Transparent,
-                                1f to Color.Black,
-                                startY = bottom - LIST_FADE_ABOVE.toPx(),
-                                endY = bottom + LIST_FADE_BELOW.toPx(),
-                            ),
-                            blendMode = BlendMode.DstIn,
-                        )
-                    },
+                    .weight(1f)
+                    .then(album.contents),
                 content = content,
             )
+        },
+    )
+}
 
-            TintedHeader(
-                name = name,
-                models = covers,
-                cover = picture.modifier,
-                artists = artists,
-                year = year,
-                summary = summary,
-                origin = origin,
-                isExplicit = isExplicit,
-                description = description,
-                releaseType = releaseType,
-                shade = shade,
-                topPadding = barHeight,
-                collapse = collapse,
-                onOpenArtist = onOpenArtist,
-                onHeights = { heights = it },
-                contents = contents,
-                // Dragged, it scrolls like the list, so it shrinks the header the same way
-                modifier = Modifier.scrollable(
-                    listState,
-                    Orientation.Vertical,
-                    reverseDirection = true,
-                ),
-            )
+/**
+ * The album header in the pane beside the list: the large cover, the explicit badge, [artists]
+ * with the year and the [description] under each other, centered, on the shade. The pane's bar
+ * names the album, with its origin, kind and length.
+ *
+ * @param cover the shared cover's modifier with its size, the cover clips itself
+ * @param contents fades everything but the cover in after it, see [rememberContentsAfterPicture]
+ */
+@Composable
+private fun PaneAlbumHeader(
+    models: List<Any>,
+    cover: Modifier,
+    artists: String?,
+    year: Int?,
+    isExplicit: Boolean,
+    description: String?,
+    onOpenArtist: (() -> Unit)?,
+    contents: Modifier,
+) {
+    val dim = Color.White.copy(alpha = TINTED_SECONDARY_ALPHA)
+    val shape = MaterialTheme.shapes.medium
 
-            TintedTopBar(
-                name = name,
-                origin = origin,
-                isExplicit = isExplicit,
-                collapse = collapse,
-                onBack = onBack,
-                action = action,
-                onAction = onAction,
-                onMore = if (menu != null) ({ menuOpen = true }) else null,
-                modifier = contents,
-            )
-        }
+    Thumbnail(models = models, shape = shape, modifier = cover.shadow(12.dp, shape))
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = contents.padding(top = 12.dp),
+    ) {
+        if (isExplicit) ExplicitBadge(TINTED_BADGE_SIZE)
+        ArtistLine(artists, year, onOpenArtist, linkColor = Color.White, color = dim)
     }
-
-    if (menuOpen && menu != null) menu { menuOpen = false }
+    description?.let {
+        DetailDescription(
+            it,
+            // Its own padding, its tap area reaches the pane's edges
+            modifier = contents.layout { measurable, constraints ->
+                val edge = HEADER_PANE_PADDING.roundToPx()
+                val placeable = measurable.measure(
+                    constraints.copy(
+                        minWidth = constraints.minWidth + 2 * edge,
+                        maxWidth = constraints.maxWidth + 2 * edge,
+                    )
+                )
+                layout(constraints.maxWidth, placeable.height) {
+                    placeable.placeRelative(-edge, 0)
+                }
+            },
+            color = dim,
+            linkColor = Color.White,
+        )
+    }
 }
 
 /** Heights in pixels of the album header, whole and as small as it gets. */
@@ -405,28 +652,30 @@ private fun TintedHeader(
                     modifier = cover.shadow(12.dp, shape),
                 )
             },
-            // What fades out as the header shrinks
+            // The badges and the name fade out as the header shrinks
             {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                if (origin != null || isExplicit)
+                    AlbumBadges(origin, isExplicit, dim, contents)
+            },
+            // The kind stays, coming down to the artists as the name above them fades out
+            {
+                Text(
+                    (releaseType?.let { stringResource(it.labelRes) }
+                        ?: pluralStringResource(R.plurals.unit_album, 1)).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = dim,
                     modifier = contents,
-                ) {
-                    if (origin != null || isExplicit)
-                        AlbumBadges(origin, isExplicit, dim, Modifier.padding(bottom = 2.dp))
-                    Text(
-                        (releaseType?.let { stringResource(it.labelRes) }
-                            ?: pluralStringResource(R.plurals.unit_album, 1)).uppercase(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = dim,
-                    )
-                    Text(
-                        name,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color.White,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                )
+            },
+            {
+                Text(
+                    name,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = contents,
+                )
             },
             // What stays beside the small cover
             {
@@ -453,12 +702,14 @@ private fun TintedHeader(
             },
         ),
         modifier = modifier.fillMaxWidth(),
-    ) { (shadeBox, coverBox, fading, staying, describing), constraints ->
+    ) { slots, constraints ->
         val fraction = collapse()
         val width = constraints.maxWidth
         val padding = TINTED_PADDING.roundToPx()
         val gap = TINTED_GAP.roundToPx()
         val lineGap = 2.dp.roundToPx()
+        // Under the badges, a little more than between the lines
+        val badgesGap = 4.dp.roundToPx()
         val top = topPadding.roundToPx() + 4.dp.roundToPx()
         val fade = TINTED_FADE.roundToPx()
         val large = TINTED_COVER_SIZE.roundToPx()
@@ -466,17 +717,22 @@ private fun TintedHeader(
         val textWidth = (width - 2 * padding - large - gap).coerceAtLeast(0)
         val text = Constraints(maxWidth = textWidth)
 
-        val upper = fading.first().measure(text)
-        val lower = staying.first().measure(text)
-        val about = describing.firstOrNull()?.measure(Constraints(maxWidth = width))
+        val badges = slots[2].firstOrNull()?.measure(text)
+        val kind = slots[3].first().measure(text)
+        val title = slots[4].first().measure(text)
+        val lower = slots[5].first().measure(text)
+        val about = slots[6].firstOrNull()?.measure(Constraints(maxWidth = width))
         val aboutHeight = about?.let { it.height + 8.dp.roundToPx() } ?: 0
+        // Room the badges and the name take above the kind and under it, whole
+        val badgesRoom = badges?.let { it.height + badgesGap } ?: 0
+        val titleRoom = lineGap + title.height
 
         val heights = HeaderHeights(
             expanded = top + maxOf(
                 large,
-                upper.height + lineGap + lower.height
+                badgesRoom + kind.height + titleRoom + lineGap + lower.height,
             ) + aboutHeight + fade,
-            collapsed = top + maxOf(small, lower.height) + fade,
+            collapsed = top + maxOf(small, kind.height + lineGap + lower.height) + fade,
         )
         if (heights != reported) {
             reported = heights
@@ -484,22 +740,29 @@ private fun TintedHeader(
         }
 
         val coverSize = lerp(large, small, fraction)
-        val upperHeight = (upper.height * (1 - fraction)).roundToInt()
-        val rowHeight = maxOf(coverSize, upperHeight + lineGap + lower.height)
-        val height = top + rowHeight + (aboutHeight * (1 - fraction)).roundToInt() + fade
+        val shrinking = 1 - fraction
+        val textHeight = ((badgesRoom + titleRoom) * shrinking).roundToInt() +
+                kind.height + lineGap + lower.height
+        val rowHeight = maxOf(coverSize, textHeight)
+        val height = top + rowHeight + (aboutHeight * shrinking).roundToInt() + fade
         // Gone by half way, before what it covers takes its place
         val fadingAlpha = (1 - 2 * fraction).coerceIn(0f, 1f)
-        val coverPlaceable = coverBox.first().measure(Constraints.fixed(coverSize, coverSize))
-        val shadePlaceable = shadeBox.first().measure(Constraints.fixed(width, height))
+        val coverPlaceable = slots[1].first().measure(Constraints.fixed(coverSize, coverSize))
+        val shadePlaceable = slots[0].first().measure(Constraints.fixed(width, height))
         val textStart = padding + coverSize + gap
         val lowerTop = top + rowHeight - lower.height
+        val titleTop = lowerTop - lineGap - title.height
+        // Over the name while it is whole, down to the artists once it is gone
+        val kindTop = lowerTop - lineGap - kind.height - (titleRoom * shrinking).roundToInt()
 
         layout(width, height) {
             shadePlaceable.place(0, 0)
             coverPlaceable.place(padding, top + rowHeight - coverSize)
-            upper.placeWithLayer(textStart, lowerTop - lineGap - upper.height) {
+            badges?.placeWithLayer(textStart, kindTop - badgesGap - badges.height) {
                 alpha = fadingAlpha
             }
+            kind.place(textStart, kindTop)
+            title.placeWithLayer(textStart, titleTop) { alpha = fadingAlpha }
             lower.place(textStart, lowerTop)
             about?.placeWithLayer(0, top + rowHeight + 8.dp.roundToPx()) { alpha = fadingAlpha }
         }
@@ -530,9 +793,7 @@ private fun TintedTopBar(
     isExplicit: Boolean,
     collapse: () -> Float,
     onBack: () -> Unit,
-    action: QueueAction?,
-    onAction: ((QueueAction) -> Unit)?,
-    onMore: (() -> Unit)?,
+    actions: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     TopAppBar(
@@ -548,12 +809,7 @@ private fun TintedTopBar(
             }
         },
         navigationIcon = { BackButton(onBack) },
-        actions = {
-            action?.let {
-                QueueActionButton(it, { onAction?.invoke(it) }, enabled = onAction != null)
-            }
-            onMore?.let { MoreSheetButton(it) }
-        },
+        actions = actions,
         // The header's shade is behind it
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
@@ -564,6 +820,20 @@ private fun TintedTopBar(
         ),
         modifier = modifier,
     )
+}
+
+/**
+ * The dark shade of [tint] a header is filled with, dark enough for white text on any cover; the
+ * theme's primary color while there is no tint. It changes smoothly to the next one.
+ */
+@Composable
+internal fun rememberCoverShade(tint: Color): Color {
+    val seed = tint.takeIf { it != Color.Unspecified } ?: MaterialTheme.colorScheme.primary
+    val shade by animateColorAsState(
+        remember(seed) { Color(Hct.fromInt(seed.toArgb()).withTone(TINT_TONE).toInt()) },
+        label = "cover shade",
+    )
+    return shade
 }
 
 /**
@@ -586,6 +856,9 @@ internal fun List<MediaItem>.albumArtistRoute(names: List<String>?): Route? {
 /**
  * The sheet of an album's ⋮ button: Play, Bookmark and Share as buttons, then Shuffle, Play next,
  * Add to queue, the artist, Statistics and, for an album that can be, Reorder as rows.
+ *
+ * Opened from a wide page, which has the queue's actions as buttons of its bar
+ * ([LocalQueueButtonsInBar]), it leaves them out.
  *
  * @param onAction runs a [QueueAction] with the album's songs, `null` while there are none: the
  * buttons and rows of those are off
@@ -615,15 +888,18 @@ fun AlbumMenu(
     val linkShare = rememberLinkShare(name, ShareKind.ALBUM) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))
     }
+    // The page's bar has them already
+    val inBar = LocalQueueButtonsInBar.current
 
     ConfigSheet(
         onDismiss = onDismiss,
         actions = { close ->
-            LabeledIconButton(
-                icon = R.drawable.play_arrow,
-                label = stringResource(R.string.menu_shortcut_play),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.PLAY) } }
+            if (!inBar)
+                LabeledIconButton(
+                    icon = R.drawable.play_arrow,
+                    label = stringResource(R.string.menu_shortcut_play),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.PLAY) } }
             LabeledIconToggle(
                 isSet = isBookmarked == true,
                 enabled = isBookmarked != null,
@@ -641,21 +917,23 @@ fun AlbumMenu(
             ) { linkShare.share { close {} } }
         },
         entries = { close ->
-            ConfigEntry(
-                R.drawable.shuffle,
-                stringResource(R.string.menu_shuffle),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.SHUFFLE) } }
-            ConfigEntry(
-                R.drawable.queue_play_next,
-                stringResource(R.string.menu_play_next),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.PLAY_NEXT) } }
-            ConfigEntry(
-                R.drawable.playlist_add,
-                stringResource(R.string.menu_add_to_queue),
-                enabled = onAction != null,
-            ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
+            if (!inBar) {
+                ConfigEntry(
+                    R.drawable.shuffle,
+                    stringResource(R.string.menu_shuffle),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.SHUFFLE) } }
+                ConfigEntry(
+                    R.drawable.queue_play_next,
+                    stringResource(R.string.menu_play_next),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.PLAY_NEXT) } }
+                ConfigEntry(
+                    R.drawable.playlist_add,
+                    stringResource(R.string.menu_add_to_queue),
+                    enabled = onAction != null,
+                ) { close { onAction?.invoke(QueueAction.ENQUEUE) } }
+            }
             if (onOpenArtist != null)
                 ConfigEntry(
                     R.drawable.mic,

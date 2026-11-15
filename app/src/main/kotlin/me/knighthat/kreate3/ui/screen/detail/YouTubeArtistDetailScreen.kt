@@ -43,7 +43,6 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
-import me.knighthat.kreate3.ui.component.TextPlaceholder
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewArtists
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -153,6 +152,8 @@ private fun YouTubeArtistDetailContent(
         standIn = opened.picture,
         origin = Origin.YOUTUBE,
         subtitle = artist?.audience,
+        description = artist?.description,
+        descriptionLoading = artist == null && state !is LiveState.Failed,
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
@@ -177,7 +178,6 @@ private fun YouTubeArtistDetailContent(
             return@ArtistDetailScaffold
         }
         if (artist == null) {
-            item(key = "description") { TextPlaceholder() }
             item(key = "songs-title") {
                 SectionTitle(stringResource(R.string.section_header_top_songs))
             }
@@ -186,9 +186,6 @@ private fun YouTubeArtistDetailContent(
                 CardRowPlaceholder(LIVE_CARD_WIDTH, Modifier.padding(top = 16.dp))
             }
             return@ArtistDetailScaffold
-        }
-        artist.description?.let {
-            item(key = "description") { DetailDescription(it) }
         }
         if (artist.topSongs.isNotEmpty()) {
             item(key = "songs-title") {

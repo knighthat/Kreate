@@ -139,7 +139,8 @@ ui/screen/
   header (`TintedHeader`, a custom `Layout`) is pinned over the list, which starts under it and
   scrolls behind its bottom fade; scrolling up first shrinks it (`NestedScrollConnection`, the list
   moved up with it by a `layout` offset, so even short lists shrink it): cover 136 → 56dp, badges,
-  overline, name and description fade out, the bar (transparent over the shade) fades in the name
+  name and description fade out, ALBUM slides down over the name and stays beside the small cover,
+  the bar (transparent over the shade) fades in the name
   with the badges under it; it grows back once the list is at its top. The cover grows from the
   album card (`sharedPicture`, same shape) with the card's cover standing in, the rest fades in
   after it (`rememberContentsAfterPicture`). The bar has a `QueueActionButton` before ⋮, its action
@@ -178,7 +179,10 @@ ui/screen/
   request and moves one by one (`moves`, fewest moves),
   `ArtistDetail.kt` (`ArtistDetailScaffold`: the artist's picture over 40% of the screen
   under a see-through top bar shaded from the top (name, under it the origin badge or a
-  `subtitle` in its place, YouTube's monthly audience; ⋮), the list starts under the picture and
+  `subtitle` in its place, YouTube's monthly audience; ⋮), the `description` the list's first item
+  (a placeholder while `descriptionLoading`); beside the list it sits under the name at the bottom
+  of the picture, which blurs while it is expanded (`DetailDescription.onExpandedChange`); the
+  list starts under the picture and
   scrolls over it, see-through, fading out over 32dp under the bar (`fadeTop`, a `DstIn` mask); the
   picture fades into its `BlurredCover` as the list goes up, fully blurred once the list's top
   reaches the bar. A `QueueActionButton` before ⋮ does `Preferences.ARTIST_PAGE_ACTION` (read by
@@ -187,6 +191,18 @@ ui/screen/
   next / Add to queue / Details / Statistics rows; used by all three artist screens; the header
   grows from the card (`sharedPicture`) with the card's picture standing in while the large one
   loads),
+  `SidePanes.kt` (pages 600dp wide and wider than tall, `isSideBySide`: the album, artist and
+  playlist scaffolds put their header in a pane at the start, 40% of the width, at least 280dp,
+  and the list beside it under a bar with the page's buttons; `SidePanes`, `HeaderPaneColumn`
+  (centered, scrolls when taller), `HeaderPaneBar` (back, optional title: `HeaderPaneTitle`, the
+  name over source
+  icon · details; album pane: `rememberCoverShade` fill, cover, explicit badge, artists,
+  description; playlist pane: blurred picture toned to the page, cover, owner, no header buttons),
+  `ListPaneBar` (wide pages put Play / Shuffle / Play next / Add to queue
+  there, `ListPaneQueueButtons`, and their ⋮ sheets leave those out, `LocalQueueButtonsInBar`),
+  `headerPaneCover`; each
+  scaffold builds what it shows once, `AlbumContent`/`ArtistContent`/`PlaylistContent` plus its bar
+  `actions`, and hands it to `Vertical…Layout` or `Horizontal…Layout`),
   `DetailScaffold.kt` (`OpenedItem` / `SavedStateHandle.openedItem()`: the name and picture of the
   card an artist or album was opened from, shown until the page has its own; optional `subtitle`
   under the title; `contentPadding` added
@@ -242,7 +258,11 @@ ui/screen/
   anchoredDraggable over the window, nested scroll
   lets lists drag it down; pager of Player/Lyrics/Queue tabs at the bottom over the blurred cover,
   indicator on top with a full-width track; no collapse button; its own `MessageHost` above the
-  tabs, the app's is under the sheet), `LyricsPage.kt` (`loadLyrics`,
+  tabs, the app's is under the sheet; on wide windows (`isSideBySide`) `NowPlayingPane` (whole
+  cover, left out when too short, controls and Player buttons) at the start and Lyrics/Queue
+  beside it, opening on Queue, over the blurred cover without the fade; `FullPlayer` keeps the
+  state and pages, `VerticalPlayer`/`HorizontalPlayer` lay them out), `LyricsPage.kt`
+  (`loadLyrics`,
   rules in `.claude/rules/lyrics.md`; `LyricsRequest`/`loadRequested` for bar picks,
   `LyricsControls` hoisted per song in `FullPlayer`, text scaled via `LocalDensity.fontScale` ×
   `LYRICS_TEXT_SIZE`), `LyricsButtons.kt` (lyrics bar: source menu with the imported file's row,
