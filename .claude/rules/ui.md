@@ -59,6 +59,8 @@ charts: `.claude/docs/charts.md`.
   row holds actions, which close the sheet before running; `ConfigToggle`s under the divider apply
   at once and leave it open.
 - Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
+- Home tabs' toolbars can hold buttons before `ConfigButton` (`HomeScaffold`'s `actions`): the
+  Playlists tab's `CreatePlaylistButton` (maintainer, 2026-11-15).
 - Artist, album and playlist pages open theirs (`ArtistMenu`, `AlbumMenu`, `PlaylistMenu`) from a ⋮
   `MoreSheetButton`; its less used actions are `ConfigEntry` rows (maintainer, 2026-11-01). Album
   and artist bars also have one `QueueActionButton` before it, its action picked in the General

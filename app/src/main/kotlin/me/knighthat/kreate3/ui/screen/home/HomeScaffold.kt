@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -173,6 +174,7 @@ private fun HomeToolbar(
     selected: Set<Origin>,
     onToggleOrigin: (Origin) -> Unit,
     scroll: ToolbarScroll,
+    actions: @Composable RowScope.() -> Unit,
     onConfigure: (() -> Unit)?,
 ) {
     Row(
@@ -245,6 +247,7 @@ private fun HomeToolbar(
         }
         // Ends the chips, a bit taller than them
         if (lined) VerticalDivider(Modifier.height(FilterChipDefaults.Height + 8.dp))
+        actions()
         onConfigure?.let { ConfigButton(it) }
     }
 }
@@ -269,6 +272,8 @@ private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit
  * @param selected the origins the tab shows, every origin while empty
  * @param sheet the tab's options, a [me.knighthat.kreate3.ui.component.ConfigSheet] that calls
  * `onDismiss` once closed; `null` for no button
+ * @param actions buttons the toolbar shows before the sheet's button, for actions used too often
+ * to sit in the sheet
  * @param refreshing whether a pull to refresh is waiting for fresh data, see [onRefresh]
  * @param onRefresh called when the user pulls [content] down from its top
  * @param contentPadding room [content] adds around its items on top of the bars', e.g. so the
@@ -289,6 +294,7 @@ fun HomeScaffold(
     refreshing: Boolean = false,
     onRefresh: () -> Unit = {},
     sheet: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -306,6 +312,7 @@ fun HomeScaffold(
                     selected,
                     onToggleOrigin,
                     toolbarScroll,
+                    actions,
                     sheet?.let { { configuring = true } },
                 )
             }

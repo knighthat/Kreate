@@ -109,13 +109,15 @@ ui/screen/
   `OriginFilter` chips (shown even for one origin, `FilterIconButton`s while Icon only),
   `DateRangeFilter` with `RangePreset` chips and an inline `DateRangePicker` up to today).
 - home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'; the
-  toolbar's `ConfigButton` opens the tab's `sheet`),
+  toolbar's `ConfigButton` opens the tab's `sheet`, `actions` sit before it),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
   all/shuffle/play next/add to queue + a Recognize song entry (`onRecognize`, the dialog from
   `KreateApp`) + show disliked, cached only, downloaded only (`SongFilters`,
   cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
-  `isBookmarked`/`isFollowed`); Playlists open random, play random, new playlist; list entries
+  `isBookmarked`/`isFollowed`); Playlists open random, play random (new playlist is a
+  `CreatePlaylistButton` in the toolbar,
+  `actions`); list entries
   "Import from file" (a
   CSV picked with SAF, "Look up songs again?" dialog when it has YouTube songs, "Search for the
   songs?" (playlist name field, Search/Cancel stacked; `answerSearch`) when it is an Exportify file

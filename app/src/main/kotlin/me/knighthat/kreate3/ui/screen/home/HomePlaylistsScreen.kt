@@ -75,6 +75,7 @@ import me.knighthat.kreate3.source.youtube.searchTime
 import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
+import me.knighthat.kreate3.ui.component.CreatePlaylistButton
 import me.knighthat.kreate3.ui.component.ImportingPlaylistItem
 import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -363,10 +364,6 @@ private fun HomePlaylistsContent(
                         stringResource(R.string.menu_shortcut_play_random),
                         enabled = any,
                     ) { close(onPlayRandom) }
-                    LabeledIconButton(
-                        R.drawable.add,
-                        stringResource(R.string.menu_shortcut_create_playlist),
-                    ) { close(onCreate) }
                 },
                 entries = { close ->
                     ConfigEntry(
@@ -385,6 +382,7 @@ private fun HomePlaylistsContent(
                 },
             )
         },
+        actions = { CreatePlaylistButton(onCreate) },
     ) { padding ->
         val gridState = rememberLazyGridState()
         // The grid keeps its first item in view when items come in above it: scroll up when a

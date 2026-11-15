@@ -108,7 +108,6 @@
     <string name="menu_shortcut_clear_history">Clear history</string>
     <string name="menu_shortcut_open_random">Open random</string>
     <string name="menu_shortcut_play_random">Play random</string>
-    <string name="menu_shortcut_create_playlist">New playlist</string>
     <string name="menu_show_disliked">Show disliked</string>
     <string name="menu_cached_only">Cached only</string>
     <string name="menu_downloaded_only">Downloaded only</string>
