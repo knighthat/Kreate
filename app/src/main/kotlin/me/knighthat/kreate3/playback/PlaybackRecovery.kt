@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.playback
 
 import android.content.Context
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -237,12 +238,18 @@ class PlaybackRecovery(
         }
     }
 
-    /** Plays the next song or stays on this one, as the setting says, and tells why it failed. */
+    /**
+     * Plays the next song or stays on this one, as the setting says, and tells why it failed. A
+     * next song that is this one again, like the only song of a queue on repeat, isn't skipped
+     * to: it would start this song over as if another one played, with its retry again.
+     */
     private fun giveUp(message: String) {
         val action = Preferences.PLAYBACK_FAILURE_ACTION.value
         val songId = player.currentMediaItem?.mediaId
+        val next = player.nextMediaItemIndex
+        val another = next != C.INDEX_UNSET && player.getMediaItemAt(next).mediaId != songId
 
-        if (action.skips && skipsInARow < MAX_SKIPS_IN_A_ROW && player.hasNextMediaItem()) {
+        if (action.skips && skipsInARow < MAX_SKIPS_IN_A_ROW && another) {
             skipsInARow++
             Logger.i(tag = TAG) { "Skipping $songId" }
             skipping = true

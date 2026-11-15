@@ -30,6 +30,10 @@ import me.knighthat.kreate3.provider.youtube.isYouTubeHost
 /**
  * Loads pictures with the client of the source they come from: YouTube's through its proxy, see
  * [YouTubeProvider.httpClient], any other with the [app]'s client.
+ *
+ * A picture on `ytimg.com` that answered 404 isn't asked for again while the app runs, it answers
+ * 404 at once: YouTube doesn't have it, like the wide frame of a video without one, and asking
+ * again gets the same answer. Requests already on their way when the first 404 comes still go.
  */
 internal class SourceNetworkClient(
     app: HttpClient,
@@ -42,18 +46,44 @@ internal class SourceNetworkClient(
     @Volatile
     private var youTubeClient: Pair<HttpClient, NetworkClient>? = null
 
+    /**
+     * Addresses of `ytimg.com` pictures that answered 404, the oldest forgotten past
+     * [MISSING_LIMIT].
+     */
+    private val missing = object : LinkedHashMap<String, Unit>() {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Unit>?) =
+            size > MISSING_LIMIT
+    }
+
     override suspend fun <T> executeRequest(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
-        val host = request.url.toUri().host?.lowercase()
-        val client = if (host != null && isYouTubeHost(host)) youTube() else app
-        return client.executeRequest(request, block)
+        val url = request.url
+        val host = url.toUri().host?.lowercase()
+        if (host == null || !isYouTubeHost(host)) return app.executeRequest(request, block)
+        if (!isPictureHost(host)) return youTube().executeRequest(request, block)
+
+        if (synchronized(missing) { url in missing }) return block(NetworkResponse(NOT_FOUND))
+        return youTube().executeRequest(request) { response ->
+            if (response.code == NOT_FOUND) synchronized(missing) { missing[url] = Unit }
+            block(response)
+        }
     }
 
     private suspend fun youTube(): NetworkClient {
         val client = youTube.httpClient()
         youTubeClient?.takeIf { it.first === client }?.let { return it.second }
         return client.asNetworkClient().also { youTubeClient = client to it }
+    }
+
+    private fun isPictureHost(host: String): Boolean =
+        host == PICTURE_DOMAIN || host.endsWith(".$PICTURE_DOMAIN")
+
+    private companion object {
+
+        const val PICTURE_DOMAIN = "ytimg.com"
+        const val NOT_FOUND = 404
+        const val MISSING_LIMIT = 1000
     }
 }

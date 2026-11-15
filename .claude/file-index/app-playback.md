@@ -14,7 +14,8 @@ playback/
 - `PlaybackRecovery.kt` — service-side listener: on a player error, or loading longer than
   `PLAYBACK_STALL_SECONDS` while playWhenReady (stall → `player.stop()`), follows
   `PLAYBACK_FAILURE_ACTION`: retry once per song (`prepare()`, reset on transition), skip to the
-  next (at most `MAX_SKIPS_IN_A_ROW` 3 until one plays), or stay idle; posts the reason unless it
+  next (at most `MAX_SKIPS_IN_A_ROW` 3 until one plays; never onto the same song again, like a
+  one-song queue on repeat), or stay idle; posts the reason unless it
   retries. With retry on, an `ERROR_CODE_UNAVAILABLE` failure runs `check` first (cancelled on
   transition): plays after all → retry, replaced → `replaceMediaItem` + `prepare()`, gone → skip or
   stop with the reason.

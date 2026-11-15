@@ -69,7 +69,8 @@ java.net.Authenticator keyed by proxy host:port, Incomplete = interceptor that f
 `HttpClientFactory.kt` (app's Ktor setup, bound in NetworkModule), `youtube/YouTubeClients.kt` (
 rebuilt per proxy with own pool; `youTubeProxy()`, `isYouTubeHost()`); `OpenSubsonicClients` keys on
 proxy too. App: `source/SourceNetworkClient.kt` (Coil routes YouTube hosts to
-`YouTubeProvider.httpClient()`), `SongDataSource` has a YouTube upstream (
+`YouTubeProvider.httpClient()`; a `ytimg.com` picture that answered 404 answers 404 without a
+request for the rest of the run), `SongDataSource` has a YouTube upstream (
 `YouTubeProvider.streamClient()`), settings `ProxySettings.kt` (section at the end of both source
 pages and the Network page, its values edited on `ProxyEditorScreen.kt`; `PreviewProxySettings` is
 an off proxy for previews), `network/youtube/SignInProxy.kt` (
