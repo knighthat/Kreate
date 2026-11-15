@@ -299,7 +299,10 @@ private fun YouTubeSettingsContent(
             value = searchesPerSecond,
             range = 1..5,
             unit = { pluralStringResource(R.plurals.unit_search, it) },
-            summary = stringResource(R.string.setting_description_searches_per_second),
+            summary = stringResource(
+                R.string.setting_description_searches_per_second,
+                stringResource(R.string.source_ytm),
+            ),
             onSelect = { Preferences.YOUTUBE_SEARCHES_PER_SECOND.update(it) },
         )
 

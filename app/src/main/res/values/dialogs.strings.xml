@@ -130,6 +130,4 @@
     <!-- Under a big microphone button that listens while held -->
     <string name="dialog_body_recognize_song_hold">Hold the button while the song plays for at least %1$s</string>
     <string name="dialog_body_recognize_song_listening">Listening…</string>
-    <!-- %1$s is a counted plural, e.g. "8 seconds". The button was let go too early -->
-    <string name="dialog_body_recognize_song_too_short">Too short to recognize, hold for at least %1$s</string>
 </resources>

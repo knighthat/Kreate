@@ -562,7 +562,7 @@ private fun HoldButton(
             when {
                 since != null -> resources.getString(R.string.dialog_body_recognize_song_listening)
                 tooShort -> resources.getString(
-                    R.string.dialog_body_recognize_song_too_short,
+                    R.string.snackbar_recognize_song_too_short,
                     resources.getQuantityString(R.plurals.second, seconds, seconds),
                 )
 
