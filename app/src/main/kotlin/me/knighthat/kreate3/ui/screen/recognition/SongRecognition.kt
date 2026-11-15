@@ -486,7 +486,10 @@ private fun FoundActions(
     }
     if (notFound)
         Text(
-            resources.getString(R.string.dialog_body_recognize_song_not_on_youtube),
+            resources.getString(
+                R.string.dialog_body_recognize_song_not_on_youtube,
+                resources.getString(R.string.source_ytm),
+            ),
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodyMedium,
         )

@@ -125,7 +125,8 @@
     <string name="dialog_title_recognize_song">Recognize song</string>
     <string name="dialog_body_recognize_song_identifying">Identifying the song…</string>
     <string name="dialog_body_recognize_song_no_match">No match found. Try again closer to the music</string>
-    <string name="dialog_body_recognize_song_not_on_youtube">Couldn\'t find it on YouTube</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Under the Play button: the recognized song wasn't found there to play -->
+    <string name="dialog_body_recognize_song_not_on_youtube">Couldn\'t find it on %1$s</string>
     <string name="dialog_body_recognize_song_failed">Couldn\'t look up the song, check the connection</string>
     <!-- Under a big microphone button that listens while held -->
     <string name="dialog_body_recognize_song_hold">Hold the button while the song plays for at least %1$s</string>
