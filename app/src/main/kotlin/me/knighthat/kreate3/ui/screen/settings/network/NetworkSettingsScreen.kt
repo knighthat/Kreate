@@ -21,14 +21,14 @@ package me.knighthat.kreate3.ui.screen.settings.network
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import me.knighthat.kreate3.BuildConfig
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
-import me.knighthat.kreate3.presence.DiscordAccount
-import me.knighthat.kreate3.presence.DiscordAccountState
 import me.knighthat.kreate3.provider.opensubsonic.CheckState
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicServer
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
@@ -45,6 +45,7 @@ import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
 import me.knighthat.kreate3.ui.screen.settings.CountSetting
+import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.SecondSetting
@@ -52,6 +53,7 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import me.knighthat.kreate3.ui.screen.settings.network.discord.discordSummary
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -73,18 +75,6 @@ private fun YouTubeAccountState.summary(): String = when (this) {
     is YouTubeAccountState.Failed -> reason ?: stringResource(
         R.string.setting_description_account_status_unreachable,
         stringResource(R.string.source_ytm)
-    )
-}
-
-/** Who is signed in to Discord, for the row that opens its page. */
-@Composable
-internal fun DiscordAccountState.summary(): String = when (this) {
-    DiscordAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
-    DiscordAccountState.SigningIn -> stringResource(R.string.setting_description_sign_in_status_waiting)
-    DiscordAccountState.SignedIn -> stringResource(R.string.status_signed_in)
-    is DiscordAccountState.Known -> stringResource(
-        R.string.setting_description_sign_in_status_signed_in_as,
-        user.displayName ?: user.username
     )
 }
 
@@ -140,7 +130,6 @@ fun NetworkSettingsScreen(
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
     youtube: YouTubeAccountStore = koinInject(),
-    discord: DiscordAccount = koinInject(),
 ) {
     // What the app found out when it started and after each change, nothing is asked here
     val server by OpenSubsonicServer.server.collectFlowAsState()
@@ -151,8 +140,6 @@ fun NetworkSettingsScreen(
     val connectTimeout by Preferences.NETWORK_CONNECT_TIMEOUT.collectAsStateWithLifecycle()
     val readTimeout by Preferences.NETWORK_READ_TIMEOUT.collectAsStateWithLifecycle()
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
-    val discordEnabled by Preferences.DISCORD_ENABLED.collectAsStateWithLifecycle()
-    val discordAccount by discord.state.collectFlowAsState()
     val shazamEnabled by Preferences.SHAZAM_ENABLED.collectAsStateWithLifecycle()
 
     NetworkSettingsContent(
@@ -165,7 +152,7 @@ fun NetworkSettingsScreen(
         url = url,
         server = server,
         serverName = openSubsonicName(),
-        discord = if (discordEnabled) discordAccount.summary() else stringResource(R.string.status_off),
+        discord = discordSummary(),
         shazamEnabled = shazamEnabled,
         onShazamEnabled = { Preferences.SHAZAM_ENABLED.update(it) },
         onBack = onBack,
@@ -189,7 +176,7 @@ fun NetworkSettingsScreen(
 /**
  * @param url the OpenSubsonic server's address, empty while there is none
  * @param serverName what the server is called, see [openSubsonicName]
- * @param discord the status of Discord's presence, see [DiscordAccountState.summary]
+ * @param discord the status of Discord's presence, see [discordSummary]
  * @param shazamEnabled whether song recognition may send what the microphone hears to Shazam
  * @param proxy the app's proxy, see [ProxySettings]
  */
@@ -269,25 +256,31 @@ private fun NetworkSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_header_integrations))
+        // The foss build has neither, its rows only say so
         SettingsItem(
             title = stringResource(
                 R.string.setting_title_configure_source,
                 stringResource(R.string.discord)
             ),
+            modifier = if (BuildConfig.NON_FREE_NET) Modifier else Modifier.alpha(DISABLED_ALPHA),
             summary = discord,
-            onClick = { onOpen(DiscordSettings) },
+            onClick = if (BuildConfig.NON_FREE_NET) ({ onOpen(DiscordSettings) }) else null,
         )
         SwitchSetting(
             title = stringResource(
                 R.string.setting_title_shazam_enabled,
                 stringResource(R.string.shazam)
             ),
-            checked = shazamEnabled,
+            checked = shazamEnabled && BuildConfig.NON_FREE_NET,
             onCheckedChange = onShazamEnabled,
-            summary = stringResource(
-                R.string.setting_description_shazam_enabled,
-                stringResource(R.string.shazam)
-            ),
+            summary = if (BuildConfig.NON_FREE_NET)
+                stringResource(
+                    R.string.setting_description_shazam_enabled,
+                    stringResource(R.string.shazam)
+                )
+            else
+                stringResource(R.string.setting_description_status_not_in_foss),
+            enabled = BuildConfig.NON_FREE_NET,
         )
     }
 }

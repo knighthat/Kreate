@@ -112,7 +112,8 @@ ui/screen/
   toolbar's `ConfigButton` opens the tab's `sheet`, `actions` sit before it),
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt` (each tab's `ConfigSheet`: Songs play
   all/shuffle/play next/add to queue + a Recognize song entry (`onRecognize`, the dialog from
-  `KreateApp`; grayed with "Disabled in settings" while `SHAZAM_ENABLED` is off) + show disliked,
+  `KreateApp`; `null` hides it in foss; grayed with "Disabled in settings" while `SHAZAM_ENABLED` is
+  off) + show disliked,
   cached only, downloaded only (`SongFilters`,
   cache/download from `SongDownloads.songs`); Albums open random, play random (songs via
   `AutoLibrary.songsOf`) + bookmarked only; Artists open random + followed only (live items by their
@@ -310,7 +311,8 @@ ui/screen/
   searching, `notFound` line when none), Show matches (closes, opens YouTube song search results of
   `searchQuery`), View on Shazam (`rememberOpenLink`, stays open), Retry (to the hold button),
   Close). Wired in
-  `KreateApp` through `TabBar`'s `itemModifier`/`iconOverlay`.
+  `KreateApp` through `TabBar`'s `itemModifier`/`iconOverlay`; in foss (`BuildConfig.NON_FREE_NET`
+  off) there is no view model, a hold only posts `snackbar_recognize_song_not_in_foss`.
 - search/ — `SearchScreen.kt` + `SearchViewModel.kt` (input, history, YouTube/server suggestions;
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.
@@ -363,8 +365,10 @@ ui/screen/
     `network/NetworkSettingsScreen.kt` (timeout second sliders, retries count slider + "
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
     `OpenSubsonicServer`, nothing asked there; Integrations: "Configure Discord" with
-    `DiscordAccountState.summary`, the Shazam switch `SHAZAM_ENABLED`),
-    `network/discord/DiscordSettingsScreen.kt` (main switch, account
+    `discordSummary()`, the Shazam switch `SHAZAM_ENABLED`; both dimmed with "Not available in FOSS
+    build" in foss), `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
+    `discordSummary()` and `discordSettingsEntry` for `KreateApp`, foss has stand-ins in
+    `app/src/foss/…/DiscordSettings.kt`: the FOSS text, no page) (main switch, account
     row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches, largest
     cover `PixelSetting` filled from 1024, Wi-Fi / mobile size `SliderSetting`s on
     `DiscordCovers.sizes`), `network/youtube/` (`YouTubeSettingsScreen.kt`

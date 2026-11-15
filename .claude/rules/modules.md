@@ -37,5 +37,14 @@ F-Droid standards: no telemetry, no proprietary libraries (`verifyFoss…Depende
 `preBuild` on a banned group, extend `proprietaryGroups` in
 `app/build.gradle.kts`), no dependency blob in the APK. Don't add a library there without checking
 its
-license and what it phones home. APKs are
+license and what it phones home.
+
+`foss` also leaves out non-free network services (F-Droid's NonFreeNet): `:discord` and `:shazam`
+are `githubImplementation`/`patreonImplementation` only, and the app code using them sits in
+`app/src/nonfree/`, a source dir of `github` and `patreon`. What `main` calls from there exists
+in `app/src/foss/` too (same name, a stand-in); `main` checks `BuildConfig.NON_FREE_NET` for UI that
+says "Not available in FOSS build"; foss turns their settings off in each profile at start
+(`NonFreeNetOff`), so they read as off. `app/src/foss/AndroidManifest.xml` removes what only those
+services need (the Discord callback, `RECORD_AUDIO`). A new non-free service follows the same
+split. APKs are
 `app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`.

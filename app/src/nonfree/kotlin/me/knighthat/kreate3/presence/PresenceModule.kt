@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit
 private val DISCORD_HTTP = named("discord")
 
 /**
- * Discord's Rich Presence: the account of each profile, what the app is doing and the
- * connection showing it.
+ * Discord's Rich Presence: the account of each profile and the connection showing what the app
+ * is doing (`PresenceState`, registered with the app).
  *
  * @param isSetup whether the setup wizard was finished, the presence starts with the app then
  */
@@ -59,7 +59,6 @@ fun presenceModule(isSetup: Boolean) = module {
     }
     single { DiscordClient(get<HttpClient>(DISCORD_HTTP), BuildConfig.DISCORD_APP_ID) }
     single { DiscordAccount(androidContext(), get(), get(), get(), get()) }
-    single { PresenceState() }
     // Covers go to litterbox through the app's client, like any request of the app
     single { CoverUploads(androidContext(), get()) }
     single(createdAtStart = isSetup) {

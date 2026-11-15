@@ -33,7 +33,10 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.discord.DiscordUser
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -53,6 +56,31 @@ import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
+
+/** Who is signed in to Discord, for the row that opens its page. */
+@Composable
+private fun DiscordAccountState.summary(): String = when (this) {
+    DiscordAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
+    DiscordAccountState.SigningIn -> stringResource(R.string.setting_description_sign_in_status_waiting)
+    DiscordAccountState.SignedIn -> stringResource(R.string.status_signed_in)
+    is DiscordAccountState.Known -> stringResource(
+        R.string.setting_description_sign_in_status_signed_in_as,
+        user.displayName ?: user.username
+    )
+}
+
+/** What the row of Network settings that opens Discord's page says: off, or who is signed in. */
+@Composable
+fun discordSummary(account: DiscordAccount = koinInject()): String {
+    val enabled by Preferences.DISCORD_ENABLED.collectAsStateWithLifecycle()
+    val state by account.state.collectFlowAsState()
+    return if (enabled) state.summary() else stringResource(R.string.status_off)
+}
+
+/** Discord's page, see [DiscordSettingsScreen]. */
+fun EntryProviderScope<NavKey>.discordSettingsEntry(onBack: () -> Unit) {
+    entry<DiscordSettings> { DiscordSettingsScreen(onBack) }
+}
 
 /**
  * Discord's Rich Presence: the switch, the account of the active profile, which sources show and

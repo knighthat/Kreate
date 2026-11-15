@@ -32,7 +32,16 @@ Root
   `KreateApp(openRoute)`, which collapses the player and pushes it; anything else →
   `error_open_link`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
-- presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol):
+- `NonFreeNet.kt` — two copies, one per platform set: `app/src/nonfree/…` (github, patreon:
+  `nonFreeNetModules(isSetup)` = `presenceModule` + `shazamModule` + the `SongRecognizer` binding)
+  and `app/src/foss/…` (`NonFreeNetOff`, created at start: turns `DISCORD_ENABLED` and
+  `SHAZAM_ENABLED` off in each profile once it's active and loaded); `KreateApplication` adds them.
+  `BuildConfig.NON_FREE_NET` says
+  which build it is. `app/src/foss/AndroidManifest.xml` removes `DiscordCallbackActivity` and
+  `RECORD_AUDIO`.
+- presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only
+  `Doing.kt` and `DiscordCovers.kt` are in `main`; the rest is under `app/src/nonfree/`, left out
+  of foss. `PresenceState` is registered in `KreateApplication` for every build.
   `PresenceModule.kt` (`presenceModule(isSetup)`: a Ktor client without read timeout through the
   network proxy (named `discord`), `DiscordAuth`/`DiscordClient` with `BuildConfig.DISCORD_APP_ID` /
   `DISCORD_REDIRECT_URI`, `DiscordPresence` created at start once set up), `DiscordAccount.kt`
@@ -52,9 +61,9 @@ Root
   picture through `ArtistPictures.pictureOf`, `app_logo` fallback, connection while enabled + signed
   in
   + something shown or shown in the last minute, per profile; `REJECTED` → forced refresh, a failed
-    refresh retried after 1 min), `CoverUploads.kt` (`DiscordCovers`:
-    resolution stops, size stops by `BINARY_SIZES`, `snapSettings`;
-    `CoverUploads.publicUrl(models)`:
+    refresh retried after 1 min), `DiscordCovers.kt` (resolution stops, size stops by
+    `BINARY_SIZES`, `snapSettings`, also used by UI settings), `CoverUploads.kt`
+    (`CoverUploads.publicUrl(models)`:
     first cover that loads at the setting's size, MD5 of its pixels, JPEG shrunk to the network's
     limit,
     litterbox `1h`, reused 55 min, a failure waits 10 min).
@@ -188,7 +197,8 @@ recognition/
 
 - `SongRecognizer.kt` — `SongRecognizer` (start/cancel/`finish(heard)` → `RecognizedSong?`, Koin
   single) and `RecognizedSong` (title, artist, album, cover, `explicit`, `pageUrl`, `searchQuery`).
-- `ShazamSongRecognizer.kt` — the bound `SongRecognizer`: records the microphone (`AudioRecord`,
+- `ShazamSongRecognizer.kt` (under `app/src/nonfree/`, not in foss) — the bound `SongRecognizer`:
+  records the microphone (`AudioRecord`,
   16 kHz mono 16-bit, 44.1 kHz when 16 kHz isn't offered, 20 s at most) on a thread of its own,
   `finish` hands the raw PCM and the app's locale to `:shazam`'s `Shazam` (the search query is
   the `q` of Shazam's YouTube Music search, else title + artist); a microphone that

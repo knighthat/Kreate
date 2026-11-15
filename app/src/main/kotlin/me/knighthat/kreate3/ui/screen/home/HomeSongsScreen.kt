@@ -52,14 +52,15 @@ import org.koin.androidx.compose.koinViewModel
 /**
  * Every song in the library, one per row.
  *
- * @param onRecognize opens song recognition's dialog, from the sheet
+ * @param onRecognize opens song recognition's dialog, from the sheet; `null` in the foss build,
+ * which has no song recognition and no entry for it
  */
 @Composable
 fun HomeSongsScreen(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
-    onRecognize: () -> Unit,
+    onRecognize: (() -> Unit)?,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomeSongsViewModel = koinViewModel(),
@@ -110,7 +111,7 @@ private fun HomeSongsContent(
     onSearch: () -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
-    onRecognize: () -> Unit,
+    onRecognize: (() -> Unit)?,
     recognitionEnabled: Boolean,
     refreshing: Boolean,
     onRefresh: () -> Unit,
@@ -148,8 +149,9 @@ private fun HomeSongsContent(
 }
 
 /**
- * The quick actions on every song shown, recognizing a song, then what the tab shows. Cached only and Downloaded only
- * exclude each other, turning one on turns the other off.
+ * The quick actions on every song shown, recognizing a song (unless [onRecognize] is `null`), then
+ * what the tab shows. Cached only and Downloaded only exclude each other, turning one on turns the
+ * other off.
  *
  * @param recognitionEnabled [Preferences.SHAZAM_ENABLED]; while off, Recognize song is grayed out
  * and says it's disabled in settings
@@ -159,7 +161,7 @@ private fun SongsSheet(
     filters: SongFilters,
     onFilter: ((SongFilters) -> SongFilters) -> Unit,
     onAction: (QueueAction) -> Unit,
-    onRecognize: () -> Unit,
+    onRecognize: (() -> Unit)?,
     recognitionEnabled: Boolean,
     onDismiss: () -> Unit,
 ) = ConfigSheet(
@@ -184,16 +186,20 @@ private fun SongsSheet(
             close { onAction(QueueAction.ENQUEUE) }
         }
     },
-    entries = { close ->
-        ConfigEntry(
-            R.drawable.mic,
-            stringResource(R.string.menu_recognize_song),
-            enabled = recognitionEnabled,
-            summary = if (recognitionEnabled)
-                null
-            else
-                stringResource(R.string.status_disabled_in_settings),
-        ) { close(onRecognize) }
+    entries = if (onRecognize == null) {
+        null
+    } else {
+        { close ->
+            ConfigEntry(
+                R.drawable.mic,
+                stringResource(R.string.menu_recognize_song),
+                enabled = recognitionEnabled,
+                summary = if (recognitionEnabled)
+                    null
+                else
+                    stringResource(R.string.status_disabled_in_settings),
+            ) { close(onRecognize) }
+        }
     },
     options = {
         ConfigToggle(

@@ -107,18 +107,22 @@ android {
             isDefault = true
             proguardFiles("proguard-dontobfuscate.pro")
             versionNameSuffix = "+$name"
+            buildConfigField("boolean", "NON_FREE_NET", "true")
         }
-        // F-Droid standards: no telemetry, no proprietary libraries (see verifyFossDependencies)
+        // F-Droid standards: no telemetry, no proprietary libraries (see verifyFossDependencies),
+        // no non-free network services (Discord, Shazam: src/nonfree stays out)
         create("foss") {
             dimension = "platform"
             proguardFiles("proguard-dontobfuscate.pro")
             versionNameSuffix = "+$name"
+            buildConfigField("boolean", "NON_FREE_NET", "false")
         }
         // Obfuscated, the release pipeline ships R8's mapping with the APKs to read stack traces
         create("patreon") {
             dimension = "platform"
             versionNameSuffix = "+$name"
             buildConfigField("String", "HOMEPAGE_URL", "\"https://patreon.com/knighthat\"")
+            buildConfigField("boolean", "NON_FREE_NET", "true")
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
@@ -145,6 +149,17 @@ android {
             versionCode = baseVersionCode
         }
     }
+
+    // What talks to non-free network services (Discord's presence, Shazam's recognition), in every
+    // platform but foss, which has its own src/foss in their place. Stays after productFlavors:
+    // a flavor's source set exists only once the flavor does ("AndroidSourceSet with name … not
+    // found" otherwise)
+    sourceSets {
+        listOf("github", "patreon").forEach {
+            getByName(it).kotlin.directories.add("src/nonfree/kotlin")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -249,8 +264,11 @@ dependencies {
     implementation(project(":preferences"))
     implementation(project(":provider"))
     implementation(project(":lyrics"))
-    implementation(project(":discord"))
-    implementation(project(":shazam"))
+    // Non-free network services, see src/nonfree
+    "githubImplementation"(project(":discord"))
+    "githubImplementation"(project(":shazam"))
+    "patreonImplementation"(project(":discord"))
+    "patreonImplementation"(project(":shazam"))
 
     // Core
     implementation(libs.androidx.core.ktx)

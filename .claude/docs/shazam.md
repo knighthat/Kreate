@@ -2,7 +2,7 @@
 
 Shazam has no public API. `:shazam` asks the undocumented server Shazam's own Android app uses, the
 way SongRec and Metrolist do. It's against Shazam's terms and can change or close without notice;
-an F-Droid build with it would likely get the NonFreeNet anti-feature.
+that's why the `foss` build leaves it out (see `.claude/rules/modules.md`).
 
 ## Request
 

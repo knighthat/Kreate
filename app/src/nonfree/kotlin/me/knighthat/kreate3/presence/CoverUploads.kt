@@ -42,7 +42,6 @@ import me.knighthat.kreate3.preferences.Preferences
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.security.MessageDigest
-import kotlin.math.abs
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.TimeSource
 
@@ -65,35 +64,6 @@ private val QUALITIES = intArrayOf(90, 80, 70, 60, 50, 40)
 
 /** What a cover is shrunk by when even the lowest quality doesn't fit. */
 private const val SHRINK = 0.75f
-
-/** Sizes of a cover uploaded for Discord, and the stops of their settings. */
-internal object DiscordCovers {
-
-    /** Stops of [Preferences.DISCORD_COVER_SIZE], in pixels. */
-    val resolutions: IntProgression = 256..1536 step 256
-
-    /** The stop of [Preferences.DISCORD_COVER_SIZE] its slider fills from, Discord's advice. */
-    const val ADVISED_RESOLUTION = 1024
-
-    /**
-     * Stops of the file size settings, like [Preferences.DISCORD_COVER_BYTES_WIFI]: 128 KiB to
-     * 1 MiB in units of 1024 when [binary], 100 kB to 1 MB otherwise.
-     */
-    fun sizes(binary: Boolean): List<Int> =
-        if (binary) (1..8).map { it * 131_072 } else (1..10).map { it * 100_000 }
-
-    /** The stop of [sizes] closest to [bytes]. */
-    fun snap(bytes: Int, binary: Boolean): Int = sizes(binary).minBy { abs(it - bytes) }
-
-    /**
-     * Moves both file size settings to the closest stops of [binary]'s, for when
-     * [Preferences.BINARY_SIZES] changes.
-     */
-    fun snapSettings(binary: Boolean) {
-        listOf(Preferences.DISCORD_COVER_BYTES_WIFI, Preferences.DISCORD_COVER_BYTES_MOBILE)
-            .forEach { it.update(snap(it.value, binary)) }
-    }
-}
 
 /**
  * Covers that only the app can open (the OpenSubsonic server's, the device's) made into

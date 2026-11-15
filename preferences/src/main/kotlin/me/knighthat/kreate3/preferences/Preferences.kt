@@ -649,7 +649,8 @@ object Preferences : KoinComponent {
     /**
      * Whether holding the Songs tab, or the Recognize song entry of its sheet, sends what the
      * microphone hears to Shazam to name the song. On by default. While it's off, the entry is
-     * grayed out and a hold only says so. Read by `HomeSongsScreen` and `rememberListen`.
+     * grayed out and a hold only says so. Read by `HomeSongsScreen` and `rememberListen`. The foss
+     * build has no song recognition and turns it off in each profile (`NonFreeNetOff`).
      */
     val SHAZAM_ENABLED by lazy { boolean("shazam_enabled", true) }
     //</editor-fold>
@@ -657,7 +658,8 @@ object Preferences : KoinComponent {
     //<editor-fold defaultstate="collapsed" desc="Discord">
     /**
      * Whether the app shows on the user's Discord profile what they listen to and browse, once
-     * they signed in (`Secrets.DISCORD_ACCESS_TOKEN`). On by default. Read by `DiscordPresence`.
+     * they signed in (`Secrets.DISCORD_ACCESS_TOKEN`). On by default. Read by `DiscordPresence`. The
+     * foss build has no Discord presence and turns it off in each profile (`NonFreeNetOff`).
      */
     val DISCORD_ENABLED by lazy { boolean("discord_enabled", true) }
 

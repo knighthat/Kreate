@@ -223,6 +223,17 @@ field the Compose compiler adds for stability. It happened twice; a `--rerun-tas
 - A class held by a class of another file, in `:app`, is better top-level than `inner`.
 - Seen that crash anyway: a clean build is the first thing to try, before suspecting the code.
 
+## Unresolved references after moving files between source folders
+
+Seen 2026-11-15. Moving files from `app/src/main/` to `app/src/nonfree/` (a source dir of
+`github` and `patreon` only), the next `compileGithubUniversalDebugKotlin` failed with
+"Unresolved reference 'DiscordPresence'" and "Cannot infer type for type parameter 'T'" in a file
+that moved with it, while `compilePatreonUniversalDebugKotlin` passed on the same files. Kotlin's
+incremental compile still had the old paths; `build.sh <task> --rerun` built it.
+
+- When a task fails right after files moved but another variant compiling the same files passes,
+  rerun the task before suspecting the code.
+
 ## Text files of unknown encoding
 
 `android.icu.text.CharsetDetector` (and the rest of ICU's charset detection) isn't in the public

@@ -49,6 +49,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.first
+import me.knighthat.kreate3.BuildConfig
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.ThemeMode
@@ -205,7 +206,7 @@ import me.knighthat.kreate3.ui.screen.settings.backup.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.data.DataSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.general.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.NetworkSettingsScreen
-import me.knighthat.kreate3.ui.screen.settings.network.discord.DiscordSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.network.discord.discordSettingsEntry
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSignInScreen
 import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSettingsScreen
@@ -321,9 +322,20 @@ fun KreateApp(
         tabBarAtBottom || (currentRoute?.hasMiniPlayer == true && playing.hasMiniPlayer)
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
     val songMenu = remember { SongMenuHost() }
-    // Holding the Songs tab names the song playing nearby
-    val recognition = koinViewModel<SongRecognitionViewModel>()
-    val holdSongs = rememberHoldToListen(rememberListen(recognition), recognition::stop)
+    // Holding the Songs tab names the song playing nearby, the foss build only says it can't
+    val recognition =
+        if (BuildConfig.NON_FREE_NET) koinViewModel<SongRecognitionViewModel>() else null
+    val holdSongs = if (recognition != null) {
+        rememberHoldToListen(rememberListen(recognition), recognition::stop)
+    } else {
+        val resources = LocalResources.current
+        rememberHoldToListen(
+            onStart = {
+                notifier.post(resources.getString(R.string.snackbar_recognize_song_not_in_foss))
+            },
+            onStop = {},
+        )
+    }
 
     KreateTheme(
         themeMode = themeMode,
@@ -356,8 +368,10 @@ fun KreateApp(
             LocalSongMenuHost provides songMenu,
         ) {
             // Inside, for the notifier of the links it opens
-            SongRecognitionDialog(recognition) { query ->
-                topLevel.push(SearchResults(query, Origin.YOUTUBE, Tab.SONGS))
+            recognition?.let {
+                SongRecognitionDialog(it) { query ->
+                    topLevel.push(SearchResults(query, Origin.YOUTUBE, Tab.SONGS))
+                }
             }
             Box(Modifier.fillMaxSize()) {
                 // The tabs' buttons: a bar under the mini player, or a rail along the start in a
@@ -369,7 +383,9 @@ fun KreateApp(
                             onSelect = topLevel::switchTab,
                             type = tabNavigation,
                             itemModifier = { if (it == Tab.SONGS) holdSongs else Modifier },
-                            iconOverlay = { if (it == Tab.SONGS) ListenOverlay(recognition) },
+                            iconOverlay = {
+                                if (it == Tab.SONGS) recognition?.let { r -> ListenOverlay(r) }
+                            },
                         )
                     },
                     navigationSuiteType =
@@ -441,7 +457,7 @@ fun KreateApp(
                                                 { topLevel.push(Search) },
                                                 { topLevel.push(Account) },
                                                 { topLevel.push(Settings) },
-                                                recognition::open,
+                                                recognition?.let { it::open },
                                                 paddingModifier,
                                                 contentPadding,
                                             )
@@ -699,7 +715,7 @@ fun KreateApp(
                                                 topLevel::pop
                                             )
                                         }
-                                        entry<DiscordSettings> { DiscordSettingsScreen(topLevel::pop) }
+                                        discordSettingsEntry(topLevel::pop)
                                         entry<ProxyEditor> {
                                             ProxyEditorScreen(
                                                 it.key,
