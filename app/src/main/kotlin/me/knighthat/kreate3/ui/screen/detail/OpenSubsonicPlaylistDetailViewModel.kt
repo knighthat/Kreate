@@ -65,6 +65,9 @@ class OpenSubsonicPlaylistDetailViewModel(
         "OpenSubsonicPlaylist.ID is missing from the saved state"
     }
 
+    /** What the screen shows of the playlist until the server answers. */
+    val opened: OpenedItem = savedStateHandle.openedItem()
+
     override val notFound: String get() = context.serverOff()
 
     /** Whether the user may make shares on the server, `false` until that is known. */

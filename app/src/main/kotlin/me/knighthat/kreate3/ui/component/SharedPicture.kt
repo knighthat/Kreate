@@ -33,14 +33,20 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -53,6 +59,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.lerp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
+import me.knighthat.kreate3.ui.navigation.Route
 import kotlin.math.abs
 
 /**
@@ -93,6 +100,9 @@ internal fun artistPictureKey(artistId: String): String = "artist-picture:$artis
 
 /** Key of an album's cover, on its cards and in the header of its page. */
 internal fun albumPictureKey(albumId: String): String = "album-picture:$albumId"
+
+/** Key of the cover of the playlist [route] opens, on its rows and in the header of its page. */
+internal fun playlistPictureKey(route: Route): String = "playlist-picture:${route.screen}"
 
 /**
  * A picture shared with the screen opened or gone back to, see [rememberSharedPicture].
@@ -205,12 +215,50 @@ private fun rememberConfig(screen: AnimatedVisibilityScope, onlyAway: Boolean) =
  */
 @Composable
 internal fun rememberContentsAfterPicture(): Modifier {
-    LocalSharedTransitionScope.current ?: return Modifier
-    val alpha = LocalNavAnimatedContentScope.current.transition.animateFloat(
+    val alpha = rememberContentsAlpha() ?: return Modifier
+    return remember(alpha) { Modifier.graphicsLayer { this.alpha = alpha.value } }
+}
+
+/**
+ * Like [rememberContentsAfterPicture], for what lies below [top] (in pixels from its own top) in
+ * a list whose first item holds the picture: what is above, the picture's item, is left as it is.
+ */
+@Composable
+internal fun rememberContentsAfterPictureBelow(top: () -> Float): Modifier {
+    val alpha = rememberContentsAlpha() ?: return Modifier
+    return remember(alpha, top) {
+        Modifier
+            // Only while it fades, a layer of its own costs a buffer the size of the list
+            .graphicsLayer {
+                compositingStrategy = if (alpha.value < 1f)
+                    CompositingStrategy.Offscreen
+                else
+                    CompositingStrategy.Auto
+            }
+            .drawWithContent {
+                drawContent()
+                val shown = alpha.value
+                if (shown < 1f) {
+                    val from = top().coerceIn(0f, size.height)
+                    drawRect(
+                        color = Color.Black.copy(alpha = shown),
+                        topLeft = Offset(0f, from),
+                        size = Size(size.width, size.height - from),
+                        blendMode = BlendMode.DstIn,
+                    )
+                }
+            }
+    }
+}
+
+/** How far the contents of a screen of [pictureFirst] have shown, `null` where nothing moves. */
+@Composable
+private fun rememberContentsAlpha(): State<Float>? {
+    LocalSharedTransitionScope.current ?: return null
+    return LocalNavAnimatedContentScope.current.transition.animateFloat(
         transitionSpec = { tween(CONTENTS_FADE_MILLIS, delayMillis = PICTURE_MOVE_MILLIS) },
         label = "contents after picture",
     ) { if (it == EnterExitState.PreEnter) 0f else 1f }
-    return remember(alpha) { Modifier.graphicsLayer { this.alpha = alpha.value } }
 }
 
 /** Clips a moving picture to [shape], at the size it has at each moment. */

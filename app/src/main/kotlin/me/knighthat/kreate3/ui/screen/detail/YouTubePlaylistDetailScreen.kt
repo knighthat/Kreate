@@ -48,10 +48,12 @@ import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.playlistPictureKey
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -135,6 +137,8 @@ fun YouTubePlaylistDetailScreen(
         CoverTheme(coverModels) {
             YouTubePlaylistDetailContent(
                 state = state,
+                opened = viewModel.opened,
+                pictureKey = playlistPictureKey(YouTubePlaylist(viewModel.playlistId)),
                 songs = songs,
                 hasMore = hasMore,
                 isSaved = isSaved,
@@ -183,6 +187,8 @@ private fun YouTubePlaylistDetailContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     link: String? = null,
+    opened: OpenedItem = OpenedItem(null, null),
+    pictureKey: String? = null,
 ) {
     val playlist = (state as? LiveState.Ready)?.value
     val listState = rememberLazyListState()
@@ -190,13 +196,14 @@ private fun YouTubePlaylistDetailContent(
     val editing = rememberPlaylistEditing(edit, actions, listState, contentPadding)
     // Changes not sent are not lost without asking; while a request waits, back waits
     PlaylistEditBackHandler(edit) { confirmLeave = true }
-    val cover = playlist?.thumbnail
+    // What it was opened with until YouTube answers
+    val cover = if (playlist != null) playlist.thumbnail else opened.picture
     val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
     val providers = koinInject<Providers>()
     val songCovers = remember(songs, providers) { songs.songCovers(providers) }
 
     PlaylistDetailScaffold(
-        name = playlist?.name.orEmpty(),
+        name = playlist?.name ?: opened.name.orEmpty(),
         models = models,
         songCovers = songCovers,
         owner = playlist?.subtitle,
@@ -207,6 +214,7 @@ private fun YouTubePlaylistDetailContent(
         onAction = onAction.takeIf { songs.isNotEmpty() },
         share = share,
         link = link,
+        pictureKey = pictureKey,
         modifier = modifier,
         contentPadding = contentPadding,
         listState = listState,

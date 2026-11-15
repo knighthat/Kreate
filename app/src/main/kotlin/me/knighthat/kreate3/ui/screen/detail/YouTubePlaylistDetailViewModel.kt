@@ -85,7 +85,7 @@ class YouTubePlaylistDetailViewModel(
     }
 
     /** What the screen shows of the playlist until YouTube answers. */
-    private val opened: OpenedItem = savedStateHandle.openedItem()
+    val opened: OpenedItem = savedStateHandle.openedItem()
 
     override val notFound: String
         get() = context.youTubeNotFound(

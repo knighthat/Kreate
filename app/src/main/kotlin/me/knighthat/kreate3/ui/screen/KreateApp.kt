@@ -786,7 +786,7 @@ fun KreateApp(
                                                 viewModel = routeViewModel(it),
                                             )
                                         }
-                                        entry<LocalPlaylist> {
+                                        entry<LocalPlaylist>(metadata = pictureFirst()) {
                                             LocalPlaylistDetailScreen(
                                                 onBack = topLevel::pop,
                                                 onEdit = { topLevel.push(EditPlaylist(it.id)) },
@@ -915,7 +915,7 @@ fun KreateApp(
                                                 viewModel = routeViewModel(it),
                                             )
                                         }
-                                        entry<OpenSubsonicPlaylist> {
+                                        entry<OpenSubsonicPlaylist>(metadata = pictureFirst()) {
                                             OpenSubsonicPlaylistDetailScreen(
                                                 onBack = topLevel::pop,
                                                 onEdit = {
@@ -1025,7 +1025,7 @@ fun KreateApp(
                                                 viewModel = routeViewModel(it),
                                             )
                                         }
-                                        entry<YouTubePlaylist> {
+                                        entry<YouTubePlaylist>(metadata = pictureFirst()) {
                                             YouTubePlaylistDetailScreen(
                                                 onBack = topLevel::pop,
                                                 onEdit = {

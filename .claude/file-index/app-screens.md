@@ -153,7 +153,9 @@ ui/screen/
   queue / Go to artist / Statistics rows, Reorder (long press: reset) for device albums.
   `albumArtistRoute`: the credited artist the album names, else the first song's first. Used by the
   three album screens; tracks numbered by position.),
-  `PlaylistDetail.kt` (`PlaylistDetailScaffold`: the playlist's picture, else a 2 × 2 grid of its
+  `PlaylistDetail.kt` (`PlaylistDetailScaffold`: the playlist's picture (moving in from its row,
+  `pictureKey`; remote pages show the row's name and picture until they load), else a 2 × 2 grid of
+  its
   song covers (`songCovers`, `CoverGrid`), the first alone with fewer, a playlist icon with none,
   framed on a blurred copy that fades into the page; origin badge, name, owner (YouTube author),
   count · length (YouTube's own "35 tracks • 1 hour" from the page), a `PlaylistOrderButton` before

@@ -83,6 +83,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -122,9 +123,13 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.TooltipSide
 import me.knighthat.kreate3.ui.component.labelRes
+import me.knighthat.kreate3.ui.component.playlistPictureKey
 import me.knighthat.kreate3.ui.component.previewCover
 import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberContentsAfterPicture
+import me.knighthat.kreate3.ui.component.rememberContentsAfterPictureBelow
 import me.knighthat.kreate3.ui.component.rememberPlaylistExport
+import me.knighthat.kreate3.ui.component.rememberSharedPicture
 import me.knighthat.kreate3.ui.component.songThumbnailModels
 
 /** Share of the screen's width the framed cover takes. */
@@ -172,6 +177,8 @@ private const val PANE_FIELD_ALPHA = 0.55f
  * @param reversed whether the songs run from the playlist's end, for the sort order button
  * @param onToggleOrder turns the songs around, `null` turns the button off
  * @param link where anyone can open the playlist, for Discord's button; `null` for none
+ * @param pictureKey the cover's [playlistPictureKey], it moves from the row the page was opened
+ * from; `null` for a cover that doesn't move
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,9 +200,12 @@ fun PlaylistDetailScaffold(
     reversed: Boolean = false,
     onToggleOrder: (() -> Unit)? = null,
     link: String? = null,
+    pictureKey: String? = null,
     content: LazyListScope.() -> Unit,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    val coverShape = MaterialTheme.shapes.large
+    val picture = pictureKey?.let { rememberSharedPicture(it, coverShape) }
     ShowBrowsingOnDiscord(
         kind = BrowsedKind.PLAYLIST,
         origin = origin,
@@ -235,6 +245,9 @@ fun PlaylistDetailScaffold(
         summary = summary,
         origin = origin,
         buttons = buttons,
+        cover = picture?.modifier ?: Modifier,
+        // Everything but the cover, shown once it landed, see pictureFirst
+        contents = rememberContentsAfterPicture(),
     )
     val actions: @Composable RowScope.() -> Unit = {
         PlaylistOrderButton(
@@ -298,6 +311,10 @@ fun PlaylistDetailScaffold(
 /**
  * What a playlist's page shows above its songs, the same in both layouts, see
  * [PlaylistDetailScaffold].
+ *
+ * @property cover moves the cover in from the row it was opened from, see [rememberSharedPicture]
+ * @property contents fades everything but the cover in after it, see
+ * [rememberContentsAfterPicture]
  */
 @Immutable
 private class PlaylistContent(
@@ -308,6 +325,8 @@ private class PlaylistContent(
     val summary: List<String>,
     val origin: Origin?,
     val buttons: List<PlaylistHeaderButton>,
+    val cover: Modifier,
+    val contents: Modifier,
 ) {
     /** The pictures the blurred field behind the header is made of. */
     val field: List<Any>
@@ -337,6 +356,16 @@ private fun VerticalPlaylistLayout(
     val direction = LocalLayoutDirection.current
     // Where the name ends in the header, the bar takes the cover once the list scrolled past it
     var nameBottom by remember { mutableIntStateOf(Int.MAX_VALUE) }
+    // Where the header ends in the list, the songs under it fade in after the cover
+    var headerHeight by remember { mutableIntStateOf(0) }
+    val headerBottom = remember(listState) {
+        {
+            if (listState.firstVisibleItemIndex == 0)
+                (headerHeight - listState.firstVisibleItemScrollOffset).toFloat()
+            else
+                0f
+        }
+    }
     val collapsed by remember(listState) {
         derivedStateOf {
             listState.firstVisibleItemIndex > 0 ||
@@ -351,7 +380,9 @@ private fun VerticalPlaylistLayout(
             end = insets.calculateEndPadding(direction),
             bottom = insets.calculateBottomPadding(),
         ),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(rememberContentsAfterPictureBelow(headerBottom)),
     ) {
         item(key = "header") {
             FramedHeader(
@@ -363,7 +394,10 @@ private fun VerticalPlaylistLayout(
                 origin = playlist.origin,
                 topPadding = barHeight,
                 buttons = playlist.buttons,
+                cover = playlist.cover,
+                contents = playlist.contents,
                 onNameBottom = { nameBottom = it },
+                modifier = Modifier.onSizeChanged { headerHeight = it.height },
             )
         }
         content()
@@ -376,6 +410,7 @@ private fun VerticalPlaylistLayout(
         collapsed = collapsed,
         onBack = onBack,
         actions = actions,
+        modifier = playlist.contents,
     )
 }
 
@@ -417,6 +452,7 @@ private fun HorizontalPlaylistLayout(
                 blur = FIELD_BLUR,
                 modifier = Modifier
                     .matchParentSize()
+                    .then(playlist.contents)
                     .clipToBounds()
                     .drawWithContent {
                         drawContent()
@@ -437,7 +473,9 @@ private fun HorizontalPlaylistLayout(
                 PlaylistCover(
                     models = playlist.models,
                     songCovers = playlist.songCovers,
-                    coverSize = Modifier.size(headerPaneCover(paneWidth - start, height)),
+                    coverSize = Modifier
+                        .size(headerPaneCover(paneWidth - start, height))
+                        .then(playlist.cover),
                 )
                 playlist.owner?.let {
                     Text(
@@ -446,13 +484,14 @@ private fun HorizontalPlaylistLayout(
                         color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 12.dp),
+                        modifier = playlist.contents.padding(top = 12.dp),
                     )
                 }
             }
             HeaderPaneBar(
                 onBack = onBack,
                 color = MaterialTheme.colorScheme.onSurface,
+                modifier = playlist.contents,
                 title = {
                     HeaderPaneTitle(
                         name = playlist.name,
@@ -464,14 +503,16 @@ private fun HorizontalPlaylistLayout(
             )
         },
         list = {
-            ListPaneBar(actions = actions)
+            ListPaneBar(playlist.contents, actions)
             LazyColumn(
                 state = listState,
                 contentPadding = contentPadding + PaddingValues(
                     end = insets.calculateEndPadding(direction),
                     bottom = insets.calculateBottomPadding(),
                 ),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .then(playlist.contents),
                 content = content,
             )
         },
@@ -488,8 +529,11 @@ private fun FramedHeader(
     origin: Origin?,
     topPadding: Dp,
     buttons: List<PlaylistHeaderButton>,
+    cover: Modifier,
+    contents: Modifier,
     onNameBottom: (Int) -> Unit,
-) = Box(Modifier.fillMaxWidth()) {
+    modifier: Modifier = Modifier,
+) = Box(modifier.fillMaxWidth()) {
     val background = MaterialTheme.colorScheme.surfaceDim
 
     BlurredCover(
@@ -497,6 +541,7 @@ private fun FramedHeader(
         blur = FIELD_BLUR,
         modifier = Modifier
             .matchParentSize()
+            .then(contents)
             // Short of the bottom: a row of the blurred picture showed under the gradient there,
             // the page's own color takes it instead
             .padding(bottom = 2.dp)
@@ -531,7 +576,9 @@ private fun FramedHeader(
             buttons = buttons,
             coverSize = Modifier
                 .fillMaxWidth(FRAMED_COVER_WIDTH)
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .then(cover),
+            contents = contents,
             onNameBottom = onNameBottom,
         )
     }
@@ -542,6 +589,7 @@ private fun FramedHeader(
  * pane beside its list.
  *
  * @param coverSize the cover's size
+ * @param contents for everything but the cover, see [PlaylistContent.contents]
  * @param onNameBottom gets where the name ends in the column, `null` when nothing needs it
  */
 @Composable
@@ -554,11 +602,12 @@ private fun FramedHeaderContent(
     origin: Origin?,
     buttons: List<PlaylistHeaderButton>,
     coverSize: Modifier,
+    contents: Modifier,
     onNameBottom: ((Int) -> Unit)? = null,
 ) {
     PlaylistCover(models, songCovers, coverSize)
     Spacer(Modifier.height(16.dp))
-    origin?.let { OriginBadge(it, FRAMED_BADGE_SIZE) }
+    origin?.let { Box(contents) { OriginBadge(it, FRAMED_BADGE_SIZE) } }
     Text(
         name,
         style = MaterialTheme.typography.headlineSmall,
@@ -566,11 +615,11 @@ private fun FramedHeaderContent(
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         modifier = if (onNameBottom != null) {
-            Modifier.onGloballyPositioned {
+            contents.onGloballyPositioned {
                 onNameBottom((it.positionInParent().y + it.size.height).toInt())
             }
         } else {
-            Modifier
+            contents
         },
     )
     owner?.let {
@@ -580,6 +629,7 @@ private fun FramedHeaderContent(
             color = MaterialTheme.colorScheme.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            modifier = contents,
         )
     }
     summary.forEach {
@@ -588,10 +638,11 @@ private fun FramedHeaderContent(
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = contents,
         )
     }
     Spacer(Modifier.height(8.dp))
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = contents) {
         buttons.forEachIndexed { index, button -> HeaderButton(button, filled = index == 0) }
     }
 }
@@ -708,10 +759,11 @@ private fun FramedTopBar(
     collapsed: Boolean,
     onBack: () -> Unit,
     actions: @Composable RowScope.() -> Unit,
+    modifier: Modifier = Modifier,
 ) = CompositionLocalProvider(LocalTooltipSide provides TooltipSide.BELOW) {
     val shown by animateFloatAsState(if (collapsed) 1f else 0f, label = "playlist bar")
 
-    Box {
+    Box(modifier) {
         // The same blurred cover the header stands on, kept behind the bar once it scrolled away
         Box(
             Modifier

@@ -63,11 +63,13 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SongMenuAction
+import me.knighthat.kreate3.ui.component.playlistPictureKey
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.songsLabel
 import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -116,6 +118,7 @@ fun LocalPlaylistDetailScreen(
 
     CoverTheme(coverModels) {
         LocalPlaylistDetailContent(
+            pictureKey = playlistPictureKey(LocalPlaylist(viewModel.playlistId)),
             name = playlist?.name,
             thumbnail = playlist?.thumbnail,
             songCovers = songCovers,
@@ -216,6 +219,7 @@ private fun LocalPlaylistDetailContent(
     exportId: Long? = null,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
+    pictureKey: String? = null,
 ) {
     val listState = rememberLazyListState()
     // Changed at once by the finger, the playlist follows on the drop
@@ -255,6 +259,7 @@ private fun LocalPlaylistDetailContent(
         listState = listState,
         reversed = reversed,
         onToggleOrder = onToggleOrder.takeIf { count > 0 && mode == CoverEditMode.NONE },
+        pictureKey = pictureKey,
         menu = { onDismiss ->
             PlaylistMenu(
                 name = name,

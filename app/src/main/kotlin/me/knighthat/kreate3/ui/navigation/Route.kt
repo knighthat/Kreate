@@ -441,11 +441,18 @@ data class OpenSubsonicArtistSongs(val id: String, val name: String?) : Route {
 
 /**
  * A playlist of the OpenSubsonic server by its id there, fetched when it opens and never stored.
+ * It shows [name] and [picture], from where it was opened, until it has its own.
  */
 @Serializable
-data class OpenSubsonicPlaylist(val id: String) : Route {
+data class OpenSubsonicPlaylist(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
+    override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 
     companion object {
         const val ID = "remotePlaylistId"
@@ -484,12 +491,19 @@ data class YouTubeArtist(
 }
 
 /**
- * A playlist of YouTube by its id there, fetched when it opens and never stored.
+ * A playlist of YouTube by its id there, fetched when it opens and never stored. It shows [name]
+ * and [picture], from where it was opened, until it has its own.
  */
 @Serializable
-data class YouTubePlaylist(val id: String) : Route {
+data class YouTubePlaylist(
+    val id: String,
+    val name: String? = null,
+    val picture: String? = null,
+) : Route {
 
-    override val arguments: Bundle get() = Bundle().apply { putString(ID, id) }
+    override val arguments: Bundle get() = openedArguments(ID, id, name, picture)
+
+    override val screen: Any get() = copy(name = null, picture = null)
 
     companion object {
         const val ID = "remotePlaylistId"
@@ -578,12 +592,16 @@ fun artistRoute(origin: Origin?, id: String): Route = when (origin) {
 
 /**
  * The screen of a playlist, by where it comes from. A playlist of an external source opens by its
- * id there.
+ * id there, showing the name and picture of [item] until it has its own.
  */
-fun playlistRoute(item: MediaItem): Route = when (item.origin) {
-    Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.remoteId ?: item.mediaId)
-    Origin.YOUTUBE -> YouTubePlaylist(item.remoteId ?: item.mediaId)
-    else -> LocalPlaylist(item.mediaId.toLong())
+fun playlistRoute(item: MediaItem): Route {
+    val name = item.mediaMetadata.title?.toString()
+    val picture = item.mediaMetadata.artworkUri?.toString()
+    return when (item.origin) {
+        Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.remoteId ?: item.mediaId, name, picture)
+        Origin.YOUTUBE -> YouTubePlaylist(item.remoteId ?: item.mediaId, name, picture)
+        else -> LocalPlaylist(item.mediaId.toLong())
+    }
 }
 
 /**

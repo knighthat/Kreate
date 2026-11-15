@@ -44,10 +44,12 @@ import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.playlistPictureKey
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
 import me.knighthat.kreate3.ui.theme.CoverTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -134,6 +136,8 @@ fun OpenSubsonicPlaylistDetailScreen(
         CoverTheme(coverModels) {
             OpenSubsonicPlaylistDetailContent(
                 state = state,
+                opened = viewModel.opened,
+                pictureKey = playlistPictureKey(OpenSubsonicPlaylist(viewModel.playlistId)),
                 onRetry = viewModel::load,
                 onBack = onBack,
                 onEdit = onEdit,
@@ -173,6 +177,8 @@ private fun OpenSubsonicPlaylistDetailContent(
     actions: PlaylistEditActions,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
+    opened: OpenedItem = OpenedItem(null, null),
+    pictureKey: String? = null,
 ) {
     val playlist = (state as? LiveState.Ready)?.value
     val resources = LocalResources.current
@@ -182,7 +188,8 @@ private fun OpenSubsonicPlaylistDetailContent(
 
     // Changes not sent are not lost without asking; while a request waits, back waits
     PlaylistEditBackHandler(edit) { confirmLeave = true }
-    val cover = playlist?.thumbnail
+    // What it was opened with until the server answers
+    val cover = if (playlist != null) playlist.thumbnail else opened.picture
     val models = remember(cover) { listOfNotNull(thumbnailModel(cover, null)) }
     val providers = koinInject<Providers>()
     val songCovers = remember(playlist?.songs, providers) {
@@ -193,7 +200,7 @@ private fun OpenSubsonicPlaylistDetailContent(
     }
 
     PlaylistDetailScaffold(
-        name = playlist?.name.orEmpty(),
+        name = playlist?.name ?: opened.name.orEmpty(),
         models = models,
         songCovers = songCovers,
         owner = null,
@@ -212,6 +219,7 @@ private fun OpenSubsonicPlaylistDetailContent(
         listState = listState,
         reversed = reversed,
         onToggleOrder = onToggleOrder.takeIf { shown.isNotEmpty() && !edit.editing },
+        pictureKey = pictureKey,
         menu = { onDismiss ->
             PlaylistMenu(
                 name = playlist?.name,

@@ -113,7 +113,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   cards); used by the OpenSubsonic and YouTube artist pages.
 - `SharedPicture.kt` — `LocalSharedTransitionScope` (KreateApp's `SharedTransitionLayout` around
   `NavDisplay`), `screenTransform` (400 ms fade of every screen change), `pictureFirst()` (entry
-  metadata of the artist and album screens: opening, the picture moves for 350 ms while the screens
+  metadata of the artist, album and playlist screens: opening, the picture moves for 350 ms while
+  the screens
   fade,
   then the rest fades in over 200 ms; going back is the plain fade),
   `rememberSharedPicture(key, corners, otherCorners, onlyAway)` (artists; a `(key, shape,
@@ -121,10 +122,12 @@ ui/component/ (shared composables; each file that draws something ends with its 
   own clip
   in a `graphicsLayer` (none while moving), corners morphing in the overlay by how far it grew
   (`MorphingClip`), `overlay` for what lies over it (artist bar, bottom fade); `onlyAway` (the
-  artist and album cards) turns the match off while its screen comes back, so nothing moves back;
+  artist and album cards, playlist rows) turns the match off while its screen comes back, so nothing
+  moves back;
   `rememberContentsAfterPicture()`: the alpha of the rest of such a screen (keep the picture out
-  of it);
-  `artistPictureKey`, `albumPictureKey`.
+  of it); `rememberContentsAfterPictureBelow(top)` fades only what is below a line, for a list
+  whose first item holds the picture (playlist page);
+  `artistPictureKey`, `albumPictureKey`, `playlistPictureKey(route)` (by `Route.screen`).
 - `RefreshBox.kt` — `RefreshBox`: pull-to-refresh around a scrollable (`pullToRefresh` + indicator,
   `enabled`, `indicatorTop`); used by `HomeScaffold`, the live detail screens
   (`LiveDetailViewModel.RefreshOnPull`), `YouTubeMoreScreen` and `SearchResultsScreen`.

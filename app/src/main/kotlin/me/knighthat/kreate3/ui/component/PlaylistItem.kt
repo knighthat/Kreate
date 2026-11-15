@@ -54,6 +54,7 @@ import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playlist.ImportStep
 import me.knighthat.kreate3.playlist.SearchCount
+import me.knighthat.kreate3.ui.navigation.playlistRoute
 
 /** How many covers make a grid, fewer show the first one alone. */
 internal const val GRID_COVERS = 4
@@ -94,6 +95,12 @@ fun PlaylistItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Moves into the header of the playlist's page as it opens, it doesn't come back from there
+    val picture = rememberSharedPicture(
+        remember(item) { playlistPictureKey(playlistRoute(item)) },
+        MaterialTheme.shapes.small,
+        onlyAway = true,
+    )
     val menu = rememberCollectionAnchor(item, CollectionKind.PLAYLIST, slides = false) {
         PlaylistRow(item, onClick = {})
     }
@@ -103,6 +110,7 @@ fun PlaylistItem(
         onClick = onClick,
         modifier = modifier.then(menu.modifier),
         onLongClick = menu.onLongClick,
+        thumbnailModifier = picture.modifier,
     )
 }
 
@@ -113,6 +121,7 @@ private fun PlaylistRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
+    thumbnailModifier: Modifier = Modifier,
 ) {
     val covers = remember(item) { item.playlistCovers }
 
@@ -124,6 +133,7 @@ private fun PlaylistRow(
                 modifier = modifier,
                 onLongClick = onLongClick,
                 ripple = false,
+                thumbnailModifier = thumbnailModifier,
             )
 
         covers.size in 1 until GRID_COVERS ->
@@ -134,6 +144,7 @@ private fun PlaylistRow(
                 thumbnails = covers.take(1),
                 onLongClick = onLongClick,
                 ripple = false,
+                thumbnailModifier = thumbnailModifier,
             )
 
         // The grid or the empty cover takes the place of the cover, ItemRow draws the overlay
@@ -145,6 +156,7 @@ private fun PlaylistRow(
             showThumbnail = false,
             onLongClick = onLongClick,
             ripple = false,
+            thumbnailModifier = thumbnailModifier,
             thumbnailOverlay = {
                 if (covers.isEmpty()) {
                     EmptyCover(

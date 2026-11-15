@@ -425,6 +425,7 @@ fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
  * @param overlineColor the color of [overlineEnd], the muted one by default
  * @param showDisliked whether a disliked song's badge shows, see [ItemBadges]
  * @param ripple whether a tap ripples; off for albums, artists and playlists
+ * @param thumbnailModifier for the box of the cover and [thumbnailOverlay], like a shared picture
  */
 @Composable
 fun ItemRow(
@@ -441,6 +442,7 @@ fun ItemRow(
     overlineColor: Color = Color.Unspecified,
     showDisliked: Boolean = true,
     ripple: Boolean = true,
+    thumbnailModifier: Modifier = Modifier,
 ) {
     val metadata = item.mediaMetadata
     val subtitle = metadata.subtitle ?: metadata.artist
@@ -458,7 +460,9 @@ fun ItemRow(
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         if (showThumbnail) {
-            Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE)) {
+            Box(modifier = Modifier
+                .size(ROW_THUMBNAIL_SIZE)
+                .then(thumbnailModifier)) {
                 Thumbnail(
                     models = thumbnails
                         ?: listOfNotNull(thumbnailModel(metadata.artworkUri, item.localSongId)),
@@ -468,7 +472,12 @@ fun ItemRow(
                 thumbnailOverlay?.invoke(this)
             }
         } else if (thumbnailOverlay != null) {
-            Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE), content = thumbnailOverlay)
+            Box(
+                modifier = Modifier
+                    .size(ROW_THUMBNAIL_SIZE)
+                    .then(thumbnailModifier),
+                content = thumbnailOverlay,
+            )
         }
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it
