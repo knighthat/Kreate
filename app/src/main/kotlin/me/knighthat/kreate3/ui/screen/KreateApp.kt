@@ -339,8 +339,10 @@ fun KreateApp(
             LocalPlaylistInitial provides playlistInitial,
             // The settings keep them apart, a backup could bring two of a kind
             LocalPlaylistButtons provides (firstButton to
-                    if (secondButton != firstButton) secondButton
-                    else PlaylistButton.entries.first { it != firstButton }),
+                    if (secondButton != firstButton)
+                        secondButton
+                    else
+                        PlaylistButton.entries.first { it != firstButton }),
             LocalSongStorage provides songStorage,
             LocalNotifier provides notifier,
             LocalLyricsFont provides lyricsFontFamily,

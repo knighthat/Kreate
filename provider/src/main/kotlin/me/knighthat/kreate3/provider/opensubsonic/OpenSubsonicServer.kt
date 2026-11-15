@@ -169,14 +169,15 @@ object OpenSubsonicServer {
             _credentials
                 .transformLatest { check ->
                     emit(
-                        if ((check as? CheckState.Done)?.result is ServerCheck.Success)
+                        if ((check as? CheckState.Done)?.result is ServerCheck.Success) {
                             try {
                                 provider.user()
                             } catch (_: ServerException) {
                                 null
                             }
-                        else
+                        } else {
                             null
+                        }
                     )
                 }
                 .onEach { _user.value = it }

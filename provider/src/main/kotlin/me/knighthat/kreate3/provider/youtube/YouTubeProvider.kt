@@ -443,8 +443,10 @@ class YouTubeProvider internal constructor(
         }
         val plays = parser.playsInQueue(response, songId)
         Logger.i(tag = TAG) {
-            if (plays) "The queue has $songId as a song that plays"
-            else "The queue has $songId as unplayable, or not at all"
+            if (plays)
+                "The queue has $songId as a song that plays"
+            else
+                "The queue has $songId as unplayable, or not at all"
         }
         return plays
     }
@@ -502,11 +504,12 @@ class YouTubeProvider internal constructor(
                 "another title".takeIf { match == null },
             )
             Logger.d(tag = TAG) {
-                if (misses.isEmpty())
+                if (misses.isEmpty()) {
                     "${song.id} fits: title ${match!!.text}, ${off!!.inWholeSeconds} s off, " +
                             if (credited) "same artist" else "other artists"
-                else
+                } else {
                     "${song.id} doesn't fit: ${misses.joinToString()}"
+                }
             }
             if (misses.isEmpty()) Fit(item, match!!, off!!, credited) else null
         }
@@ -585,11 +588,12 @@ class YouTubeProvider internal constructor(
                 },
             )
             Logger.d(tag = TAG) {
-                if (misses.isEmpty())
+                if (misses.isEmpty()) {
                     "${song.id} fits: title ${match!!.text}, ${off!!.inWholeSeconds} s off, " +
                             if (credited) "same artist" else "other artists"
-                else
+                } else {
                     "${song.id} doesn't fit: ${misses.joinToString()}"
+                }
             }
             if (misses.isEmpty()) Fit(item, match!!, off!!, credited) else null
         }
@@ -599,11 +603,12 @@ class YouTubeProvider internal constructor(
             .firstOrNull()
             ?.item
         Logger.i(tag = TAG) {
-            if (found == null)
+            if (found == null) {
                 "No song of ${results.size} results matches a ${duration.inWholeSeconds} s track"
-            else
+            } else {
                 "${found.song.song.id} matches a ${duration.inWholeSeconds} s track, " +
                         "of ${fitting.size} that fit"
+            }
         }
         return found
     }

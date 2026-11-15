@@ -184,8 +184,10 @@ internal class InnerTube(
     ): YouTubeStream? {
         val login = playbackLogin()
         val cookies =
-            if (quality == StreamQuality.ORIGINAL || login != PlaybackLogin.NEVER) session()?.cookies
-            else null
+            if (quality == StreamQuality.ORIGINAL || login != PlaybackLogin.NEVER)
+                session()?.cookies
+            else
+                null
         return streams().stream(videoId, refused, quality, login, cookies)
     }
 

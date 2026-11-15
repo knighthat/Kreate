@@ -401,34 +401,36 @@ private class PlaylistHeaderButton(
 private fun HeaderButton(button: PlaylistHeaderButton, filled: Boolean) {
     val label = stringResource(button.button.labelRes)
     val content: @Composable RowScope.() -> Unit = {
-        if (button.loading)
+        if (button.loading) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
                 modifier = Modifier.size(ButtonDefaults.IconSize),
             )
-        else
+        } else {
             Icon(
                 painterResource(button.button.icon),
                 contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize),
             )
+        }
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
         Text(label)
     }
-    if (filled)
+    if (filled) {
         Button(
             onClick = button.onClick,
             enabled = button.enabled,
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             content = content,
         )
-    else
+    } else {
         OutlinedButton(
             onClick = button.onClick,
             enabled = button.enabled,
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             content = content,
         )
+    }
 }
 
 /** The icon of a playlist page button. */

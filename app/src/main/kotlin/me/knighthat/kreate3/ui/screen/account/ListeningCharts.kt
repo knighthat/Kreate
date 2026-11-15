@@ -68,11 +68,12 @@ private fun Context.overTime(
         days <= WEEKS_SHOWN * 7 -> Calendar.WEEK_OF_YEAR
         else -> Calendar.MONTH
     }
-    val format = if (step == Calendar.MONTH)
+    val format = if (step == Calendar.MONTH) {
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_NO_MONTH_DAY or
                 DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_YEAR
-    else
+    } else {
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
+    }
 
     val calendar = Calendar.getInstance(zone).apply {
         timeInMillis = first

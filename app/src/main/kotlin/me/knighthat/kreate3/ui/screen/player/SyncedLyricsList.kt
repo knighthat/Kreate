@@ -237,10 +237,11 @@ private fun sungUpTo(
 
     val last = first + length - 1
     val right = layout.getBoundingBox(last)
-    val x = if (layout.getLineForOffset(last) == visual)
+    val x = if (layout.getLineForOffset(last) == visual) {
         left.left + (right.right - left.left) * fraction
-    else
-    // A word too long for the width wraps, fill its first part
+    } else {
+        // A word too long for the width wraps, fill its first part
         left.left + (layout.getLineRight(visual) - left.left) * fraction
+    }
     return visual to x
 }

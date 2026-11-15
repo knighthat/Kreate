@@ -465,11 +465,12 @@ class OpenSubsonicProviderTest {
     @Test
     fun aPlaylistIsRearrangedByTakingEverySongOutAndAddingThemAgain() = runBlocking {
         val server = provider { request ->
-            if (request.url.encodedPath.endsWith("getPlaylist"))
+            if (request.url.encodedPath.endsWith("getPlaylist")) {
                 """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
                     {"id":"a"},{"id":"b"},{"id":"c"}]}}}"""
-            else
+            } else {
                 OK
+            }
         }
 
         val done = server.rearrangePlaylist("p1") { current -> current.reversed() }
@@ -485,11 +486,12 @@ class OpenSubsonicProviderTest {
     @Test
     fun songsOnlyTakenOutAreRemovedByPositionAndNotAddedAgain() = runBlocking {
         val server = provider { request ->
-            if (request.url.encodedPath.endsWith("getPlaylist"))
+            if (request.url.encodedPath.endsWith("getPlaylist")) {
                 """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
                     {"id":"a"},{"id":"b"},{"id":"a"}]}}}"""
-            else
+            } else {
                 OK
+            }
         }
 
         val done = server.rearrangePlaylist("p1") { current -> current.filter { it != "a" } }

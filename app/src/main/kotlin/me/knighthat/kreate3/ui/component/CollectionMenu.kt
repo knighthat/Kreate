@@ -408,14 +408,15 @@ internal fun CollectionMenuContent(
                 ) {
                     close {
                         openRoute(
-                            if (kind == CollectionKind.ALBUM)
+                            if (kind == CollectionKind.ALBUM) {
                                 AlbumDetails(
                                     title.orEmpty(),
                                     (item.mediaMetadata.albumArtist ?: item.mediaMetadata.artist)
                                         ?.toString()
                                 )
-                            else
+                            } else {
                                 ArtistDetails(title.orEmpty())
+                            }
                         )
                     }
                 }

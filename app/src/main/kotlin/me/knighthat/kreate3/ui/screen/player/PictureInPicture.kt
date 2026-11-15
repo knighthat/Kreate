@@ -136,9 +136,9 @@ private fun PictureInPictureCover(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.surface),
 ) {
-    if (filled)
+    if (filled) {
         Thumbnail(models = covers, shape = RectangleShape, modifier = Modifier.fillMaxSize())
-    else
+    } else {
         Thumbnail(
             models = covers,
             shape = RoundedCornerShape(8.dp),
@@ -147,6 +147,7 @@ private fun PictureInPictureCover(
                 .aspectRatio(1f)
                 .padding(8.dp),
         )
+    }
 }
 
 //<editor-fold defaultstate="collapsed" desc="Previews">

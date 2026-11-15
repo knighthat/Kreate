@@ -223,12 +223,20 @@ class KreateActivity : ComponentActivity() {
                     it.name == intent.getStringExtra(key)
                 }
                 quality(SETUP_WIZARD_YOUTUBE_QUALITY_WIFI)?.let {
-                    (if (youTubeSignedIn) Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
-                    else Preferences.YOUTUBE_QUALITY_WIFI).update(it)
+                    val preference =
+                        if (youTubeSignedIn)
+                            Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
+                        else
+                            Preferences.YOUTUBE_QUALITY_WIFI
+                    preference.update(it)
                 }
                 quality(SETUP_WIZARD_YOUTUBE_QUALITY_MOBILE)?.let {
-                    (if (youTubeSignedIn) Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM
-                    else Preferences.YOUTUBE_QUALITY_MOBILE).update(it)
+                    val preference =
+                        if (youTubeSignedIn)
+                            Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM
+                        else
+                            Preferences.YOUTUBE_QUALITY_MOBILE
+                    preference.update(it)
                 }
                 quality(SETUP_WIZARD_OPEN_SUBSONIC_QUALITY_WIFI)
                     ?.let { Preferences.OPEN_SUBSONIC_QUALITY_WIFI.update(it) }

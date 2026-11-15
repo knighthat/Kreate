@@ -197,13 +197,13 @@ private fun EditOnlinePlaylistContent(
                     .padding(horizontal = 16.dp),
             )
 
-            if (origin == Origin.YOUTUBE)
+            if (origin == Origin.YOUTUBE) {
                 PrivacyChoices(
                     selected = draft.privacy,
                     enabled = enabled,
                     onSelect = { value -> onChange { it.copy(privacy = value) } },
                 )
-            else
+            } else {
                 SwitchRow(
                     title = stringResource(R.string.setting_title_public_playlist),
                     description = stringResource(R.string.setting_description_public_playlist),
@@ -215,6 +215,7 @@ private fun EditOnlinePlaylistContent(
                         }
                     },
                 )
+            }
         }
     }
 }

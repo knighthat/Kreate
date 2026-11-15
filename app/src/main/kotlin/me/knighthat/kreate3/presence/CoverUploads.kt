@@ -133,8 +133,10 @@ class CoverUploads internal constructor(
             if (failures[hash]?.let { it.elapsedNow() < RETRY_AFTER } == true) return@withLock null
 
             val limit = DiscordCovers.snap(
-                if (isMetered()) Preferences.DISCORD_COVER_BYTES_MOBILE.value
-                else Preferences.DISCORD_COVER_BYTES_WIFI.value,
+                if (isMetered())
+                    Preferences.DISCORD_COVER_BYTES_MOBILE.value
+                else
+                    Preferences.DISCORD_COVER_BYTES_WIFI.value,
                 Preferences.BINARY_SIZES.value,
             )
             val jpeg = withContext(Dispatchers.Default) { bitmap.jpegWithin(limit) }

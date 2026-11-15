@@ -691,13 +691,14 @@ private fun Settings(
 ) {
     StepColumn {
         Text(
-            if (migrated)
+            if (migrated) {
                 stringResource(R.string.wizard_profile_intro_migrated)
-            else
+            } else {
                 stringResource(
                     R.string.wizard_profile_intro,
                     stringResource(R.string.quoted, DEFAULT_PROFILE_NAME)
                 )
+            }
         )
 
         OutlinedTextField(
@@ -1076,16 +1077,19 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                         youTubeChannelChoice = youTubeChannelChoice,
                         openSubsonicSignedIn = openSubsonicSignedIn,
                         onYouTube = {
-                            if (youTubeSignedIn && youTubeChannelChoice)
+                            if (youTubeSignedIn && youTubeChannelChoice) {
                                 scope.launch {
                                     val channels = youTubeProvider.channelsOrNone()
                                     youTubeChannelChoice = channels.size > 1
                                     // A lookup that failed leaves the sign in to try again
-                                    if (channels.size > 1) changingChannel = channels
-                                    else signingIn = WizardSource.YOUTUBE_MUSIC
+                                    if (channels.size > 1)
+                                        changingChannel = channels
+                                    else
+                                        signingIn = WizardSource.YOUTUBE_MUSIC
                                 }
-                            else
+                            } else {
                                 signingIn = WizardSource.YOUTUBE_MUSIC
+                            }
                         },
                         onOpenSubsonic = { signingIn = WizardSource.OPEN_SUBSONIC },
                     )

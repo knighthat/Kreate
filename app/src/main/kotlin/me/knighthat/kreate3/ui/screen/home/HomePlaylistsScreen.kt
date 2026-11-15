@@ -126,19 +126,20 @@ fun HomePlaylistsScreen(
     val searchesPerSecond by Preferences.YOUTUBE_SEARCHES_PER_SECOND.state
         .collectAsStateWithLifecycle()
     pendingImport?.let {
-        if (it.tracks > 0)
+        if (it.tracks > 0) {
             SearchSongsDialog(
                 songs = it.tracks,
                 name = it.playlists.singleOrNull()?.name,
                 searchTime = searchTime(it.tracks, searchesPerSecond),
                 onAnswer = viewModel::answerSearch,
             )
-        else
+        } else {
             LookUpSongsDialog(
                 songs = it.youTubeSongs,
                 searchTime = searchTime(it.youTubeSongs, searchesPerSecond),
                 onAnswer = viewModel::answerLookUp,
             )
+        }
     }
 
     // Each visit to the tab, the items of the external sources are fetched again
@@ -292,13 +293,14 @@ private fun SearchSongsDialog(
  */
 private fun Resources.roughLength(length: Duration): String {
     val seconds = length.inWholeSeconds + if (length.inWholeMilliseconds % 1000 > 0) 1 else 0
-    val shown = if (seconds < 60)
+    val shown = if (seconds < 60) {
         listOf(Measure(seconds.coerceAtLeast(1), MeasureUnit.SECOND))
-    else
+    } else {
         ((seconds + 59) / 60).minutes.toComponents { hours, minutes, _, _ ->
             listOf(Measure(hours, MeasureUnit.HOUR), Measure(minutes, MeasureUnit.MINUTE))
                 .filter { it.number.toLong() > 0 }
         }
+    }
     return MeasureFormat.getInstance(configuration.locales[0], MeasureFormat.FormatWidth.WIDE)
         .formatMeasures(*shown.toTypedArray())
 }

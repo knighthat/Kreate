@@ -314,13 +314,14 @@ private fun DataSettingsContent(
             range = 0..10,
             unit = { pluralStringResource(R.plurals.unit_time, it) },
             onSelect = { Preferences.DOWNLOAD_RETRY_COUNT.update(it) },
-            summary = if (downloadRetries == 0)
+            summary = if (downloadRetries == 0) {
                 stringResource(R.string.setting_description_download_retries_off)
-            else
+            } else {
                 stringResource(
                     R.string.setting_description_download_retries,
                     pluralStringResource(R.plurals.time, downloadRetries, downloadRetries),
-                ),
+                )
+            },
             leadingIcon = { SliderIcon(R.drawable.replay, R.drawable.remove) },
             trailingIcon = { SliderIcon(R.drawable.replay, R.drawable.add) },
         )

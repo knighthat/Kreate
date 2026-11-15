@@ -160,13 +160,16 @@ fun DetailDescription(
         modifier = modifier
             .fillMaxWidth()
             .then(
-                if (collapsing) Modifier
-                else Modifier.animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = FastOutSlowInEasing
+                if (collapsing) {
+                    Modifier
+                } else {
+                    Modifier.animateContentSize(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
                     )
-                )
+                }
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

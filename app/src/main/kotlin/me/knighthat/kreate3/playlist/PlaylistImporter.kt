@@ -585,18 +585,20 @@ class PlaylistImporter(
 
         fun skip(reason: ImportSkip, song: PlaylistSong) = skip(reason, song.title, song.id)
         var notLookedUp: NotLookedUp? = null
-        val looked = if (!lookUp)
+        val looked = if (!lookUp) {
             null
-        else try {
-            lookUpYouTube(playlists, task) ?: null.also { notLookedUp = NotLookedUp.REFUSED }
-        } catch (e: YouTubeException) {
-            // Refusals come back as null, only an unreachable YouTube throws
-            Logger.w(
-                e,
-                TAG
-            ) { "Couldn't reach YouTube to look songs up, they go in as the file has them" }
-            notLookedUp = NotLookedUp.UNREACHABLE
-            null
+        } else {
+            try {
+                lookUpYouTube(playlists, task) ?: null.also { notLookedUp = NotLookedUp.REFUSED }
+            } catch (e: YouTubeException) {
+                // Refusals come back as null, only an unreachable YouTube throws
+                Logger.w(
+                    e,
+                    TAG
+                ) { "Couldn't reach YouTube to look songs up, they go in as the file has them" }
+                notLookedUp = NotLookedUp.UNREACHABLE
+                null
+            }
         }
 
         val matches = matchTracks(playlists, task)
@@ -936,13 +938,14 @@ fun importMessage(resources: Resources, report: PlaylistImportReport): Message {
 /** What to tell the user when an import failed with [error]. */
 fun importFailedMessage(resources: Resources, error: Throwable): Message {
     // Which columns are wrong only helps a bug report, the log has them
-    val text = if (error is InvalidHeaderException)
+    val text = if (error is InvalidHeaderException) {
         resources.getString(R.string.error_import_playlists_bad_columns)
-    else
+    } else {
         resources.getString(
             R.string.error_import_playlists,
             error.localizedMessage ?: resources.getString(R.string.error_reason_unknown),
         )
+    }
     return Message(
         text = text,
         duration = MessageDuration.LONG,

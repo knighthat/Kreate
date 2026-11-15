@@ -693,12 +693,12 @@ private fun SongMenuActions(
     MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio), enabled = playable) {
         close { playback.radio(item) }
     }
-    if (navigator != null && album != null)
+    if (navigator != null && album != null) {
         MenuRow(
             R.drawable.album,
             stringResource(R.string.menu_go_to_album)
         ) { close { openRoute(album) } }
-    else if (navigator != null && lookup.needed)
+    } else if (navigator != null && lookup.needed) {
         MenuRow(
             R.drawable.album,
             stringResource(R.string.menu_go_to_album),
@@ -707,9 +707,9 @@ private fun SongMenuActions(
         ) {
             lookup.resolve(LookupRow.ALBUM) {
                 val route = lookup.album
-                if (route != null)
+                if (route != null) {
                     close { openRoute(route) }
-                else
+                } else {
                     notifier.post(
                         Message(
                             resources.getString(
@@ -718,11 +718,13 @@ private fun SongMenuActions(
                             )
                         )
                     )
+                }
             }
         }
-    else if (navigator != null && noAlbum)
+    } else if (navigator != null && noAlbum) {
         MenuRow(R.drawable.album, stringResource(R.string.menu_go_to_album), enabled = false) {}
-    if (navigator != null && (artists.isNotEmpty() || lookup.needed))
+    }
+    if (navigator != null && (artists.isNotEmpty() || lookup.needed)) {
         MenuRow(
             icon = R.drawable.mic,
             label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size.coerceAtLeast(1))
@@ -733,11 +735,11 @@ private fun SongMenuActions(
         ) {
             val open: () -> Unit = {
                 val found = lookup.artists
-                if (found.size == 1)
+                if (found.size == 1) {
                     close { openRoute(found.single().route) }
-                else if (found.size > 1)
+                } else if (found.size > 1) {
                     onPickArtist()
-                else
+                } else {
                     notifier.post(
                         Message(
                             resources.getString(
@@ -746,6 +748,7 @@ private fun SongMenuActions(
                             )
                         )
                     )
+                }
             }
             if (artists.size == 1)
                 close { openRoute(artists.single().route) }
@@ -754,13 +757,14 @@ private fun SongMenuActions(
             else
                 lookup.resolve(LookupRow.ARTIST, open)
         }
-    else if (navigator != null && noArtist)
+    } else if (navigator != null && noArtist) {
         MenuRow(
             icon = R.drawable.mic,
             label = pluralStringResource(R.plurals.menu_go_to_artist, 1)
                 .replaceFirstChar { it.uppercase() },
             enabled = false,
         ) {}
+    }
     actions.forEach { action ->
         MenuRow(action.icon, action.label) { close(action.onClick) }
     }
@@ -935,12 +939,13 @@ internal fun MenuRow(
     headlineContent = { Text(label) },
     leadingContent = {
         // A spinner takes the icon's place while the row fetches what it opens
-        if (loading)
+        if (loading) {
             Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
             }
-        else
+        } else {
             Icon(painterResource(icon), contentDescription = null)
+        }
     },
     trailingContent = trailing?.let { { Icon(painterResource(it), contentDescription = null) } },
     colors = ListItemDefaults.colors(containerColor = Color.Transparent),

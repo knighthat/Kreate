@@ -122,17 +122,18 @@ class PlaylistImportNotifications(private val context: Context) {
                     )
                 )
                 .setContentText(
-                    if (outcome.fromYouTube)
+                    if (outcome.fromYouTube) {
                         context.getString(
                             R.string.notification_playlist_import_subtitle_all_found,
                             songs,
                             context.getString(R.string.source_ytm),
                         )
-                    else
+                    } else {
                         context.getString(
                             R.string.notification_playlist_import_subtitle_all_imported,
                             songs
                         )
+                    }
                 )
             context.notify(resultTag(key), RESULT_ID, summary.build())
             return
@@ -144,14 +145,15 @@ class PlaylistImportNotifications(private val context: Context) {
         shown.forEachIndexed { index, song ->
             context.notify(failedTag(key, index), FAILED_ID, failed(song, outcome.name, group))
         }
-        val text = if (outcome.imported == 0)
+        val text = if (outcome.imported == 0) {
             context.getString(R.string.notification_playlist_import_subtitle_nothing)
-        else
+        } else {
             context.getString(
                 R.string.notification_playlist_import_subtitle_some_imported,
                 outcome.imported,
                 context.resources.getQuantityString(R.plurals.song, total, total),
             )
+        }
         val title = context.getString(
             if (outcome.imported == 0)
                 R.string.notification_playlist_import_title_not_imported
@@ -168,15 +170,16 @@ class PlaylistImportNotifications(private val context: Context) {
                 // The header of the group, the only text of the summary that shows from Android 7
                 // on: the title, else the group would say nothing of the playlist
                 .setSubText(
-                    if (shown.size == outcome.failed.size)
+                    if (shown.size == outcome.failed.size) {
                         title
-                    else
+                    } else {
                         context.getString(
                             R.string.notification_playlist_import_subtitle_failures_listed,
                             title,
                             shown.size,
                             outcome.failed.size,
                         )
+                    }
                 )
                 .setGroup(group)
                 .setGroupSummary(true)
