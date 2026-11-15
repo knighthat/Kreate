@@ -128,9 +128,12 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `RefreshBox.kt` — `RefreshBox`: pull-to-refresh around a scrollable (`pullToRefresh` + indicator,
   `enabled`, `indicatorTop`); used by `HomeScaffold`, the live detail screens
   (`LiveDetailViewModel.RefreshOnPull`), `YouTubeMoreScreen` and `SearchResultsScreen`.
-- `TabBar.kt` — `TabBar`: the NavigationBar of `Tab`s, shared by the home bottom bar (`KreateApp`)
-  and the search results tabs; drops labels under `LocalIconOnly`. `itemModifier`/`iconOverlay`
-  per tab (the home bar's Songs hold, see `recognition/`).
+- `TabBar.kt` — the tabs' buttons on the material3 adaptive navigation suite: `tabNavigationType()`
+  (bottom bar under 600dp of window width, rail from there, a sideways phone included),
+  `tabNavigationColors()` (rail in the bar's color), `TabNavigationItems` (one `NavigationSuiteItem`
+  per `Tab`, labels dropped under `LocalIconOnly`, `itemModifier`/`iconOverlay` per tab for the
+  Songs hold, see `recognition/`) placed by `KreateApp`'s `NavigationSuiteScaffold` (type `None`
+  off the tabs), and `TabBar` (the same buttons in a bar, the search results tabs).
 - `Messages.kt` — `LocalNotifier`/`LocalMessageHost` (provided in `KreateApp`), `ShowMessages` (
   collects only while STARTED, read from `currentStateFlow` — not repeatOnLifecycle, lint flags it
   since `KreateActivity` calls setContent in onStart; newest replaces current), `MessageHost` (the

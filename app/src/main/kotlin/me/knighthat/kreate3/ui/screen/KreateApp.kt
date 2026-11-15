@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.screen
 
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -32,6 +31,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -75,11 +76,13 @@ import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.ShowMessages
 import me.knighthat.kreate3.ui.component.SongMenuHost
 import me.knighthat.kreate3.ui.component.SongMenuOverlay
-import me.knighthat.kreate3.ui.component.TabBar
+import me.knighthat.kreate3.ui.component.TabNavigationItems
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.pictureFirst
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.screenTransform
+import me.knighthat.kreate3.ui.component.tabNavigationColors
+import me.knighthat.kreate3.ui.component.tabNavigationType
 import me.knighthat.kreate3.ui.navigation.About
 import me.knighthat.kreate3.ui.navigation.Account
 import me.knighthat.kreate3.ui.navigation.AlbumDetails
@@ -310,10 +313,12 @@ fun KreateApp(
         onRouteOpened()
     }
     val currentRoute = topLevel.backStack.lastOrNull() as? Route
-    // Only the tabs have the bar, other screens have the mini player alone once something plays
+    // Only the tabs have the bar or rail, other screens have the mini player alone once something plays
     val hasTabBar = currentRoute?.let(Tab::of) != null
+    val tabNavigation = tabNavigationType()
+    val tabBarAtBottom = hasTabBar && tabNavigation == NavigationSuiteType.NavigationBar
     val hasBottomBar =
-        hasTabBar || (currentRoute?.hasMiniPlayer == true && playing.hasMiniPlayer)
+        tabBarAtBottom || (currentRoute?.hasMiniPlayer == true && playing.hasMiniPlayer)
     val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
     val songMenu = remember { SongMenuHost() }
     // Holding the Songs tab names the song playing nearby
@@ -355,581 +360,690 @@ fun KreateApp(
                 topLevel.push(SearchResults(query, Origin.YOUTUBE, Tab.SONGS))
             }
             Box(Modifier.fillMaxSize()) {
-                Scaffold(
-                    bottomBar = {
-                        when {
-                            hasTabBar -> Column {
-                                PlaybackMiniPlayer(miniPlayer, controller = playback)
-                                TabBar(
-                                    selected = topLevel.currentTab,
-                                    onSelect = topLevel::switchTab,
-                                    itemModifier = {
-                                        if (it == Tab.SONGS) holdSongs else Modifier
-                                    },
-                                    iconOverlay = {
-                                        if (it == Tab.SONGS) ListenOverlay(recognition)
+                // The tabs' buttons: a bar under the mini player, or a rail along the start in a
+                // wide window, see tabNavigationType
+                NavigationSuiteScaffold(
+                    navigationItems = {
+                        TabNavigationItems(
+                            selected = topLevel.currentTab,
+                            onSelect = topLevel::switchTab,
+                            type = tabNavigation,
+                            itemModifier = { if (it == Tab.SONGS) holdSongs else Modifier },
+                            iconOverlay = { if (it == Tab.SONGS) ListenOverlay(recognition) },
+                        )
+                    },
+                    navigationSuiteType =
+                        if (hasTabBar) tabNavigation else NavigationSuiteType.None,
+                    navigationSuiteColors = tabNavigationColors(),
+                    containerColor = MaterialTheme.colorScheme.surfaceDim,
+                ) {
+                    Scaffold(
+                        bottomBar = {
+                            when {
+                                // On top of the tabs' bar, which keeps clear of the system's
+                                tabBarAtBottom ->
+                                    PlaybackMiniPlayer(miniPlayer, controller = playback)
+
+                                // Other screens, and the tabs beside the rail, cover the whole window
+                                // until something plays
+                                hasBottomBar -> Surface(
+                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                ) {
+                                    // Without the bar, the mini player stays clear of the system's
+                                    Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
+                                        PlaybackMiniPlayer(miniPlayer, controller = playback)
+                                    }
+                                }
+                            }
+                        },
+                        snackbarHost = {
+                            val route = topLevel.backStack.lastOrNull() as? Route
+                            if (route?.showsMessages != false) MessageHost()
+                        },
+                        containerColor = MaterialTheme.colorScheme.surfaceDim,
+                        modifier = Modifier.fillMaxSize(),
+                    ) { barPadding ->
+                        // Before the screens, so their own handling of going back comes first
+                        ExitConfirmation(
+                            atBottom = topLevel.backStack.size == 1,
+                            snackbar = messages
+                        )
+                        // Pictures move from a screen to the one it opens, like an artist's to their page
+                        SharedTransitionLayout {
+                            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+                                NavDisplay(
+                                    backStack = topLevel.backStack,
+                                    onBack = topLevel::pop,
+                                    // As long as the pictures they share take to move
+                                    transitionSpec = { screenTransform() },
+                                    popTransitionSpec = { screenTransform() },
+                                    entryDecorators = listOf(
+                                        rememberSaveableStateHolderNavEntryDecorator(),
+                                        rememberViewModelStoreNavEntryDecorator(),
+                                    ),
+                                    entryProvider = entryProvider {
+                                        // The bar already keeps clear of the system's, the screens don't again.
+                                        // The mini player isn't kept clear of from outside, the lists end with
+                                        // room for it instead, see MiniPlayerSpace
+                                        val barBottom =
+                                            PaddingValues(bottom = barPadding.calculateBottomPadding())
+                                        val paddingModifier = Modifier
+                                            .padding(miniPlayer.outside(barBottom))
+                                            .consumeWindowInsets(barBottom)
+                                        val contentPadding = miniPlayer.inside
+                                        // Pages that keep clear of the system's bar themselves, their colors
+                                        // reach under it while no bar of the app is there
+                                        val edgeModifier =
+                                            if (hasBottomBar) paddingModifier else Modifier
+
+                                        entry<Songs> {
+                                            HomeSongsScreen(
+                                                { topLevel.push(Search) },
+                                                { topLevel.push(Account) },
+                                                { topLevel.push(Settings) },
+                                                recognition::open,
+                                                paddingModifier,
+                                                contentPadding,
+                                            )
+                                        }
+                                        entry<Albums> {
+                                            HomeAlbumsScreen(
+                                                { topLevel.push(albumRoute(it)) },
+                                                { topLevel.push(Search) },
+                                                { topLevel.push(Account) },
+                                                { topLevel.push(Settings) },
+                                                paddingModifier,
+                                                contentPadding,
+                                            )
+                                        }
+                                        entry<Artists> {
+                                            HomeArtistsScreen(
+                                                { topLevel.push(artistRoute(it)) },
+                                                { topLevel.push(Search) },
+                                                { topLevel.push(Account) },
+                                                { topLevel.push(Settings) },
+                                                paddingModifier,
+                                                contentPadding,
+                                            )
+                                        }
+                                        entry<Playlists> {
+                                            HomePlaylistsScreen(
+                                                { topLevel.push(playlistRoute(it)) },
+                                                { topLevel.push(CreatePlaylist()) },
+                                                { topLevel.push(Search) },
+                                                { topLevel.push(Account) },
+                                                { topLevel.push(Settings) },
+                                                paddingModifier,
+                                                contentPadding,
+                                            )
+                                        }
+
+                                        entry<CreatePlaylist> {
+                                            CreatePlaylistScreen(
+                                                origin = it.songOrigin,
+                                                songId = it.songId,
+                                                onBack = topLevel::pop,
+                                            )
+                                        }
+
+                                        entry<Search> {
+                                            SearchScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenAlbum = { topLevel.push(albumRoute(it)) },
+                                                onOpenArtist = { topLevel.push(artistRoute(it)) },
+                                                onOpenPlaylist = { topLevel.push(playlistRoute(it)) },
+                                                onSearch = { query, origin, tab ->
+                                                    topLevel.push(SearchResults(query, origin, tab))
+                                                },
+                                            )
+                                        }
+                                        entry<SearchResults> {
+                                            SearchResultsScreen(
+                                                initialTab = it.tab,
+                                                onBack = topLevel::pop,
+                                                onOpenAlbum = { item ->
+                                                    topLevel.push(
+                                                        albumRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                onOpenArtist = { item ->
+                                                    topLevel.push(
+                                                        artistRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                onOpenPlaylist = { item ->
+                                                    topLevel.push(
+                                                        playlistRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+
+                                        entry<Account> {
+                                            AccountScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = topLevel::push,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<History> {
+                                            HistoryScreen(
+                                                topLevel::pop,
+                                                paddingModifier,
+                                                contentPadding
+                                            )
+                                        }
+                                        entry<Statistics> {
+                                            StatisticsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                                onOpenAlbum = { topLevel.push(AlbumStatistics(it.mediaId)) },
+                                                onOpenArtist = { topLevel.push(ArtistStatistics(it.mediaId)) },
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<AlbumStatistics> {
+                                            GroupStatisticsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                                onOpenPage = { item -> topLevel.push(albumRoute(item)) },
+                                                viewModel = routeViewModel(it),
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<ArtistStatistics> {
+                                            GroupStatisticsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
+                                                onOpenPage = { item ->
+                                                    topLevel.push(
+                                                        artistRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                viewModel = routeViewModel(it),
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<SongStatistics> {
+                                            SongStatisticsScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<SongDetails> {
+                                            SongDetailsScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<AlbumDetails> {
+                                            AlbumDetailsScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<ArtistDetails> {
+                                            ArtistDetailsScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<Liked> {
+                                            LikedScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<Disliked> {
+                                            DislikedScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<Downloaded> {
+                                            DownloadedScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenQueue = { topLevel.push(DownloadQueue) },
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<LegacyDownloadsSelect> {
+                                            LegacyDownloadsScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+                                        entry<DownloadQueue> {
+                                            DownloadQueueScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                            )
+                                        }
+
+                                        entry<Settings> {
+                                            SettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = topLevel::push,
+                                            )
+                                        }
+                                        entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
+                                        entry<DataSettings> { DataSettingsScreen(topLevel::pop) }
+                                        entry<PlayerSettings> {
+                                            PlayerSettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenVoiceSearch = {
+                                                    topLevel.push(
+                                                        VoiceSearchSettings
+                                                    )
+                                                },
+                                            )
+                                        }
+                                        entry<VoiceSearchSettings> {
+                                            VoiceSearchSettingsScreen(
+                                                topLevel::pop
+                                            )
+                                        }
+                                        entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
+                                        entry<FontPreview> {
+                                            FontPreviewScreen(
+                                                it.key,
+                                                topLevel::pop
+                                            )
+                                        }
+                                        entry<NetworkSettings> {
+                                            NetworkSettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = topLevel::push,
+                                            )
+                                        }
+                                        entry<YouTubeSettings> {
+                                            YouTubeSettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onSignIn = { topLevel.push(YouTubeSignIn) },
+                                            )
+                                        }
+                                        entry<OpenSubsonicSettings> {
+                                            OpenSubsonicSettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onSignIn = { topLevel.push(OpenSubsonicSignIn) },
+                                            )
+                                        }
+                                        entry<OpenSubsonicSignIn> {
+                                            OpenSubsonicSignInScreen(
+                                                topLevel::pop
+                                            )
+                                        }
+                                        entry<DiscordSettings> { DiscordSettingsScreen(topLevel::pop) }
+                                        entry<ProxyEditor> {
+                                            ProxyEditorScreen(
+                                                it.key,
+                                                topLevel::pop
+                                            )
+                                        }
+                                        entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
+                                        entry<About> {
+                                            AboutScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenLicenses = { topLevel.push(OpenSourceLicenses) },
+                                            )
+                                        }
+                                        entry<OpenSourceLicenses> {
+                                            OpenSourceLicensesScreen(
+                                                topLevel::pop
+                                            )
+                                        }
+                                        entry<YouTubeSignIn> {
+                                            YouTubeSignInScreen(
+                                                onBack = topLevel::pop,
+                                                onSignedIn = topLevel::pop,
+                                            )
+                                        }
+
+                                        entry<LocalAlbum>(metadata = pictureFirst()) {
+                                            LocalAlbumDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenArtist = topLevel::push,
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        AlbumStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditAlbum(
+                                                            it.id,
+                                                            Origin.LOCAL
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<LocalArtist>(metadata = pictureFirst()) {
+                                            LocalArtistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenAlbum = { item ->
+                                                    topLevel.push(
+                                                        albumRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                onOpenDetails = { name ->
+                                                    topLevel.push(
+                                                        ArtistDetails(
+                                                            name
+                                                        )
+                                                    )
+                                                },
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        ArtistStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditArtist(
+                                                            it.id,
+                                                            Origin.LOCAL
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<LocalPlaylist> {
+                                            LocalPlaylistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onEdit = { topLevel.push(EditPlaylist(it.id)) },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+
+                                        entry<EditSong> {
+                                            EditSongScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<EditAlbum> {
+                                            EditAlbumScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<EditArtist> {
+                                            EditArtistScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<EditOnlinePlaylist> {
+                                            EditOnlinePlaylistScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<EditPlaylist> {
+                                            EditPlaylistScreen(
+                                                onBack = topLevel::pop,
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+
+                                        // Items of external sources are fetched live and never stored
+                                        entry<OpenSubsonicAlbum>(metadata = pictureFirst()) {
+                                            OpenSubsonicAlbumDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenArtist = topLevel::push,
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        AlbumStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditAlbum(
+                                                            it.id,
+                                                            Origin.OPEN_SUBSONIC
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<OpenSubsonicArtist>(metadata = pictureFirst()) {
+                                            OpenSubsonicArtistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenAlbum = { item ->
+                                                    topLevel.push(
+                                                        albumRoute(
+                                                            item
+                                                        )
+                                                    )
+                                                },
+                                                onOpenSongs = { name ->
+                                                    topLevel.push(
+                                                        OpenSubsonicArtistSongs(
+                                                            it.id,
+                                                            name
+                                                        )
+                                                    )
+                                                },
+                                                onOpenDetails = { name ->
+                                                    topLevel.push(
+                                                        ArtistDetails(
+                                                            name
+                                                        )
+                                                    )
+                                                },
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        ArtistStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditArtist(
+                                                            it.id,
+                                                            Origin.OPEN_SUBSONIC
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<OpenSubsonicArtistSongs> {
+                                            OpenSubsonicArtistSongsScreen(
+                                                topLevel::pop,
+                                                paddingModifier,
+                                                contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<OpenSubsonicPlaylist> {
+                                            OpenSubsonicPlaylistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditOnlinePlaylist(
+                                                            it.id,
+                                                            Origin.OPEN_SUBSONIC
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<YouTubeAlbum>(metadata = pictureFirst()) {
+                                            YouTubeAlbumDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = { tab, item ->
+                                                    itemRoute(tab, item)?.let(topLevel::push)
+                                                },
+                                                onSeeMore = { title, more ->
+                                                    topLevel.push(
+                                                        youTubeMoreRoute(
+                                                            title,
+                                                            more
+                                                        )
+                                                    )
+                                                },
+                                                onOpenArtist = topLevel::push,
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        AlbumStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditAlbum(
+                                                            it.id,
+                                                            Origin.YOUTUBE
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<YouTubeArtist>(metadata = pictureFirst()) {
+                                            YouTubeArtistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = { tab, item ->
+                                                    itemRoute(tab, item)?.let(topLevel::push)
+                                                },
+                                                onSeeMore = { title, more ->
+                                                    topLevel.push(
+                                                        youTubeMoreRoute(
+                                                            title,
+                                                            more
+                                                        )
+                                                    )
+                                                },
+                                                onOpenPlaylist = { id ->
+                                                    topLevel.push(
+                                                        YouTubePlaylist(
+                                                            id
+                                                        )
+                                                    )
+                                                },
+                                                onOpenDetails = { name ->
+                                                    topLevel.push(
+                                                        ArtistDetails(
+                                                            name
+                                                        )
+                                                    )
+                                                },
+                                                onOpenStatistics = {
+                                                    topLevel.push(
+                                                        ArtistStatistics(
+                                                            it.id
+                                                        )
+                                                    )
+                                                },
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditArtist(
+                                                            it.id,
+                                                            Origin.YOUTUBE
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<YouTubeMore> {
+                                            YouTubeMoreScreen(
+                                                onBack = topLevel::pop,
+                                                onOpen = { tab, item ->
+                                                    itemRoute(tab, item)?.let(topLevel::push)
+                                                },
+                                                modifier = paddingModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
+                                        entry<YouTubePlaylist> {
+                                            YouTubePlaylistDetailScreen(
+                                                onBack = topLevel::pop,
+                                                onEdit = {
+                                                    topLevel.push(
+                                                        EditOnlinePlaylist(
+                                                            it.id,
+                                                            Origin.YOUTUBE
+                                                        )
+                                                    )
+                                                },
+                                                modifier = edgeModifier,
+                                                contentPadding = contentPadding,
+                                                viewModel = routeViewModel(it),
+                                            )
+                                        }
                                     },
                                 )
                             }
-
-                            // Other screens cover the whole window until something plays
-                            hasBottomBar -> Surface(
-                                color = MaterialTheme.colorScheme.surfaceContainer,
-                            ) {
-                                // Without the bar, the mini player stays clear of the system's
-                                Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                                    PlaybackMiniPlayer(miniPlayer, controller = playback)
-                                }
-                            }
-                        }
-                    },
-                    snackbarHost = {
-                        val route = topLevel.backStack.lastOrNull() as? Route
-                        if (route?.showsMessages != false) MessageHost()
-                    },
-                    containerColor = MaterialTheme.colorScheme.surfaceDim,
-                    modifier = Modifier.fillMaxSize(),
-                ) { barPadding ->
-                    // Before the screens, so their own handling of going back comes first
-                    ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = messages)
-                    // Pictures move from a screen to the one it opens, like an artist's to their page
-                    SharedTransitionLayout {
-                        CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-                            NavDisplay(
-                                backStack = topLevel.backStack,
-                                onBack = topLevel::pop,
-                                // As long as the pictures they share take to move
-                                transitionSpec = { screenTransform() },
-                                popTransitionSpec = { screenTransform() },
-                                entryDecorators = listOf(
-                                    rememberSaveableStateHolderNavEntryDecorator(),
-                                    rememberViewModelStoreNavEntryDecorator(),
-                                ),
-                                entryProvider = entryProvider {
-                                    // The bar already keeps clear of the system's, the screens don't again.
-                                    // The mini player isn't kept clear of from outside, the lists end with
-                                    // room for it instead, see MiniPlayerSpace
-                                    val barBottom =
-                                        PaddingValues(bottom = barPadding.calculateBottomPadding())
-                                    val paddingModifier = Modifier
-                                        .padding(miniPlayer.outside(barBottom))
-                                        .consumeWindowInsets(barBottom)
-                                    val contentPadding = miniPlayer.inside
-                                    // Pages that keep clear of the system's bar themselves, their colors
-                                    // reach under it while no bar of the app is there
-                                    val edgeModifier =
-                                        if (hasBottomBar) paddingModifier else Modifier
-
-                                    entry<Songs> {
-                                        HomeSongsScreen(
-                                            { topLevel.push(Search) },
-                                            { topLevel.push(Account) },
-                                            { topLevel.push(Settings) },
-                                            recognition::open,
-                                            paddingModifier,
-                                            contentPadding,
-                                        )
-                                    }
-                                    entry<Albums> {
-                                        HomeAlbumsScreen(
-                                            { topLevel.push(albumRoute(it)) },
-                                            { topLevel.push(Search) },
-                                            { topLevel.push(Account) },
-                                            { topLevel.push(Settings) },
-                                            paddingModifier,
-                                            contentPadding,
-                                        )
-                                    }
-                                    entry<Artists> {
-                                        HomeArtistsScreen(
-                                            { topLevel.push(artistRoute(it)) },
-                                            { topLevel.push(Search) },
-                                            { topLevel.push(Account) },
-                                            { topLevel.push(Settings) },
-                                            paddingModifier,
-                                            contentPadding,
-                                        )
-                                    }
-                                    entry<Playlists> {
-                                        HomePlaylistsScreen(
-                                            { topLevel.push(playlistRoute(it)) },
-                                            { topLevel.push(CreatePlaylist()) },
-                                            { topLevel.push(Search) },
-                                            { topLevel.push(Account) },
-                                            { topLevel.push(Settings) },
-                                            paddingModifier,
-                                            contentPadding,
-                                        )
-                                    }
-
-                                    entry<CreatePlaylist> {
-                                        CreatePlaylistScreen(
-                                            origin = it.songOrigin,
-                                            songId = it.songId,
-                                            onBack = topLevel::pop,
-                                        )
-                                    }
-
-                                    entry<Search> {
-                                        SearchScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenAlbum = { topLevel.push(albumRoute(it)) },
-                                            onOpenArtist = { topLevel.push(artistRoute(it)) },
-                                            onOpenPlaylist = { topLevel.push(playlistRoute(it)) },
-                                            onSearch = { query, origin, tab ->
-                                                topLevel.push(SearchResults(query, origin, tab))
-                                            },
-                                        )
-                                    }
-                                    entry<SearchResults> {
-                                        SearchResultsScreen(
-                                            initialTab = it.tab,
-                                            onBack = topLevel::pop,
-                                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                                            onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
-                                            onOpenPlaylist = { item ->
-                                                topLevel.push(
-                                                    playlistRoute(
-                                                        item
-                                                    )
-                                                )
-                                            },
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-
-                                    entry<Account> {
-                                        AccountScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = topLevel::push,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<History> {
-                                        HistoryScreen(
-                                            topLevel::pop,
-                                            paddingModifier,
-                                            contentPadding
-                                        )
-                                    }
-                                    entry<Statistics> {
-                                        StatisticsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
-                                            onOpenAlbum = { topLevel.push(AlbumStatistics(it.mediaId)) },
-                                            onOpenArtist = { topLevel.push(ArtistStatistics(it.mediaId)) },
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<AlbumStatistics> {
-                                        GroupStatisticsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
-                                            onOpenPage = { item -> topLevel.push(albumRoute(item)) },
-                                            viewModel = routeViewModel(it),
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<ArtistStatistics> {
-                                        GroupStatisticsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenSong = { id -> topLevel.push(SongStatistics(id)) },
-                                            onOpenPage = { item -> topLevel.push(artistRoute(item)) },
-                                            viewModel = routeViewModel(it),
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<SongStatistics> {
-                                        SongStatisticsScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<SongDetails> {
-                                        SongDetailsScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<AlbumDetails> {
-                                        AlbumDetailsScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<ArtistDetails> {
-                                        ArtistDetailsScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<Liked> {
-                                        LikedScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<Disliked> {
-                                        DislikedScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<Downloaded> {
-                                        DownloadedScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenQueue = { topLevel.push(DownloadQueue) },
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<LegacyDownloadsSelect> {
-                                        LegacyDownloadsScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-                                    entry<DownloadQueue> {
-                                        DownloadQueueScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                        )
-                                    }
-
-                                    entry<Settings> {
-                                        SettingsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = topLevel::push,
-                                        )
-                                    }
-                                    entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
-                                    entry<DataSettings> { DataSettingsScreen(topLevel::pop) }
-                                    entry<PlayerSettings> {
-                                        PlayerSettingsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenVoiceSearch = { topLevel.push(VoiceSearchSettings) },
-                                        )
-                                    }
-                                    entry<VoiceSearchSettings> { VoiceSearchSettingsScreen(topLevel::pop) }
-                                    entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
-                                    entry<FontPreview> { FontPreviewScreen(it.key, topLevel::pop) }
-                                    entry<NetworkSettings> {
-                                        NetworkSettingsScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = topLevel::push,
-                                        )
-                                    }
-                                    entry<YouTubeSettings> {
-                                        YouTubeSettingsScreen(
-                                            onBack = topLevel::pop,
-                                            onSignIn = { topLevel.push(YouTubeSignIn) },
-                                        )
-                                    }
-                                    entry<OpenSubsonicSettings> {
-                                        OpenSubsonicSettingsScreen(
-                                            onBack = topLevel::pop,
-                                            onSignIn = { topLevel.push(OpenSubsonicSignIn) },
-                                        )
-                                    }
-                                    entry<OpenSubsonicSignIn> { OpenSubsonicSignInScreen(topLevel::pop) }
-                                    entry<DiscordSettings> { DiscordSettingsScreen(topLevel::pop) }
-                                    entry<ProxyEditor> { ProxyEditorScreen(it.key, topLevel::pop) }
-                                    entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
-                                    entry<About> {
-                                        AboutScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenLicenses = { topLevel.push(OpenSourceLicenses) },
-                                        )
-                                    }
-                                    entry<OpenSourceLicenses> { OpenSourceLicensesScreen(topLevel::pop) }
-                                    entry<YouTubeSignIn> {
-                                        YouTubeSignInScreen(
-                                            onBack = topLevel::pop,
-                                            onSignedIn = topLevel::pop,
-                                        )
-                                    }
-
-                                    entry<LocalAlbum>(metadata = pictureFirst()) {
-                                        LocalAlbumDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenArtist = topLevel::push,
-                                            onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditAlbum(
-                                                        it.id,
-                                                        Origin.LOCAL
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<LocalArtist>(metadata = pictureFirst()) {
-                                        LocalArtistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                                            onOpenDetails = { name ->
-                                                topLevel.push(
-                                                    ArtistDetails(
-                                                        name
-                                                    )
-                                                )
-                                            },
-                                            onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditArtist(
-                                                        it.id,
-                                                        Origin.LOCAL
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<LocalPlaylist> {
-                                        LocalPlaylistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onEdit = { topLevel.push(EditPlaylist(it.id)) },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-
-                                    entry<EditSong> {
-                                        EditSongScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<EditAlbum> {
-                                        EditAlbumScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<EditArtist> {
-                                        EditArtistScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<EditOnlinePlaylist> {
-                                        EditOnlinePlaylistScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<EditPlaylist> {
-                                        EditPlaylistScreen(
-                                            onBack = topLevel::pop,
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-
-                                    // Items of external sources are fetched live and never stored
-                                    entry<OpenSubsonicAlbum>(metadata = pictureFirst()) {
-                                        OpenSubsonicAlbumDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenArtist = topLevel::push,
-                                            onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditAlbum(
-                                                        it.id,
-                                                        Origin.OPEN_SUBSONIC
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<OpenSubsonicArtist>(metadata = pictureFirst()) {
-                                        OpenSubsonicArtistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                                            onOpenSongs = { name ->
-                                                topLevel.push(OpenSubsonicArtistSongs(it.id, name))
-                                            },
-                                            onOpenDetails = { name ->
-                                                topLevel.push(
-                                                    ArtistDetails(
-                                                        name
-                                                    )
-                                                )
-                                            },
-                                            onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditArtist(
-                                                        it.id,
-                                                        Origin.OPEN_SUBSONIC
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<OpenSubsonicArtistSongs> {
-                                        OpenSubsonicArtistSongsScreen(
-                                            topLevel::pop,
-                                            paddingModifier,
-                                            contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<OpenSubsonicPlaylist> {
-                                        OpenSubsonicPlaylistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditOnlinePlaylist(
-                                                        it.id,
-                                                        Origin.OPEN_SUBSONIC
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<YouTubeAlbum>(metadata = pictureFirst()) {
-                                        YouTubeAlbumDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = { tab, item ->
-                                                itemRoute(tab, item)?.let(topLevel::push)
-                                            },
-                                            onSeeMore = { title, more ->
-                                                topLevel.push(
-                                                    youTubeMoreRoute(
-                                                        title,
-                                                        more
-                                                    )
-                                                )
-                                            },
-                                            onOpenArtist = topLevel::push,
-                                            onOpenStatistics = { topLevel.push(AlbumStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditAlbum(
-                                                        it.id,
-                                                        Origin.YOUTUBE
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<YouTubeArtist>(metadata = pictureFirst()) {
-                                        YouTubeArtistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = { tab, item ->
-                                                itemRoute(tab, item)?.let(topLevel::push)
-                                            },
-                                            onSeeMore = { title, more ->
-                                                topLevel.push(
-                                                    youTubeMoreRoute(
-                                                        title,
-                                                        more
-                                                    )
-                                                )
-                                            },
-                                            onOpenPlaylist = { id ->
-                                                topLevel.push(
-                                                    YouTubePlaylist(
-                                                        id
-                                                    )
-                                                )
-                                            },
-                                            onOpenDetails = { name ->
-                                                topLevel.push(
-                                                    ArtistDetails(
-                                                        name
-                                                    )
-                                                )
-                                            },
-                                            onOpenStatistics = { topLevel.push(ArtistStatistics(it.id)) },
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditArtist(
-                                                        it.id,
-                                                        Origin.YOUTUBE
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<YouTubeMore> {
-                                        YouTubeMoreScreen(
-                                            onBack = topLevel::pop,
-                                            onOpen = { tab, item ->
-                                                itemRoute(tab, item)?.let(topLevel::push)
-                                            },
-                                            modifier = paddingModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                    entry<YouTubePlaylist> {
-                                        YouTubePlaylistDetailScreen(
-                                            onBack = topLevel::pop,
-                                            onEdit = {
-                                                topLevel.push(
-                                                    EditOnlinePlaylist(
-                                                        it.id,
-                                                        Origin.YOUTUBE
-                                                    )
-                                                )
-                                            },
-                                            modifier = edgeModifier,
-                                            contentPadding = contentPadding,
-                                            viewModel = routeViewModel(it),
-                                        )
-                                    }
-                                },
-                            )
                         }
                     }
                 }

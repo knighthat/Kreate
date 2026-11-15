@@ -54,3 +54,6 @@
   agent's own shell. Use `./gradlew --stop` or kill specific PIDs from `pgrep -af`.
 - A UI stutter is traced before it's fixed (main thread Running vs runnable): see
   `.claude/docs/emulator.md`. Debug-build composition of a new screen (50–100 ms) is not a bug.
+- A device test that only needs something playing (the player, the queue, lyrics, the mini player,
+  the notification) plays an OpenSubsonic song. Play from YouTube Music only when the test is about
+  its playback itself (streams, quality, its errors).
