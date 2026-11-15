@@ -118,7 +118,13 @@ private fun PlaylistRow(
 
     when {
         item.mediaMetadata.artworkUri != null ->
-            ItemRow(item = item, onClick = onClick, modifier = modifier, onLongClick = onLongClick)
+            ItemRow(
+                item = item,
+                onClick = onClick,
+                modifier = modifier,
+                onLongClick = onLongClick,
+                ripple = false,
+            )
 
         covers.size in 1 until GRID_COVERS ->
             ItemRow(
@@ -127,6 +133,7 @@ private fun PlaylistRow(
                 modifier = modifier,
                 thumbnails = covers.take(1),
                 onLongClick = onLongClick,
+                ripple = false,
             )
 
         // The grid or the empty cover takes the place of the cover, ItemRow draws the overlay
@@ -137,6 +144,7 @@ private fun PlaylistRow(
             modifier = modifier,
             showThumbnail = false,
             onLongClick = onLongClick,
+            ripple = false,
             thumbnailOverlay = {
                 if (covers.isEmpty()) {
                     EmptyCover(
@@ -194,6 +202,7 @@ fun ImportingPlaylistItem(
         onClick = {},
         modifier = modifier,
         showThumbnail = false,
+        ripple = false,
         thumbnailOverlay = {
             Thumbnail(
                 models = emptyList(),

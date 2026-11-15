@@ -27,6 +27,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -423,6 +424,7 @@ fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
  * @param showBadges whether the line above the title shows the item's badges
  * @param overlineColor the color of [overlineEnd], the muted one by default
  * @param showDisliked whether a disliked song's badge shows, see [ItemBadges]
+ * @param ripple whether a tap ripples; off for albums, artists and playlists
  */
 @Composable
 fun ItemRow(
@@ -438,6 +440,7 @@ fun ItemRow(
     showBadges: Boolean = true,
     overlineColor: Color = Color.Unspecified,
     showDisliked: Boolean = true,
+    ripple: Boolean = true,
 ) {
     val metadata = item.mediaMetadata
     val subtitle = metadata.subtitle ?: metadata.artist
@@ -446,7 +449,12 @@ fun ItemRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
+            .combinedClickable(
+                interactionSource = null,
+                indication = if (ripple) LocalIndication.current else null,
+                onLongClick = onLongClick,
+                onClick = onClick,
+            )
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         if (showThumbnail) {

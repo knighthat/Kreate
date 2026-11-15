@@ -63,7 +63,13 @@ fun AlbumItem(
         item = item,
         modifier = modifier
             .then(menu.modifier)
-            .combinedClickable(onClick = onClick, onLongClick = menu.onLongClick),
+            // Taps don't ripple on albums, artists and playlists
+            .combinedClickable(
+                interactionSource = null,
+                indication = null,
+                onClick = onClick,
+                onLongClick = menu.onLongClick,
+            ),
         pictureModifier = picture.modifier,
     )
 }

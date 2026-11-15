@@ -617,6 +617,7 @@ private fun SearchContent(
                             }
                         },
                         trailing = { KindBadge(it.kind) },
+                        ripple = it.kind == Tab.SONGS,
                     )
                 }
                 if (live.queries.isNotEmpty()) {
