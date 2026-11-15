@@ -37,7 +37,8 @@ Root
   and `app/src/foss/…` (`NonFreeNetOff`, created at start: turns `DISCORD_ENABLED` and
   `SHAZAM_ENABLED` off in each profile once it's active and loaded); `KreateApplication` adds them.
   `BuildConfig.NON_FREE_NET` says
-  which build it is. `app/src/foss/AndroidManifest.xml` removes `DiscordCallbackActivity` and
+  which build it is. `app/src/foss/AndroidManifest.xml` removes `DiscordCallbackActivity`,
+  `DiscordSignInActivity` and
   `RECORD_AUDIO`.
 - presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only
   `Doing.kt` and `DiscordCovers.kt` are in `main`; the rest is under `app/src/nonfree/`, left out
@@ -46,11 +47,16 @@ Root
   network proxy (named `discord`), `DiscordAuth`/`DiscordClient` with `BuildConfig.DISCORD_APP_ID` /
   `DISCORD_REDIRECT_URI`, `DiscordPresence` created at start once set up), `DiscordAccount.kt`
   (tokens in `Secrets.DISCORD_*`; `access(profile, force)` refreshes a day ahead or when the gateway
-  refused it, saves only while that profile is active, forgets them on `invalid_grant`;
+  refused it, saves only while that profile is active, forgets them on `invalid_grant` and posts
+  the signed-out notice;
   `DiscordAccountState`; `start` → URL to open,
   `finish(uri)` from the callback, `abandon` on resume without an answer, `refreshUser` once per
   profile, `signOut` revokes), `DiscordCallbackActivity.kt` (exported, `kreate3://discord/callback`,
-  own task, hands the answer over and brings `KreateActivity` back), `Doing.kt` (`Doing.Listening`/
+  own task, hands the answer over and brings `KreateActivity` back),
+  `DiscordSignInNotification.kt` (OTHER channel, id 8000: "Signed out of Discord" with a Sign in
+  button, taken back on a finished sign in), `DiscordSignInActivity.kt` (not exported, the button's
+  target: `start()` and opens the page; an activity because a receiver can't open another app from
+  a notification on Android 12+), `Doing.kt` (`Doing.Listening`/
   `Browsing`/`Searching`, `BrowsedKind`, `PresenceState` (player's song + page on screen),
   `ShowOnDiscord`/`ShowBrowsingOnDiscord`/`ShowSearchingOnDiscord` composables, off in previews;
   called by the album/artist/playlist detail scaffolds and `SearchResultsScreen`),

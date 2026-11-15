@@ -29,5 +29,8 @@
         <activity
             android:name=".presence.DiscordCallbackActivity"
             tools:node="remove" />
+        <activity
+            android:name=".presence.DiscordSignInActivity"
+            tools:node="remove" />
     </application>
 </manifest>

@@ -127,6 +127,16 @@
             android:name=".ProfilesActivity"
             android:exported="false" />
 
+        <!-- The "Sign in" button of the notification telling Discord signed the user out: opens
+             Discord's sign in page -->
+        <activity
+            android:name=".presence.DiscordSignInActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <!-- Where Discord's sign in page sends its answer, BuildConfig.DISCORD_REDIRECT_URI. Its
              own task, so it never stays on top of the browser's -->
         <activity

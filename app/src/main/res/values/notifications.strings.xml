@@ -48,6 +48,9 @@
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
     <string name="notification_other_title_resuming">Resuming music</string>
     <string name="notification_other_title_starting">Starting music</string>
+    <!-- %1$s is Discord (proper noun, don't decline it). Discord no longer accepts the app's sign in, so what the user plays isn't shown there anymore -->
+    <string name="notification_other_title_discord_signed_out">Signed out of %1$s</string>
+    <string name="notification_other_subtitle_discord_signed_out">Sign in again to keep showing what you\'re listening to</string>
     <string name="notification_downloads_title_channel">Downloads</string>
     <string name="notification_downloads_subtitle_channel">Songs being downloaded, downloaded, or that couldn\'t be downloaded</string>
     <string name="notification_downloads_title_downloading">Downloading</string>

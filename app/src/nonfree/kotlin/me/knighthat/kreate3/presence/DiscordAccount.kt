@@ -148,6 +148,7 @@ class DiscordAccount internal constructor(
                 try {
                     val received = auth.finish(signIn, code)
                     save(received)
+                    context.cancelDiscordSignedOut()
                     Logger.i(tag = TAG) { "Signed in to Discord" }
                     loadUser(received.access)
                 } catch (e: CancellationException) {
@@ -199,7 +200,10 @@ class DiscordAccount internal constructor(
             auth.refresh(kept.refresh)
         } catch (e: DiscordSignedOutException) {
             Logger.w(e, TAG) { "Discord no longer takes the tokens, signed out" }
-            if (profiles.activeId.value == profile) clear()
+            if (profiles.activeId.value == profile) {
+                clear()
+                context.postDiscordSignedOut()
+            }
             return null
         } catch (e: IOException) {
             // Still good for a while, the next connection tries again
