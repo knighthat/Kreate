@@ -83,7 +83,8 @@ charts: `.claude/docs/charts.md`.
 ## Menus and hints
 
 - A tap on an album, artist or playlist doesn't ripple (cards with `indication = null`, rows with
-  `ItemRow`'s `ripple = false`, search suggestions too); songs keep it (maintainer, 2026-11-15).
+  `ItemRow`'s `ripple = false`, search suggestions and the album page's artist name too); songs
+  keep it (maintainer, 2026-11-15).
 - Menus of list items open by long-press; rows have no trailing ⋮ (more) button. The pressed row
   lifts out of the list and hovers above the bottom sheet as a card, and the sheet's first button
   row is its header with no divider (`SongMenu.kt`). Menus for albums, artists and playlists reuse

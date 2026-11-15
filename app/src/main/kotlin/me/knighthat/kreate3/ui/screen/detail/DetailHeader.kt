@@ -324,10 +324,16 @@ internal fun ArtistLine(
             modifier = Modifier
                 .weight(1f, fill = false)
                 .then(
-                    if (onOpenArtist != null)
-                        Modifier.clickable(onClick = onOpenArtist)
-                    else
+                    // Taps don't ripple on artists, like their cards
+                    if (onOpenArtist != null) {
+                        Modifier.clickable(
+                            interactionSource = null,
+                            indication = null,
+                            onClick = onOpenArtist,
+                        )
+                    } else {
                         Modifier
+                    }
                 ),
         )
     }
