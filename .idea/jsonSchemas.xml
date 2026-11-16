@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="GitHub Funding">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="GitHub Funding" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/github-funding.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".github/FUNDING.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="crowdin.yml">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="crowdin.yml" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/crowdin.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".gitlab/ci/crowdin.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="dependabot-v2.json">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="dependabot-v2.json" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/dependabot-2.0.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".github/dependabot.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="gitlab-ci">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="gitlab-ci" />
+              <option name="relativePathToSchema" value="https://gitlab.com/gitlab-org/gitlab-foss/-/raw/master/app/assets/javascripts/editor/schema/ci.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".gitlab/ci/renovate.yml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value=".gitlab/ci/release.yml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value=".gitlab/ci/crowdin-release.yml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value=".gitlab-ci.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>
