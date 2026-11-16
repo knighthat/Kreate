@@ -1,7 +1,9 @@
 # Releases a version tag (v*, other tags start none of these jobs), one job after the other:
 #   build        the Patreon APKs (universal + the four ABIs, signed) and R8's mapping
 #   release      the GitLab release with them attached
-#   github-sync  the tag and its branch pushed to GitHub
+#   github-sync  the tagged commit pushed to its branch on GitHub, plus the tag itself for a
+#                stable version (vX.Y.Z); a beta (any tag with a "-", like v3.0.0-beta.3) stays
+#                on GitLab
 # Each job starts only when the one before it succeeded, so a failed build creates no release and
 # sends nothing to GitHub. A release made by hand in the GitLab UI creates its tag first, so the
 # same pipeline runs and release only adds the APKs to the release that is already there.
@@ -157,7 +159,8 @@ github-sync:
       artifacts: false
   rules:
     - if: $CI_COMMIT_TAG =~ /^v/
-  # The tag goes up as it is. The branch the release was cut from (looked up, a tag doesn't record
+  # A stable tag (no "-" in it) goes up as it is; a beta's tag stays on GitLab and only its commits
+  # go up. The branch the release was cut from (looked up, a tag doesn't record
   # it) is moved to the tagged commit only when that is a plain fast-forward on GitHub; a release
   # cut from a commit that isn't ahead of it fails the job instead of rewriting GitHub's history.
   # GitHub only hears from GitLab through this job
@@ -179,4 +182,8 @@ github-sync:
       if [ -z "$BRANCH" ]; then echo "No branch to follow for $CI_COMMIT_TAG, found: $BRANCHES"; exit 1; fi
       echo "Releasing $CI_COMMIT_TAG on $BRANCH"
       git push github "${CI_COMMIT_SHA}:refs/heads/${BRANCH}"
-    - git push github "refs/tags/${CI_COMMIT_TAG}"
+    - |
+      case "$CI_COMMIT_TAG" in
+        *-*) echo "$CI_COMMIT_TAG is a pre-release, its tag stays on GitLab" ;;
+        *) git push github "refs/tags/${CI_COMMIT_TAG}" ;;
+      esac
