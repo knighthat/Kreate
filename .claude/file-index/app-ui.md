@@ -155,7 +155,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   mark at -14, "LUFS", fixed-width pill, volume down/up icons), `PixelSlider` (range in steps,
   filled
   from a marked `fillFrom` value, "px"; Discord's largest cover) and
-  `SecondSlider` (whole seconds of an `IntRange`, filled from the start, "seconds", `number` for
+  `SecondSlider` (whole seconds of an `IntRange` in `step`s, 1 by default, filled from the start,
+  "seconds", `number` for
   what the ball shows, hourglass -/+ icons) and `PercentSlider` (whole percents, "%", no default
   icons) and `MinuteSlider` (minutes of an `IntRange` in `step`s, "minutes", hourglass -/+ icons)
   and

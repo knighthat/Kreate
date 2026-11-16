@@ -110,6 +110,33 @@ class SchemaMigrationTest {
     }
 
     @Test
+    fun loadAheadMovesOntoItsNewSteps() = runBlocking {
+        val ahead = intPreferencesKey("playback_buffer_ahead_seconds")
+        val steps = PROFILE_STEPS.take(2)
+        fun migrated(seconds: Int) = runBlocking {
+            SchemaMigration(steps, "test").migrate(
+                preferencesOf(
+                    version to 1,
+                    ahead to seconds
+                )
+            )[ahead]
+        }
+
+        // The whole song becomes 5 minutes, the rest the nearest step from 30 seconds
+        assertEquals(300, migrated(0))
+        assertEquals(30, migrated(5))
+        assertEquals(40, migrated(44))
+        assertEquals(50, migrated(45))
+        assertEquals(50, migrated(50))
+        assertEquals(60, migrated(60))
+        assertEquals(300, migrated(400))
+
+        // Never set, the default stays the default
+        val unset = SchemaMigration(steps, "test").migrate(preferencesOf(version to 1, name to "x"))
+        assertFalse(unset.contains(ahead))
+    }
+
+    @Test
     fun withoutStepsAFileIsOnlyStamped() = runBlocking {
         val migrated = SchemaMigration(emptyList(), "test").migrate(preferencesOf(name to "kept"))
 

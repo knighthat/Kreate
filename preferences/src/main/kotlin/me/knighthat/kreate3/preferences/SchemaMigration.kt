@@ -58,6 +58,15 @@ internal val PROFILE_STEPS: List<SchemaStep> = listOf(
             }
         }
     },
+    // 1 → 2: "Load ahead" went from 1-60 seconds or the whole song (0), which could fill the
+    // memory with a long song, to 30 seconds-5 minutes in steps of 10. The whole song becomes 5
+    // minutes, the rest the nearest step
+    SchemaStep { preferences ->
+        val key = intPreferencesKey("playback_buffer_ahead_seconds")
+        val seconds = preferences[key] ?: return@SchemaStep
+        preferences[key] =
+            if (seconds <= 0) 300 else ((seconds + 5) / 10 * 10).coerceIn(30, 300)
+    },
 )
 
 /**

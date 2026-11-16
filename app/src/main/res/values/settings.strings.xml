@@ -230,8 +230,6 @@
     <string name="setting_title_load_ahead">Load ahead</string>
     <!-- %1$s is a duration, e.g. "30 seconds". How far ahead of the playback position the song is loaded (downloaded into memory) -->
     <string name="setting_description_load_ahead">Load up to %1$s ahead</string>
-    <!-- %1$s is the name of this app, Kreate. With no limit the app loads the whole song -->
-    <string name="setting_description_load_ahead_unlimited">Load as much as %1$s can</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
     <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). Seeking back = moving the playback position backwards; "it" = the part of the song already played -->

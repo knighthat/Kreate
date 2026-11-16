@@ -497,7 +497,8 @@ fun <T> SliderSetting(
 }
 
 /**
- * A setting of whole seconds in [range], picked on a [SecondSlider] whose ball shows the seconds.
+ * A setting of whole seconds in [range], every [step] seconds from its start, picked on a
+ * [SecondSlider] whose ball shows the seconds.
  * The setting changes only when the slider is let go. While not [enabled] the row is dimmed and
  * the slider doesn't move.
  *
@@ -514,6 +515,7 @@ fun SecondSetting(
     summary: String? = null,
     enabled: Boolean = true,
     number: (Int) -> String = Int::toString,
+    step: Int = 1,
 ) {
     // Where the slider is while it is dragged
     var position by remember(value) { mutableIntStateOf(value.coerceIn(range)) }
@@ -527,6 +529,7 @@ fun SecondSetting(
             // A tap moves and lets go in one frame, read the position it left
             onValueChangeFinished = { if (position != value) onSelect(position) },
             number = number,
+            step = step,
         )
     }
 }

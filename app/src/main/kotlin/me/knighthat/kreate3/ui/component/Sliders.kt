@@ -199,8 +199,8 @@ fun PixelSlider(
 )
 
 /**
- * A slider for a number of seconds from the start of [range] to its end, stopping at every whole
- * second: a thin track filled from the start to a ball with [number] of the seconds in it (the
+ * A slider for a number of seconds from the start of [range] to its end, stopping every [step]
+ * seconds from the start (every second by default): a thin track filled from the start to a ball with [number] of the seconds in it (the
  * seconds themselves by default), which grows while held; "seconds" sits under the middle of the
  * track. [leadingIcon] and [trailingIcon] stand at the ends, an hourglass with "-" and one with
  * "+" by default.
@@ -220,9 +220,10 @@ fun SecondSlider(
     trailingIcon: (@Composable () -> Unit)? = {
         SliderIcon(R.drawable.hourglass_empty, R.drawable.add)
     },
+    step: Int = 1,
 ) = SecondSlider(
     value, onValueChange, range, null, modifier, enabled, onValueChangeFinished, number,
-    leadingIcon, trailingIcon,
+    leadingIcon, trailingIcon, step,
 )
 
 /** The [SecondSlider] held or not as [held] says, or as the finger does while it's `null`. */
@@ -242,12 +243,14 @@ private fun SecondSlider(
     trailingIcon: (@Composable () -> Unit)? = {
         SliderIcon(R.drawable.hourglass_empty, R.drawable.add)
     },
+    step: Int = 1,
 ) = WholeSlider(
-    value = value,
-    onValueChange = onValueChange,
-    range = range,
-    number = number,
-    unit = { pluralStringResource(R.plurals.unit_second, it) },
+    // The slider counts the stops, the seconds are the stop times the step
+    value = (value - range.first) / step,
+    onValueChange = { onValueChange(range.first + it * step) },
+    range = 0..(range.last - range.first) / step,
+    number = { number(range.first + it * step) },
+    unit = { pluralStringResource(R.plurals.unit_second, range.first + it * step) },
     held = held,
     modifier = modifier,
     enabled = enabled,
@@ -669,6 +672,7 @@ private fun SecondSliderPreview() = PreviewTheme {
             // Held, the ball grown
             SecondSlider(value = 30, onValueChange = {}, range = 1..60, held = true)
             SecondSlider(value = 3, onValueChange = {}, range = 0..5, enabled = false)
+            SecondSlider(value = 50, onValueChange = {}, range = 30..300, step = 10)
         }
     }
 }

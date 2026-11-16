@@ -53,22 +53,25 @@ internal class SongLoadControl(
     false,
 ) {
 
-    /** `null` loads the whole song. */
-    private val aheadUs: Long?
+    /**
+     * Within what the settings offer. The old whole song (`0`) loads [MAX_AHEAD_SECONDS], until
+     * the settings are migrated.
+     */
+    private val aheadUs: Long
         get() = aheadSeconds()
             .takeIf { it > 0 }
-            ?.coerceAtMost(CEILING_SECONDS)
-            ?.seconds
-            ?.inWholeMicroseconds
+            .let { it ?: MAX_AHEAD_SECONDS }
+            .coerceIn(MIN_AHEAD_SECONDS, MAX_AHEAD_SECONDS)
+            .seconds
+            .inWholeMicroseconds
 
     /**
      * The parent stops loading at [CEILING_MS] ahead and keeps track of whether it is loading
      * (the next song's preload waits for that), so it gets the buffer scaled to [aheadUs] instead
-     * of being skipped. Loading the whole song hands it nothing buffered, it then loads until the
-     * heap is nearly full.
+     * of being skipped.
      */
     override fun shouldContinueLoading(parameters: LoadControl.Parameters): Boolean {
-        val scaled = aheadUs?.let { parameters.bufferedDurationUs * CEILING_US / it } ?: 0
+        val scaled = parameters.bufferedDurationUs * CEILING_US / aheadUs
         return super.shouldContinueLoading(parameters.withBuffered(scaled))
     }
 
@@ -77,7 +80,7 @@ internal class SongLoadControl(
      * for [AFTER_RUNNING_OUT_US] at least, so a slow network doesn't stop it again right away.
      */
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {
-        val ahead = aheadUs ?: Long.MAX_VALUE
+        val ahead = aheadUs
         val toStart = toStartSeconds().seconds.inWholeMicroseconds.coerceIn(0, ahead)
         val needed =
             if (parameters.rebuffering) {
@@ -108,8 +111,20 @@ internal class SongLoadControl(
         )
 
     companion object {
-        /** Most seconds the settings can ask to load ahead or before playing. */
+        /** Most seconds the settings can ask to load before playing. */
         const val CEILING_SECONDS = 60
+
+        /** Fewest seconds the settings can ask to load ahead. */
+        const val MIN_AHEAD_SECONDS = 30
+
+        /**
+         * Most seconds the settings can ask to load ahead: 5 minutes. More, like the whole song
+         * it once offered, could fill the memory with a long song in a lossless format.
+         */
+        const val MAX_AHEAD_SECONDS = 300
+
+        /** The settings ask to load ahead in steps of this many seconds from [MIN_AHEAD_SECONDS]. */
+        const val AHEAD_STEP_SECONDS = 10
 
         /** What was played that stays loaded while [Preferences.PLAYBACK_KEEP_PLAYED] is on. */
         const val KEPT_PLAYED_MS = 60_000

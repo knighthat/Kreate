@@ -153,7 +153,7 @@ playback/
   `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`,
   `SongLoadControl` (back buffer from the `PlayerBuild` parameter of the player factory).
 - `SongLoadControl.kt` — `DefaultLoadControl` buffering by time: min = max = 60 s ceiling, the
-  buffer handed to the parent scaled to `PLAYBACK_BUFFER_AHEAD_SECONDS` (read each call; `0` =
-  whole song, parent loads until its heap headroom check stops it);
+  buffer handed to the parent scaled to `PLAYBACK_BUFFER_AHEAD_SECONDS` (read each call; kept within
+  `MIN_AHEAD_SECONDS`..`MAX_AHEAD_SECONDS` = 30..300, the old whole-song `0` loads 300);
   `shouldStartPlayback` own: `PLAYBACK_BUFFER_TO_START_SECONDS` (≤ ahead), ≥ 2 s after running out;
   `KEPT_PLAYED_MS` 60 s back buffer.

@@ -20,11 +20,13 @@ package me.knighthat.kreate3.playback
 
 import androidx.annotation.OptIn
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.PlayerId
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.SinglePeriodTimeline
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -58,13 +60,13 @@ class SongLoadControlTest {
 
     @Test
     fun neverWaitsForMoreThanIsLoadedAhead() {
-        val control = control(ahead = 3, toStart = 10)
-        assertTrue(control.shouldStartPlayback(parameters(3_000)))
+        val control = control(ahead = 30, toStart = 60)
+        assertTrue(control.shouldStartPlayback(parameters(30_000)))
     }
 
     @Test
-    fun loadingTheWholeSongWaitsForAllThatIsAsked() {
-        val control = control(ahead = 0, toStart = 60)
+    fun loadingFiveMinutesAheadWaitsForAllThatIsAsked() {
+        val control = control(ahead = 300, toStart = 60)
         assertFalse(control.shouldStartPlayback(parameters(59_999)))
         assertTrue(control.shouldStartPlayback(parameters(60_000)))
     }
@@ -77,9 +79,41 @@ class SongLoadControlTest {
     }
 
     @Test
-    fun runningOutWaitsNoLongerThanIsLoadedAhead() {
-        val control = control(ahead = 1, toStart = 1)
-        assertTrue(control.shouldStartPlayback(parameters(1_000, rebuffering = true)))
+    fun loadsThirtySecondsAheadAtLeast() {
+        // A value below the slider, like the old 1 to 29 seconds, loads 30
+        val control = control(ahead = 1, toStart = 60)
+        assertFalse(control.shouldStartPlayback(parameters(29_999)))
+        assertTrue(control.shouldStartPlayback(parameters(30_000)))
+    }
+
+    @Test
+    fun loadsAtMostFiveMinutesAhead() {
+        // The old whole song (0) and anything past 5 minutes load 5 minutes
+        listOf(0, 300, 3_600).forEach { ahead ->
+            val control = control(ahead = ahead, toStart = 1)
+            control.onPrepared(PlayerId.UNSET)
+            assertTrue(control.shouldContinueLoading(playing(bufferedMs = 299_000)))
+            assertFalse(control.shouldContinueLoading(playing(bufferedMs = 300_000)))
+        }
+    }
+
+    /** What the parent is asked while playing: it looks the song up in the timeline. */
+    private fun playing(bufferedMs: Long): LoadControl.Parameters {
+        val timeline = SinglePeriodTimeline(
+            C.TIME_UNSET, true, false, false, null, MediaItem.Builder().setMediaId("song").build(),
+        )
+        return LoadControl.Parameters(
+            PlayerId.UNSET,
+            timeline,
+            MediaSource.MediaPeriodId(timeline.getUidOfPeriod(0)),
+            0,
+            bufferedMs * 1000,
+            1f,
+            true,
+            false,
+            C.TIME_UNSET,
+            C.TIME_UNSET,
+        )
     }
 
     @Test

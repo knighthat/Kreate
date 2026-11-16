@@ -18,6 +18,10 @@
 
 package me.knighthat.kreate3.ui.screen.settings.player
 
+import android.content.res.Resources
+import android.icu.text.MeasureFormat
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,6 +77,7 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * How the player behaves and looks, what it keeps of the songs played, where its lyrics come
@@ -305,23 +310,19 @@ private fun PlayerSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_header_buffering))
-        // The stop past the last second is the whole song, stored as 0
+        // What the player loads for a value off the slider, see SongLoadControl
+        val aheadRange = SongLoadControl.MIN_AHEAD_SECONDS..SongLoadControl.MAX_AHEAD_SECONDS
+        val ahead = bufferAhead.coerceIn(aheadRange)
         SecondSetting(
             title = stringResource(R.string.setting_title_load_ahead),
-            value = if (bufferAhead == 0) WHOLE_SONG_STOP else bufferAhead,
-            range = 1..WHOLE_SONG_STOP,
-            summary = if (bufferAhead == 0) {
-                stringResource(
-                    R.string.setting_description_load_ahead_unlimited,
-                    stringResource(R.string.app_name),
-                )
-            } else {
-                stringResource(R.string.setting_description_load_ahead, seconds(bufferAhead))
-            },
-            number = { if (it == WHOLE_SONG_STOP) "∞" else it.toString() },
-            onSelect = {
-                Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(if (it == WHOLE_SONG_STOP) 0 else it)
-            },
+            value = ahead,
+            range = aheadRange,
+            step = SongLoadControl.AHEAD_STEP_SECONDS,
+            summary = stringResource(
+                R.string.setting_description_load_ahead,
+                resources.span(ahead)
+            ),
+            onSelect = { Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(it) },
         )
         SecondSetting(
             title = stringResource(R.string.setting_title_load_before_playing),
@@ -533,5 +534,14 @@ private fun PlayerSettingsPreview() = PreviewTheme {
  */
 private const val MAX_SECONDS = 60
 
-/** The stop of "Load ahead" past [MAX_SECONDS], for the whole song. */
-private const val WHOLE_SONG_STOP = MAX_SECONDS + 1
+/** `1 minute, 30 seconds`: [seconds] in the locale's own words, in whole minutes and seconds. */
+private fun Resources.span(seconds: Int): String =
+    seconds.seconds.toComponents { minutes, rest, _ ->
+        val parts = listOf(
+            Measure(minutes, MeasureUnit.MINUTE),
+            Measure(rest, MeasureUnit.SECOND),
+        ).filter { it.number.toLong() > 0 }
+        MeasureFormat.getInstance(configuration.locales[0], MeasureFormat.FormatWidth.WIDE)
+            .formatMeasures(*parts.ifEmpty { listOf(Measure(0, MeasureUnit.SECOND)) }
+                .toTypedArray())
+    }

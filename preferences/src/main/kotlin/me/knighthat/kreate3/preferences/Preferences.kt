@@ -531,8 +531,9 @@ object Preferences : KoinComponent {
     val PLAYBACK_STALL_SECONDS by lazy { int("playback_stall_seconds", 15) }
 
     /**
-     * Seconds of the song playing the player loads ahead of where it is, from 1 to 60, `0` for
-     * the whole song. Loading stops once that much is in, and goes on as it plays out.
+     * Seconds of the song playing the player loads ahead of where it is, from 30 to 300 (5
+     * minutes) in steps of 10. Loading stops once that much is in, and goes on as it plays out.
+     * Before schema step 1 → 2 it was 1 to 60 or the whole song (`0`).
      * `SongLoadControl` reads it each time the player decides whether to keep loading.
      */
     val PLAYBACK_BUFFER_AHEAD_SECONDS by lazy { int("playback_buffer_ahead_seconds", 50) }
