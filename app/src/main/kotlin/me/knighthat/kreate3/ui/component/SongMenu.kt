@@ -120,6 +120,7 @@ import me.knighthat.kreate3.ui.screen.player.Reaction
 import me.knighthat.kreate3.ui.screen.player.rememberSongReaction
 import org.koin.compose.koinInject
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /** Space between the lifted row and the open sheet, and between the row and the screen's sides. */
@@ -220,10 +221,14 @@ private class SheetPlacement(private val sheetState: SheetState) {
 
     /**
      * Top edge of the sheet once it's open, `null` until it is laid out. Like `ModalBottomSheet`,
-     * it opens as high as its height allows, and hides at the bottom of the window.
+     * a sheet taller than half the window opens halfway, a shorter one on all of it, and it hides
+     * at the bottom of the window.
      */
     val openTop: Float?
-        get() = sheet?.let { max(windowTop, windowBottom - it.height) }
+        get() = sheet?.let {
+            val half = windowTop + (windowBottom - windowTop) / 2
+            max(half, windowBottom - it.height)
+        }
 
     /** Top edge of the sheet now, `null` until it is laid out. */
     val top: Float?
@@ -285,7 +290,8 @@ internal val LocalOverlayScope = staticCompositionLocalOf<CoroutineScope> {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    // A menu taller than half the screen opens on its top half, the rest is a drag up
+    val sheetState = rememberModalBottomSheetState()
     val placement = remember(sheetState) { SheetPlacement(sheetState) }
     val scope = rememberCoroutineScope()
 
@@ -427,10 +433,12 @@ private fun LiftedRow(request: SongMenuRequest, placement: SheetPlacement) {
                     lerp(row.right, sheet?.let { it.right - gap } ?: row.right, progress)
                 // Above the open sheet, not where the sheet is now: on the way the row
                 // would dip under the rising sheet. Both move with the progress, so the
-                // sheet stays below the row all along. A tall sheet leaves no room above
-                // it, the row then stays below the status bar and covers the sheet's top
+                // sheet stays below the row all along. Dragged open past that, the row rises
+                // with the sheet. A tall sheet leaves no room above it, the row then stays
+                // below the status bar and covers the sheet's top
                 val highest = origin.y + statusBars.getTop(this) + gap
                 val above = placement.openTop
+                    ?.let { open -> placement.top?.let { min(open, it) } ?: open }
                     ?.let { max(it - gap - row.height, highest) } ?: row.top
                 val top = lerp(row.top, above, progress)
 

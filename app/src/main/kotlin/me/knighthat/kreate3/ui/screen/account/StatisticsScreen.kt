@@ -33,14 +33,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +57,7 @@ import me.knighthat.kreate3.database.model.OriginTime
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
@@ -271,7 +267,6 @@ private fun periodText(range: HistoryRange?): String {
  * The filters of the page, in a sheet: the sources to count, then the days, by a preset or on the
  * calendar. A filter applies as soon as it's picked; a range on the calendar once its last day is.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatisticsSheet(
     choices: List<Origin>,
@@ -286,13 +281,14 @@ private fun StatisticsSheet(
         StatisticsPeriod.entries.map { RangePreset(it.labelRes, it.range(now, zone)) }
     }
 
-    // Opens halfway, on the filters; the calendar is a drag up
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+    ConfigSheet(
+        onDismiss = onDismiss,
+        actions = null,
+        options = {
             OriginFilter(choices, filter.origins, onToggleOrigin)
             DateRangeFilter(filter.range, presets, onPickRange)
-        }
-    }
+        },
+    )
 }
 
 /** Time, plays, songs and artists, two by two, each with its change since last month when [previous] is given. */

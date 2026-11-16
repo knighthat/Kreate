@@ -63,6 +63,8 @@ charts: `.claude/docs/charts.md`.
   row holds actions, which close the sheet before running; `ConfigToggle`s under the divider apply
   at once and leave it open.
 - Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
+- Menu sheets (every `ConfigSheet`, the song and collection menu) open halfway when taller than
+  half the screen, the rest a drag up; never `skipPartiallyExpanded` (maintainer, 2026-11-16).
 - Home tabs' toolbars can hold buttons before `ConfigButton` (`HomeScaffold`'s `actions`): the
   Playlists tab's `CreatePlaylistButton` (maintainer, 2026-11-15).
 - Artist, album and playlist pages open theirs (`ArtistMenu`, `AlbumMenu`, `PlaylistMenu`) from a ⋮

@@ -22,9 +22,7 @@ import android.content.res.Resources
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,17 +31,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -80,8 +73,8 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AddToQueueButton
 import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.LabeledIconButton
-import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlayAllButton
 import me.knighthat.kreate3.ui.component.PlayNextButton
@@ -418,7 +411,6 @@ private fun ClearHistoryDialog(filtered: Boolean, onClear: () -> Unit, onDismiss
  * or on the calendar. A filter applies as soon as it's picked; a range on the calendar once its
  * last day is.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun HistorySheet(
     choices: List<Origin>,
@@ -430,62 +422,40 @@ private fun HistorySheet(
     onClearHistory: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // Opens halfway, on the buttons and filters; the calendar is a drag up
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
     val now = remember { System.currentTimeMillis() }
     val zone = remember { TimeZone.getDefault() }
     val presets = remember(now, zone) {
         HistoryRangePreset.entries.map { RangePreset(it.labelRes, it.range(now, zone)) }
     }
 
-    // Slides the sheet away before doing what was picked
-    fun close(then: () -> Unit) {
-        scope.launch { sheetState.hide() }.invokeOnCompletion {
-            onDismiss()
-            then()
-        }
-    }
+    ConfigSheet(
+        onDismiss = onDismiss,
+        actions = { close ->
+            @Composable
+            fun Action(@DrawableRes icon: Int, @StringRes label: Int, onClick: () -> Unit) =
+                LabeledIconButton(icon, stringResource(label), onClick = onClick)
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-            val iconOnly = LocalIconOnly.current
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                // Icon only drops the labels, the icons keep them for screen readers
-                @Composable
-                fun Action(@DrawableRes icon: Int, @StringRes label: Int, onClick: () -> Unit) =
-                    LabeledIconButton(
-                        icon,
-                        stringResource(label),
-                        showLabel = !iconOnly,
-                        onClick = onClick
-                    )
-
-                Action(R.drawable.play_arrow, R.string.menu_shortcut_play_all) {
-                    close { onQueue(QueueAction.PLAY) }
-                }
-                Action(R.drawable.queue_play_next, R.string.menu_shortcut_play_next) {
-                    close { onQueue(QueueAction.PLAY_NEXT) }
-                }
-                Action(R.drawable.playlist_add, R.string.menu_shortcut_add_to_queue) {
-                    close { onQueue(QueueAction.ENQUEUE) }
-                }
-                Action(R.drawable.shuffle, R.string.menu_shortcut_shuffle) {
-                    close { onQueue(QueueAction.SHUFFLE) }
-                }
-                Action(R.drawable.delete, R.string.menu_shortcut_clear_history) {
-                    close(onClearHistory)
-                }
+            Action(R.drawable.play_arrow, R.string.menu_shortcut_play_all) {
+                close { onQueue(QueueAction.PLAY) }
             }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
+            Action(R.drawable.queue_play_next, R.string.menu_shortcut_play_next) {
+                close { onQueue(QueueAction.PLAY_NEXT) }
+            }
+            Action(R.drawable.playlist_add, R.string.menu_shortcut_add_to_queue) {
+                close { onQueue(QueueAction.ENQUEUE) }
+            }
+            Action(R.drawable.shuffle, R.string.menu_shortcut_shuffle) {
+                close { onQueue(QueueAction.SHUFFLE) }
+            }
+            Action(R.drawable.delete, R.string.menu_shortcut_clear_history) {
+                close(onClearHistory)
+            }
+        },
+        options = {
             OriginFilter(choices, selected, onToggleOrigin)
             DateRangeFilter(range, presets, onPickRange)
-        }
-    }
+        },
+    )
 }
 
 private fun Resources.ago(plural: Int, count: Int): String =

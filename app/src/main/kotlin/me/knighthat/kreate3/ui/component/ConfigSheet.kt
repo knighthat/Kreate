@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 
 /**
- * The options of a screen in a sheet as tall as they need: [actions] as a row of buttons, an icon
+ * The options of a screen in a sheet: [actions] as a row of buttons, an icon
  * over its label ([LabeledIconButton]), then [entries] and [options] under a divider, `null` for
  * none.
  *
@@ -70,12 +70,12 @@ import me.knighthat.kreate3.R
 @Composable
 fun ConfigSheet(
     onDismiss: () -> Unit,
-    actions: @Composable RowScope.(close: (then: () -> Unit) -> Unit) -> Unit,
+    actions: (@Composable RowScope.(close: (then: () -> Unit) -> Unit) -> Unit)?,
     options: (@Composable ColumnScope.() -> Unit)? = null,
     entries: (@Composable ColumnScope.(close: (then: () -> Unit) -> Unit) -> Unit)? = null,
 ) {
-    // Opens on its content at once, never half of it
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    // A sheet taller than half the screen opens on its top half, the rest is a drag up
+    val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
     fun close(then: () -> Unit) {
@@ -87,7 +87,7 @@ fun ConfigSheet(
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         ConfigSheetContent(
-            actions = { actions(::close) },
+            actions = actions?.let { { it(::close) } },
             options = options,
             entries = entries?.let { { it(::close) } },
         )
@@ -96,7 +96,7 @@ fun ConfigSheet(
 
 @Composable
 private fun ConfigSheetContent(
-    actions: @Composable RowScope.() -> Unit,
+    actions: (@Composable RowScope.() -> Unit)?,
     options: (@Composable ColumnScope.() -> Unit)?,
     entries: (@Composable ColumnScope.() -> Unit)? = null,
 ) = Column(
@@ -104,12 +104,15 @@ private fun ConfigSheetContent(
         .verticalScroll(rememberScrollState())
         .padding(bottom = 16.dp)
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxWidth(),
-    ) { actions() }
-    if (entries != null || options != null)
-        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    if (actions != null) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth(),
+        ) { actions() }
+        // A sheet of options alone starts on them, the divider only parts them from the buttons
+        if (entries != null || options != null)
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    }
     entries?.invoke(this)
     options?.invoke(this)
 }

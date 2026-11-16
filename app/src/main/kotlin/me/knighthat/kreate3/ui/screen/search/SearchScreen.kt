@@ -57,7 +57,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -110,6 +109,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ItemRow
 import me.knighthat.kreate3.ui.component.LocalTooltipSide
 import me.knighthat.kreate3.ui.component.MessageHost
@@ -306,15 +306,17 @@ private fun SearchInputBar(
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun ConfigSheet(
+private fun SearchSheet(
     origin: Origin,
     origins: List<Origin>,
     onOriginChange: (Origin) -> Unit,
     categories: Set<Tab>,
     onCategoryChange: (Tab, Boolean) -> Unit,
     onDismiss: () -> Unit,
-) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+) = ConfigSheet(
+    onDismiss = onDismiss,
+    actions = null,
+    options = {
         SectionTitle(stringResource(R.string.section_header_source))
         CenteredPicker(
             items = origins,
@@ -345,9 +347,10 @@ private fun ConfigSheet(
                 }
             }
         }
-        Spacer(Modifier.height(24.dp))
-    }
-}
+        // 24 dp under the chips with the sheet's own 16
+        Spacer(Modifier.height(8.dp))
+    },
+)
 
 /**
  * What kind of item a suggestion is, so rows of different kinds can share one list.
@@ -660,7 +663,7 @@ private fun SearchContent(
     }
 
     if (showConfig)
-        ConfigSheet(
+        SearchSheet(
             origin = origin,
             origins = origins,
             onOriginChange = onOriginChange,
