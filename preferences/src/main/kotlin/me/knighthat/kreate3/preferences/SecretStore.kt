@@ -152,6 +152,37 @@ internal class SecretStore(
     }
 
     /**
+     * Deletes every secret of the active profile, after every read and write asked before.
+     *
+     * @return `false` when it couldn't be saved, which is reported and changes nothing
+     */
+    suspend fun clearAll(): Boolean {
+        val done = CompletableDeferred<Boolean>()
+        tasks.send {
+            try {
+                val profileId = profiles.activeId.value ?: return@send
+                val error = retrying {
+                    storeOf(profileId).edit { secrets ->
+                        secrets.asMap().keys
+                            .filter { it.name != SCHEMA_VERSION_NAME }
+                            .forEach { secrets.remove(it) }
+                    }
+                }
+                if (error != null) {
+                    profiles.reports.report(SECRETS, saving = true, failureReasonOf(error))
+                } else {
+                    states.values.forEach { it.value = "" }
+                    done.complete(true)
+                }
+            } finally {
+                // Nothing completes it on a failure, the queue's own catch included
+                done.complete(false)
+            }
+        }
+        return done.await()
+    }
+
+    /**
      * Saves the values of [MOVED_FROM_PREFERENCES] found in each profile's preferences file as
      * secrets, then takes them out of that file. A profile whose move fails keeps its values
      * there and is tried again at the next start, it isn't reported.

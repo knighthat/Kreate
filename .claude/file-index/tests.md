@@ -23,7 +23,8 @@ Tests mirror the main paths under `src/test/`.
   (Undislike all's and Unlike all's message), playlist/`PlaylistCsvTest` (old and new headers,
   durations, quoting, missing headers, grouping, `LocalMatcher`).
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
-  repository/ `HistoryRepositoryTest`, `StatisticsRepositoryTest`, `LocalCatalogRepositoryTest`,
+  repository/ `CleanupRepositoryTest`, `HistoryRepositoryTest`, `StatisticsRepositoryTest`,
+  `LocalCatalogRepositoryTest`,
   `MappersTest`,
   `PlaylistRepositoryTest`, `PlaylistImportRepositoryTest`, `RemoteCatalogRepositoryTest`,
   `SearchPatternTest`,

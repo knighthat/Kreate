@@ -255,4 +255,21 @@ class SecretStoreTest {
         password.update("saved")
         assertEquals("saved", runBlocking { password.current() })
     }
+
+    @Test
+    fun clearAllDeletesEverySecretOfTheProfile() {
+        val first = store.secret("first")
+        val second = store.secret("second")
+        first.update("a")
+        second.update("b")
+        eventually { first.value == "a" && second.value == "b" }
+
+        assertTrue(runBlocking { withTimeout(5_000) { store.clearAll() } })
+        assertEquals("", first.value)
+        assertEquals("", second.value)
+
+        restart()
+        assertEquals("", runBlocking { withTimeout(5_000) { store.current("first") } })
+        assertEquals("", runBlocking { withTimeout(5_000) { store.current("second") } })
+    }
 }

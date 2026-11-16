@@ -54,6 +54,7 @@ import me.knighthat.kreate3.ui.screen.home.HomeSongsViewModel
 import me.knighthat.kreate3.ui.screen.recognition.SongRecognitionViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchResultsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchViewModel
+import me.knighthat.kreate3.ui.screen.settings.SettingsViewModel
 import me.knighthat.kreate3.ui.screen.settings.about.OpenSourceLicensesViewModel
 import me.knighthat.kreate3.ui.screen.settings.backup.BackupViewModel
 import me.knighthat.kreate3.ui.screen.settings.data.DataSettingsViewModel
@@ -101,6 +102,7 @@ val viewModelModule = module {
     viewModelOf(::YouTubeMoreViewModel)
     viewModelOf(::YouTubeAccountViewModel)
     viewModelOf(::DataSettingsViewModel)
+    viewModelOf(::SettingsViewModel)
     viewModelOf(::YouTubePlaylistDetailViewModel)
 
     viewModelOf(::OpenSubsonicSettingsViewModel)

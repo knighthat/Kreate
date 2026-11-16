@@ -20,6 +20,7 @@ package me.knighthat.kreate3.presence
 
 import io.ktor.client.HttpClient
 import me.knighthat.kreate3.BuildConfig
+import me.knighthat.kreate3.ServiceSignOut
 import me.knighthat.kreate3.discord.DiscordAuth
 import me.knighthat.kreate3.discord.DiscordClient
 import me.knighthat.kreate3.provider.HttpClientFactory
@@ -59,6 +60,8 @@ fun presenceModule(isSetup: Boolean) = module {
     }
     single { DiscordClient(get<HttpClient>(DISCORD_HTTP), BuildConfig.DISCORD_APP_ID) }
     single { DiscordAccount(androidContext(), get(), get(), get(), get()) }
+    // A settings reset signs out of Discord, telling it the tokens won't be used again
+    single<ServiceSignOut>(named("discord")) { ServiceSignOut { get<DiscordAccount>().forget() } }
     // Covers go to litterbox through the app's client, like any request of the app
     single { CoverUploads(androidContext(), get()) }
     single(createdAtStart = isSetup) {

@@ -87,4 +87,12 @@ object Secrets : KoinComponent {
 
     /** When [DISCORD_ACCESS_TOKEN] runs out, in seconds since the epoch, as text. */
     val DISCORD_TOKEN_EXPIRES by lazy { store.secret("discord_token_expires") }
+
+    /**
+     * Deletes every secret of the active profile: it is signed out of everything. Nothing is told
+     * to the services, a sign out that should tell one does so first.
+     *
+     * @return `false` when it couldn't be saved, which is reported and changes nothing
+     */
+    suspend fun clearAll(): Boolean = store.clearAll()
 }

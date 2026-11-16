@@ -24,6 +24,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import me.knighthat.kreate3.database.dao.AlbumDao
 import me.knighthat.kreate3.database.dao.ArtistDao
+import me.knighthat.kreate3.database.dao.CleanupDao
 import me.knighthat.kreate3.database.dao.LyricsDao
 import me.knighthat.kreate3.database.dao.PersistentQueueDao
 import me.knighthat.kreate3.database.dao.PlaybackHistoryDao
@@ -93,6 +94,8 @@ internal abstract class AppDatabase : RoomDatabase() {
     abstract fun albumDao(): AlbumDao
 
     abstract fun artistDao(): ArtistDao
+
+    abstract fun cleanupDao(): CleanupDao
 
     abstract fun lyricsDao(): LyricsDao
 

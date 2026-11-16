@@ -175,6 +175,49 @@ fun SettingsItem(
 }
 
 /**
+ * A row that does something hard to undo: a tap asks first, with [dialogTitle] and [dialogBody],
+ * and [onConfirm] runs once the user picks [action]. While not [enabled] the row is dimmed and
+ * taps do nothing.
+ */
+@Composable
+fun ConfirmSetting(
+    title: String,
+    summary: String,
+    dialogTitle: String,
+    dialogBody: String,
+    action: String,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    var asking by remember { mutableStateOf(false) }
+    SettingsItem(
+        title = title,
+        modifier = if (enabled) modifier else modifier.alpha(DISABLED_ALPHA),
+        summary = summary,
+        onClick = if (enabled) ({ asking = true }) else null,
+    )
+
+    if (asking)
+        AlertDialog(
+            onDismissRequest = { asking = false },
+            title = { Text(dialogTitle) },
+            text = { Text(dialogBody) },
+            confirmButton = {
+                TextButton(onClick = {
+                    asking = false
+                    onConfirm()
+                }) { Text(action) }
+            },
+            dismissButton = {
+                TextButton(onClick = { asking = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+}
+
+/**
  * A setting that is on or off, a tap anywhere on the row flips it. While not [enabled] the row is
  * dimmed and taps do nothing, the setting keeps its value, unless [onDisabledClick] says what a
  * tap does then (e.g. asking for what the setting needs).

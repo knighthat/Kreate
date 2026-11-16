@@ -317,7 +317,11 @@ ui/screen/
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.
 - settings/ — one subpackage per page; shared bits stay at the root: `SettingsScreen.kt` (page
-  list), `SettingsComponents.kt` (SettingsPage (top bar actions + restart-app button with confirm
+  list, then Reset to default) + `SettingsViewModel.kt` (`reset`: every `ServiceSignOut`,
+  `Secrets.clearAll`, `Preferences.reset`, deletes the profile's fonts, device language when it had
+  its own), `SettingsComponents.kt` (`ConfirmSetting`
+  (row whose tap asks in a dialog first), SettingsPage (top bar actions + restart-app button with
+  confirm
   dialog)/Section, MainSwitch (page-top switch), SettingsSummary (row text: title 1 line, summary
   2), Switch/Choice/Radio/Number/Text settings, Slider setting (`StopSlider`, optional end icons),
   SecondSetting/MinuteSetting/PercentSetting/CountSetting/LufsSetting/PixelSetting (slider rows
@@ -341,7 +345,10 @@ ui/screen/
     stored asks first (Turn it off? / Smaller…, Apply, Apply & restart for caches, Cancel); default
     profile only: Clear / Delete each, confirmed (`SongCaches.clear`, Coil `diskCache.clear` +
     memory cache when ticked, `SongDownloads.deleteAll`); then Downloads and Images (memory cache)
-    settings), `player/PlayerSettingsScreen.kt` (player behavior/UI
+    settings; Database: Clear search history, Clear listening history (active
+    user; `clearPlays`, Undo puts them back), Clean up database (grayed out with a
+    note for other profiles, `CleanupRepository`, deletes removed playlists' picked pictures)),
+    `player/PlayerSettingsScreen.kt` (player behavior/UI
   only: Queue incl. preload slider, failure action + stall limit, Sound (even out loudness switch,
   target loudness slider), Buffering (load ahead incl.
   Unlimited / before

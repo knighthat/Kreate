@@ -33,7 +33,8 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:
   shared value; songs with `unavailable_since` hidden).
 - dao/ — one DAO per table (internal). `UserPlaylistDao.kt` also has `UserPlaylistRow` (a
-  playlist + its `covers` JSON, for `PlaylistRepository.all`).
+  playlist + its `covers` JSON, for `PlaylistRepository.all`). `CleanupDao.kt` has no table of its
+  own: deletes unused rows of every user for `CleanupRepository` (`EmptyPlaylistRow`).
 - model/ — public models mirroring entities/views (`Origin`/`LyricsSync` now come from `:model`);
   `ReleaseType.kt` (album/EP/single, read from the source, never stored);
   `SourceSong.kt` (a song with its credited artists' ids and shared names in credit order
@@ -63,7 +64,11 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
   else is kept, else `NULL`; `fileThumbnails()`; per-user downloads via `user_song.downloaded_at`:
   `downloadedIds()` (active), `downloadedByAnyone()`, `forgetDownload(songId, cover, everyUser)`,
   `updateDownloaders`),
-  `UserAlbum`, `UserArtist`, `LocalCatalog` (sync scan results), `RemoteCatalog` (`RemoteSong`,
+  `UserAlbum`, `UserArtist`, `Cleanup` (Data settings' Clean up database: every user's unchanged,
+  unplayed library rows outside their playlists, unchanged albums/artists, empty playlists (their
+  pictures returned for the app to delete), then songs/albums/artists nobody keeps; device items
+  left to the scan, songs with FILE lyrics kept; VACUUM after), `LocalCatalog` (sync scan results),
+  `RemoteCatalog` (`RemoteSong`,
   `RemoteItem`; liked-song sync from servers; `replaceSong` moves an old id's rows to the song
   published in its place, `SongReplacement`), `PlaylistImport`
   (`ImportedPlaylist`, `ImportedCredits`; `importPlaylist` makes one local playlist from a file's

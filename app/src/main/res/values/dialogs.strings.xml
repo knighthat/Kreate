@@ -131,4 +131,13 @@
     <!-- Under a big microphone button that listens while held -->
     <string name="dialog_body_recognize_song_hold">Hold the button while the song plays for at least %1$s</string>
     <string name="dialog_body_recognize_song_listening">Listening…</string>
+    <string name="dialog_title_reset_settings">Reset settings?</string>
+    <!-- "Storage sizes" are the cache and download sizes of the Data settings, shared by every profile -->
+    <string name="dialog_body_reset_settings">Every setting of this profile goes back to its default and it is signed out of every account and server. Storage sizes stay.</string>
+    <string name="dialog_title_clear_search_history">Clear search history?</string>
+    <string name="dialog_body_clear_search_history">Every search this profile made is forgotten.</string>
+    <string name="dialog_title_clear_listening_history">Clear listening history?</string>
+    <string name="dialog_body_clear_listening_history">Every song this profile played is taken out of its history, and its statistics start over.</string>
+    <string name="dialog_title_clean_up_database">Clean up the database?</string>
+    <string name="dialog_body_clean_up_database">For every profile: songs never played or changed and in no playlist, albums and artists never changed, and playlists without songs are removed. Songs on the device stay.</string>
 </resources>

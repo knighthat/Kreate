@@ -29,6 +29,8 @@ import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.AlbumRepositoryImpl
 import me.knighthat.kreate3.database.repository.ArtistRepository
 import me.knighthat.kreate3.database.repository.ArtistRepositoryImpl
+import me.knighthat.kreate3.database.repository.CleanupRepository
+import me.knighthat.kreate3.database.repository.CleanupRepositoryImpl
 import me.knighthat.kreate3.database.repository.HistoryRepository
 import me.knighthat.kreate3.database.repository.HistoryRepositoryImpl
 import me.knighthat.kreate3.database.repository.LocalCatalogRepository
@@ -121,6 +123,7 @@ val databaseModule = module {
 
     single { get<AppDatabase>().albumDao() }
     single { get<AppDatabase>().artistDao() }
+    single { get<AppDatabase>().cleanupDao() }
     single { get<AppDatabase>().lyricsDao() }
     single { get<AppDatabase>().persistentQueueDao() }
     single { get<AppDatabase>().playbackHistoryDao() }
@@ -147,4 +150,5 @@ val databaseModule = module {
     singleOf(::SongRepositoryImpl) bind SongRepository::class
     singleOf(::UserSongRepositoryImpl) bind UserSongRepository::class
     singleOf(::UserRepositoryImpl) bind UserRepository::class
+    singleOf(::CleanupRepositoryImpl) bind CleanupRepository::class
 }

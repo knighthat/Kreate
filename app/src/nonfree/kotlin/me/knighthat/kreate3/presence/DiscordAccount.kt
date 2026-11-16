@@ -174,13 +174,19 @@ class DiscordAccount internal constructor(
 
     /** Signs the active profile out, telling Discord the tokens won't be used again. */
     fun signOut() {
-        scope.launch {
-            val kept = load()
-            clear()
-            user.value = null
-            Logger.i(tag = TAG) { "Signed out of Discord" }
-            kept?.let { auth.revoke(it) }
-        }
+        scope.launch { forget() }
+    }
+
+    /**
+     * Like [signOut], returning once the tokens are forgotten; Discord is told afterwards on the
+     * app's scope.
+     */
+    internal suspend fun forget() {
+        val kept = load()
+        clear()
+        user.value = null
+        Logger.i(tag = TAG) { "Signed out of Discord" }
+        kept?.let { scope.launch { auth.revoke(it) } }
     }
 
     /**

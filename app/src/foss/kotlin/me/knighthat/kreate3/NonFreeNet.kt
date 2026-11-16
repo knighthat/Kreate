@@ -19,7 +19,9 @@
 package me.knighthat.kreate3
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.ProfileManager
@@ -38,17 +40,21 @@ fun nonFreeNetModules(isSetup: Boolean): List<Module> = listOf(
 
 /**
  * Turns off [Preferences.DISCORD_ENABLED] and [Preferences.SHAZAM_ENABLED] in the active profile,
- * at start and after each switch to another profile, so the settings say what the foss build does.
+ * at start, after each switch to another profile and whenever they come back on (a reset to
+ * defaults), so the settings say what the foss build does.
  */
 class NonFreeNetOff(profileManager: ProfileManager, scope: CoroutineScope) {
 
     init {
         scope.launch {
-            profileManager.activeId.filterNotNull().collect { id ->
+            profileManager.activeId.filterNotNull().collectLatest { id ->
                 // Written before the profile's own values are in, they would be replaced by them
                 Preferences.awaitProfile(id)
-                Preferences.DISCORD_ENABLED.update(false)
-                Preferences.SHAZAM_ENABLED.update(false)
+                merge(Preferences.DISCORD_ENABLED.state, Preferences.SHAZAM_ENABLED.state)
+                    .collect {
+                        Preferences.DISCORD_ENABLED.update(false)
+                        Preferences.SHAZAM_ENABLED.update(false)
+                    }
             }
         }
     }

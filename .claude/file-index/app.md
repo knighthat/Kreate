@@ -32,10 +32,13 @@ Root
   `KreateApp(openRoute)`, which collapses the player and pushes it; anything else →
   `error_open_link`.
 - `ProfilesActivity.kt` — list/add/switch/delete profiles.
+- `ServiceSignOut.kt` — sign out of a service that must be told first; every Koin one runs before
+  a settings reset deletes the profile's secrets (Discord's in nonfree).
 - `NonFreeNet.kt` — two copies, one per platform set: `app/src/nonfree/…` (github, patreon:
   `nonFreeNetModules(isSetup)` = `presenceModule` + `shazamModule` + the `SongRecognizer` binding)
   and `app/src/foss/…` (`NonFreeNetOff`, created at start: turns `DISCORD_ENABLED` and
-  `SHAZAM_ENABLED` off in each profile once it's active and loaded); `KreateApplication` adds them.
+  `SHAZAM_ENABLED` off in each profile once it's active and loaded, and again whenever they come
+  back on, like after a settings reset); `KreateApplication` adds them.
   `BuildConfig.NON_FREE_NET` says
   which build it is. `app/src/foss/AndroidManifest.xml` removes `DiscordCallbackActivity`,
   `DiscordSignInActivity` and
@@ -45,13 +48,16 @@ Root
   of foss. `PresenceState` is registered in `KreateApplication` for every build.
   `PresenceModule.kt` (`presenceModule(isSetup)`: a Ktor client without read timeout through the
   network proxy (named `discord`), `DiscordAuth`/`DiscordClient` with `BuildConfig.DISCORD_APP_ID` /
-  `DISCORD_REDIRECT_URI`, `DiscordPresence` created at start once set up), `DiscordAccount.kt`
+  `DISCORD_REDIRECT_URI`, `DiscordPresence` created at start once set up, a `ServiceSignOut` named
+  `discord` calling
+  `DiscordAccount.forget`), `DiscordAccount.kt`
   (tokens in `Secrets.DISCORD_*`; `access(profile, force)` refreshes a day ahead or when the gateway
   refused it, saves only while that profile is active, forgets them on `invalid_grant` and posts
   the signed-out notice;
   `DiscordAccountState`; `start` → URL to open,
   `finish(uri)` from the callback, `abandon` on resume without an answer, `refreshUser` once per
-  profile, `signOut` revokes), `DiscordCallbackActivity.kt` (exported, `kreate3://discord/callback`,
+  profile, `signOut` revokes, `forget` = the same, returning once forgotten),
+  `DiscordCallbackActivity.kt` (exported, `kreate3://discord/callback`,
   own task, hands the answer over and brings `KreateActivity` back),
   `DiscordSignInNotification.kt` (OTHER channel, id 8000: "Signed out of Discord" with a Sign in
   button, taken back on a finished sign in), `DiscordSignInActivity.kt` (not exported, the button's

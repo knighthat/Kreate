@@ -716,6 +716,15 @@ object Preferences : KoinComponent {
     suspend fun awaitProfile(profileId: String) = engine.awaitProfile(profileId)
 
     /**
+     * Takes every setting of the active profile back to its default, except the accepted
+     * [TOS_CHECKSUM]. [GlobalPreferences] and [Secrets] stay as they are, see
+     * [Secrets.clearAll]. Files a setting points at (fonts) are the caller's to delete.
+     *
+     * @return `false` when it couldn't be saved, which is reported and changes nothing
+     */
+    suspend fun reset(): Boolean = engine.reset(setOf(TOS_CHECKSUM.name))
+
+    /**
      * Saves pending changes now, those of [GlobalPreferences] too, call it when the app is about to
      * close.
      */

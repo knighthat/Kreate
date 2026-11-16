@@ -74,6 +74,7 @@ internal class PreferenceEngine(
         class Dirty(val preference: Preference<*>) : Command
         class Switch(val profileId: String) : Command
         class Flush(val done: CompletableDeferred<Boolean>) : Command
+        class Reset(val keep: Set<String>, val done: CompletableDeferred<Boolean>) : Command
     }
 
     private val commands = Channel<Command>(Channel.UNLIMITED)
@@ -142,6 +143,18 @@ internal class PreferenceEngine(
         return done.await()
     }
 
+    /**
+     * Takes every setting of the active profile back to its default, except those named in
+     * [keep]. Pending changes are saved first.
+     *
+     * @return `false` when it couldn't be saved, which is reported and changes nothing
+     */
+    suspend fun reset(keep: Set<String>): Boolean {
+        val done = CompletableDeferred<Boolean>()
+        commands.send(Command.Reset(keep, done))
+        return done.await()
+    }
+
     private suspend fun process() {
         val dirty = mutableSetOf<Preference<*>>()
         var profileId: String? = null
@@ -157,6 +170,11 @@ internal class PreferenceEngine(
                 null -> write(profileId, dirty)
                 is Command.Dirty -> dirty += command.preference
                 is Command.Flush -> command.done.complete(write(profileId, dirty))
+
+                is Command.Reset -> {
+                    write(profileId, dirty)
+                    command.done.complete(reset(profileId, command.keep))
+                }
 
                 is Command.Switch -> {
                     write(profileId, dirty)
@@ -187,6 +205,23 @@ internal class PreferenceEngine(
         batch.forEach { it.revert(failed = changes[it.name], stored = saved[it.name]) }
         report(saving = true, error)
         return false
+    }
+
+    /** @return `false` when it couldn't be saved */
+    private suspend fun reset(profileId: String?, keep: Set<String>): Boolean {
+        if (profileId == null) return false
+
+        val removed = saved.keys.filter { it !in keep }.associateWith { null }
+        if (removed.isEmpty()) return true
+
+        val error = retrying { storage.write(profileId, removed) }
+        if (error != null) {
+            report(saving = true, error)
+            return false
+        }
+        saved -= removed.keys
+        publish(Snapshot(saved.toMap(), profileId))
+        return true
     }
 
     private suspend fun load(profileId: String) {

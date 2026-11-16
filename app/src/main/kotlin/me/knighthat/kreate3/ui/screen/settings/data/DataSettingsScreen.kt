@@ -63,6 +63,7 @@ import me.knighthat.kreate3.ui.component.StopSlider
 import me.knighthat.kreate3.ui.component.StorageUsage
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
+import me.knighthat.kreate3.ui.screen.settings.ConfirmSetting
 import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.DISABLED_ALPHA
 import me.knighthat.kreate3.ui.screen.settings.PercentSetting
@@ -107,8 +108,9 @@ private fun songDownloadSizes(binary: Boolean): List<Long> =
 /**
  * What the app keeps on the device: how full the device is and the app's part of it, the room the
  * image disk cache, the song cache and the song downloads take with their sizes, which the default
- * profile can also wipe, then how songs download and the image memory cache. The sizes and the
- * memory cache are [GlobalPreferences], only the default profile changes them.
+ * profile can also wipe, then how songs download and the image memory cache, then clearing the
+ * search and listening histories and cleaning up the database (default profile only). The sizes
+ * and the memory cache are [GlobalPreferences], only the default profile changes them.
  */
 @Composable
 fun DataSettingsScreen(
@@ -158,6 +160,10 @@ fun DataSettingsScreen(
         onClearImageCache = if (defaultProfile) ({ viewModel.clearImageCache(it) }) else null,
         onClearSongCache = if (defaultProfile) ({ viewModel.clearSongCache() }) else null,
         onDeleteAllDownloads = if (defaultProfile) viewModel::deleteAllDownloads else null,
+        onClearSearchHistory = { viewModel.clearSearchHistory() },
+        onClearListeningHistory = { viewModel.clearListeningHistory() },
+        // Every profile's library is cleaned up at once
+        onCleanUpDatabase = if (defaultProfile) ({ viewModel.cleanUpDatabase() }) else null,
         onRestart = { viewModel.restart() },
         onBack = onBack,
         modifier = modifier,
@@ -174,6 +180,8 @@ fun DataSettingsScreen(
  * while it loads and the notes stay hidden
  * @param onClearImageCache `null` while the profile may not wipe, like [onClearSongCache] and
  * [onDeleteAllDownloads]; given whether to clear the memory cache too
+ * @param onCleanUpDatabase `null` while the profile may not clean up, the row is grayed out then,
+ * naming [defaultProfileName]
  * @param onRestart restarts the app, for a smaller cache to apply
  */
 @Composable
@@ -197,6 +205,9 @@ private fun DataSettingsContent(
     onClearImageCache: ((memory: Boolean) -> Unit)?,
     onClearSongCache: (() -> Unit)?,
     onDeleteAllDownloads: (() -> Unit)?,
+    onClearSearchHistory: () -> Unit,
+    onClearListeningHistory: () -> Unit,
+    onCleanUpDatabase: (() -> Unit)?,
     onRestart: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -367,6 +378,42 @@ private fun DataSettingsContent(
             enabled = appWide,
             leadingIcon = { SliderIcon(R.drawable.memory, R.drawable.remove) },
             trailingIcon = { SliderIcon(R.drawable.memory, R.drawable.add) },
+        )
+
+        SettingsSection(stringResource(R.string.setting_header_database))
+        ConfirmSetting(
+            title = stringResource(R.string.setting_title_clear_search_history),
+            summary = stringResource(R.string.setting_description_clear_search_history),
+            dialogTitle = stringResource(R.string.dialog_title_clear_search_history),
+            dialogBody = stringResource(R.string.dialog_body_clear_search_history),
+            action = stringResource(R.string.action_clear),
+            onConfirm = onClearSearchHistory,
+        )
+        ConfirmSetting(
+            title = stringResource(R.string.setting_title_clear_listening_history),
+            summary = stringResource(R.string.setting_description_clear_listening_history),
+            dialogTitle = stringResource(R.string.dialog_title_clear_listening_history),
+            dialogBody = stringResource(R.string.dialog_body_clear_listening_history),
+            action = stringResource(R.string.action_clear),
+            onConfirm = onClearListeningHistory,
+        )
+        val cleanUpDescription = stringResource(R.string.setting_description_clean_up_database)
+        ConfirmSetting(
+            title = stringResource(R.string.setting_title_clean_up_database),
+            summary = if (onCleanUpDatabase != null || defaultProfileName == null) {
+                cleanUpDescription
+            } else {
+                val only = stringResource(
+                    R.string.setting_description_clean_up_database_status_default_profile_only,
+                    stringResource(R.string.quoted, defaultProfileName),
+                )
+                "$cleanUpDescription\n$only"
+            },
+            dialogTitle = stringResource(R.string.dialog_title_clean_up_database),
+            dialogBody = stringResource(R.string.dialog_body_clean_up_database),
+            action = stringResource(R.string.action_clean_up),
+            onConfirm = { onCleanUpDatabase?.invoke() },
+            enabled = onCleanUpDatabase != null,
         )
     }
 }
@@ -645,8 +692,8 @@ private fun sizeLabel(resources: Resources, bytes: Long, binary: Boolean): Strin
 private fun DataSettingsPreview() = PreviewTheme { DataSettingsSample(defaultProfile = true) }
 
 /**
- * Another profile than the default one: nothing can be wiped, no Clear or Delete buttons, and the
- * sizes and the memory cache are read-only.
+ * Another profile than the default one: nothing can be wiped, no Clear or Delete buttons, Clean
+ * up database grayed out, and the sizes and the memory cache are read-only.
  */
 @ScreenPreviews
 @Composable
@@ -683,6 +730,9 @@ private fun DataSettingsSample(defaultProfile: Boolean) {
         onClearImageCache = if (defaultProfile) ({}) else null,
         onClearSongCache = if (defaultProfile) ({}) else null,
         onDeleteAllDownloads = if (defaultProfile) ({}) else null,
+        onClearSearchHistory = {},
+        onClearListeningHistory = {},
+        onCleanUpDatabase = if (defaultProfile) ({}) else null,
         onRestart = {},
         onBack = {},
     )

@@ -37,10 +37,12 @@ import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.UiSettings
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 /**
- * The settings pages to pick from.
+ * The settings pages to pick from, and a row that resets the active profile's settings once
+ * confirmed.
  *
  * @param onOpen called with the route of the page the user picked
  */
@@ -50,6 +52,7 @@ fun SettingsScreen(
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
     profileManager: ProfileManager = koinInject(),
+    viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val activeId by profileManager.activeId.collectAsStateWithLifecycle()
 
@@ -59,6 +62,7 @@ fun SettingsScreen(
         onOpen = onOpen,
         showBackup = activeId == Profile.DEFAULT_ID,
         server = openSubsonicName(),
+        onReset = { viewModel.reset() },
         modifier = modifier,
     )
 }
@@ -70,6 +74,7 @@ private fun SettingsContent(
     onOpen: (Route) -> Unit,
     showBackup: Boolean,
     server: String,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsPage(stringResource(R.string.screen_title_settings), onBack, modifier) {
@@ -113,11 +118,19 @@ private fun SettingsContent(
             summary = stringResource(R.string.setting_description_about),
             onClick = { onOpen(About) },
         )
+        ConfirmSetting(
+            title = stringResource(R.string.setting_title_reset_settings),
+            summary = stringResource(R.string.setting_description_reset_settings),
+            dialogTitle = stringResource(R.string.dialog_title_reset_settings),
+            dialogBody = stringResource(R.string.dialog_body_reset_settings),
+            action = stringResource(R.string.action_reset),
+            onConfirm = onReset,
+        )
     }
 }
 
 @ScreenPreviews
 @Composable
 private fun SettingsPreview() = PreviewTheme {
-    SettingsContent(onBack = {}, onOpen = {}, showBackup = true, server = "Navidrome")
+    SettingsContent(onBack = {}, onOpen = {}, showBackup = true, server = "Navidrome", onReset = {})
 }

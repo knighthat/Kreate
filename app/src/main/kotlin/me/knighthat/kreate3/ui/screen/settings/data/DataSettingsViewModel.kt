@@ -25,6 +25,7 @@ import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
+import co.touchlab.kermit.Logger
 import coil3.SingletonImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,25 +42,34 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.KreateApplication
+import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.CleanupRepository
+import me.knighthat.kreate3.database.repository.HistoryRepository
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.imageCacheDir
+import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.SongCaches
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.source.CoverFiles
+import me.knighthat.kreate3.source.PickedCovers
 import me.knighthat.kreate3.ui.component.StorageUse
 import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.component.storageUse
 import me.knighthat.kreate3.ui.screen.account.WHILE_SHOWN
 import java.io.File
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * The room the image disk cache, the song cache and the song downloads take, looked at again
  * every few seconds while the page shows, and wiping them. The caches are shared by every user,
  * the downloads are told apart by user. [deviceStorage] puts them with the downloaded covers and
- * the lyrics against the device's storage.
+ * the lyrics against the device's storage. Also clears the search and listening histories and
+ * cleans up the database.
  *
  * @param scope the app's global scope, a wipe goes on when the page closes
  */
@@ -70,6 +80,9 @@ class DataSettingsViewModel(
     private val downloads: SongDownloads,
     private val covers: CoverFiles,
     songs: SongRepository,
+    private val history: HistoryRepository,
+    private val cleanup: CleanupRepository,
+    private val notifier: Notifier,
     private val scope: CoroutineScope,
 ) : ViewModel() {
 
@@ -175,6 +188,79 @@ class DataSettingsViewModel(
         downloads.deleteAll()
     }
 
+    /** Forgets every search of the active user, saying how it went. */
+    fun clearSearchHistory() = scope.launch {
+        val message = try {
+            history.clearSearches()
+            R.string.snackbar_search_history_cleared
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't clear the search history" }
+            R.string.snackbar_search_history_not_cleared
+        }
+        notifier.post(context.getString(message))
+    }
+
+    /**
+     * Takes every play of the active user out of the history, saying so with an Undo that puts
+     * them back.
+     */
+    fun clearListeningHistory() = scope.launch {
+        try {
+            val removed = history.clearPlays()
+            val text = context.getString(R.string.snackbar_listening_history_cleared)
+            if (removed.isEmpty()) {
+                notifier.post(text)
+                return@launch
+            }
+            notifier.post(undoMessage(context.resources, text) {
+                scope.launch {
+                    try {
+                        history.restorePlays(removed)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Logger.w(e, TAG) { "Couldn't put back ${removed.size} plays" }
+                    }
+                }
+            })
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't clear the listening history" }
+            notifier.post(context.getString(R.string.snackbar_listening_history_not_cleared))
+        }
+    }
+
+    /**
+     * Deletes what no user keeps, see [CleanupRepository.cleanUp], and the pictures of the
+     * playlists it deleted, saying how it went.
+     */
+    fun cleanUpDatabase() = scope.launch {
+        val message = try {
+            val result = cleanup.cleanUp()
+            withContext(Dispatchers.IO) {
+                result.playlists.forEach {
+                    val owner = PickedCovers.ownerOf(it.playlistId)
+                    if (covers.isPickedBy(it.userId, owner, it.thumbnail))
+                        it.thumbnail?.path?.let(::File)?.delete()
+                }
+            }
+            Logger.i(tag = TAG) { "Cleaned up the database: $result" }
+            if (result.isEmpty)
+                R.string.snackbar_database_nothing_to_clean_up
+            else
+                R.string.snackbar_database_cleaned_up
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.w(e, TAG) { "Couldn't clean up the database" }
+            R.string.snackbar_database_not_cleaned_up
+        }
+        notifier.post(context.getString(message))
+    }
+
     /** Restarts the app once the settings are written, see [KreateApplication.restartAfterPlayback]. */
     fun restart() = scope.launch {
         Preferences.flush()
@@ -197,6 +283,8 @@ class DataSettingsViewModel(
             .stateIn(viewModelScope, WHILE_SHOWN, null)
 
     private companion object {
+        const val TAG = "DataSettings"
+
         /** How often the room of the caches is looked at again, they grow as songs play. */
         const val INTERVAL = 2000L
     }

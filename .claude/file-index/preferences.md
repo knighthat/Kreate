@@ -5,7 +5,9 @@ on
 2026-10-20, verify a path still exists before relying on it. Map of the parts:
 `.claude/file-index.md`.
 
-- `preferences/Preferences.kt` — every setting (`object Preferences`), keys on disk never renamed.
+- `preferences/Preferences.kt` — every setting (`object Preferences`), keys on disk never renamed;
+  `reset()` takes the profile's settings back to defaults, keeping only the ToS checksum
+  (`PreferenceEngine.reset`).
   `Preference.kt` — single setting following the active profile.
 - `preferences/GlobalPreferences.kt` — settings shared by every profile (cache/download sizes, image
   memory cache, log level/rollover/keep, crash log retention), default profile edits them.
@@ -13,7 +15,8 @@ on
   (these + the profile list), its engine, damaged file rebuilt from profile folders.
 - `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens (Discord's OAuth2
   ones too) in
-  `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`).
+  `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`);
+  `Secrets.clearAll` deletes the active profile's (settings reset).
 - `app/res/xml/backup_rules.xml` (API ≤30) + `data_extraction_rules.xml` (API 31+) — backup/transfer
   exclusions (`.claude/rules/storage.md`).
 - `preferences/PreferencesBackup.kt` — preference files for a backup (global + profiles/<id>

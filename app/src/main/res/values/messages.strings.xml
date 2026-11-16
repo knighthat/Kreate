@@ -298,4 +298,12 @@
     <string name="snackbar_recognize_song_no_microphone">Allow the microphone to recognize songs</string>
     <!-- %1$s is a counted plural, e.g. "8 seconds". The Songs tab, or the big microphone button of the song recognition dialog, was let go too early while it listened to name the song playing nearby. Shown as a message and in that dialog -->
     <string name="snackbar_recognize_song_too_short">Too short to recognize, hold for at least %1$s</string>
+    <string name="snackbar_settings_reset">Settings back to default</string>
+    <string name="snackbar_search_history_cleared">Search history cleared</string>
+    <string name="snackbar_search_history_not_cleared">Couldn\'t clear search history</string>
+    <string name="snackbar_listening_history_cleared">Listening history cleared</string>
+    <string name="snackbar_listening_history_not_cleared">Couldn\'t clear listening history</string>
+    <string name="snackbar_database_cleaned_up">Unused data removed</string>
+    <string name="snackbar_database_nothing_to_clean_up">Nothing to clean up</string>
+    <string name="snackbar_database_not_cleaned_up">Couldn\'t clean up the database</string>
 </resources>

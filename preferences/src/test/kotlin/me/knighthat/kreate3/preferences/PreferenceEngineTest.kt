@@ -300,4 +300,43 @@ class PreferenceEngineTest {
 
         eventually { volume.value == 5 }
     }
+
+    @Test
+    fun resetTakesSettingsBackToDefaultsAndKeepsTheNamedOnes() {
+        storage.profiles[Profile.DEFAULT_ID] = mapOf("volume" to 7, "kept" to "yes")
+        start()
+        val volume = volume()
+        val kept = Preference("kept", "", codec<String, String>({ it }, { it }), engine)
+
+        assertTrue(runBlocking { withTimeout(5_000) { engine.reset(setOf("kept")) } })
+
+        assertEquals(5, volume.value)
+        assertEquals("yes", kept.value)
+        assertEquals(mapOf("kept" to "yes"), storage.profiles[Profile.DEFAULT_ID])
+    }
+
+    @Test
+    fun resetSavesPendingChangesFirst() {
+        start()
+        val volume = volume()
+        volume.update(9)
+
+        runBlocking { withTimeout(5_000) { engine.reset(emptySet()) } }
+
+        assertEquals(5, volume.value)
+        assertEquals(emptyMap<String, Any>(), storage.profiles[Profile.DEFAULT_ID].orEmpty())
+    }
+
+    @Test
+    fun aFailedResetChangesNothing() {
+        storage.profiles[Profile.DEFAULT_ID] = mapOf("volume" to 7)
+        start()
+        val volume = volume()
+        storage.failingWrites.set(10)
+
+        assertFalse(runBlocking { withTimeout(5_000) { engine.reset(emptySet()) } })
+
+        assertEquals(7, volume.value)
+        assertEquals(PreferenceFailure.Store.SETTINGS, nextFailure().store)
+    }
 }
