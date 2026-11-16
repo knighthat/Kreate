@@ -50,6 +50,15 @@ maintainer's account on the emulator. The approach follows Metrolist (`.ignore.d
   sent as `mp:<path>`); an asset's URL is
   `https://cdn.discordapp.com/app-assets/{app id}/{asset id}.png`, ids from
   `GET /api/v10/oauth2/applications/{id}/assets` (no sign in).
+- `external-assets` only signs the URL (probed 2026-11-15): it answers at once with a path even
+  for a host that doesn't exist, so it can't tell whether a link works. The path is
+  `external/<signature>/<scheme>/<host>/<path>`, served at `https://media.discordapp.net/<path>`.
+  That proxy fetches the picture on the first view (`last-modified` = that moment, not the
+  registration), serves its cached copy after (`cache-control: public, max-age=31536000`), and
+  caches each size apart: 20 minutes after the source was deleted the size already served still
+  came back, a new size (`?width=256&height=256`) gave `404 Invalid resource`. An unreachable
+  host gives `502`. So the source must stay up as long as a presence may show it; how long a
+  served size survives is unknown.
 - Leaving on purpose closes with 1000 (the presence goes at once); other closes use 4000 to keep
   the session resumable.
 
