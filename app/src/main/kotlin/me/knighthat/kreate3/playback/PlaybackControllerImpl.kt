@@ -247,7 +247,7 @@ class PlaybackControllerImpl(
                     .sendCustomCommand(PlayNextCommand.COMMAND, PlayNextCommand.args(items))
                     .await()
                 if (result.resultCode != SessionResult.RESULT_SUCCESS)
-                    Logger.w(TAG) { "The service refused to add items next: ${result.resultCode}" }
+                    Logger.w(tag = TAG) { "The service refused to add items next: ${result.resultCode}" }
             } else {
                 controller.addMediaItems(at, items)
             }

@@ -26,9 +26,9 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import co.touchlab.kermit.Logger
@@ -174,10 +174,10 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
             .setArtworkUri(cover)
             .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
             .setExtras(
-                bundleOf(
-                    EXTRA_ORIGIN to address.getQueryParameter(ORIGIN),
-                    EXTRA_ALBUM_ID to address.getQueryParameter(ALBUM),
-                )
+                Bundle().apply {
+                    putString(EXTRA_ORIGIN, address.getQueryParameter(ORIGIN))
+                    putString(EXTRA_ALBUM_ID, address.getQueryParameter(ALBUM))
+                }
             )
             .build()
         val item = MediaItem.Builder().setMediaId(song).setMediaMetadata(metadata).build()

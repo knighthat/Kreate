@@ -20,6 +20,7 @@ package me.knighthat.kreate3.auto
 
 import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
@@ -59,7 +60,10 @@ class ServedArtworkTest {
                 MediaMetadata.Builder()
                     .setArtworkUri(cover?.toUri())
                     .setExtras(
-                        bundleOf(EXTRA_ORIGIN to origin?.name, EXTRA_ALBUM_ID to album)
+                        Bundle().apply {
+                            putString(EXTRA_ORIGIN, origin?.name)
+                            putString(EXTRA_ALBUM_ID, album)
+                        }
                     )
                     .build()
             )
@@ -116,7 +120,7 @@ class ServedArtworkTest {
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
-                    .setExtras(bundleOf(EXTRA_ORIGIN to Origin.LOCAL.name))
+                    .setExtras(Bundle().apply { putString(EXTRA_ORIGIN, Origin.LOCAL.name) })
                     .build()
             )
             .build()

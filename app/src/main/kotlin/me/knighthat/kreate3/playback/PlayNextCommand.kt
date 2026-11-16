@@ -20,9 +20,9 @@ package me.knighthat.kreate3.playback
 
 import android.os.Bundle
 import androidx.annotation.OptIn
-import androidx.core.os.BundleCompat
 import androidx.media3.common.BundleListRetriever
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaLibraryInfo
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.SessionCommand
 
@@ -40,16 +40,18 @@ internal object PlayNextCommand {
 
     /** Arguments of [COMMAND] for [items], handed over like Media3 hands over a queue. */
     fun args(items: List<MediaItem>): Bundle = Bundle().apply {
-        BundleCompat.putBinder(
-            this,
+        putBinder(
             KEY_ITEMS,
-            BundleListRetriever(items.map(MediaItem::toBundleIncludeLocalConfiguration))
+            BundleListRetriever(
+                items.map { it.toBundleIncludeLocalConfiguration(MediaLibraryInfo.INTERFACE_VERSION) }
+            )
         )
     }
 
     /** The items [args] carries, `null` when it carries none. */
     fun itemsOf(args: Bundle): List<MediaItem>? {
-        val binder = BundleCompat.getBinder(args, KEY_ITEMS) ?: return null
-        return BundleListRetriever.getList(binder).map(MediaItem::fromBundle)
+        val binder = args.getBinder(KEY_ITEMS) ?: return null
+        return BundleListRetriever.getList(binder)
+            .map { MediaItem.fromBundle(it, MediaLibraryInfo.INTERFACE_VERSION) }
     }
 }

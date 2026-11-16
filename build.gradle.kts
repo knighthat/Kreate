@@ -27,3 +27,10 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.aboutlibraries.android) apply false
 }
+// Calling a deprecated function fails the build instead of warning. A call that can't avoid one
+// (e.g. an old API kept for older Android versions) is marked @Suppress("DEPRECATION")
+subprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+        compilerOptions.freeCompilerArgs.add("-Xwarning-level=DEPRECATION:error")
+    }
+}

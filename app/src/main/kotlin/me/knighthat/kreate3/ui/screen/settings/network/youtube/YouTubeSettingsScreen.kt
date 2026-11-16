@@ -63,6 +63,7 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
 import org.koin.androidx.compose.koinViewModel
 import java.text.Collator
+import java.util.IllformedLocaleException
 import java.util.Locale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -353,7 +354,12 @@ private fun RegionSetting(region: String) {
 }
 
 private fun name(region: String, locale: Locale): String =
-    Locale("", region).getDisplayCountry(locale)
+    try {
+        Locale.Builder().setRegion(region).build().getDisplayCountry(locale)
+    } catch (_: IllformedLocaleException) {
+        // Not a code Locale knows, shown as it is
+        region
+    }
 
 /**
  * The settings of while someone is [signedIn], with Original, or of while nobody is. Each keeps
