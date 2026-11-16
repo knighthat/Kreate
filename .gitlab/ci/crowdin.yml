@@ -12,7 +12,7 @@
 #
 # Both name the Crowdin branch after the git branch. A scheduled pipeline always starts from the
 # default branch; pick another one in Build > Pipelines > New pipeline, together with the variable
-# CROWDIN_ACTION (upload or download, download when left out).
+# CROWDIN_ACTION (upload or download, download when left out; release is crowdin-release.yml's).
 #
 # Needs the CI/CD variables CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN (masked) and
 # CROWDIN_DEPLOY_KEY (type File, the private half of a deploy key with write access). The public
