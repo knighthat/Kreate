@@ -273,12 +273,16 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
         // Each profile's language, a restored one too
         AppLanguage.follow(this, get(), get())
+        // Texts translated since the build, not in foss
+        TranslationUpdates.init(this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         // A language picked in the system's settings while the app runs
         AppLanguage.takeFromSystem(this)
+        // A switch of language checks its texts
+        TranslationUpdates.check(this)
     }
 }
 

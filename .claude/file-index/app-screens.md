@@ -350,10 +350,13 @@ ui/screen/
     `AUTO_*_TAP` choices and a Voice search row), `player/VoiceSearchSettingsScreen.kt` (voice
     search origins: drag to reorder via `ReorderableColumn`, switch to skip; OpenSubsonic dimmed,
     not movable or switchable while `OPEN_SUBSONIC_ENABLED` is off),
-    `ui/UiSettingsScreen.kt` (theme, contrast; language + "Translate this language" and
+    `ui/UiSettingsScreen.kt` (theme, contrast; language row opening `LanguageSettings` + "Translate
+    this language" and
     "Request new language" rows (both open the Crowdin project; translate hidden while System or
     English is picked); Layout: icon only, playlist
     initial, binary units; Font: `FontSettings`; app icon),
+    `ui/LanguageSettingsScreen.kt` (radio list of System + `AppLanguage.available`; patreon
+    (`BuildConfig.PREBUILT_LANGUAGES` false) shows a literal "No translation available" instead),
     `ui/FontSettings.kt` (App font / Lyrics font rows, `ButtonSetting`, Reset shown only once a
     font is kept: tap → file picker (.ttf/.otf by name) → `FontFiles.stage` →
     `FontPreview` route for an answer → Save keeps it (`FontFiles.keep`, preference set), Back

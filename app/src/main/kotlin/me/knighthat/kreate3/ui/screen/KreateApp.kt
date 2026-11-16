@@ -108,6 +108,7 @@ import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.FontPreview
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.History
+import me.knighthat.kreate3.ui.navigation.LanguageSettings
 import me.knighthat.kreate3.ui.navigation.LegacyDownloadsSelect
 import me.knighthat.kreate3.ui.navigation.Liked
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
@@ -214,6 +215,7 @@ import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeSignInScre
 import me.knighthat.kreate3.ui.screen.settings.player.PlayerSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.player.VoiceSearchSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.FontPreviewScreen
+import me.knighthat.kreate3.ui.screen.settings.ui.LanguageSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.UiSettingsScreen
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.LocalLyricsFont
@@ -232,7 +234,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
-        Settings, GeneralSettings, DataSettings, PlayerSettings, VoiceSearchSettings, UiSettings, NetworkSettings, YouTubeSettings,
+        Settings, GeneralSettings, DataSettings, PlayerSettings, VoiceSearchSettings, UiSettings, LanguageSettings, NetworkSettings, YouTubeSettings,
         OpenSubsonicSettings, OpenSubsonicSignIn, DiscordSettings, BackupSettings, About, OpenSourceLicenses, YouTubeSignIn,
         Search -> false
 
@@ -685,7 +687,21 @@ fun KreateApp(
                                                 topLevel::pop
                                             )
                                         }
-                                        entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
+                                        entry<UiSettings> {
+                                            UiSettingsScreen(
+                                                onBack = topLevel::pop,
+                                                onOpenLanguages = {
+                                                    topLevel.push(
+                                                        LanguageSettings
+                                                    )
+                                                },
+                                            )
+                                        }
+                                        entry<LanguageSettings> {
+                                            LanguageSettingsScreen(
+                                                topLevel::pop
+                                            )
+                                        }
                                         entry<FontPreview> {
                                             FontPreviewScreen(
                                                 it.key,

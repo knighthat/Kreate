@@ -59,8 +59,8 @@ download:
     # BRANCH_l10n belongs to Crowdin: it is rebuilt from BRANCH every run, whatever it held before
     - git checkout -B "${BRANCH}_l10n"
     # Every translation comes fresh from Crowdin: the files crowdin.yml writes go first, English
-    # (values/, en-US/) and the other resources in values-*/ (values-night/) stay
-    - find app/src/main/res -path 'app/src/main/res/values-*/*' \( -name '*.strings.xml' -o -name plurals.xml \) -delete
+    # (values/, en-US/) and the other resources stay
+    - find app/src/crowdin/res -path 'app/src/crowdin/res/values-*/*' \( -name '*.strings.xml' -o -name plurals.xml \) -delete
     - find fastlane/metadata/android -mindepth 2 -maxdepth 2 ! -path '*/en-US/*' \( -name full_description.txt -o -name short_description.txt \) -delete
     # A file that isn't fully translated comes down too, with its translated texts only, whatever
     # the project settings say: without it Crowdin left those files out and the step above deleted them

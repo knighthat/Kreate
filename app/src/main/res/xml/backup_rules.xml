@@ -36,4 +36,15 @@
     <exclude
         domain="external"
         path="crashlogs" />
+    <!-- Texts delivered by the Crowdin SDK and when they were last checked (TranslationUpdates,
+         patreon only), a new install fetches them again -->
+    <exclude
+        domain="sharedpref"
+        path="com.crowdin.platform.string.preferences.xml" />
+    <exclude
+        domain="sharedpref"
+        path="com.crowdin.platform.string.repository.xml" />
+    <exclude
+        domain="sharedpref"
+        path="translation_checks.xml" />
 </full-backup-content>

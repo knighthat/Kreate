@@ -9,8 +9,9 @@ paths:
 What stays a literal: `ui.md`.
 
 Only the English source files (`values/*.xml`) are edited here. Translations come from Crowdin
-(`crowdin.yml`) and are merged into `values-*/` from the `*_l10n` branches; never touch a
-`values-*/` file, not even when a key is removed, renamed or merged: Crowdin follows the source at
+(`crowdin.yml`) and are merged into `app/src/crowdin/res/values-*/` (foss and github only,
+patreon ships none) from the `*_l10n` branches; never touch a `values-*/` file there, not even when
+a key is removed, renamed or merged: Crowdin follows the source at
 its next sync.
 
 ## Files

@@ -40,10 +40,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Translations aren't in the repo, they are merged into res/ before each release
-        // (crowdin.yml). This only counts the supported languages: English and every folder with
-        // texts, "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
-        val languages = file("src/main/res")
+        // Translations are merged into src/crowdin/res/ before each release (crowdin.yml), a
+        // resource dir of foss and github only. This only counts the supported languages: English
+        // and every folder with texts, "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
+        val languages = file("src/crowdin/res")
             .listFiles { dir ->
                 dir.name.startsWith("values-")
                         && dir.listFiles { f -> f.name.endsWith(".strings.xml") }.orEmpty()
@@ -63,6 +63,8 @@ android {
             "LANGUAGES",
             "\"${(listOf("en") + languages.sorted()).joinToString(",")}\""
         )
+        // Whether the language page lists the languages above, patreon's will come from Crowdin
+        buildConfigField("boolean", "PREBUILT_LANGUAGES", "true")
 
         // Kreate's app on Discord's developer portal, a public client: the id isn't a secret.
         // The redirect is set on the portal too, and in the manifest's DiscordCallbackActivity
@@ -123,6 +125,9 @@ android {
             versionNameSuffix = "+$name"
             buildConfigField("String", "HOMEPAGE_URL", "\"https://patreon.com/knighthat\"")
             buildConfigField("boolean", "NON_FREE_NET", "true")
+            buildConfigField("boolean", "PREBUILT_LANGUAGES", "false")
+            // Has no translations in its APK (src/crowdin stays out)
+            buildConfigField("String", "LANGUAGES", "\"en\"")
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
@@ -151,12 +156,20 @@ android {
     }
 
     // What talks to non-free network services (Discord's presence, Shazam's recognition), in every
-    // platform but foss, which has its own src/foss in their place. Stays after productFlavors:
+    // platform but foss, which has its own src/foss in their place. Crowdin's texts translated after
+    // the build are patreon's own (src/patreon). Stays after
+    // productFlavors:
     // a flavor's source set exists only once the flavor does ("AndroidSourceSet with name … not
     // found" otherwise)
     sourceSets {
         listOf("github", "patreon").forEach {
             getByName(it).kotlin.directories.add("src/nonfree/kotlin")
+        }
+        // The translations Crowdin merges, with a TranslationUpdates that keeps them; patreon ships
+        // none and gets its texts from the Crowdin SDK instead (src/patreon)
+        listOf("foss", "github").forEach {
+            getByName(it).res.directories.add("src/crowdin/res")
+            getByName(it).kotlin.directories.add("src/crowdin/kotlin")
         }
     }
 
@@ -269,6 +282,8 @@ dependencies {
     "githubImplementation"(project(":shazam"))
     "patreonImplementation"(project(":discord"))
     "patreonImplementation"(project(":shazam"))
+    // Texts translated after the build, see src/patreon's TranslationUpdates
+    "patreonImplementation"(libs.crowdin.sdk)
 
     // Core
     implementation(libs.androidx.core.ktx)

@@ -142,9 +142,9 @@ class KreateActivity : ComponentActivity() {
     // A screen a link asks for, kept like openPlayer until the content opened it
     private val openRoute = MutableStateFlow<Route?>(null)
 
-    // In the language picked in the app, see AppLanguage
+    // In the language picked in the app, see AppLanguage, with texts translated since the build
     override fun attachBaseContext(newBase: Context) =
-        super.attachBaseContext(AppLanguage.wrap(newBase))
+        super.attachBaseContext(TranslationUpdates.wrap(AppLanguage.wrap(newBase)))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
