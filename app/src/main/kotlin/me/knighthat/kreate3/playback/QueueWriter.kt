@@ -30,8 +30,9 @@ import me.knighthat.kreate3.model.Origin
  * A song of the queue to save.
  *
  * @property origin where the song comes from, `null` when the item doesn't say
+ * @property tail its [QueueTail], encoded
  */
-internal class QueueEntry(val id: String, val origin: Origin?)
+internal class QueueEntry(val id: String, val origin: Origin?, val tail: String? = null)
 
 /** One write to the saved queue, see [QueueWriter]. */
 internal sealed interface QueueWrite {
@@ -47,6 +48,9 @@ internal sealed interface QueueWrite {
     class Remove(val index: Int, val count: Int) : QueueWrite
 
     class Move(val index: Int, val count: Int, val to: Int) : QueueWrite
+
+    /** The song at [index] carries [tail] now, encoded, `null` for none. */
+    class Tail(val index: Int, val tail: String?) : QueueWrite
 }
 
 /**
@@ -90,18 +94,28 @@ internal class QueueWriter(
                 when (write) {
                     is QueueWrite.Queue -> {
                         store(write.songs)
-                        queue.replace(write.songs.map { it.id }, write.current, write.position)
+                        queue.replace(
+                            write.songs.map { it.id },
+                            write.current,
+                            write.position,
+                            write.songs.map { it.tail },
+                        )
                     }
 
                     is QueueWrite.Position -> queue.setPosition(write.index, write.position)
 
                     is QueueWrite.Insert -> {
                         store(write.songs)
-                        queue.insert(write.index, write.songs.map { it.id })
+                        queue.insert(
+                            write.index,
+                            write.songs.map { it.id },
+                            write.songs.map { it.tail },
+                        )
                     }
 
                     is QueueWrite.Remove -> queue.remove(write.index, write.count)
                     is QueueWrite.Move -> queue.move(write.index, write.count, write.to)
+                    is QueueWrite.Tail -> queue.setTail(write.index, write.tail)
                 }
             } catch (e: CancellationException) {
                 throw e

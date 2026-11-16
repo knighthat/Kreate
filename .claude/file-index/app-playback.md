@@ -120,7 +120,9 @@ playback/
   no like), asking its source again; then `SongFormatRecorder.flush` and `onStored` (queue re-save).
 - `Radio.kt` — songs like a song, per origin: local ones scored from the user's library (
   `UserSongRepository.similar`), others asked from their source; nothing stored. `RADIO_SIZE` (30).
-- `PersistentQueue.kt` — saves the player queue to `persistent_queue` (changes as they happen:
+- `PersistentQueue.kt` — saves the player queue to `persistent_queue` (with each song's `QueueTail`
+  in `queue_tail`, written on insert/whole saves and as `QueueWrite.Tail` when it moves; changes as
+  they happen:
   `onTimelineChanged` diffs window uids with `diffQueue` into insert/remove/move writes that touch
   only those songs, whole queue on start, on enabling, after a failed change write and after an
   arbitrary reorder; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s
@@ -133,6 +135,14 @@ playback/
   ms of the one playing row (single-statement CASE update keeps it unique), songs missing from
   `song` skipped on insert. Ordinal = player index, gaps where a song couldn't be stored; the DAO
   shifts neighbours through negative ordinals to avoid key clashes.
+- `QueueTail.kt` — `QueueTail` (a continuation token, `Source.NEXT` with its `next` start or
+  `Source.PLAYLIST` for the playlist page, kotlinx JSON in
+  the item's metadata extras `queue_tail`): what the queue goes on with after the song carrying
+  it; `MediaItem.queueTail`/`queueTailText`/`withQueueTail`, `List.withQueueTail` (on the last).
+- `QueueExtender.kt` — service-side listener: while `playWhenReady`, a song carrying a tail
+  `TAIL_LOOKAHEAD` (5) or fewer songs ahead in play order gets the next part fetched, inserted after
+  it, the tail moved to the part's last song (`replaceMediaItem`); a failure retries on the next
+  change. Created in `PlaybackService.createSession` with `queuePart` + `queued()`.
 - `QueueWriter.kt` — `PersistentQueue`'s ordered write channel (`QueueWrite` kinds, `QueueEntry`);
   stores unstored remote songs in `song` only (`SongStore.storeInCatalog`, one request each, stops
   at the first network failure)

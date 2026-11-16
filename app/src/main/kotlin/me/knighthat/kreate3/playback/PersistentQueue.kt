@@ -76,6 +76,9 @@ class PersistentQueue(
 
     /** The queue as the last change left it, the uid of each window. */
     private var known: List<Any> = emptyList()
+
+    /** The [QueueTail] of each window of [known], encoded. */
+    private var knownTails: List<String?> = emptyList()
     private val following: Job
 
     /** Completes once the saved queue was put back, or wasn't to be. */
@@ -92,6 +95,7 @@ class PersistentQueue(
                 restored.complete(Unit)
             }
             known = uids(player.currentTimeline)
+            knownTails = tails(player.currentTimeline)
             player.addListener(this@PersistentQueue)
 
             combine(
@@ -116,11 +120,17 @@ class PersistentQueue(
         if (reason != Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) return
 
         val old = known
+        val oldTails = knownTails
         known = uids(timeline)
+        knownTails = tails(timeline)
         if (!enabled) return
 
         val changes = diffQueue(old, known)
-        if (changes.isEmpty()) return
+        if (changes.isEmpty()) {
+            // A song kept its place, the tail it carries may have changed
+            saveTails(old, oldTails)
+            return
+        }
 
         for (change in changes)
             when (change) {
@@ -139,6 +149,7 @@ class PersistentQueue(
                     return
                 }
             }
+        saveTails(old, oldTails)
 
         // The song playing may be another one now, or have moved: the changes carry no place
         savePosition()
@@ -201,7 +212,9 @@ class PersistentQueue(
         var position = 0L
         for (song in saved) {
             if (currentOnly && song.position == null) continue
-            val item = song.song.toMediaItem()?.let(queued) ?: continue
+            val item = song.song.toMediaItem()?.let(queued)
+                ?.withQueueTail(QueueTail.decode(song.tail))
+                ?: continue
             song.position?.let {
                 start = items.size
                 position = it
@@ -233,7 +246,7 @@ class PersistentQueue(
     private fun saveQueue() {
         val songs = List(player.mediaItemCount) {
             val item = player.getMediaItemAt(it)
-            QueueEntry(item.mediaId, item.origin)
+            QueueEntry(item.mediaId, item.origin, item.queueTailText)
         }
         writer.send(QueueWrite.Queue(songs, player.currentMediaItemIndex, player.currentPosition))
     }
@@ -244,8 +257,24 @@ class PersistentQueue(
     private fun entries(timeline: Timeline, from: Int, count: Int): List<QueueEntry> =
         List(count) {
             val item = timeline.getWindow(from + it, window).mediaItem
-            QueueEntry(item.mediaId, item.origin)
+            QueueEntry(item.mediaId, item.origin, item.queueTailText)
         }
+
+    private fun tails(timeline: Timeline): List<String?> =
+        List(timeline.windowCount) { timeline.getWindow(it, window).mediaItem.queueTailText }
+
+    /**
+     * Writes the tails that changed on songs that were in the queue before, [old] with
+     * [oldTails]: the songs added carry theirs already.
+     */
+    private fun saveTails(old: List<Any>, oldTails: List<String?>) {
+        val before = old.indices.associate { old[it] to oldTails[it] }
+        known.forEachIndexed { index, uid ->
+            if (uid !in before) return@forEachIndexed
+            val tail = knownTails[index]
+            if (before[uid] != tail) writer.send(QueueWrite.Tail(index, tail))
+        }
+    }
 
     private fun savePosition() {
         if (player.mediaItemCount == 0) return

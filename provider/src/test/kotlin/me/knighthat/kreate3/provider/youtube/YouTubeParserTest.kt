@@ -253,6 +253,43 @@ class YouTubeParserTest {
     }
 
     @Test
+    fun playlistPageGivesItsShuffleStart() {
+        // The buttons as a playlist of YouTube Music had them on 2026-11-16
+        val page = parser.playlistPage(
+            "RDCLAK5uy_l607",
+            Json.parseToJsonElement(
+                """{"contents":{"twoColumnBrowseResultsRenderer":{"tabs":[{"tabRenderer":{"content":
+                {"sectionListRenderer":{"contents":[{"musicResponsiveHeaderRenderer":{
+                    "title":{"runs":[{"text":"Hits"}]},
+                    "buttons":[
+                        {"toggleButtonRenderer":{"defaultIcon":{"iconType":"BOOKMARK_BORDER"}}},
+                        {"musicPlayButtonRenderer":{"playNavigationEndpoint":{"watchEndpoint":
+                            {"videoId":"b8-tXG8KrWs","playlistId":"RDCLAK5uy_l607","params":"8gECGAM%3D"}}}},
+                        {"menuRenderer":{"items":[
+                            {"menuNavigationItemRenderer":{"icon":{"iconType":"MUSIC_SHUFFLE"},
+                                "navigationEndpoint":{"watchPlaylistEndpoint":
+                                    {"playlistId":"RDCLAK5uy_l607","params":"wAEB8gECGAE%3D"}}}},
+                            {"menuNavigationItemRenderer":{"icon":{"iconType":"MIX"},
+                                "navigationEndpoint":{"watchPlaylistEndpoint":
+                                    {"playlistId":"RDAMPLRDCLAK5uy_l607","params":"wAEB"}}}}
+                        ]}}
+                    ]}}]}}}}]}}}"""
+            ),
+        )!!
+
+        // The mix next to it is another list
+        assertEquals(YouTubeQueueStart("RDCLAK5uy_l607", "wAEB8gECGAE%3D"), page.shuffle)
+    }
+
+    @Test
+    fun aPlaylistWithoutButtonsHasNoShuffleStart() {
+        val page =
+            parser.playlistPage("OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs", fixture("pl_top"))!!
+
+        assertNull(page.shuffle)
+    }
+
+    @Test
     fun aPlaylistOfTheUserIsEditableAndNamesEachPlace() {
         fun row(videoId: String, setVideoId: String) =
             """{"musicResponsiveListItemRenderer":{"playlistItemData":{"videoId":"$videoId","playlistSetVideoId":"$setVideoId"},

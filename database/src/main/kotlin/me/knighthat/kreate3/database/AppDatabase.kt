@@ -86,6 +86,8 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
         AutoMigration(from = 2, to = 3),
         // Index `playback_history(user_id, song_id)`, for the play counts of the playlist covers
         AutoMigration(from = 3, to = 4),
+        // `persistent_queue.queue_tail`, null for the songs queued so far
+        AutoMigration(from = 4, to = 5),
     ],
 )
 @TypeConverters(Converters::class)

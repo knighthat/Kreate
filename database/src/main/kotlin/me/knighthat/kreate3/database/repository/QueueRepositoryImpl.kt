@@ -45,12 +45,24 @@ internal class QueueRepositoryImpl(
         queueDao.list(scope.awaitId()).map(PersistentQueueEntity::toModel)
 
     override suspend fun details(): List<QueuedSongDetails> =
-        queueDao.details(scope.awaitId()).map { QueuedSongDetails(it.song.toModel(), it.position) }
+        queueDao.details(scope.awaitId())
+            .map { QueuedSongDetails(it.song.toModel(), it.position, it.tail) }
 
-    override suspend fun replace(songIds: List<String>, current: Int, position: Long) {
+    override suspend fun replace(
+        songIds: List<String>,
+        current: Int,
+        position: Long,
+        tails: List<String?>,
+    ) {
         val userId = scope.requireId()
         val items = songIds.mapIndexed { index, songId ->
-            PersistentQueueEntity(userId, index, songId, position.takeIf { index == current })
+            PersistentQueueEntity(
+                userId,
+                index,
+                songId,
+                position.takeIf { index == current },
+                tails.getOrNull(index),
+            )
         }
         queueDao.replace(userId, items)
     }
@@ -58,14 +70,19 @@ internal class QueueRepositoryImpl(
     override suspend fun setPosition(index: Int, position: Long) =
         queueDao.setPosition(scope.requireId(), index, position)
 
-    override suspend fun insert(index: Int, songIds: List<String>) {
+    override suspend fun insert(index: Int, songIds: List<String>, tails: List<String?>) {
         val userId = scope.requireId()
         queueDao.insert(
             userId,
             index,
-            songIds.map { PersistentQueueEntity(userId, 0, it) },
+            songIds.mapIndexed { place, songId ->
+                PersistentQueueEntity(userId, 0, songId, tail = tails.getOrNull(place))
+            },
         )
     }
+
+    override suspend fun setTail(index: Int, tail: String?) =
+        queueDao.setTail(scope.requireId(), index, tail)
 
     override suspend fun remove(index: Int, count: Int) =
         queueDao.remove(scope.requireId(), index, count)

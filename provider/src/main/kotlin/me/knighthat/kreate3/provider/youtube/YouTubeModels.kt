@@ -185,11 +185,26 @@ data class YouTubePlaylistPage(
     val saved: Boolean? = null,
     val editable: Boolean = false,
     val privacy: PlaylistPrivacy? = null,
+    /** What the page's "Shuffle play" plays, in an order YouTube picks; `null` when it has none. */
+    val shuffle: YouTubeQueueStart? = null,
 ) {
 
     /** The songs of [entries]. */
     val songs: List<RemoteSong> get() = entries.map { it.song }
 }
+
+/**
+ * Where YouTube Music starts a queue, like a playlist's "Shuffle play": the songs come from
+ * [YouTubeProvider.queue] part after part, in the order YouTube gives.
+ *
+ * @property params YouTube's own words for how to play it, like shuffled
+ * @property videoId the song it starts with, `null` for the list's choice
+ */
+data class YouTubeQueueStart(
+    val playlistId: String,
+    val params: String? = null,
+    val videoId: String? = null,
+)
 
 /**
  * A place in a playlist.

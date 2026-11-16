@@ -43,6 +43,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubePlaylistEntry
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeQueueStart
 import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
@@ -62,6 +63,7 @@ data class YouTubePlaylistDetail(
     val subtitle: String?,
     val summary: String? = null,
     val editable: Boolean = false,
+    val shuffle: YouTubeQueueStart? = null,
 )
 
 /**
@@ -112,7 +114,10 @@ class YouTubePlaylistDetailViewModel(
 
     private val _songs = MutableStateFlow(emptyList<MediaItem>())
     private val _hasMore = MutableStateFlow(false)
-    private var continuation: String? = null
+
+    /** The token of the part of the playlist after [songs], `null` when they are all there. */
+    var continuation: String? = null
+        private set
     private var more: Job? = null
 
     /**
@@ -164,6 +169,7 @@ class YouTubePlaylistDetailViewModel(
             subtitle = page.author,
             summary = page.summary,
             editable = page.editable,
+            shuffle = page.shuffle,
         )
     }
 

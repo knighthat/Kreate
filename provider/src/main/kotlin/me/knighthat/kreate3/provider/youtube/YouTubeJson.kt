@@ -205,6 +205,9 @@ internal const val LYRICS_PREFIX = "MPLYt"
  */
 internal val LIBRARY_ADD_ICONS = setOf("LIBRARY_ADD", "BOOKMARK_BORDER")
 
+/** Icon of a page's "Shuffle play" row. */
+internal const val SHUFFLE_ICON = "MUSIC_SHUFFLE"
+
 /** Browse id of the songs, albums and artists related to a song. */
 internal const val RELATED_PREFIX = "MPTRt"
 

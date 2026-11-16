@@ -25,8 +25,11 @@ package me.knighthat.kreate3.database.model
  *
  * @property position where the song playing was, in milliseconds. Only that one song of the
  * queue has it, the others are `null`.
+ * @property tail what the queue goes on with after this song, as it was saved, see
+ * [me.knighthat.kreate3.database.repository.QueueRepository.setTail]
  */
 data class QueuedSongDetails(
     val song: UserSongView,
     val position: Long? = null,
+    val tail: String? = null,
 )

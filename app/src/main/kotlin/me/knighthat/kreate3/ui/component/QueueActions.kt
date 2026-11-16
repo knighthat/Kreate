@@ -49,11 +49,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.undoMessage
@@ -61,6 +64,10 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.songTitle
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeQueueStart
+import me.knighthat.kreate3.source.youtube.continuedBy
+import me.knighthat.kreate3.source.youtube.shuffledQueue
 import org.koin.compose.koinInject
 
 /**
@@ -257,6 +264,66 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
                 val songs = currentSongs()
                 // The list can be a whole library, the controller can be called from any thread
                 withContext(Dispatchers.Default) { playback.queue(resources, action, songs) }
+                    ?.let(notifier::post)
+            }
+        }
+    }
+}
+
+/**
+ * Like [rememberQueueActions], for a playlist of YouTube Music. Shuffle plays what the playlist's
+ * own "Shuffle play" plays, in YouTube's order, about 25 songs at first. The other actions take
+ * the songs [songs] gives, the ones shown, and the rest of the playlist after them follows from
+ * its page as it plays. Either way the next part comes as playback gets close to it, see
+ * [me.knighthat.kreate3.playback.QueueTail]. Without "Shuffle play", or when YouTube can't be
+ * reached, Shuffle shuffles the songs shown.
+ *
+ * @param shuffle the playlist's "Shuffle play", `null` while it has none
+ * @param continuation the token of the playlist's page after [songs], `null` when there is none
+ */
+@Composable
+fun rememberYouTubePlaylistActions(
+    playlistId: String,
+    shuffle: () -> YouTubeQueueStart?,
+    continuation: () -> String?,
+    songs: suspend () -> List<MediaItem>,
+): (QueueAction) -> Unit {
+    val playback = koinInject<PlaybackController>()
+    val youTube = koinInject<YouTubeProvider>()
+    val library = koinInject<UserSongRepository>()
+    val notifier = LocalNotifier.current
+    val scope = rememberCoroutineScope()
+    val currentShuffle by rememberUpdatedState(shuffle)
+    val currentContinuation by rememberUpdatedState(continuation)
+    val currentSongs by rememberUpdatedState(songs)
+
+    val resources = LocalResources.current
+
+    return remember(playlistId, playback, youTube, library, notifier, scope, resources) {
+        { action ->
+            scope.launch {
+                val shuffled = currentShuffle()?.takeIf { action == QueueAction.SHUFFLE }?.let {
+                    try {
+                        youTube.shuffledQueue(it, library.listDislikedIds())
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Logger.w(e, "QueueActions") { "Couldn't fetch the shuffled playlist" }
+                        null
+                    }
+                }
+                val (played, list) = if (shuffled != null) {
+                    // YouTube shuffled them already
+                    QueueAction.PLAY to shuffled
+                } else {
+                    val shown = currentSongs()
+                    // Shuffled here, the rest of the playlist can't join in
+                    if (action == QueueAction.SHUFFLE)
+                        action to shown
+                    else
+                        action to shown.continuedBy(playlistId, currentContinuation())
+                }
+                withContext(Dispatchers.Default) { playback.queue(resources, played, list) }
                     ?.let(notifier::post)
             }
         }

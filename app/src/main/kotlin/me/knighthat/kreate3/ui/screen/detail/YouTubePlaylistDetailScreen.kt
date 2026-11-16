@@ -50,8 +50,8 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.playlistPictureKey
 import me.knighthat.kreate3.ui.component.previewSongs
-import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.rememberYouTubePlaylistActions
 import me.knighthat.kreate3.ui.component.thumbnailModel
 import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
 import me.knighthat.kreate3.ui.theme.CoverTheme
@@ -147,7 +147,12 @@ fun YouTubePlaylistDetailScreen(
                 onRetry = viewModel::load,
                 onBack = onBack,
                 onEdit = onEdit,
-                onAction = rememberQueueActions { viewModel.songs.value },
+                onAction = rememberYouTubePlaylistActions(
+                    playlistId = viewModel.playlistId,
+                    shuffle = { (viewModel.state.value as? LiveState.Ready)?.value?.shuffle },
+                    continuation = { viewModel.continuation },
+                    songs = { viewModel.songs.value },
+                ),
                 onSongClick = rememberSongTap(null) { viewModel.songs.value },
                 share = viewModel::shareLink,
                 // The account's liked songs are its own, nobody else can open them

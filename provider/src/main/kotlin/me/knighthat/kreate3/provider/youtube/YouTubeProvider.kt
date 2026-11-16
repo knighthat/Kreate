@@ -892,6 +892,24 @@ class YouTubeProvider internal constructor(
         )
     }
 
+    /**
+     * The songs [start] plays, about 25 at a time, in the order YouTube gives: shuffled for a
+     * playlist's "Shuffle play".
+     *
+     * @param continuation the token of the previous songs, `null` for the first ones. The same
+     * [start] must be given with it.
+     */
+    suspend fun queue(
+        start: YouTubeQueueStart,
+        continuation: String? = null
+    ): YouTubePage<SongItem> =
+        parser.queue(
+            if (continuation == null)
+                innerTube.next(start.videoId, start.playlistId, start.params)
+            else
+                innerTube.continuation(Endpoint.NEXT, continuation, start.playlistId)
+        )
+
     /** Endless songs like [songId], starting with it. */
     suspend fun radio(songId: String, continuation: String? = null): YouTubePage<SongItem> =
         upNext(songId, RADIO_PREFIX + songId, continuation)

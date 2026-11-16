@@ -74,6 +74,8 @@ import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
+import me.knighthat.kreate3.source.youtube.continuedBy
+import me.knighthat.kreate3.source.youtube.shuffledQueue
 import me.knighthat.kreate3.ui.navigation.AlbumDetails
 import me.knighthat.kreate3.ui.navigation.ArtistDetails
 import me.knighthat.kreate3.ui.navigation.EditAlbum
@@ -198,6 +200,39 @@ internal class CollectionSongs(
             songs?.withoutDisliked(library.listDislikedIds())
         }
 
+    /**
+     * The songs [action] queues of [item]. For a playlist of YouTube only the first part is
+     * fetched, the rest comes as it plays, see [me.knighthat.kreate3.playback.QueueTail]:
+     * Shuffle takes what the playlist's own "Shuffle play" plays, in YouTube's order; the other
+     * actions the songs of its page. [of] for the others, and for Shuffle on a playlist without
+     * that button.
+     *
+     * @return the songs, and whether they are in the order they play in already
+     * @throws Exception when the source can't be asked
+     */
+    suspend fun forQueue(
+        kind: CollectionKind,
+        item: MediaItem,
+        action: QueueAction,
+    ): Pair<List<MediaItem>, Boolean>? = withContext(Dispatchers.Default) {
+        if (item.origin == Origin.YOUTUBE && kind == CollectionKind.PLAYLIST) {
+            val playlistId = item.remoteId ?: item.mediaId
+            val page = youTube.playlistPage(playlistId) ?: return@withContext null
+            val disliked = library.listDislikedIds()
+            if (action != QueueAction.SHUFFLE) {
+                val songs = page.songs.map {
+                    it.toLiveMediaItem(
+                        youTube.artwork(it.song.thumbnail ?: it.album?.thumbnail, SONG_ARTWORK)
+                    )
+                }
+                return@withContext songs.withoutDisliked(disliked)
+                    .continuedBy(playlistId, page.continuation) to false
+            }
+            page.shuffle?.let { return@withContext youTube.shuffledQueue(it, disliked) to true }
+        }
+        of(kind, item)?.let { it to false }
+    }
+
     private suspend fun fromDevice(kind: CollectionKind, item: MediaItem): List<MediaItem> =
         when (kind) {
             CollectionKind.ALBUM -> library.listOfAlbum(item.mediaId)
@@ -308,13 +343,13 @@ internal fun CollectionMenuContent(
         }
     )
 
-    /** Fetches the songs under a spinner on the control [key], then hands them to [then]. */
-    fun withSongs(key: Any, then: (List<MediaItem>) -> Unit) {
+    /** Fetches what [fetch] gives under a spinner on the control [key], then hands it to [then]. */
+    fun <T : Any> withFetched(key: Any, fetch: suspend () -> T?, then: (T) -> Unit) {
         if (waiting != null) return
         waiting = key
         scope.launch {
-            val songs = try {
-                songSource.of(kind, item)
+            val fetched = try {
+                fetch()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -322,20 +357,28 @@ internal fun CollectionMenuContent(
                 null
             }
             waiting = null
-            if (songs == null)
+            if (fetched == null)
                 notifier.post(Message(resources.getString(R.string.error_collection_songs, name)))
             else
-                then(songs)
+                then(fetched)
         }
     }
 
-    fun queue(action: QueueAction) = withSongs(action) { songs ->
-        close {
-            appScope.launch(Dispatchers.Default) {
-                playback.queue(resources, action, songs)?.let(notifier::post)
+    /** Fetches the songs under a spinner on the control [key], then hands them to [then]. */
+    fun withSongs(key: Any, then: (List<MediaItem>) -> Unit) =
+        withFetched(key, { songSource.of(kind, item) }, then)
+
+    fun queue(action: QueueAction) =
+        withFetched(action, { songSource.forQueue(kind, item, action) }) { (songs, ordered) ->
+            close {
+                appScope.launch(Dispatchers.Default) {
+                    // YouTube shuffled them already
+                    val played =
+                        if (ordered && action == QueueAction.SHUFFLE) QueueAction.PLAY else action
+                    playback.queue(resources, played, songs)?.let(notifier::post)
+                }
             }
         }
-    }
 
     // The device's items have no link
     val shares = origin != null && origin != Origin.LOCAL

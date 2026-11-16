@@ -43,8 +43,15 @@ interface QueueRepository {
     /**
      * Swaps the queue for [songIds], in order, a song may appear more than once. The song at
      * [current] was playing at [position], in milliseconds. Songs that aren't saved are left out.
+     *
+     * @param tails the [setTail] of each song by its place, none for the places it doesn't reach
      */
-    suspend fun replace(songIds: List<String>, current: Int, position: Long)
+    suspend fun replace(
+        songIds: List<String>,
+        current: Int,
+        position: Long,
+        tails: List<String?> = emptyList(),
+    )
 
     /**
      * Marks the song at [index] of the queue last saved with [replace] as playing at [position],
@@ -55,8 +62,16 @@ interface QueueRepository {
     /**
      * Puts [songIds] in the queue last saved, starting at [index], and pushes the songs after
      * them back. Only those songs are written. Songs that aren't saved are left out.
+     *
+     * @param tails the [setTail] of each song by its place, none for the places it doesn't reach
      */
-    suspend fun insert(index: Int, songIds: List<String>)
+    suspend fun insert(index: Int, songIds: List<String>, tails: List<String?> = emptyList())
+
+    /**
+     * Keeps with the song at [index] of the queue last saved how to fetch what comes after it,
+     * in the caller's own words, `null` for nothing. Read back by [details].
+     */
+    suspend fun setTail(index: Int, tail: String?)
 
     /** Takes [count] songs from [index] on out of the queue last saved, the songs after them close up. */
     suspend fun remove(index: Int, count: Int)

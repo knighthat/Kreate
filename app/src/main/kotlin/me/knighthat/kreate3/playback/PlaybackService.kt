@@ -67,6 +67,7 @@ import me.knighthat.kreate3.auto.grantArtwork
 import me.knighthat.kreate3.auto.smallCoverJpeg
 import me.knighthat.kreate3.auto.withServedArtwork
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.download.SongDownloads
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.DownloadedSongAction
@@ -75,6 +76,7 @@ import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.SongStore
+import me.knighthat.kreate3.source.youtube.queuePart
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.utils.IS_ANDROID_10_AND_UP
 import org.koin.core.component.KoinComponent
@@ -106,6 +108,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private var normalizer: LoudnessNormalizer? = null
     private var recovery: PlaybackRecovery? = null
     private var persistentQueue: PersistentQueue? = null
+    private var queueExtender: QueueExtender? = null
     private var audioEffects: AudioEffectSession? = null
     private var sleepTimer: SleepTimerRunner? = null
     private var presence: PresenceReporter? = null
@@ -186,6 +189,12 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             store = get<SongStore>()::storeInCatalog,
             queued = { it.queued() },
         )
+        // The next part of a playlist YouTube Music plays, as playback gets close to it
+        val songs = get<UserSongRepository>()
+        queueExtender = QueueExtender(player, scope) { tail ->
+            youTube.queuePart(tail, songs.listDislikedIds())
+                .mapNotNull { it.queued() }
+        }
         PlayedSongRecorder(
             player = player,
             library = get(),
@@ -261,6 +270,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         // Before the player is released, it saves where the song is
         persistentQueue?.release()
         persistentQueue = null
+        queueExtender?.release()
+        queueExtender = null
         scope?.cancel()
         scope = null
         session.player.release()

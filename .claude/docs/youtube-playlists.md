@@ -26,3 +26,12 @@ Answers are nested and change often; check with a throwaway playlist before rely
   (`YouTubeProvider.updatePlaylist`). The owner's current privacy is read from the editing header
   at `editHeader.musicPlaylistEditHeaderRenderer.privacy`, also untried; the edit screen copes
   with it missing. No call sets a playlist's picture: YouTube Music builds it from the songs.
+- Playing a playlist (2026-11-16, signed out, a public 178-song playlist): the page header's
+  `musicPlayButtonRenderer.playNavigationEndpoint.watchEndpoint` (`videoId`, `playlistId`,
+  `params` like `8gECGAM%3D`) is Play; the header menu's `menuNavigationItemRenderer` with icon
+  `MUSIC_SHUFFLE` has a `watchPlaylistEndpoint` (`params` like `wAEB8gECGAE%3D`) for "Shuffle
+  play". `next` with those (params sent percent-encoded as given) answers 25 songs, shuffled by
+  YouTube for the shuffle one, and a `nextRadioContinuationData` token for the next 25, also in the
+  same order; the playlist page itself lists 100 songs at a time. `MIX` ("Start mix") is another,
+  endless list (`RDAMPL…`). The menu's Play next and Add to queue are `queueAddEndpoint`s, not
+  used.

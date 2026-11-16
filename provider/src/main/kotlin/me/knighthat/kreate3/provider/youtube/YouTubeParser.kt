@@ -578,6 +578,26 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                     "privacy",
                 ).asString
             }?.let { name -> PlaylistPrivacy.entries.firstOrNull { it.name == name } },
+            shuffle = shuffleStart(header),
+        )
+    }
+
+    /** The "Shuffle play" row of the header's menu, as YouTube Music sends it to `next`. */
+    private fun shuffleStart(header: JsonElement): YouTubeQueueStart? =
+        header.path("buttons").asArray.orEmpty()
+            .flatMap { it.path("menuRenderer", "items").asArray.orEmpty() }
+            .mapNotNull { it.path("menuNavigationItemRenderer") }
+            .firstOrNull { it.path("icon", "iconType").asString == SHUFFLE_ICON }
+            ?.path("navigationEndpoint", "watchPlaylistEndpoint")
+            ?.queueStart()
+
+    private fun JsonElement.queueStart(): YouTubeQueueStart? {
+        val playlistId = path("playlistId").asString ?: return null
+        return YouTubeQueueStart(
+            playlistId = playlistId,
+            // As it comes, percent-encoded: YouTube takes it back so
+            params = path("params").asString,
+            videoId = path("videoId").asString,
         )
     }
 

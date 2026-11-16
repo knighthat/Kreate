@@ -31,6 +31,8 @@ import androidx.room.Index
  * @property songId the queued [SongEntity]
  * @property position where the song playing was, in milliseconds. Only that one song of the
  * queue has it, the others are `null`.
+ * @property tail how to fetch the songs the queue goes on with after this one, in the app's own
+ * words, like a token of YouTube for the next part of a playlist; `null` for most songs
  */
 @Entity(
     tableName = "persistent_queue",
@@ -58,4 +60,6 @@ internal data class PersistentQueueEntity(
     @ColumnInfo(name = "song_id")
     val songId: String,
     val position: Long? = null,
+    @ColumnInfo(name = "queue_tail")
+    val tail: String? = null,
 )

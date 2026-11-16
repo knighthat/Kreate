@@ -31,6 +31,7 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
 internal data class QueuedSongRow(
     @Embedded val song: UserSongViewEntity,
     @ColumnInfo(name = "queue_position") val position: Long?,
+    @ColumnInfo(name = "queue_tail") val tail: String?,
 )
 
 @Dao
@@ -71,7 +72,8 @@ internal abstract class PersistentQueueDao {
             COALESCE(us.album_position, s.album_position) AS album_position, 
             s.unavailable_since AS unavailable_since, 
             us.liked_at AS liked_at, 
-            pq.position AS queue_position 
+            pq.position AS queue_position, 
+            pq.queue_tail AS queue_tail 
         FROM persistent_queue pq 
         JOIN song s ON s.id = pq.song_id 
         LEFT JOIN user_song us ON us.song_id = s.id AND us.user_id = pq.user_id 
@@ -86,8 +88,8 @@ internal abstract class PersistentQueueDao {
     /** Inserts the item if its song is saved, an item of a missing song would break the key. */
     @Query(
         """
-        INSERT INTO persistent_queue (user_id, ordinal, song_id, position) 
-        SELECT :userId, :ordinal, :songId, :position 
+        INSERT INTO persistent_queue (user_id, ordinal, song_id, position, queue_tail) 
+        SELECT :userId, :ordinal, :songId, :position, :tail 
         WHERE EXISTS (
             SELECT 1 
             FROM song 
@@ -100,7 +102,18 @@ internal abstract class PersistentQueueDao {
         ordinal: Int,
         songId: String,
         position: Long?,
+        tail: String?,
     )
+
+    @Query(
+        """
+        UPDATE persistent_queue 
+        SET queue_tail = :tail 
+        WHERE user_id = :userId 
+        AND ordinal = :ordinal
+    """
+    )
+    abstract suspend fun setTail(userId: String, ordinal: Int, tail: String?)
 
     /**
      * Gives the item at [ordinal] the [position] and takes it from every other item of [userId],
@@ -131,7 +144,7 @@ internal abstract class PersistentQueueDao {
     open suspend fun replace(userId: String, items: List<PersistentQueueEntity>) {
         clear(userId)
         for (item in items)
-            insertIfSaved(userId, item.ordinal, item.songId, item.position)
+            insertIfSaved(userId, item.ordinal, item.songId, item.position, item.tail)
     }
 
     /**
@@ -183,7 +196,7 @@ internal abstract class PersistentQueueDao {
     open suspend fun insert(userId: String, index: Int, items: List<PersistentQueueEntity>) {
         shift(userId, index, items.size)
         for ((offset, item) in items.withIndex())
-            insertIfSaved(userId, index + offset, item.songId, item.position)
+            insertIfSaved(userId, index + offset, item.songId, item.position, item.tail)
     }
 
     /** Takes the items from [index] on, [count] of them, and closes the gap, in one transaction. */

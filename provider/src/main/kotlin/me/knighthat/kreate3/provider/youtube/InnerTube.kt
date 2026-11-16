@@ -354,11 +354,14 @@ internal class InnerTube(
     /**
      * The queue of [videoId], or of [playlistId] when it is played, with the tabs of the player
      * that lead to the lyrics and related items.
+     *
+     * @param params how a page's button plays [playlistId], like shuffled
      */
-    suspend fun next(videoId: String?, playlistId: String?): JsonObject =
+    suspend fun next(videoId: String?, playlistId: String?, params: String? = null): JsonObject =
         post("next") {
             videoId?.let { put("videoId", it) }
             playlistId?.let { put("playlistId", it) }
+            params?.let { put("params", it) }
             putQueueOptions()
         }
 
