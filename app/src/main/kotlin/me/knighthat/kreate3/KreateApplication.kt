@@ -273,12 +273,16 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
         // Each profile's language, a restored one too
         AppLanguage.follow(this, get(), get())
+        // The languages of the patreon build, which come from Crowdin
+        TranslationUpdates.init(this, get(), get(), get())
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         // A language picked in the system's settings while the app runs
         AppLanguage.takeFromSystem(this)
+        // A switch of language checks its texts
+        TranslationUpdates.check(this)
     }
 }
 

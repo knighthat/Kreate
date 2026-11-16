@@ -93,6 +93,10 @@ data object VoiceSearchSettings : Route
 @Serializable
 data object UiSettings : Route
 
+/** The app's language, opened from [UiSettings]. */
+@Serializable
+data object LanguageSettings : Route
+
 @Serializable
 data object NetworkSettings : Route
 

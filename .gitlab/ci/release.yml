@@ -29,6 +29,8 @@
 #   PRODUCTION_KEYSTORE                type File, the production.jks keystore
 #   PRODUCTION_STORE_PASSWORD          the keystore's password
 #   PRODUCTION_PATREON_KEY_PASSWORD    the password of the "kreate" key
+#   CROWDIN_DISTRIBUTION_HASH          the hash of the Crowdin distribution patreon's languages come
+#                                      from (Crowdin > Distributions)
 #   GITHUB_DEPLOY_KEY                  type File, the private half of a deploy key with write access
 #                                      (the public half goes in the GitHub repository's
 #                                      Settings > Deploy keys)
@@ -77,7 +79,7 @@ build:
     - yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
   script:
     - |
-      for v in PRODUCTION_KEYSTORE PRODUCTION_STORE_PASSWORD PRODUCTION_PATREON_KEY_PASSWORD; do
+      for v in PRODUCTION_KEYSTORE PRODUCTION_STORE_PASSWORD PRODUCTION_PATREON_KEY_PASSWORD CROWDIN_DISTRIBUTION_HASH; do
         if [ -z "$(printenv "$v")" ]; then echo "$v is not set (is the tag protected?)"; exit 1; fi
       done
     - mkdir -p .ignore.d/keystores

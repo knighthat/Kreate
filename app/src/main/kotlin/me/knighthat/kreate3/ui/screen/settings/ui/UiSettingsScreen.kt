@@ -27,10 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.AppIcon
 import me.knighthat.kreate3.AppLanguage
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.TranslationUpdates
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
@@ -46,8 +46,8 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
-import org.koin.compose.koinInject
 import java.util.Locale
+import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /** The Crowdin project, where the app is translated and new languages are asked for. */
 private const val CROWDIN_PROJECT_URL = "https://translate.kreate.knighthat.me/project/kreate"
@@ -56,7 +56,11 @@ private const val CROWDIN_PROJECT_URL = "https://translate.kreate.knighthat.me/p
  * What the user sees and touches: the theme, the language and the app icon.
  */
 @Composable
-fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun UiSettingsScreen(
+    onBack: () -> Unit,
+    onOpenLanguages: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
@@ -65,7 +69,8 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
     val language by Preferences.LANGUAGE.collectAsStateWithLifecycle()
-    val scope = koinInject<CoroutineScope>()
+    // Patreon's languages are known once its kept manifest was read
+    val online by TranslationUpdates.languages.collectFlowAsState()
     val openLink = rememberOpenLink()
 
     UiSettingsContent(
@@ -79,10 +84,8 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             it.apply(context)
             appIcon = it
         },
-        language = AppLanguage.of(language),
-        languages = listOf(null) + AppLanguage.available,
-        // The global scope, a restart for it outlives this screen
-        onLanguageChange = { AppLanguage.select(context, scope, it) },
+        language = remember(language, online) { AppLanguage.of(language) },
+        onOpenLanguages = onOpenLanguages,
         onOpenCrowdin = { openLink(CROWDIN_PROJECT_URL) },
         fontSettings = { FontSettings() },
         onBack = onBack,
@@ -100,8 +103,7 @@ private fun UiSettingsContent(
     appIcon: AppIcon,
     onAppIconChange: (AppIcon) -> Unit,
     language: Locale?,
-    languages: List<Locale?>,
-    onLanguageChange: (Locale?) -> Unit,
+    onOpenLanguages: () -> Unit,
     onOpenCrowdin: () -> Unit,
     fontSettings: @Composable () -> Unit,
     onBack: () -> Unit,
@@ -125,14 +127,12 @@ private fun UiSettingsContent(
         )
 
         SettingsSection(stringResource(R.string.setting_title_language))
-        // Each language in its own words, "null" follows the device
-        val system = stringResource(R.string.status_system)
-        ChoiceSetting(
+        // The list is a page of its own (LanguageSettingsScreen), "null" follows the device
+        SettingsItem(
             title = stringResource(R.string.setting_title_language),
-            value = language,
-            options = languages,
-            label = { it?.let(AppLanguage::displayName) ?: system },
-            onSelect = onLanguageChange,
+            summary = language?.let(AppLanguage::displayName)
+                ?: stringResource(R.string.status_system),
+            onClick = onOpenLanguages,
         )
         // Both lead to the Crowdin project, which lists every language. Translating needs a
         // language picked, "System" names none and English is the source
@@ -197,8 +197,7 @@ private fun UiSettingsPreview() = PreviewTheme {
         appIcon = AppIcon.BLACK,
         onAppIconChange = {},
         language = Locale.forLanguageTag("vi"),
-        languages = listOf(null, Locale.ENGLISH, Locale.forLanguageTag("vi")),
-        onLanguageChange = {},
+        onOpenLanguages = {},
         onOpenCrowdin = {},
         fontSettings = {
             FontSettings(
