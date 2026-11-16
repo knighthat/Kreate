@@ -280,17 +280,19 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         withSongUri()?.withServedArtwork(this@PlaybackService)
 
     /**
-     * The song with its cover inside: the system's media controls can't read [ArtworkProvider]'s
-     * after the device restarted. As it is when the cover can't be loaded, like before there is a
-     * network.
+     * The song with its cover inside and no cover address: the system's media controls can't
+     * read [ArtworkProvider]'s after the device restarted. Without a cover when it can't be
+     * loaded, like before there is a network.
      */
     private suspend fun MediaItem.withArtworkData(): MediaItem {
-        val cover = mediaMetadata.artworkUri?.coverSource() ?: return this
-        val data = withTimeoutOrNull(COVER_WAIT) { smallCoverJpeg(cover) } ?: return this
+        val data = mediaMetadata.artworkUri
+            ?.coverSource()
+            ?.let { withTimeoutOrNull(COVER_WAIT) { smallCoverJpeg(it) } }
         return buildUpon()
             .setMediaMetadata(
                 mediaMetadata.buildUpon()
-                    .setArtworkData(data, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
+                    .setArtworkUri(null)
+                    .setArtworkData(data, data?.let { MediaMetadata.PICTURE_TYPE_FRONT_COVER })
                     .build()
             )
             .build()

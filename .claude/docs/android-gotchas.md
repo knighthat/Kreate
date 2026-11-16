@@ -62,8 +62,20 @@ UI (`KreateApp(openPlayer, onPlayerOpened)`).
 
 ## Media3 playback resumption
 
-Learned adding `onPlaybackResumption` (media3 1.11.1, read from the sources jar; not yet checked on
-a device):
+Learned adding `onPlaybackResumption` (media3 1.11.1, read from the sources jar; checked on an API
+36
+emulator 2026-11-16: after a reboot System UI shows the resume card and its play button resumes the
+saved song at its position):
+
+- The card shows only in fully expanded Quick Settings; the half-open shade shows active media only
+  (System UI's design). On a slow emulator it fades in a few seconds after the panel opens, so a
+  screenshot taken at once shows no card. Check `dumpsys activity service
+  com.android.systemui/.SystemUIService dependency DumpController MediaDataManager`: an entry with
+  `resumption=true` means System UI has the card.
+- With nothing saved, `onPlaybackResumption` throws, System UI logs `ResumeMediaBrowser: Subscribe
+  error … recent.root` and shows no card. That is expected, not a failure.
+- System UI keeps an app on its resume list only after it saw the app's media notification and
+  connected to its browser (`MediaResumeListener: Testing if we can connect`).
 
 - It's on only while `androidx.media3.session.MediaButtonReceiver` is in the manifest
   (`MediaSessionLegacyStub.canResumePlaybackOnStart`). Without it, Media3 refuses System UI's
