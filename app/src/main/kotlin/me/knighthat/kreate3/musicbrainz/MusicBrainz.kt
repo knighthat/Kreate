@@ -20,10 +20,12 @@ package me.knighthat.kreate3.musicbrainz
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.encodeURLPathPart
@@ -360,7 +362,7 @@ class MusicBrainz(private val client: HttpClient, private val json: Json) {
             val response = client.get("$BASE_URL/$path") {
                 // MusicBrainz blocks clients that don't name themselves
                 header(HttpHeaders.UserAgent, USER_AGENT)
-                header(HttpHeaders.Accept, "application/json")
+                accept(ContentType.Application.Json)
                 parameter("fmt", "json")
                 block()
             }

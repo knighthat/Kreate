@@ -21,11 +21,10 @@ package me.knighthat.kreate3.discord
 import android.util.Base64
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.isSuccess
@@ -168,7 +167,7 @@ class DiscordAuth(
      * @throws IOException when Discord can't be reached
      */
     suspend fun user(access: String): DiscordUser {
-        val response = http.get(USER_URL) { header(HttpHeaders.Authorization, "Bearer $access") }
+        val response = http.get(USER_URL) { bearerAuth(access) }
         if (response.status == HttpStatusCode.Unauthorized)
             throw DiscordSignedOutException("Discord refused the token")
         if (!response.status.isSuccess())

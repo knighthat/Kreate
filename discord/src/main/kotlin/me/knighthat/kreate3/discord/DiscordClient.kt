@@ -24,6 +24,7 @@ import io.ktor.client.plugins.pluginOrNull
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.client.request.parameter
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
@@ -64,9 +65,6 @@ import kotlin.time.TimeSource
 private const val TAG = "DiscordClient"
 
 private const val GATEWAY_URL = "wss://gateway.discord.gg"
-
-/** Version and encoding of the gateway, added to every address of it. */
-private const val GATEWAY_QUERY = "?v=10&encoding=json"
 
 // Opcodes of the gateway
 private const val DISPATCH = 0
@@ -189,7 +187,11 @@ class DiscordClient(
         state: Resumable,
         onReady: () -> Unit,
     ): Ending {
-        val socket = sockets.webSocketSession((state.url ?: GATEWAY_URL) + GATEWAY_QUERY)
+        val socket = sockets.webSocketSession(state.url ?: GATEWAY_URL) {
+            // Version and encoding of the gateway, added to every address of it
+            parameter("v", 10)
+            parameter("encoding", "json")
+        }
         // Leaving on purpose ends the session, which takes the presence off at once. Any other
         // close keeps it to be resumed
         var leaving = false

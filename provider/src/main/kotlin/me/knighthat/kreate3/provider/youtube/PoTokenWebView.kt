@@ -35,6 +35,7 @@ import com.metrolist.innertubex.extraction.potoken.parseIntegrityTokenData
 import com.metrolist.innertubex.extraction.potoken.stringToU8
 import com.metrolist.innertubex.extraction.potoken.u8ToBase64
 import io.ktor.client.HttpClient
+import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -285,7 +286,7 @@ internal class PoTokenWebView private constructor(
             val answer = withContext(Dispatchers.IO) {
                 val response = client().post(url) {
                     header(HttpHeaders.UserAgent, USER_AGENT)
-                    header(HttpHeaders.Accept, "application/json")
+                    accept(ContentType.Application.Json)
                     header("x-goog-api-key", API_KEY)
                     header("x-user-agent", "grpc-web-javascript/0.1")
                     setBody(TextContent(body, ContentType.parse("application/json+protobuf")))

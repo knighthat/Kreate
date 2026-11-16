@@ -20,13 +20,12 @@ package me.knighthat.kreate3.discord
 
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
@@ -105,7 +104,7 @@ internal class DiscordAssets(
         val path = try {
             val response =
                 http.post("https://discord.com/api/v9/applications/$appId/external-assets") {
-                    header(HttpHeaders.Authorization, "Bearer $access")
+                    bearerAuth(access)
                     setBody(
                         TextContent(
                             buildJsonObject { putJsonArray("urls") { add(url) } }.toString(),
