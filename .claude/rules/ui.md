@@ -43,6 +43,10 @@ charts: `.claude/docs/charts.md`.
   configuration (locale) and recomposes, the context doesn't. Keep `LocalContext` only for what
   needs a `Context` (starting activities, image loaders). View models keep their `Context` and
   pass `context.resources` to such helpers.
+- What only the default profile may use (app-wide sizes and logging, Backup, Clean up database)
+  still shows to other profiles: the entry is grayed out (`DISABLED_ALPHA`, taps do nothing) with a
+  line naming the default profile; buttons inside such an entry (Data's Clear/Delete) are left out
+  (maintainer, 2026-11-16).
 - Text stays a literal (not in a `*.strings.xml`) only for: the labels of a setting's values (not
   extracted yet), protocol names (`HTTP`, `SOCKS5`) and examples (never translated),
   preview-only text, and what Discord's presence reads (`presence/DiscordTexts.kt`, English on

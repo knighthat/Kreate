@@ -317,7 +317,8 @@ ui/screen/
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.
 - settings/ — one subpackage per page; shared bits stay at the root: `SettingsScreen.kt` (page
-  list, then Reset to default) + `SettingsViewModel.kt` (`reset`: every `ServiceSignOut`,
+  list, Backup grayed with a note for other profiles, then Reset to default) +
+  `SettingsViewModel.kt` (`reset`: every `ServiceSignOut`,
   `Secrets.clearAll`, `Preferences.reset`, deletes the profile's fonts, device language when it had
   its own), `SettingsComponents.kt` (`ConfirmSetting`
   (row whose tap asks in a dialog first), SettingsPage (top bar actions + restart-app button with

@@ -20,10 +20,13 @@ package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -52,27 +55,36 @@ fun SettingsScreen(
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
     profileManager: ProfileManager = koinInject(),
+    userRepository: UserRepository = koinInject(),
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val activeId by profileManager.activeId.collectAsStateWithLifecycle()
+    val defaultUser by remember(userRepository) { userRepository.find(Profile.DEFAULT_ID) }
+        .collectAsStateWithLifecycle(null)
 
     // A backup holds every profile, so only the default one may save or replace them
     SettingsContent(
         onBack = onBack,
         onOpen = onOpen,
-        showBackup = activeId == Profile.DEFAULT_ID,
+        backupAllowed = activeId == Profile.DEFAULT_ID,
+        defaultProfileName = defaultUser?.name,
         server = openSubsonicName(),
         onReset = { viewModel.reset() },
         modifier = modifier,
     )
 }
 
-/** @param server what the OpenSubsonic server is called, see [openSubsonicName] */
+/**
+ * @param backupAllowed whether the profile may open Backup; the row is grayed out otherwise,
+ * naming [defaultProfileName] (`null` while it loads, the note stays hidden)
+ * @param server what the OpenSubsonic server is called, see [openSubsonicName]
+ */
 @Composable
 private fun SettingsContent(
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
-    showBackup: Boolean,
+    backupAllowed: Boolean,
+    defaultProfileName: String?,
     server: String,
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
@@ -107,12 +119,21 @@ private fun SettingsContent(
             ),
             onClick = { onOpen(NetworkSettings) },
         )
-        if (showBackup)
-            SettingsItem(
-                title = stringResource(R.string.screen_title_backup),
-                summary = stringResource(R.string.setting_description_backup),
-                onClick = { onOpen(BackupSettings) },
-            )
+        val backupDescription = stringResource(R.string.setting_description_backup)
+        SettingsItem(
+            title = stringResource(R.string.screen_title_backup),
+            summary = if (backupAllowed || defaultProfileName == null) {
+                backupDescription
+            } else {
+                val only = stringResource(
+                    R.string.setting_description_backup_status_default_profile_only,
+                    stringResource(R.string.quoted, defaultProfileName),
+                )
+                "$backupDescription\n$only"
+            },
+            onClick = if (backupAllowed) ({ onOpen(BackupSettings) }) else null,
+            modifier = if (backupAllowed) Modifier else Modifier.alpha(DISABLED_ALPHA),
+        )
         SettingsItem(
             title = stringResource(R.string.screen_title_about),
             summary = stringResource(R.string.setting_description_about),
@@ -131,6 +152,21 @@ private fun SettingsContent(
 
 @ScreenPreviews
 @Composable
-private fun SettingsPreview() = PreviewTheme {
-    SettingsContent(onBack = {}, onOpen = {}, showBackup = true, server = "Navidrome", onReset = {})
+private fun SettingsPreview() = PreviewTheme { SettingsSample(backupAllowed = true) }
+
+/** Another profile than the default one: Backup is grayed out, naming the default profile. */
+@ScreenPreviews
+@Composable
+private fun SettingsOtherProfilePreview() = PreviewTheme { SettingsSample(backupAllowed = false) }
+
+@Composable
+private fun SettingsSample(backupAllowed: Boolean) {
+    SettingsContent(
+        onBack = {},
+        onOpen = {},
+        backupAllowed = backupAllowed,
+        defaultProfileName = "Default",
+        server = "Navidrome",
+        onReset = {},
+    )
 }
