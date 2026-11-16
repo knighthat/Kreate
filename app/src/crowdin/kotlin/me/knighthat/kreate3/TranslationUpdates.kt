@@ -19,6 +19,12 @@
 package me.knighthat.kreate3
 
 import android.content.Context
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.json.Json
+import java.util.Locale
 
 /**
  * The foss and github builds pull no texts from Crowdin, they show the translations merged into
@@ -27,9 +33,17 @@ import android.content.Context
 @Suppress("UNUSED_PARAMETER")
 object TranslationUpdates {
 
-    fun init(context: Context) = Unit
+    /** None besides the APK's, see `AppLanguage.available`. */
+    val languages: StateFlow<List<Locale>?> = MutableStateFlow(emptyList())
+
+    /** Never goes up, nothing is downloaded. */
+    val delivered: StateFlow<Int> = MutableStateFlow(0)
+
+    fun init(context: Context, scope: CoroutineScope, client: HttpClient, json: Json) = Unit
 
     fun wrap(base: Context): Context = base
+
+    suspend fun refresh() = Unit
 
     fun check(context: Context) = Unit
 }

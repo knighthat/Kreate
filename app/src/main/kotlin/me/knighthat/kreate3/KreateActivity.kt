@@ -152,6 +152,13 @@ class KreateActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // A language got its first texts after this screen was made (patreon)
+        val delivered = TranslationUpdates.delivered.value
+        lifecycleScope.launch {
+            TranslationUpdates.delivered.first { it != delivered }
+            recreate()
+        }
+
         // Requires context, must run after `super.onCreate(savedInstanceState)`
         isSetup = setupCompletedFile().exists()
         // Don't run subsequent tasks if not yet setup

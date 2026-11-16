@@ -5,7 +5,7 @@
 # downloaded into app/src/crowdin/res/values-<code>/ before each release, a resource dir of the foss
 # and github builds only (patreon ships none); the app counts every folder it finds there as a
 # supported language (see app/build.gradle.kts). The patreon build pulls its texts from the
-# "Android values" distribution instead (TranslationUpdates in app/src/patreon), which serves what
+# "android-app-texts" distribution instead (TranslationUpdates in app/src/patreon), which serves what
 # it had at its last release.
 #
 # Credentials come from the environment, never from this file:

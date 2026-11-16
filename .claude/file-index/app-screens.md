@@ -355,8 +355,9 @@ ui/screen/
     "Request new language" rows (both open the Crowdin project; translate hidden while System or
     English is picked); Layout: icon only, playlist
     initial, binary units; Font: `FontSettings`; app icon),
-    `ui/LanguageSettingsScreen.kt` (radio list of System + `AppLanguage.available`; patreon
-    (`BuildConfig.PREBUILT_LANGUAGES` false) shows a literal "No translation available" instead),
+    `ui/LanguageSettingsScreen.kt` (radio list of System + `AppLanguage.available`, follows
+    `TranslationUpdates.languages`, calls `refresh` on opening: spinner while only English is
+    known, then a literal "No translation available"),
     `ui/FontSettings.kt` (App font / Lyrics font rows, `ButtonSetting`, Reset shown only once a
     font is kept: tap → file picker (.ttf/.otf by name) → `FontFiles.stage` →
     `FontPreview` route for an answer → Save keeps it (`FontFiles.keep`, preference set), Back

@@ -48,7 +48,8 @@ says "Not available in FOSS build"; foss turns their settings off in each profil
 services need (the Discord callback, `RECORD_AUDIO`). A new non-free service follows the same
 split. Translations split by platform: `foss` and `github` get `app/src/crowdin/` (the merged
 `values-*` in `res/`, a `TranslationUpdates` that does nothing in `kotlin/`); `patreon` ships
-English alone (`BuildConfig.LANGUAGES` = `en`, `PREBUILT_LANGUAGES` off) and gets later texts from
-the Crowdin SDK (`patreonImplementation` only), its `TranslationUpdates` and manifest (removing the
+English alone (`BuildConfig.LANGUAGES` = `en`) and gets its languages from Crowdin's manifest and
+their texts from the Crowdin SDK (`patreonImplementation` only), its `TranslationUpdates` and
+manifest (removing the
 SDK's unused sign in) in `app/src/patreon/`. APKs are
 `app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`.

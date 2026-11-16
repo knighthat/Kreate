@@ -41,15 +41,16 @@ Root
   which build it is. `app/src/foss/AndroidManifest.xml` removes `DiscordCallbackActivity`,
   `DiscordSignInActivity` and
   `RECORD_AUDIO`; `app/src/patreon/AndroidManifest.xml` removes the Crowdin SDK's `AuthActivity`.
-- `TranslationUpdates.kt` — two copies: `app/src/patreon/…` (the Crowdin SDK delivers texts
-  translated after the build from distribution `02072db4999a42ff831759a4v12`, the APK has English
-  only; `init` from `KreateApplication`, `wrap` in both
-  activities'
-  `attachBaseContext`,
-  `check` at start and on configuration changes: shown language not English, at most every 48 h
-  per language in `translation_checks`, all due again after an app update) and
-  `app/src/crowdin/kotlin/…` (foss,
-  github: does nothing, the APK's texts).
+- `TranslationUpdates.kt` — two copies: `app/src/patreon/…` (APK has English only; `languages`
+  from Crowdin's manifest kept in `noBackupFilesDir/crowdin_manifest.json`, refetched by
+  `refresh` (language page) once 48 h old; `check` at start, on configuration changes and every
+  48 h on the global scope: downloads the shown non-English language through the Crowdin SDK
+  (distribution `BuildConfig.CROWDIN_DISTRIBUTION_HASH`: env, else local.properties; empty = English
+  only) when it has none, or its download is 48 h old and
+  the manifest has a newer release; times per tag in `translation_checks`, a failed download is
+  forgotten; `delivered` makes `KreateActivity` recreate after a language's first download;
+  `wrap` in both activities' `attachBaseContext`) and `app/src/crowdin/kotlin/…` (foss, github:
+  does nothing, the APK's texts).
 - presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only
   `Doing.kt` and `DiscordCovers.kt` are in `main`; the rest is under `app/src/nonfree/`, left out
   of foss. `PresenceState` is registered in `KreateApplication` for every build.
@@ -85,8 +86,8 @@ Root
     litterbox `1h`, reused 55 min, a failure waits 10 min).
 - `AppLanguage.kt` — app language, per profile in `Preferences.LANGUAGE` (empty = the device's):
   `available` from `BuildConfig.LANGUAGES` (English + the `app/src/crowdin/res/values-*` folders
-  with
-  a `*.strings.xml`, listed by `app/build.gradle.kts`), `displayName` in the language itself,
+  with a `*.strings.xml`, listed by `app/build.gradle.kts`) + `TranslationUpdates.languages`
+  (patreon; `follow` waits for them), `displayName` in the language itself,
   country/script only when two share a language; `select` (settings), `follow` (started by
   `KreateApplication`: shows each profile's language once it loads, a restored one too) and
   `takeFromSystem` (config change: a pick in the system's settings goes to the active profile). What

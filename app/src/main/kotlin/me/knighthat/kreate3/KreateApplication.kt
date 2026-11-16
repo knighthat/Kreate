@@ -273,8 +273,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
         // Each profile's language, a restored one too
         AppLanguage.follow(this, get(), get())
-        // Texts translated since the build, not in foss
-        TranslationUpdates.init(this)
+        // The languages of the patreon build, which come from Crowdin
+        TranslationUpdates.init(this, get(), get(), get())
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

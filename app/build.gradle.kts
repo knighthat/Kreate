@@ -19,6 +19,7 @@
 import com.android.build.api.variant.DeviceTestBuilder
 import com.android.build.api.variant.HostTestBuilder
 import com.android.build.api.variant.impl.VariantOutputImpl
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -63,8 +64,6 @@ android {
             "LANGUAGES",
             "\"${(listOf("en") + languages.sorted()).joinToString(",")}\""
         )
-        // Whether the language page lists the languages above, patreon's will come from Crowdin
-        buildConfigField("boolean", "PREBUILT_LANGUAGES", "true")
 
         // Kreate's app on Discord's developer portal, a public client: the id isn't a secret.
         // The redirect is set on the portal too, and in the manifest's DiscordCallbackActivity
@@ -125,9 +124,31 @@ android {
             versionNameSuffix = "+$name"
             buildConfigField("String", "HOMEPAGE_URL", "\"https://patreon.com/knighthat\"")
             buildConfigField("boolean", "NON_FREE_NET", "true")
-            buildConfigField("boolean", "PREBUILT_LANGUAGES", "false")
-            // Has no translations in its APK (src/crowdin stays out)
+            // Has no translations in its APK (src/crowdin stays out), its others come from Crowdin's
+            // distribution (src/patreon's TranslationUpdates)
             buildConfigField("String", "LANGUAGES", "\"en\"")
+            // The Crowdin distribution those come from: the environment's CROWDIN_DISTRIBUTION_HASH
+            // (CI), else the same key in local.properties (local builds); a build with neither has
+            // English only
+            val localProperties = rootProject.layout.projectDirectory.file("local.properties")
+            val crowdinHash = providers.environmentVariable("CROWDIN_DISTRIBUTION_HASH")
+                .orElse(
+                    providers.fileContents(localProperties)
+                        .asText
+                        .map { text ->
+                            Properties()
+                                .apply { load(text.reader()) }
+                                .getProperty("CROWDIN_DISTRIBUTION_HASH")
+                                .orEmpty()
+                        }
+                )
+                .orNull
+                .orEmpty()
+                .trim()
+            require(crowdinHash.matches(Regex("[0-9a-z]*"))) {
+                "CROWDIN_DISTRIBUTION_HASH isn't a hash"
+            }
+            buildConfigField("String", "CROWDIN_DISTRIBUTION_HASH", "\"$crowdinHash\"")
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
