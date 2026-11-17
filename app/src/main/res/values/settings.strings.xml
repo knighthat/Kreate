@@ -405,9 +405,7 @@
     <string name="setting_title_reset_settings">Reset to default</string>
     <string name="setting_description_reset_settings">Put this profile\'s settings back to how they came</string>
     <string name="setting_title_clear_search_history">Clear search history</string>
-    <string name="setting_description_clear_search_history">Forget every search this profile made</string>
     <string name="setting_title_clear_listening_history">Clear listening history</string>
-    <string name="setting_description_clear_listening_history">Forget every song this profile played, statistics start over</string>
     <string name="setting_title_clean_up_database">Clean up database</string>
     <string name="setting_description_clean_up_database">Remove songs, albums, artists and empty playlists nothing uses</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). The cleanup covers every profile's library, so only that profile may run it -->

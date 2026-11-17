@@ -383,7 +383,6 @@ private fun DataSettingsContent(
         SettingsSection(stringResource(R.string.setting_header_database))
         ConfirmSetting(
             title = stringResource(R.string.setting_title_clear_search_history),
-            summary = stringResource(R.string.setting_description_clear_search_history),
             dialogTitle = stringResource(R.string.dialog_title_clear_search_history),
             dialogBody = stringResource(R.string.dialog_body_clear_search_history),
             action = stringResource(R.string.action_clear),
@@ -391,7 +390,6 @@ private fun DataSettingsContent(
         )
         ConfirmSetting(
             title = stringResource(R.string.setting_title_clear_listening_history),
-            summary = stringResource(R.string.setting_description_clear_listening_history),
             dialogTitle = stringResource(R.string.dialog_title_clear_listening_history),
             dialogBody = stringResource(R.string.dialog_body_clear_listening_history),
             action = stringResource(R.string.action_clear),

@@ -182,12 +182,12 @@ fun SettingsItem(
 @Composable
 fun ConfirmSetting(
     title: String,
-    summary: String,
     dialogTitle: String,
     dialogBody: String,
     action: String,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
+    summary: String? = null,
     enabled: Boolean = true,
 ) {
     var asking by remember { mutableStateOf(false) }
