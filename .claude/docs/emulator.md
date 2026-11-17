@@ -11,7 +11,12 @@ save which account or channel a device is signed in as.
 
 ## Launching
 
-- Launcher activity: `adb shell am start -n me.knighthat.kreate3/.KreateActivity`.
+- Launcher activity: `adb shell am start -n me.knighthat.kreate3/.KreateActivity` on a stopped app.
+  The launcher starts the enabled icon alias (`.BlackIcon`, `AppIcon`) instead, and while that copy
+  runs, a start naming `.KreateActivity` without flags stacks a second copy on top (standard launch
+  mode): check `dumpsys activity activities | grep 'Hist.*kreate3'` when a test sees two screens'
+  state. The launcher's own start: `cmd package resolve-activity --brief -c
+  android.intent.category.LAUNCHER me.knighthat.kreate3` names the component.
 - Install your own build before judging a device result:
   `ANDROID_SERIAL=emulator-5554 ./gradlew :app:installGithubUniversalDebug`. Without
   `ANDROID_SERIAL` Gradle installs on every attached device, a real phone included. Target the
@@ -68,6 +73,11 @@ save which account or channel a device is signed in as.
   `adb shell run-as me.knighthat.kreate3 kill -9 $(adb shell pidof me.knighthat.kreate3)`; the
   service usually restarts (START_STICKY) and the queue comes back.
 - adb sometimes reports the emulator `offline` for a moment; retry.
+- Screens kept out of screenshots (`SecureScreen`, `FLAG_SECURE`): `dumpsys window windows | grep -c
+  'fl=.*SECURE'` counts secure windows (1 on such a screen, 0 after Back); `screencap` and the
+  system screenshot (`input keyevent 120`, saved under `/sdcard/Pictures/Screenshots`) come out as
+  one black color; recents (`input keyevent 187`) shows the card black. Delete the screenshots
+  after.
 - Media notification tap: `adb shell cmd statusbar expand-notifications`, screenshot, tap the
   card's title area. For the cold path, swipe the app away in recents first: the activity is gone
   while `PlaybackService` keeps playing. `am start … -f 0x24000000` with the same action stands in

@@ -131,7 +131,15 @@ private fun HomeSongsContent(
         refreshing = refreshing,
         onRefresh = onRefresh,
         sheet = { onDismiss ->
-            SongsSheet(filters, onFilter, onAction, onRecognize, recognitionEnabled, onDismiss)
+            SongsSheet(
+                songs.itemCount > 0,
+                filters,
+                onFilter,
+                onAction,
+                onRecognize,
+                recognitionEnabled,
+                onDismiss,
+            )
         },
     ) { padding ->
         LazyColumn(
@@ -153,11 +161,13 @@ private fun HomeSongsContent(
  * what the tab shows. Cached only and Downloaded only exclude each other, turning one on turns the
  * other off.
  *
+ * @param hasSongs whether the tab shows any song; the quick actions are grayed out without one
  * @param recognitionEnabled [Preferences.SHAZAM_ENABLED]; while off, Recognize song is grayed out
  * and says it's disabled in settings
  */
 @Composable
 private fun SongsSheet(
+    hasSongs: Boolean,
     filters: SongFilters,
     onFilter: ((SongFilters) -> SongFilters) -> Unit,
     onAction: (QueueAction) -> Unit,
@@ -167,21 +177,31 @@ private fun SongsSheet(
 ) = ConfigSheet(
     onDismiss = onDismiss,
     actions = { close ->
-        LabeledIconButton(R.drawable.play_arrow, stringResource(R.string.menu_shortcut_play_all)) {
+        LabeledIconButton(
+            R.drawable.play_arrow,
+            stringResource(R.string.menu_shortcut_play_all),
+            enabled = hasSongs,
+        ) {
             close { onAction(QueueAction.PLAY) }
         }
-        LabeledIconButton(R.drawable.shuffle, stringResource(R.string.menu_shortcut_shuffle)) {
+        LabeledIconButton(
+            R.drawable.shuffle,
+            stringResource(R.string.menu_shortcut_shuffle),
+            enabled = hasSongs,
+        ) {
             close { onAction(QueueAction.SHUFFLE) }
         }
         LabeledIconButton(
             R.drawable.queue_play_next,
             stringResource(R.string.menu_shortcut_play_next),
+            enabled = hasSongs,
         ) {
             close { onAction(QueueAction.PLAY_NEXT) }
         }
         LabeledIconButton(
             R.drawable.playlist_add,
             stringResource(R.string.menu_shortcut_add_to_queue),
+            enabled = hasSongs,
         ) {
             close { onAction(QueueAction.ENQUEUE) }
         }
