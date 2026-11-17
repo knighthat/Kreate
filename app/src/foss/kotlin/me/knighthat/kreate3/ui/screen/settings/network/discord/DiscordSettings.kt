@@ -22,11 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import me.knighthat.kreate3.BuildConfig
 import me.knighthat.kreate3.R
 
 /** The foss build has no Discord presence, its row in Network settings says so. */
 @Composable
-fun discordSummary(): String = stringResource(R.string.setting_description_status_not_in_foss)
+fun discordSummary(): String =
+    stringResource(R.string.status_not_available_in, BuildConfig.FLAVOR_platform.uppercase())
 
 /** The foss build has no Discord page. */
 @Suppress("UNUSED_PARAMETER")

@@ -313,7 +313,7 @@ ui/screen/
   `searchQuery`), View on Shazam (`rememberOpenLink`, stays open), Retry (to the hold button),
   Close). Wired in
   `KreateApp` through `TabBar`'s `itemModifier`/`iconOverlay`; in foss (`BuildConfig.NON_FREE_NET`
-  off) there is no view model, a hold only posts `snackbar_recognize_song_not_in_foss`.
+  off) there is no view model, a hold only posts `status_not_available_in`.
 - search/ — `SearchScreen.kt` + `SearchViewModel.kt` (input, history, YouTube/server suggestions;
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.

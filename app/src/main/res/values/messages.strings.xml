@@ -292,8 +292,6 @@
     <string name="error_discord_sign_in_again">The %1$s sign in expired, try again</string>
     <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
     <string name="snackbar_recognize_song_disabled">Disabled in settings</string>
-    <!-- The Songs tab was held to recognize the song playing nearby, in the build made for F-Droid, which leaves song recognition out. FOSS = free and open source software -->
-    <string name="snackbar_recognize_song_not_in_foss">Not available in FOSS build</string>
     <string name="snackbar_recognize_song_no_microphone">Allow the microphone to recognize songs</string>
     <!-- %1$s is a counted plural, e.g. "8 seconds". The Songs tab, or the big microphone button of the song recognition dialog, was let go too early while it listened to name the song playing nearby. Shown as a message and in that dialog -->
     <string name="snackbar_recognize_song_too_short">Too short to recognize, hold for at least %1$s</string>

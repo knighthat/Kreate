@@ -273,13 +273,17 @@ private fun NetworkSettingsContent(
             ),
             checked = shazamEnabled && BuildConfig.NON_FREE_NET,
             onCheckedChange = onShazamEnabled,
-            summary = if (BuildConfig.NON_FREE_NET)
+            summary = if (BuildConfig.NON_FREE_NET) {
                 stringResource(
                     R.string.setting_description_shazam_enabled,
                     stringResource(R.string.shazam)
                 )
-            else
-                stringResource(R.string.setting_description_status_not_in_foss),
+            } else {
+                stringResource(
+                    R.string.status_not_available_in,
+                    BuildConfig.FLAVOR_platform.uppercase()
+                )
+            },
             enabled = BuildConfig.NON_FREE_NET,
         )
     }

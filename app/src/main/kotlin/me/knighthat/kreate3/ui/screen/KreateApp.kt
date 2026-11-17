@@ -333,7 +333,12 @@ fun KreateApp(
         val resources = LocalResources.current
         rememberHoldToListen(
             onStart = {
-                notifier.post(resources.getString(R.string.snackbar_recognize_song_not_in_foss))
+                notifier.post(
+                    resources.getString(
+                        R.string.status_not_available_in,
+                        BuildConfig.FLAVOR_platform.uppercase()
+                    )
+                )
             },
             onStop = {},
         )

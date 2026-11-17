@@ -40,4 +40,6 @@
     <string name="status_nothing_played">Nothing played yet</string>
     <!-- Under a playlist being imported: %1$s songs of %2$s have been searched for on YouTube Music so far, both numbers formatted, e.g. "Searching 120 of 1,722" -->
     <string name="status_import_searched">Searching %1$s of %2$s</string>
+    <!-- %1$s is the name of the app's build, e.g. FOSS (free and open source software, the build made for F-Droid). Shown for a feature that build leaves out: under the Discord and song recognition rows of Network settings, and as a message when the Songs tab is held to recognize a song -->
+    <string name="status_not_available_in">Not available in %1$s build</string>
 </resources>
