@@ -50,6 +50,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeProxy
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SecureScreen
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import org.koin.androidx.compose.koinViewModel
 
@@ -142,6 +143,8 @@ internal fun YouTubeSignInContent(
     finishSignIn: (YouTubeChannel?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    SecureScreen()
+
     var webView by remember { mutableStateOf<WebView?>(null) }
     // The page waits for YouTube's proxy, it never loads without it
     var proxy by remember { mutableStateOf<SignInProxy?>(null) }

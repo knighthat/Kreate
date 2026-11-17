@@ -149,6 +149,11 @@ ui/component/ (shared composables; each file that draws something ends with its 
 - `PreviewSamples.kt` (sample data, `previewItem` with album/media type/reaction for badges,
   `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark, `@ComponentPreviews` wrap-content
   light+dark, `previewCover()` a made-up cover drawn as a `Bitmap`).
+- `SecureScreen.kt` — `SecureScreen()`: `FLAG_SECURE` on the activity window while the calling
+  screen is composed (no screenshots, recordings or recents preview), counted so overlapping
+  screens in a transition don't clear it early, off while `Preferences.SCREENSHOT_CREDENTIALS`
+  allows screenshots (General → Privacy); called by the OpenSubsonic, YouTube and proxy sign-in
+  contents.
 - `Sliders.kt` — thin-track sliders on a private `BallSlider` (4dp track, number in a ball/pill
   thumb 26dp, 34dp while held, no gap, unit label under the middle, `leadingIcon`/`trailingIcon`
   slots, `held` overloads for previews): `LufsSlider` (-18..-10 LUFS in 0.5 steps, filled from a

@@ -49,6 +49,7 @@ import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SecureScreen
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
@@ -119,6 +120,8 @@ internal fun OpenSubsonicSignInContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    SecureScreen()
+
     // `null` while untouched, the saved value shows: secrets are empty until their file is read
     var typedUrl by rememberSaveable { mutableStateOf<String?>(null) }
     var picked by rememberSaveable { mutableStateOf<OpenSubsonicAuth?>(null) }

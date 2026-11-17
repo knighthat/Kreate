@@ -51,6 +51,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SecureScreen
 import me.knighthat.kreate3.ui.navigation.RouteResults
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import org.koin.compose.koinInject
@@ -138,6 +139,8 @@ private fun ProxyEditorContent(
     onSave: (ProxyConfig) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    SecureScreen()
+
     var type by rememberSaveable { mutableStateOf(start.type) }
     var host by rememberSaveable { mutableStateOf(start.host) }
     var port by rememberSaveable { mutableStateOf(if (start.port == 0) "" else start.port.toString()) }

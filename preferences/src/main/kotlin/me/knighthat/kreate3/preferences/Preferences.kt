@@ -94,6 +94,13 @@ object Preferences : KoinComponent {
     val NOTIFICATION_OPENS_PLAYER by lazy { boolean("notification_opens_player", true) }
 
     /**
+     * Screens showing credentials (the OpenSubsonic, YouTube Music and proxy sign-ins) show in
+     * screenshots, screen recordings and the recent apps; off, they are blank there. Read by
+     * `SecureScreen`.
+     */
+    val SCREENSHOT_CREDENTIALS by lazy { boolean("screenshot_credentials", false) }
+
+    /**
      * What the button beside ⋮ in the bar of an album's page does with its songs, set in the
      * General settings and read by the album screens.
      */

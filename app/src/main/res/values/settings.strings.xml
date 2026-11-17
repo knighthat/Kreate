@@ -130,6 +130,10 @@
     <string name="setting_description_confirm_exit_status_off">No confirmation</string>
     <string name="setting_title_notification_opens_player">Open player from notification</string>
     <string name="setting_description_notification_opens_player">Tapping the media notification opens the full player</string>
+    <string name="setting_header_privacy">Privacy</string>
+    <string name="setting_title_screenshot_credentials">Screenshot sensitive data</string>
+    <string name="setting_description_screenshot_credentials_on">Allowed regardless of screen</string>
+    <string name="setting_description_screenshot_credentials_off">Not allowed, recents show blank screen also</string>
     <string name="setting_title_page_button">Page button</string>
     <string name="setting_title_first_button">First button</string>
     <string name="setting_title_second_button">Second button</string>

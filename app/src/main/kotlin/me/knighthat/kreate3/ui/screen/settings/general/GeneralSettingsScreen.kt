@@ -113,6 +113,7 @@ fun GeneralSettingsScreen(
     val exitOnBack by Preferences.EXIT_ON_BACK.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
     val notificationOpensPlayer by Preferences.NOTIFICATION_OPENS_PLAYER.collectAsStateWithLifecycle()
+    val screenshotCredentials by Preferences.SCREENSHOT_CREDENTIALS.collectAsStateWithLifecycle()
     val albumPageAction by Preferences.ALBUM_PAGE_ACTION.collectAsStateWithLifecycle()
     val artistPageAction by Preferences.ARTIST_PAGE_ACTION.collectAsStateWithLifecycle()
     val playlistFirstButton by Preferences.PLAYLIST_FIRST_BUTTON.collectAsStateWithLifecycle()
@@ -172,6 +173,7 @@ fun GeneralSettingsScreen(
         exitOnBack = exitOnBack,
         exitTimeout = exitTimeout,
         notificationOpensPlayer = notificationOpensPlayer,
+        screenshotCredentials = screenshotCredentials,
         albumPageAction = albumPageAction,
         artistPageAction = artistPageAction,
         playlistFirstButton = playlistFirstButton,
@@ -211,6 +213,7 @@ private fun GeneralSettingsContent(
     exitOnBack: Boolean,
     exitTimeout: Int,
     notificationOpensPlayer: Boolean,
+    screenshotCredentials: Boolean,
     albumPageAction: QueueAction,
     artistPageAction: QueueAction,
     playlistFirstButton: PlaylistButton,
@@ -376,6 +379,19 @@ private fun GeneralSettingsContent(
             )
         }
 
+        SettingsSection(stringResource(R.string.setting_header_privacy))
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_screenshot_credentials),
+            checked = screenshotCredentials,
+            onCheckedChange = { Preferences.SCREENSHOT_CREDENTIALS.update(it) },
+            summary = stringResource(
+                if (screenshotCredentials)
+                    R.string.setting_description_screenshot_credentials_on
+                else
+                    R.string.setting_description_screenshot_credentials_off
+            ),
+        )
+
         SettingsSection(stringResource(R.string.setting_header_logging))
         if (!appWide && defaultProfileName != null)
             SettingsSummary(
@@ -466,6 +482,7 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         exitOnBack = true,
         exitTimeout = 2,
         notificationOpensPlayer = true,
+        screenshotCredentials = false,
         albumPageAction = QueueAction.PLAY,
         artistPageAction = QueueAction.SHUFFLE,
         playlistFirstButton = PlaylistButton.PLAY,

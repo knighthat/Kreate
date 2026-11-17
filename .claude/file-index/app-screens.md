@@ -338,7 +338,7 @@ ui/screen/
   `rememberRouteResult`),
   `CredentialField.kt` (one-line credential field with show/hide eye, optional placeholder).
   `general/GeneralSettingsScreen.kt` (library scan, navigation, album and
-  artist page buttons), `data/DataSettingsScreen.kt`
+  artist page buttons, privacy: screenshots of credential screens), `data/DataSettingsScreen.kt`
   + `DataSettingsViewModel.kt` (Storage: `DeviceStorageUsage.kt` bar of the device with the app's
     parts (`StoragePart`: image cache, song cache, downloads, download covers, lyrics) and other
     apps, then image disk cache, song cache, song downloads as `StorageUsage` bars, polled every 2
