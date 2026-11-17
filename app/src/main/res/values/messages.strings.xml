@@ -247,7 +247,6 @@
     <string name="snackbar_queue_cleared">Queue cleared</string>
     <string name="snackbar_playback_stopped">Playback stopped</string>
     <string name="snackbar_removed_from_history">Removed from history</string>
-    <string name="snackbar_history_cleared">History cleared</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
     <string name="snackbar_removed_from_dislike_count">%1$s removed from dislike</string>
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->

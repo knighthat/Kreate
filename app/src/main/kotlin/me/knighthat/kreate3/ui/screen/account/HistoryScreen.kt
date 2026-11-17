@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -152,7 +151,6 @@ fun HistoryScreen(
             }
         },
         onDelete = { viewModel.delete(it, notifier::post) },
-        onClear = { viewModel.clear(notifier::post) },
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -180,7 +178,6 @@ private fun HistoryContent(
     onPlay: (HistoryRow) -> Unit,
     onQueue: (QueueAction, period: Int?) -> Unit,
     onDelete: (HistoryRow) -> Unit,
-    onClear: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -197,18 +194,8 @@ private fun HistoryContent(
         if (shownQuery != null) listState.scrollToItem(0)
         shownQuery = query
     }
-    var confirmClear by rememberSaveable { mutableStateOf(false) }
     var options by rememberSaveable { mutableStateOf(false) }
 
-    if (confirmClear)
-        ClearHistoryDialog(
-            filtered = filtered,
-            onClear = {
-                confirmClear = false
-                onClear()
-            },
-            onDismiss = { confirmClear = false },
-        )
     if (options)
         HistorySheet(
             choices = choices,
@@ -217,7 +204,6 @@ private fun HistoryContent(
             onToggleOrigin = onToggleOrigin,
             onPickRange = onPickRange,
             onQueue = { onQueue(it, null) },
-            onClearHistory = { confirmClear = true },
             onDismiss = { options = false },
         )
 
@@ -385,30 +371,10 @@ private fun PausedBanner(onResume: () -> Unit) =
         TextButton(onClick = onResume) { Text(stringResource(R.string.action_resume)) }
     }
 
-/** Asks before taking plays out, every play unless [filtered], the ones shown then. */
-@Composable
-private fun ClearHistoryDialog(filtered: Boolean, onClear: () -> Unit, onDismiss: () -> Unit) =
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_title_clear_history)) },
-        text = {
-            Text(
-                stringResource(
-                    if (filtered)
-                        R.string.dialog_body_clear_history_shown
-                    else
-                        R.string.dialog_body_clear_history
-                )
-            )
-        },
-        confirmButton = { TextButton(onClick = onClear) { Text(stringResource(R.string.action_clear)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
-    )
-
 /**
- * What can be done with the history shown, in a sheet: Play all, Play next, Add to queue,
- * Shuffle and Clear history as a row of buttons, then the origins to show and the days, by a preset
- * or on the calendar. A filter applies as soon as it's picked; a range on the calendar once its
+ * What can be done with the history shown, in a sheet: Play all, Play next, Add to queue and
+ * Shuffle as a row of buttons, then the origins to show and the days, by a preset or on the
+ * calendar. A filter applies as soon as it's picked; a range on the calendar once its
  * last day is.
  */
 @Composable
@@ -419,7 +385,6 @@ private fun HistorySheet(
     onToggleOrigin: (Origin) -> Unit,
     onPickRange: (HistoryRange?) -> Unit,
     onQueue: (QueueAction) -> Unit,
-    onClearHistory: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val now = remember { System.currentTimeMillis() }
@@ -446,9 +411,6 @@ private fun HistorySheet(
             }
             Action(R.drawable.shuffle, R.string.menu_shortcut_shuffle) {
                 close { onQueue(QueueAction.SHUFFLE) }
-            }
-            Action(R.drawable.delete, R.string.menu_shortcut_clear_history) {
-                close(onClearHistory)
             }
         },
         options = {
@@ -514,6 +476,5 @@ private fun HistoryPreview() = PreviewTheme {
         onPlay = {},
         onQueue = { _, _ -> },
         onDelete = {},
-        onClear = {},
     )
 }

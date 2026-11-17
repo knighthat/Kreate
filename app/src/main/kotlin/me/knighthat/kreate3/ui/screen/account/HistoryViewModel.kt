@@ -142,10 +142,6 @@ class HistoryViewModel(
             .map { list -> list.associateBy(PeriodSummary::period) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
 
-    /** Whether a range or an origin leaves plays out. */
-    private val isFiltered: Boolean
-        get() = _range.value != null || _origins.value.isNotEmpty()
-
     fun pickRange(range: HistoryRange?) {
         _range.value = range
     }
@@ -188,22 +184,6 @@ class HistoryViewModel(
         return withContext(Dispatchers.Default) {
             history.listPlays(periods.map(HistorySpan::period), _origins.value, _newestFirst.value)
                 .mapNotNull { play -> play.song.toMediaItem()?.let { play.id to it } }
-        }
-    }
-
-    /**
-     * Takes the plays shown out of the history, every play while nothing is filtered out, then
-     * [onDone] gets a message whose Undo puts them back.
-     */
-    fun clear(onDone: (Message) -> Unit) {
-        val periods = spans.value.orEmpty().map(HistorySpan::period)
-        val origins = _origins.value
-        val filtered = isFiltered
-        scope.launch {
-            val removed =
-                if (filtered) history.deletePlays(periods, origins) else history.clearPlays()
-            if (removed.isNotEmpty())
-                onDone(undoable(R.string.snackbar_history_cleared, removed))
         }
     }
 

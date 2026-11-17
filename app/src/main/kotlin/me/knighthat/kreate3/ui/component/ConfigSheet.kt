@@ -59,12 +59,14 @@ import me.knighthat.kreate3.R
 
 /**
  * The options of a screen in a sheet: [actions] as a row of buttons, an icon
- * over its label ([LabeledIconButton]), then [entries] and [options] under a divider, `null` for
- * none.
+ * over its label ([LabeledIconButton]), then [entries] and [options] under a divider, then
+ * [lastEntries] under another one, `null` for none.
  *
- * @param actions gets `close`, which slides the sheet away and then runs what it is given; an
- * action calls it, an option applies at once and leaves the sheet open
+ * @param actions at most 4 buttons, more go in [entries]; gets `close`, which slides the sheet away
+ * and then runs what it is given; an action calls it, an option applies at once and leaves the sheet
+ * open
  * @param entries actions less used as rows ([ConfigEntry]), which get `close` like [actions]
+ * @param lastEntries rows like [entries] at the end of the sheet, after [options] (Delete all)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +75,7 @@ fun ConfigSheet(
     actions: (@Composable RowScope.(close: (then: () -> Unit) -> Unit) -> Unit)?,
     options: (@Composable ColumnScope.() -> Unit)? = null,
     entries: (@Composable ColumnScope.(close: (then: () -> Unit) -> Unit) -> Unit)? = null,
+    lastEntries: (@Composable ColumnScope.(close: (then: () -> Unit) -> Unit) -> Unit)? = null,
 ) {
     // A sheet taller than half the screen opens on its top half, the rest is a drag up
     val sheetState = rememberModalBottomSheetState()
@@ -90,6 +93,7 @@ fun ConfigSheet(
             actions = actions?.let { { it(::close) } },
             options = options,
             entries = entries?.let { { it(::close) } },
+            lastEntries = lastEntries?.let { { it(::close) } },
         )
     }
 }
@@ -99,6 +103,7 @@ private fun ConfigSheetContent(
     actions: (@Composable RowScope.() -> Unit)?,
     options: (@Composable ColumnScope.() -> Unit)?,
     entries: (@Composable ColumnScope.() -> Unit)? = null,
+    lastEntries: (@Composable ColumnScope.() -> Unit)? = null,
 ) = Column(
     Modifier
         .verticalScroll(rememberScrollState())
@@ -110,11 +115,16 @@ private fun ConfigSheetContent(
             modifier = Modifier.fillMaxWidth(),
         ) { actions() }
         // A sheet of options alone starts on them, the divider only parts them from the buttons
-        if (entries != null || options != null)
+        if (entries != null || options != null || lastEntries != null)
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
     }
     entries?.invoke(this)
     options?.invoke(this)
+    if (lastEntries != null) {
+        if (entries != null || options != null)
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        lastEntries()
+    }
 }
 
 /**
@@ -230,6 +240,30 @@ private fun ConfigSheetEntriesPreview() = PreviewTheme {
                     ConfigEntry(R.drawable.queue_play_next, "Play next") {}
                     ConfigEntry(R.drawable.info, "Details") {}
                 },
+            )
+        }
+    }
+}
+
+/** A row at the end, after the options, like Downloaded's Delete all. */
+@OptIn(ExperimentalMaterial3Api::class)
+@ComponentPreviews
+@Composable
+private fun ConfigSheetLastEntriesPreview() = PreviewTheme {
+    Surface(color = BottomSheetDefaults.ContainerColor) {
+        Column(modifier = Modifier.width(360.dp)) {
+            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
+            ConfigSheetContent(
+                actions = {
+                    LabeledIconButton(R.drawable.play_arrow, "Play all") {}
+                    LabeledIconButton(R.drawable.shuffle, "Shuffle") {}
+                    LabeledIconButton(R.drawable.queue_play_next, "Play next") {}
+                    LabeledIconButton(R.drawable.playlist_add, "Add to queue") {}
+                },
+                options = {
+                    ConfigToggle(R.drawable.thumb_down, "Show disliked", checked = false) {}
+                },
+                lastEntries = { ConfigEntry(R.drawable.delete, "Delete all") {} },
             )
         }
     }

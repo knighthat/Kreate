@@ -62,6 +62,10 @@ charts: `.claude/docs/charts.md`.
 - A screen's options go in a `ConfigSheet` (`ConfigSheet.kt`) opened by `ConfigButton`: the button
   row holds actions, which close the sheet before running; `ConfigToggle`s under the divider apply
   at once and leave it open.
+- A sheet's row of quick action buttons (a `ConfigSheet`'s `actions`, the song and collection
+  menus' rows) holds at most 4 buttons; the less used ones beyond that go under it as
+  `ConfigEntry` rows with `menu_*` labels. A Delete all row goes last, after the
+  options (`ConfigSheet`'s `lastEntries`) (maintainer, 2026-11-16).
 - Sort controls stay in the bar, never in the sheet (maintainer, 2026-10-30).
 - Menu sheets (every `ConfigSheet`, the song and collection menu) open halfway when taller than
   half the screen, the rest a drag up; never `skipPartiallyExpanded` (maintainer, 2026-11-16).

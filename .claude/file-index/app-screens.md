@@ -47,7 +47,8 @@ ui/screen/
   of this user's and all users' bytes against `MEDIA3_DOWNLOAD_SIZE`; In progress section shows the
   running downloads and the next in line (else the first one), its See more opens the rest; origin
   chips (Disliked's `OriginChips`) as a row of the list; the bar's `ConfigButton` opens
-  `DownloadedSheet` (`ConfigSheet`): Play all, Shuffle, Play next, Add to queue, Delete all
+  `DownloadedSheet` (`ConfigSheet`): Play all, Shuffle, Play next, Add to queue, a Delete all row at
+  the end
   (confirm, only what's shown), then Show disliked (`UserSongRepository.downloaded` includes
   disliked songs, hidden by default, marked with a thumb when shown); the newest/oldest button stays
   in the bar; tap plays the list from the song;
@@ -96,13 +97,13 @@ ui/screen/
   plays from
   that play on in its group (`songsFrom`); menu adds Delete from history (that play); top bar:
   newest/oldest toggle and Config, which opens `HistorySheet` (a `ModalBottomSheet`: Play all,
-  Play next, Add to queue, Shuffle, Clear history as a row of `LabeledIconButton`s (labels hidden
-  while Icon only), origin chips and date presets with an inline `DateRangePicker` from
+  Play next, Add to queue, Shuffle as a row of `LabeledIconButton`s (labels hidden
+  while Icon only), origin chips and date presets with an inline
+  `DateRangePicker` from
   `FilterSheet.kt`, each applied at once); nothing is kept, the
   page opens unfiltered and
   newest first; entries carry the `query` they came from, keys use it and the list goes to the top
-  when it changes;
-  Clear history clears all, or only what's shown while filtered; paused banner with Resume),
+  when it changes; no Clear history (Data settings has one); paused banner with Resume),
   `HistoryGroups.kt` (`HistoryBuckets`: Today, Yesterday, days to 6, weeks to a month, months to a
   year, years up to 50; `spans()` gives each bucket's time span; `HistoryRange` as picker UTC days,
   presets). `FilterSheet.kt` (filter sheet parts History and Statistics share: `SheetHeader`,

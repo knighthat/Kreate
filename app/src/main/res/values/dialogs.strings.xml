@@ -73,9 +73,6 @@
     <string name="dialog_body_stop_download">%1$s won\'t be downloaded.</string>
     <string name="dialog_title_restore_a_backup">Restore a backup?</string>
     <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
-    <string name="dialog_title_clear_history">Clear history?</string>
-    <string name="dialog_body_clear_history">Every song this profile played is taken out of its history.</string>
-    <string name="dialog_body_clear_history_shown">Only the plays matching your filters are removed. The rest of the history stays.</string>
     <string name="dialog_title_undislike_all">Undislike all?</string>
     <string name="dialog_body_undislike_all">Every song this profile disliked shows up in its lists again.</string>
     <string name="dialog_body_undislike_all_shown">Only the songs matching your filters show up in your lists again. The rest stay hidden.</string>

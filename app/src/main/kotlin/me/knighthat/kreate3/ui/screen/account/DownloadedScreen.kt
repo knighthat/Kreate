@@ -50,6 +50,7 @@ import me.knighthat.kreate3.download.DownloadStage
 import me.knighthat.kreate3.download.DownloadWait
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.ConfigButton
+import me.knighthat.kreate3.ui.component.ConfigEntry
 import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
 import me.knighthat.kreate3.ui.component.LabeledIconButton
@@ -253,7 +254,7 @@ private fun DownloadedContent(
         )
 }
 
-/** The quick actions on the songs shown and Delete all, then whether disliked songs show. */
+/** The quick actions on the songs shown, whether disliked songs show, then Delete all as a row at the end. */
 @Composable
 private fun DownloadedSheet(
     hasSongs: Boolean,
@@ -275,20 +276,23 @@ private fun DownloadedSheet(
         Queue(R.drawable.shuffle, R.string.menu_shortcut_shuffle, QueueAction.SHUFFLE)
         Queue(R.drawable.queue_play_next, R.string.menu_shortcut_play_next, QueueAction.PLAY_NEXT)
         Queue(R.drawable.playlist_add, R.string.menu_shortcut_add_to_queue, QueueAction.ENQUEUE)
-        LabeledIconButton(
+    },
+    options = {
+        ConfigToggle(
+            R.drawable.thumb_down,
+            stringResource(R.string.menu_show_disliked),
+            showDisliked,
+            onToggle = onToggleDisliked,
+        )
+    },
+    lastEntries = { close ->
+        ConfigEntry(
             R.drawable.delete,
-            stringResource(R.string.menu_shortcut_delete_all),
+            stringResource(R.string.menu_delete_all),
             enabled = hasSongs,
         ) { close(onDeleteAll) }
     },
-) {
-    ConfigToggle(
-        R.drawable.thumb_down,
-        stringResource(R.string.menu_show_disliked),
-        showDisliked,
-        onToggle = onToggleDisliked,
-    )
-}
+)
 
 @Composable
 private fun DeleteAllDownloadsDialog(

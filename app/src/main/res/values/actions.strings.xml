@@ -105,7 +105,6 @@
     <string name="menu_shortcut_play_all">Play all</string>
     <string name="menu_shuffle">Shuffle</string>
     <string name="menu_shortcut_shuffle">Shuffle</string>
-    <string name="menu_shortcut_clear_history">Clear history</string>
     <string name="menu_shortcut_open_random">Open random</string>
     <string name="menu_shortcut_play_random">Play random</string>
     <string name="menu_show_disliked">Show disliked</string>
@@ -114,7 +113,7 @@
     <string name="menu_bookmarked_only">Bookmarked only</string>
     <string name="menu_followed_only">Followed only</string>
     <string name="menu_monthly_only">Monthly only</string>
-    <string name="menu_shortcut_delete_all">Delete all</string>
+    <string name="menu_delete_all">Delete all</string>
     <string name="menu_shortcut_undislike_all">Undislike all</string>
     <string name="menu_shortcut_unlike_all">Unlike all</string>
     <string name="menu_off">Off</string>
