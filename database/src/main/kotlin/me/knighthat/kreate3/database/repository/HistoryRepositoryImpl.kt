@@ -185,25 +185,6 @@ internal class HistoryRepositoryImpl(
         }
     }
 
-    override suspend fun deletePlays(
-        periods: List<PlayPeriod>,
-        origins: Set<Origin>,
-    ): List<PlaybackHistory> {
-        if (periods.isEmpty()) return emptyList()
-        val userId = scope.requireId()
-        return database.inTransaction {
-            playbackHistoryDao.listIds(
-                RoomRawQuery(
-                    sql = "SELECT h.id ${playsIn(periods, origins)}",
-                    onBindStatement = { it.bindText(1, userId) },
-                )
-            ).chunked(MAX_IDS).flatMap { ids ->
-                playbackHistoryDao.byIds(userId, ids)
-                    .also { playbackHistoryDao.delete(userId, ids) }
-            }.map(PlaybackHistoryEntity::toModel)
-        }
-    }
-
     override suspend fun clearPlays(): List<PlaybackHistory> {
         val userId = scope.requireId()
         return database.inTransaction {

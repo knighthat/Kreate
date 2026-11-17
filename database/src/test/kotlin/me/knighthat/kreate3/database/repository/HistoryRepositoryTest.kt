@@ -335,27 +335,4 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         repository.restorePlays(all)
         assertEquals(before, repository.recentPlays(10).first())
     }
-
-    @Test
-    fun deletingWhatIsShownLeavesTheRestAlone() = runBlocking {
-        librarySong("local")
-        librarySong("remote", Origin.YOUTUBE)
-        librarySong("disliked", likedAt = DISLIKED)
-        playAt("local", 1)
-        playAt("remote", 2)
-        playAt("disliked", 3)
-        playAt("remote", 20)
-
-        repository.deletePlays(listOf(period(0, 10)), setOf(Origin.YOUTUBE))
-
-        assertEquals(
-            listOf("remote", "disliked", "local"),
-            repository.recentPlays(10).first().map { it.songId },
-        )
-
-        activeUser.id.value = "other"
-        repository.deletePlays(listOf(period(0, 30)), emptySet())
-        activeUser.id.value = USER
-        assertEquals(3, repository.recentPlays(10).first().size)
-    }
 }

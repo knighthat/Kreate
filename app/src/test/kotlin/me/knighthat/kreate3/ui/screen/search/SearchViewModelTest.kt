@@ -102,9 +102,6 @@ class SearchViewModelTest {
         override suspend fun recordPlay(songId: String, timeSpent: Duration) = 0L
         override suspend fun updatePlay(id: Long, timeSpent: Duration) = Unit
         override suspend fun deletePlay(id: Long): PlaybackHistory? = null
-        override suspend fun deletePlays(periods: List<PlayPeriod>, origins: Set<Origin>) =
-            emptyList<PlaybackHistory>()
-
         override suspend fun clearPlays() = emptyList<PlaybackHistory>()
         override suspend fun restorePlays(plays: List<PlaybackHistory>) = Unit
     }

@@ -88,9 +88,6 @@ internal interface PlaybackHistoryDao {
     @RawQuery(observedEntities = [PlaybackHistoryEntity::class, UserSongViewEntity::class, SongArtistMapEntity::class])
     fun observePlays(query: RoomRawQuery): Flow<List<PlaybackHistoryEntity>>
 
-    @RawQuery
-    suspend fun listIds(query: RoomRawQuery): List<Long>
-
     @Insert
     suspend fun insert(history: PlaybackHistoryEntity): Long
 
