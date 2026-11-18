@@ -162,16 +162,55 @@ class PatreonAuthTest {
     @Test
     fun `claims are read from the payload`() {
         val payload = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).encode(
-            """{"sub":"1","tier":3,"patron_status":"declined_patron","exp":100}""".toByteArray()
+            """{"sub":"1","tier":3,"features":["backups","later",1],"patron_status":"declined_patron","exp":100}"""
+                .toByteArray()
         )
+        val claims = PatreonTokens("h.$payload.s", "r").claims
         assertEquals(
-            PatreonClaims("1", 3, PatronStatus.DECLINED_PATRON, 100),
-            PatreonTokens("h.$payload.s", "r").claims,
+            PatreonClaims("1", 3, setOf("backups", "later"), PatronStatus.DECLINED_PATRON, 100),
+            claims,
         )
+        assertTrue(claims.has(PatreonFeature.BACKUPS))
 
         val unknownStatus = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
             .encode("""{"tier":0,"patron_status":"new_value"}""".toByteArray())
         assertEquals(PatronStatus.NONE, PatreonClaims.of("h.$unknownStatus.s").status)
+        // Issued before the claim existed
+        assertEquals(emptySet<String>(), PatreonClaims.of("h.$unknownStatus.s").features)
         assertEquals(PatreonClaims.UNKNOWN, PatreonClaims.of("not a token"))
+    }
+
+    @Test
+    fun `profile comes with the tokens and is kept as text`() = runBlocking {
+        val profile = """{"id":"1","name":"Neon Coast","username":null,"avatar":null,""" +
+                """"tier":3,"tierTitle":"Supporter","features":["backups"],"patronStatus":"active_patron",""" +
+                """"nextChargeDate":null}"""
+        val tokens = auth(HttpStatusCode.OK, """{"token":"t","refresh":"r","profile":$profile}""")
+            .refresh("r0")
+
+        val expected = PatreonProfile(
+            id = "1",
+            name = "Neon Coast",
+            username = null,
+            avatar = null,
+            tier = 3,
+            tierTitle = "Supporter",
+            features = setOf("backups"),
+            status = PatronStatus.ACTIVE_PATRON,
+            nextChargeDate = null,
+        )
+        assertEquals(expected, tokens.profile)
+        assertEquals(expected, PatreonProfile.decode(expected.encode()))
+        assertNull(PatreonProfile.decode(""))
+        assertNull(PatreonProfile.decode("""{"name":"no id"}"""))
+        // Kept before features existed
+        assertEquals(emptySet<String>(), PatreonProfile.decode("""{"id":"1","tier":3}""")?.features)
+
+        val web = auth(HttpStatusCode.OK, "")
+            .webViewResult("$API/patreon/done#token=t&refresh=r&profile=%7B%22id%22%3A%222%22%2C%22tier%22%3A0%7D")
+                as PatreonLogin.Success
+        assertEquals("2", web.tokens.profile?.id)
+        assertEquals(PatronStatus.NONE, web.tokens.profile?.status)
+        Unit
     }
 }

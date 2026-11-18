@@ -262,6 +262,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
             )
             // Discord's presence and Shazam's song recognition, none in the foss build
             modules(nonFreeNetModules(setupCompletedFile().exists()))
+            // What only this build has (src/<platform>), e.g. patreon's Patreon sign in
+            modules(platformModule)
         }
 
         // The level, size and count the user picked, and the crash logs that outlived their time

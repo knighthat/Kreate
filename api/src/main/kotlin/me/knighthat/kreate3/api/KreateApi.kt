@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.api
 
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -46,3 +47,23 @@ class ApiException(val status: Int, val error: String?) :
     IOException("The API answered $status ${error.orEmpty()}".trimEnd())
 
 internal fun JsonObject.text(name: String): String? = (get(name) as? JsonPrimitive)?.contentOrNull
+
+/**
+ * The texts of the array [name], e.g. `features`; empty when it's missing or isn't an array, and
+ * without the values that aren't texts.
+ */
+internal fun JsonObject.texts(name: String): Set<String> =
+    (get(name) as? JsonArray)
+        ?.mapNotNullTo(mutableSetOf()) { (it as? JsonPrimitive)?.takeIf { it.isString }?.content }
+        .orEmpty()
+
+/**
+ * The ids of features a tier unlocks, as the token's and the profile's `features` name them.
+ * Which tier gets which can change on the server: check for the id, never compare tiers. Ids not
+ * listed here are ones a newer app knows, ignore them.
+ */
+object PatreonFeature {
+
+    /** Backups kept online, see the cloud backup switch. */
+    const val BACKUPS = "backups"
+}

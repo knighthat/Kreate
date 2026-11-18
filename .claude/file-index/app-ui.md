@@ -185,6 +185,8 @@ ui/navigation/
   KreateApp, for opening screens from components that don't own the back stack (song menu).
 - `TopLevelBackStack.kt` — one back stack per Tab; `push` goes back to a page the tab already has
   open (`Route.screen`: detail routes without the name/picture they were opened with).
+- `PlatformEntries.kt` — screens only one platform has (patreon's Patreon page), declared in that
+  platform's `platformModule`; `KreateApp` adds every one Koin has to its entries.
 - `RouteViewModel.kt` — `routeExtras`: route args → ViewModel `SavedStateHandle`.
 - `RouteResults.kt` — pages opened for an answer like an activity result: `rememberRouteResult`
   (key saved, `RouteLauncher.launch(input)`, answer delivered once the opener is back),

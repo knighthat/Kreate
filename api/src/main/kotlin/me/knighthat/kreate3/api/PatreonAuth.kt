@@ -169,7 +169,9 @@ class PatreonAuth(
         val token = answer["token"]
         val refresh = answer["refresh"]
         return if (!token.isNullOrEmpty() && !refresh.isNullOrEmpty())
-            PatreonLogin.Success(PatreonTokens(token, refresh))
+            PatreonLogin.Success(
+                PatreonTokens(token, refresh, PatreonProfile.ofText(answer["profile"]))
+            )
         else
             failure(answer)
     }
@@ -216,7 +218,7 @@ class PatreonAuth(
         val refresh = answer?.text("refresh")
         if (token.isNullOrEmpty() || refresh.isNullOrEmpty())
             throw IOException("The API's answer has no tokens")
-        return PatreonTokens(token, refresh)
+        return PatreonTokens(token, refresh, PatreonProfile.of(answer["profile"]))
     }
 
     private fun parse(body: String): JsonObject? =

@@ -305,6 +305,8 @@ dependencies {
     "patreonImplementation"(project(":shazam"))
     // Texts translated after the build, see src/patreon's TranslationUpdates
     "patreonImplementation"(libs.crowdin.sdk)
+    // The project's own API: the Patreon sign in, see src/patreon
+    "patreonImplementation"(project(":api"))
 
     // Core
     implementation(libs.androidx.core.ktx)

@@ -379,7 +379,18 @@ ui/screen/
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
     `OpenSubsonicServer`, nothing asked there; Integrations: "Configure Discord" with
     `discordSummary()`, the Shazam switch `SHAZAM_ENABLED`; both dimmed with "Not available in FOSS
-    build" in foss), `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
+    build" in foss; "Configure Patreon" with `patreonSummary()` (from the device secrets
+    `PATREON_TOKEN`/`PATREON_PROFILE`: "Sign in to enable cloud backup" / "Signed in as" name, else
+    username), dimmed with "Not available in …
+    build" outside patreon and for profiles other than the default one (naming it)),
+    `network/patreon/PatreonSettingsScreen.kt` (under `app/src/patreon/`; its
+    `platformModule` adds the `PatreonSettings` entry as `PlatformEntries`) (Account: sign in
+    opens the API's login in the browser / tap to sign out with a dialog, then Tier (`tierTitle`,
+    else "Not a patron") and Renewal date (day of `nextChargeDate`, else "None scheduled"), not
+    tappable; Backup: Cloud backup
+    switch `GlobalPreferences.CLOUD_BACKUP`, grayed while signed out or when the token's `features`
+    lack `backups` (then a tap opens `HOMEPAGE_URL`, the Patreon page)),
+    `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
     `discordSummary()` and `discordSettingsEntry` for `KreateApp`, foss has stand-ins in
     `app/src/foss/…/DiscordSettings.kt`: the FOSS text, no page) (main switch, account
     row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches, largest

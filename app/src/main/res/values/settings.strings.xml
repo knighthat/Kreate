@@ -390,6 +390,20 @@
     <string name="setting_description_discord_enabled_off">Nothing shows on your %1$s profile</string>
     <!-- %1$s is Discord. Row to sign in, with what signing in does under it -->
     <string name="setting_description_sign_in_discord">Lets the app set your %1$s status, nothing else</string>
+    <!-- Network page row of the Patreon account while nobody is signed in -->
+    <string name="setting_description_configure_patreon_status_signed_out">Sign in to enable cloud backup</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_sign_in_patreon">Reads your %1$s name and membership, nothing else</string>
+    <string name="setting_title_cloud_backup">Cloud backup</string>
+    <string name="setting_title_tier">Tier</string>
+    <string name="setting_title_renewal_date">Renewal date</string>
+    <string name="setting_description_patreon_tier_none">Not a patron</string>
+    <string name="setting_description_patreon_renewal_none">None scheduled</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_cloud_backup">Saves your backups online with your %1$s account</string>
+    <string name="setting_description_cloud_backup_status_not_in_tier">Your tier doesn\'t include cloud backup, tap to upgrade</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). The Patreon account belongs to the device, so only that profile may sign in or out -->
+    <string name="setting_description_patreon_status_default_profile_only">Only %1$s can sign in or out</string>
     <string name="setting_description_sign_in_status_waiting">Waiting for the sign in page…</string>
     <!-- Text under each source's switch on the Discord page -->
     <string name="setting_description_discord_source">Its songs, albums, artists, playlists and searches</string>

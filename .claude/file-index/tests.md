@@ -30,9 +30,12 @@ Tests mirror the main paths under `src/test/`.
   `SearchPatternTest`,
   `SongRepositoryTest`, `UserLibraryRepositoryTest`, `UserRepositoryTest`, `UserScopeTest`.
 - preferences: `CodecTest`, `PreferencesBackupTest`, `DataStorePreferenceStorageTest`,
-  `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest`.
+  `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest` (device
+  secrets too).
 - api: `PatreonAuthTest` (MockEngine: login URL and PKCE challenge, code trade, redirect and
-  fragment results, refresh rotation, 401 vs other failures, no address, token claims).
+  fragment results, refresh rotation, 401 vs other failures, no address, token claims and features,
+  profile
+  parsing and storing).
 - discord: `DiscordActivityTest` (text limits, gateway JSON of buttons and assets).
 - shazam: `ShazamTest` (signature equal to Metrolist's reference, silence has no peaks and isn't
   sent, resampling, MockEngine request/404/429/match parsing).

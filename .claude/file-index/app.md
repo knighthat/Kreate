@@ -53,6 +53,21 @@ Root
   forgotten; `delivered` makes `KreateActivity` recreate after a language's first download;
   `wrap` in both activities' `attachBaseContext`) and `app/src/crowdin/kotlin/…` (foss, github:
   does nothing, the APK's texts).
+- `PlatformModule.kt` — one per platform in `app/src/<platform>/…` (`platformModule`, what only
+  that build has; patreon: `PatreonAuth` on the app's `HttpClient` with `PATREON_REDIRECT`,
+  `PatreonSession` (at start), `PatreonAccount`, the Patreon page as `PlatformEntries`; foss,
+  github: empty);
+  `KreateApplication` adds it.
+- patreon/ (under `app/src/patreon/`, patreon build only; `:api` does the requests) —
+  `PatreonSession.kt` (`member`: `PatreonMember(claims, profile)` decoded from the device
+  secrets once per change, `null` signed out; `has(feature)` from the token's `features`),
+  `PatreonAccount.kt` (`PATREON_REDIRECT` = `kreate3://patreon/done`; device sign in in
+  `Secrets.PATREON_*`, state from `PatreonSession`; `PatreonAccountState` (SignedOut, SigningIn,
+  SignedIn (profile)); `start` →
+  login URL (null + message without an API address), `finish(uri)` from the callback, `abandon`
+  on resume without an answer, `signOut` forgets the three secrets; no refresh yet),
+  `PatreonCallbackActivity.kt` (exported, `kreate3://patreon/done` in
+  `app/src/patreon/AndroidManifest.xml`, hands the answer over and brings the app back).
 - presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only
   `Doing.kt` and `DiscordCovers.kt` are in `main`; the rest is under `app/src/nonfree/`, left out
   of foss. `PresenceState` is registered in `KreateApplication` for every build.

@@ -290,6 +290,10 @@
     <string name="error_discord_sign_in">Couldn\'t sign in to %1$s</string>
     <!-- %1$s is Discord. The app was closed during the sign in, it has to be started again -->
     <string name="error_discord_sign_in_again">The %1$s sign in expired, try again</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_patreon_sign_in">Couldn\'t sign in to %1$s</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_patreon_sign_in_again">The %1$s sign in expired, try again</string>
     <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
     <string name="snackbar_recognize_song_disabled">Disabled in settings</string>
     <string name="snackbar_recognize_song_no_microphone">Allow the microphone to recognize songs</string>

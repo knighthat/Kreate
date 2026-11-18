@@ -197,6 +197,34 @@ class SecretStoreTest {
         eventually { !orphan.exists() }
     }
 
+    @Test
+    fun deviceSecretsAreTheSameForEveryProfile() {
+        val device = store.secret("device_value", device = true)
+        val profile = store.secret("profile_value")
+        device.update("shared")
+        profile.update("mine")
+        eventually { device.value == "shared" && profile.value == "mine" }
+        assertTrue(File(root, "device_secrets.preferences_pb").isFile)
+
+        val other = runBlocking { profiles.add("other")!! }
+        runBlocking { profiles.switchTo(other) }
+        eventually { profiles.activeId.value == other }
+        eventually { profile.value.isEmpty() }
+        Thread.sleep(300)
+        assertEquals("shared", device.value)
+
+        // A reset of the profile and a profile deleted keep them
+        assertTrue(runBlocking { store.clearAll() })
+        assertEquals("shared", device.value)
+        runBlocking { profiles.switchTo(Profile.DEFAULT_ID) }
+        runBlocking { profiles.delete(other) }
+        eventually { !Profile.directory(root, other).exists() }
+        restart()
+        assertEquals(
+            "shared",
+            runBlocking { store.secret("device_value", device = true).current() })
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun rejectsNamesThatAreNotFileSafe() {
         store.secret("../escape")

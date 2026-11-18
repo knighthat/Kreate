@@ -27,11 +27,18 @@ import kotlinx.serialization.json.longOrNull
 import kotlin.io.encoding.Base64
 
 /**
- * What a Patreon sign in gives: the [token] Kreate's API takes (a JWT, 24 hours) and the
- * [refresh] blob that gets the next pair. The module keeps neither, the app stores both in its
- * secrets and replaces the blob after every refresh.
+ * What a Patreon sign in or a refresh gives: the [token] Kreate's API takes (a JWT, 24 hours), the
+ * [refresh] blob that gets the next pair and who the user is ([profile], for display only). The
+ * module keeps none of them, the app stores all three in its secrets and replaces them after every
+ * refresh.
+ *
+ * @property profile `null` when the API's answer had none (or one without an `id`)
  */
-class PatreonTokens(val token: String, val refresh: String) {
+class PatreonTokens(
+    val token: String,
+    val refresh: String,
+    val profile: PatreonProfile? = null,
+) {
 
     /** What [token] says about the user, read without checking it. */
     val claims: PatreonClaims by lazy { PatreonClaims.of(token) }
@@ -49,31 +56,46 @@ enum class PatronStatus {
     NONE,
 }
 
+/** The status the API names [value] (`active_patron`…), [PatronStatus.NONE] for anything else. */
+internal fun patronStatusOf(value: String?): PatronStatus =
+    when (value) {
+        "active_patron" -> PatronStatus.ACTIVE_PATRON
+        "declined_patron" -> PatronStatus.DECLINED_PATRON
+        "former_patron" -> PatronStatus.FORMER_PATRON
+        else -> PatronStatus.NONE
+    }
+
 /**
  * The token's payload, only to adjust the UI (e.g. know when to refresh, or gray out what needs a
  * higher tier): the API decides what the token allows, so it's never verified here.
  *
  * @property userId Patreon's user id, `null` when missing
- * @property tier membership tier, 0 for non-patrons; file features need 3 or higher
+ * @property tier membership tier, 0 for non-patrons; decide with [features] instead
+ * @property features ids of what the tier unlocks ([PatreonFeature]), empty for tier 0 and for
+ *   tokens issued before the claim existed (it fills in at the next refresh)
  * @property expiresAt when the token expires, in seconds since the Unix epoch, 0 when unknown
  */
 data class PatreonClaims(
     val userId: String?,
     val tier: Int,
+    val features: Set<String>,
     val status: PatronStatus,
     val expiresAt: Long,
 ) {
 
+    /** Whether the tier unlocks [feature], one of [PatreonFeature]. */
+    fun has(feature: String): Boolean = feature in features
+
     override fun toString(): String =
-        "PatreonClaims(tier=$tier, status=$status, expiresAt=$expiresAt)"
+        "PatreonClaims(tier=$tier, features=$features, status=$status, expiresAt=$expiresAt)"
 
     companion object {
 
         private val json = Json { ignoreUnknownKeys = true }
         private val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT_OPTIONAL)
 
-        /** Nothing known: tier 0, no membership, unknown expiry. */
-        val UNKNOWN = PatreonClaims(null, 0, PatronStatus.NONE, 0)
+        /** Nothing known: tier 0, nothing unlocked, no membership, unknown expiry. */
+        val UNKNOWN = PatreonClaims(null, 0, emptySet(), PatronStatus.NONE, 0)
 
         /** The claims of the JWT [token], [UNKNOWN] when it can't be read. */
         fun of(token: String): PatreonClaims {
@@ -88,12 +110,8 @@ data class PatreonClaims(
             return PatreonClaims(
                 userId = claims.text("sub"),
                 tier = claims.number("tier")?.toInt() ?: 0,
-                status = when (claims.text("patron_status")) {
-                    "active_patron" -> PatronStatus.ACTIVE_PATRON
-                    "declined_patron" -> PatronStatus.DECLINED_PATRON
-                    "former_patron" -> PatronStatus.FORMER_PATRON
-                    else -> PatronStatus.NONE
-                },
+                features = claims.texts("features"),
+                status = patronStatusOf(claims.text("patron_status")),
                 expiresAt = claims.number("exp") ?: 0,
             )
         }

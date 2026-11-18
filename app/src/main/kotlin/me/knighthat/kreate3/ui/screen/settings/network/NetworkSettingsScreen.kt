@@ -20,13 +20,20 @@ package me.knighthat.kreate3.ui.screen.settings.network
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 import me.knighthat.kreate3.BuildConfig
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.Profile
+import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.CheckState
@@ -42,6 +49,7 @@ import me.knighthat.kreate3.ui.component.SliderIcon
 import me.knighthat.kreate3.ui.component.openSubsonicName
 import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
+import me.knighthat.kreate3.ui.navigation.PatreonSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
 import me.knighthat.kreate3.ui.screen.settings.CountSetting
@@ -56,6 +64,40 @@ import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import me.knighthat.kreate3.ui.screen.settings.network.discord.discordSummary
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
+
+/** Only this build signs in to Patreon (src/patreon). */
+private val IS_PATREON = BuildConfig.FLAVOR_platform == "patreon"
+
+/**
+ * The Patreon row's summary: who is signed in on this device, from the device secrets the Patreon
+ * page writes.
+ *
+ * @param token the Patreon sign in, empty while signed out
+ * @param profile who signed in, as `PatreonProfile.encode` writes it
+ */
+@Composable
+private fun patreonSummary(token: String, profile: String): String {
+    if (!IS_PATREON)
+        return stringResource(
+            R.string.status_not_available_in,
+            BuildConfig.FLAVOR_platform.uppercase()
+        )
+    if (token.isEmpty())
+        return stringResource(R.string.setting_description_configure_patreon_status_signed_out)
+
+    val name = remember(profile) {
+        runCatching {
+            val values = Json.parseToJsonElement(profile).jsonObject
+            listOf("name", "username").firstNotNullOfOrNull { key ->
+                (values[key] as? JsonPrimitive)?.takeIf { it.isString }?.content?.ifEmpty { null }
+            }
+        }.getOrNull()
+    }
+    return if (name != null)
+        stringResource(R.string.setting_description_sign_in_status_signed_in_as, name)
+    else
+        stringResource(R.string.status_signed_in)
+}
 
 /** Who is signed in, for the row that opens the YouTube page. */
 @Composable
@@ -130,6 +172,8 @@ fun NetworkSettingsScreen(
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
     youtube: YouTubeAccountStore = koinInject(),
+    profileManager: ProfileManager = koinInject(),
+    userRepository: UserRepository = koinInject(),
 ) {
     // What the app found out when it started and after each change, nothing is asked here
     val server by OpenSubsonicServer.server.collectFlowAsState()
@@ -141,6 +185,11 @@ fun NetworkSettingsScreen(
     val readTimeout by Preferences.NETWORK_READ_TIMEOUT.collectAsStateWithLifecycle()
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
     val shazamEnabled by Preferences.SHAZAM_ENABLED.collectAsStateWithLifecycle()
+    val activeId by profileManager.activeId.collectFlowAsState()
+    val patreonToken by Secrets.PATREON_TOKEN.collectAsStateWithLifecycle()
+    val patreonProfile by Secrets.PATREON_PROFILE.collectAsStateWithLifecycle()
+    val defaultUser by remember(userRepository) { userRepository.find(Profile.DEFAULT_ID) }
+        .collectFlowAsState(null)
 
     NetworkSettingsContent(
         connectTimeout = connectTimeout,
@@ -153,6 +202,10 @@ fun NetworkSettingsScreen(
         server = server,
         serverName = openSubsonicName(),
         discord = discordSummary(),
+        patreon = patreonSummary(patreonToken, patreonProfile),
+        // The Patreon account belongs to the device, like a backup
+        patreonAllowed = activeId == Profile.DEFAULT_ID,
+        defaultProfileName = defaultUser?.name,
         shazamEnabled = shazamEnabled,
         onShazamEnabled = { Preferences.SHAZAM_ENABLED.update(it) },
         onBack = onBack,
@@ -177,6 +230,9 @@ fun NetworkSettingsScreen(
  * @param url the OpenSubsonic server's address, empty while there is none
  * @param serverName what the server is called, see [openSubsonicName]
  * @param discord the status of Discord's presence, see [discordSummary]
+ * @param patreon the Patreon account, see [patreonSummary]
+ * @param patreonAllowed whether the profile may open the Patreon page; the row is grayed out
+ * otherwise, naming [defaultProfileName] (`null` while it loads, the note stays hidden)
  * @param shazamEnabled whether song recognition may send what the microphone hears to Shazam
  * @param proxy the app's proxy, see [ProxySettings]
  */
@@ -192,6 +248,9 @@ private fun NetworkSettingsContent(
     server: CheckState,
     serverName: String,
     discord: String,
+    patreon: String,
+    patreonAllowed: Boolean,
+    defaultProfileName: String?,
     shazamEnabled: Boolean,
     onShazamEnabled: (Boolean) -> Unit,
     onBack: () -> Unit,
@@ -266,6 +325,25 @@ private fun NetworkSettingsContent(
             summary = discord,
             onClick = if (BuildConfig.NON_FREE_NET) ({ onOpen(DiscordSettings) }) else null,
         )
+        // Only the patreon build has it, the others' row says so
+        val canOpenPatreon = IS_PATREON && patreonAllowed
+        SettingsItem(
+            title = stringResource(
+                R.string.setting_title_configure_source,
+                stringResource(R.string.patreon)
+            ),
+            modifier = if (canOpenPatreon) Modifier else Modifier.alpha(DISABLED_ALPHA),
+            summary = if (!IS_PATREON || patreonAllowed || defaultProfileName == null) {
+                patreon
+            } else {
+                val only = stringResource(
+                    R.string.setting_description_patreon_status_default_profile_only,
+                    stringResource(R.string.quoted, defaultProfileName),
+                )
+                "$patreon\n$only"
+            },
+            onClick = if (canOpenPatreon) ({ onOpen(PatreonSettings) }) else null,
+        )
         SwitchSetting(
             title = stringResource(
                 R.string.setting_title_shazam_enabled,
@@ -311,6 +389,9 @@ private fun NetworkSettingsPreview() = PreviewTheme {
         ),
         serverName = "Navidrome",
         discord = "Signed in as neoncoast",
+        patreon = "Signed in as Neon Coast",
+        patreonAllowed = true,
+        defaultProfileName = "Neon Coast",
         shazamEnabled = true,
         onShazamEnabled = {},
         onBack = {},

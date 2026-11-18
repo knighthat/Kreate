@@ -16,7 +16,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<!-- Only in the patreon build, the one with the Crowdin SDK -->
+<!-- Only in the patreon build, the one with the Crowdin SDK and the Patreon sign in -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -26,5 +26,28 @@
         <activity
             android:name="com.crowdin.platform.auth.AuthActivity"
             tools:node="remove" />
+
+        <!-- Where the API's Patreon login sends its answer, PATREON_REDIRECT. Its own task, so it
+             never stays on top of the browser's -->
+        <activity
+            android:name=".patreon.PatreonCallbackActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="patreon"
+                    android:path="/done"
+                    android:scheme="kreate3" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

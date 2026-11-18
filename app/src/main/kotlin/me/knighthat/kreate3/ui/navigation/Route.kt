@@ -112,6 +112,10 @@ data object OpenSubsonicSettings : Route
 @Serializable
 data object DiscordSettings : Route
 
+/** The Patreon account and cloud backup, opened from [NetworkSettings]; patreon build only. */
+@Serializable
+data object PatreonSettings : Route
+
 /** The OpenSubsonic server's credentials, opened from [OpenSubsonicSettings]. */
 @Serializable
 data object OpenSubsonicSignIn : Route

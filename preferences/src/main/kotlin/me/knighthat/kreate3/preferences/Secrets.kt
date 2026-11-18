@@ -23,7 +23,7 @@ import org.koin.core.component.inject
 
 /**
  * Every secret of the app, like passwords, API keys and account names. Values belong to the
- * active profile.
+ * active profile, except the device's (see the Device section).
  *
  * Anything that lets someone sign in as the user, or tells who they are on a service, goes here,
  * never in [Preferences]. Names are stored on disk, never rename a secret.
@@ -88,8 +88,28 @@ object Secrets : KoinComponent {
     /** When [DISCORD_ACCESS_TOKEN] runs out, in seconds since the epoch, as text. */
     val DISCORD_TOKEN_EXPIRES by lazy { store.secret("discord_token_expires") }
 
+    //<editor-fold defaultstate="collapsed" desc="Device">
+    // Belong to the device, not a profile: the same for every profile, kept through resets
+
     /**
-     * Deletes every secret of the active profile: it is signed out of everything. Nothing is told
+     * Kreate API's token from the Patreon sign in (a JWT), sent as `Bearer`. Empty while nobody is
+     * signed in. Only the patreon build signs in.
+     */
+    val PATREON_TOKEN by lazy { store.secret("patreon_token", device = true) }
+
+    /**
+     * Trades for a new [PATREON_TOKEN], replaced by every refresh. Anyone with it can sign in as
+     * the user.
+     */
+    val PATREON_REFRESH by lazy { store.secret("patreon_refresh", device = true) }
+
+    /** Who signed in to Patreon, as `PatreonProfile.encode` writes it; personal, never logged. */
+    val PATREON_PROFILE by lazy { store.secret("patreon_profile", device = true) }
+    //</editor-fold>
+
+    /**
+     * Deletes every secret of the active profile: it is signed out of everything. The device's
+     * stay. Nothing is told
      * to the services, a sign out that should tell one does so first.
      *
      * @return `false` when it couldn't be saved, which is reported and changes nothing
