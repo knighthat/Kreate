@@ -413,7 +413,9 @@ ui/screen/
     (signed out → Sign in opens the Patreon page, no `backups` feature → Upgrade opens
     `HOMEPAGE_URL` and Check again refreshes, failure → Retry, rows of name, size and upload time,
     a tap asks to restore (download or the kept copy, `Backup.stage`, restart; the row says
-    Downloading… / Reading…), an ✕ at the end asks to delete it online (Deleting…, off the list
+    Downloading… / Reading…), a download button saves it to a file picked (`CreateDocument`, the
+    kept copy or a download, "Saved <name>"), an ✕ at the end asks to
+    delete it online (Deleting…, off the list
     without a new request, "Deleted <name>" only when the server deleted it; one found gone, on
     delete or restore,
     just leaves the list), 180-day note),

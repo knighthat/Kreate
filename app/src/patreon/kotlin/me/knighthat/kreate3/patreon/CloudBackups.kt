@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.patreon
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -28,6 +29,8 @@ import androidx.work.WorkManager
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.AppLanguage
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.api.PatreonClaims
 import me.knighthat.kreate3.api.PatreonFeature
 import me.knighthat.kreate3.api.PatreonFileTooLargeException
@@ -36,6 +39,8 @@ import me.knighthat.kreate3.api.PatreonSignedOutException
 import me.knighthat.kreate3.api.PatreonStorageFullException
 import me.knighthat.kreate3.api.PatreonTierException
 import me.knighthat.kreate3.backup.Backup
+import me.knighthat.kreate3.notification.AppChannel
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
@@ -70,6 +75,7 @@ class CloudBackups internal constructor(
     private val files: PatreonFiles,
     private val backup: Backup,
     private val remoteBackups: RemoteBackups,
+    private val notifier: Notifier,
 ) {
 
     // When the last cloud backup was uploaded, in milliseconds since the epoch
@@ -146,10 +152,12 @@ class CloudBackups internal constructor(
             Outcome.DONE
         } catch (e: PatreonFileTooLargeException) {
             Logger.e(e, TAG) { "The backup is too big for the cloud" }
+            tell(R.string.error_cloud_backup_too_large)
             scheduleNext(INTERVAL)
             Outcome.FAILED
         } catch (e: PatreonStorageFullException) {
             Logger.e(e, TAG) { "No room left in the cloud" }
+            tell(R.string.error_cloud_backup_full)
             scheduleNext(INTERVAL)
             Outcome.FAILED
         } catch (e: IOException) {
@@ -168,6 +176,12 @@ class CloudBackups internal constructor(
         } finally {
             withContext(Dispatchers.IO) { zip.delete() }
         }
+    }
+
+    /** Tells the user why no backup could be made, a notification while no screen shows. */
+    private fun tell(@StringRes text: Int) {
+        val resources = AppLanguage.wrap(context).resources
+        notifier.post(resources.getString(text), AppChannel.BACKUP)
     }
 
     /** `0` when there is none or it can't be read. */

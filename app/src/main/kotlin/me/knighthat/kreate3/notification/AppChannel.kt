@@ -98,6 +98,18 @@ enum class AppChannel(
         titleRes = R.string.notification_playlist_import_title_channel,
         descriptionRes = R.string.notification_playlist_import_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
+    ),
+
+    /**
+     * How backups went, for every build: for now the patreon build's cloud backups (a weekly
+     * upload that can't be made, a restore or delete from the Remote tab told while no screen
+     * shows), later the local ones too.
+     */
+    BACKUP(
+        id = "backup",
+        titleRes = R.string.notification_backup_title_channel,
+        descriptionRes = R.string.notification_backup_subtitle_channel,
+        importance = NotificationManagerCompat.IMPORTANCE_DEFAULT,
     );
 
     /** The id of a [Message]'s notification, a new one replaces the one already showing. */

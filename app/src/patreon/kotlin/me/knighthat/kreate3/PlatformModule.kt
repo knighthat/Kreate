@@ -52,7 +52,7 @@ val platformModule = module {
     single { RemoteBackupPage(get<RemoteBackups>().active) { RemoteBackupsPage(it) } }
     // Checks as the app starts whether a cloud backup is due, see CloudBackups
     single(createdAtStart = true) {
-        CloudBackups(androidContext(), get(), get(), get(), get()).also { it.start() }
+        CloudBackups(androidContext(), get(), get(), get(), get(), get()).also { it.start() }
     }
     single<PlatformEntries> {
         PlatformEntries { onBack -> entry<PatreonSettings> { PatreonSettingsScreen(onBack) } }

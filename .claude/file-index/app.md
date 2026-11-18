@@ -68,7 +68,8 @@ Root
   `noBackupFilesDir/cloud_backup_last` (epoch ms) is a week old or more: cleaned `Backup.export` to
   `cacheDir/cloud_backup.zip`, `PatreonFiles.upload` as `kreate_backup_<date_time>.zip`, writes
   the time, `RemoteBackups.forget`; then a delayed `cloud_backup_next` worker for the rest of the
-  week; offline → retry with backoff, too large / storage full → failure, tried next week),
+  week; offline → retry with backoff, too large / storage full → failure told on
+  `AppChannel.BACKUP`, tried next week),
   `RemoteBackups.kt` (at start; `active`: signed in + `backups` feature + `CLOUD_BACKUP`;
   `list()` keeps the files in memory with the token they were asked with, asks again only once
   it changed, through `PatreonAccount.withToken`, and each time deletes downloaded copies no
@@ -219,6 +220,8 @@ notification/
   channel goes to `SystemNotifications`, one without is dropped.
 - `AppChannel.kt` — notification channels (PLAYBACK default importance, OTHER default (one-off
   notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, PLAYLIST_IMPORT low,
+  BACKUP default (every build; for now only the cloud backup's failures and the Remote tab's
+  restore/save/delete failures, later the local backup too),
   SLEEP_TIMER low +
   `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`); the brief foreground
   notification of playback resumption goes to OTHER with `setSilent(true)`, the old `resume` channel

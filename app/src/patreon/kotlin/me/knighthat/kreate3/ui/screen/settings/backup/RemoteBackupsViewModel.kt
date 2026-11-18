@@ -19,11 +19,13 @@
 package me.knighthat.kreate3.ui.screen.settings.backup
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.api.PatreonFeature
@@ -46,6 +49,7 @@ import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.patreon.PatreonAccount
 import me.knighthat.kreate3.patreon.PatreonSession
 import me.knighthat.kreate3.patreon.RemoteBackups
+import java.io.FileNotFoundException
 import java.io.IOException
 
 private const val TAG = "RemoteBackups"
@@ -70,7 +74,8 @@ sealed interface RemoteBackupsState {
 /**
  * The backups the user keeps online for the Remote tab, created when it opens: [RemoteBackups]
  * asks for them only when its token changed since (one request per page of 1000 files, the server
- * keeps 50 at most), again on [retry] after a failure. A tap [restore]s one.
+ * keeps 50 at most), again on [retry] after a failure. A tap [restore]s one; one can be [save]d
+ * to a file or [delete]d too.
  */
 class RemoteBackupsViewModel(
     private val context: Context,
@@ -85,6 +90,7 @@ class RemoteBackupsViewModel(
     private val _state = MutableStateFlow<RemoteBackupsState>(RemoteBackupsState.Loading)
     private val _restoring = MutableStateFlow<Restoring?>(null)
     private val _deleting = MutableStateFlow<RemoteFile?>(null)
+    private val _saving = MutableStateFlow<RemoteFile?>(null)
     private var loading: Job? = null
 
     /** A restore of [file] at [step]. */
@@ -97,6 +103,15 @@ class RemoteBackupsViewModel(
 
     /** The backup being deleted, `null` while none is. */
     val deleting: StateFlow<RemoteFile?> = _deleting.asStateFlow()
+
+    /** The backup being saved to a file the user picked, `null` while none is. */
+    val saving: StateFlow<RemoteFile?> = _saving.asStateFlow()
+
+    /** The backup whose file the user is picking now, for [save] once they did. */
+    var toSave: RemoteFile? = null
+
+    private val busy: Boolean
+        get() = _restoring.value != null || _deleting.value != null || _saving.value != null
 
     val state: StateFlow<RemoteBackupsState> = _state.asStateFlow()
 
@@ -137,7 +152,7 @@ class RemoteBackupsViewModel(
      * the page doesn't stop it.
      */
     fun restore(file: RemoteFile) {
-        if (_restoring.value != null || _deleting.value != null) return
+        if (busy) return
         _restoring.value = Restoring(file, Restoring.Step.DOWNLOADING)
 
         viewModelScope.launch {
@@ -153,7 +168,10 @@ class RemoteBackupsViewModel(
                         return@async
                     } catch (e: IOException) {
                         Logger.w(e, TAG) { "Couldn't download the backup" }
-                        notifier.post(context.getString(R.string.error_remote_backup_download))
+                        notifier.post(
+                            context.getString(R.string.error_remote_backup_download),
+                            AppChannel.BACKUP,
+                        )
                         return@async
                     }
                     _restoring.value = Restoring(file, Restoring.Step.READING)
@@ -163,12 +181,12 @@ class RemoteBackupsViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: BackupException) {
-                notifier.post(e.describe(context), AppChannel.OTHER)
+                notifier.post(e.describe(context), AppChannel.BACKUP)
             } catch (e: IOException) {
                 Logger.w(e, TAG) { "Couldn't restore the backup" }
                 notifier.post(
                     context.getString(R.string.setting_description_restore_status_failed),
-                    AppChannel.OTHER,
+                    AppChannel.BACKUP,
                 )
             } finally {
                 _restoring.value = null
@@ -181,7 +199,7 @@ class RemoteBackupsViewModel(
      * server for the list again. Runs on the app's scope, so leaving the page doesn't stop it.
      */
     fun delete(file: RemoteFile) {
-        if (_deleting.value != null || _restoring.value != null) return
+        if (busy) return
         _deleting.value = file
 
         viewModelScope.launch {
@@ -201,12 +219,59 @@ class RemoteBackupsViewModel(
                 throw e
             } catch (e: IOException) {
                 Logger.w(e, TAG) { "Couldn't delete the backup" }
-                notifier.post(context.getString(R.string.error_remote_backup_delete))
+                notifier.post(
+                    context.getString(R.string.error_remote_backup_delete),
+                    AppChannel.BACKUP,
+                )
             } finally {
                 _deleting.value = null
             }
         }
     }
+
+    /**
+     * Saves [file] to [target], a file the user picked, without restoring it: downloaded unless a
+     * copy is kept. Runs on the app's scope, so leaving the page doesn't stop it.
+     */
+    fun save(file: RemoteFile, target: Uri) {
+        if (busy) return
+        _saving.value = file
+
+        viewModelScope.launch {
+            try {
+                scope.async {
+                    val zip = backups.download(file)
+                    withContext(Dispatchers.IO) {
+                        val output = context.contentResolver.openOutputStream(target, "wt")
+                            ?: throw FileNotFoundException("Can't write to the file picked")
+                        output.use { out -> zip.inputStream().use { it.copyTo(out) } }
+                    }
+                }.await()
+                notifier.post(
+                    context.getString(
+                        R.string.snackbar_remote_backup_saved,
+                        context.getString(R.string.quoted, file.name)
+                    )
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: PatreonFileMissingException) {
+                // Gone online already, it just leaves the list
+                drop(file)
+            } catch (e: IOException) {
+                Logger.w(e, TAG) { "Couldn't save the backup" }
+                tellSaveFailed()
+            } catch (e: SecurityException) {
+                Logger.w(e, TAG) { "Couldn't write the backup to the file picked" }
+                tellSaveFailed()
+            } finally {
+                _saving.value = null
+            }
+        }
+    }
+
+    private fun tellSaveFailed() =
+        notifier.post(context.getString(R.string.error_remote_backup_save), AppChannel.BACKUP)
 
     /** Takes [file] off the list shown, without asking for it again. */
     private fun drop(file: RemoteFile) {

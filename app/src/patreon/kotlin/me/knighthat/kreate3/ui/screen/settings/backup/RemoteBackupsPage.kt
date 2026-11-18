@@ -18,9 +18,13 @@
 
 package me.knighthat.kreate3.ui.screen.settings.backup
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,6 +78,12 @@ fun RemoteBackupsPage(
     val checking by viewModel.checking.collectFlowAsState()
     val restoring by viewModel.restoring.collectFlowAsState()
     val deleting by viewModel.deleting.collectFlowAsState()
+    val saving by viewModel.saving.collectFlowAsState()
+    val saveTo = rememberLauncherForActivityResult(CreateDocument("application/zip")) { uri ->
+        val file = viewModel.toSave
+        viewModel.toSave = null
+        if (uri != null && file != null) viewModel.save(file, uri)
+    }
     val binarySizes by Preferences.BINARY_SIZES.collectAsStateWithLifecycle()
     val navigator = LocalNavigator.current
     val openLink = rememberOpenLink()
@@ -83,6 +93,7 @@ fun RemoteBackupsPage(
         checking = checking,
         restoring = restoring,
         deleting = deleting,
+        saving = saving,
         binarySizes = binarySizes,
         contentPadding = contentPadding,
         onSignIn = { navigator?.open(PatreonSettings) },
@@ -92,6 +103,10 @@ fun RemoteBackupsPage(
         onCheckMembership = viewModel::checkMembership,
         onRestore = viewModel::restore,
         onDelete = viewModel::delete,
+        onSave = {
+            viewModel.toSave = it
+            saveTo.launch(it.name)
+        },
     )
 }
 
@@ -101,6 +116,8 @@ fun RemoteBackupsPage(
  * @param deleting the backup being deleted, see [RemoteBackupsViewModel.delete]
  * @param onRestore restores a backup, once the user agreed to replace everything
  * @param onDelete deletes a backup online, once the user agreed
+ * @param saving the backup being saved to a file, see [RemoteBackupsViewModel.save]
+ * @param onSave asks where to save a backup, without restoring it
  * @param binarySizes see [Preferences.BINARY_SIZES]
  */
 @Composable
@@ -109,6 +126,7 @@ private fun RemoteBackupsContent(
     checking: Boolean,
     restoring: RemoteBackupsViewModel.Restoring?,
     deleting: RemoteFile?,
+    saving: RemoteFile?,
     binarySizes: Boolean,
     contentPadding: PaddingValues,
     onSignIn: () -> Unit,
@@ -117,11 +135,12 @@ private fun RemoteBackupsContent(
     onCheckMembership: () -> Unit,
     onRestore: (RemoteFile) -> Unit,
     onDelete: (RemoteFile) -> Unit,
+    onSave: (RemoteFile) -> Unit,
 ) {
     var confirmRestore by remember { mutableStateOf<RemoteFile?>(null) }
     var confirmDelete by remember { mutableStateOf<RemoteFile?>(null) }
-    // One restore or delete at a time
-    val idle = restoring == null && deleting == null
+    // One restore, delete or save at a time
+    val idle = restoring == null && deleting == null && saving == null
 
     when (state) {
         RemoteBackupsState.Loading -> Notice(contentPadding) { CircularProgressIndicator() }
@@ -170,6 +189,7 @@ private fun RemoteBackupsContent(
                     val uploaded = file.lastModified
                     val summary = when {
                         deleting == file -> stringResource(R.string.status_deleting)
+                        saving == file -> stringResource(R.string.status_downloading)
                         step == Step.DOWNLOADING -> stringResource(R.string.status_downloading)
                         step == Step.READING ->
                             stringResource(R.string.setting_description_restore_status_reading)
@@ -187,11 +207,19 @@ private fun RemoteBackupsContent(
                         summary = summary,
                         onClick = if (idle) ({ confirmRestore = file }) else null,
                         trailing = {
-                            val description = stringResource(R.string.semantic_delete_backup)
-                            Tooltip(description) {
-                                IconButton(onClick = { confirmDelete = file }, enabled = idle) {
-                                    Icon(painterResource(R.drawable.close), description)
-                                }
+                            Row {
+                                RowButton(
+                                    icon = R.drawable.download,
+                                    description = stringResource(R.string.semantic_save_backup),
+                                    onClick = { onSave(file) },
+                                    enabled = idle,
+                                )
+                                RowButton(
+                                    icon = R.drawable.close,
+                                    description = stringResource(R.string.semantic_delete_backup),
+                                    onClick = { confirmDelete = file },
+                                    enabled = idle,
+                                )
                             }
                         },
                     )
@@ -239,6 +267,19 @@ private fun RemoteBackupsContent(
     }
 }
 
+/** An icon button at the end of a backup's row, named in its [Tooltip]. */
+@Composable
+private fun RowButton(
+    @DrawableRes icon: Int,
+    description: String,
+    onClick: () -> Unit,
+    enabled: Boolean,
+) = Tooltip(description) {
+    IconButton(onClick = onClick, enabled = enabled) {
+        Icon(painterResource(icon), description)
+    }
+}
+
 @Composable
 private fun RestoreDialog(onRestore: () -> Unit, onDismiss: () -> Unit) = AlertDialog(
     onDismissRequest = onDismiss,
@@ -277,6 +318,7 @@ private fun RemoteBackupsPreview() = PreviewTheme {
         checking = false,
         restoring = null,
         deleting = null,
+        saving = null,
         state = RemoteBackupsState.Loaded(
             listOf(
                 RemoteFile("kreate_20261115.zip", 4_812_000, Instant.parse("2026-11-15T09:30:00Z")),
@@ -292,5 +334,6 @@ private fun RemoteBackupsPreview() = PreviewTheme {
         onCheckMembership = {},
         onRestore = {},
         onDelete = {},
+        onSave = {},
     )
 }

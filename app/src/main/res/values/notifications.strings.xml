@@ -57,6 +57,8 @@
     <string name="notification_downloads_title_downloaded">Downloaded</string>
     <string name="notification_downloads_title_failed">Download failed</string>
     <string name="notification_downloads_subtitle_paused">Paused</string>
+    <string name="notification_backup_title_channel">Backup</string>
+    <string name="notification_backup_subtitle_channel">Backups that couldn\'t be made, restored or deleted</string>
     <string name="notification_playlist_import_title_channel">Playlist imports</string>
     <string name="notification_playlist_import_subtitle_channel">Progress of importing playlist files, and the songs that couldn\'t be imported</string>
     <!-- %1$s is the name of the playlist made from a playlist file (as the file or the user named it, not translated) -->
