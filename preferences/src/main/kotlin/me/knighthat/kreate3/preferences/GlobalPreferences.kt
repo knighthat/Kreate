@@ -108,8 +108,8 @@ object GlobalPreferences : KoinComponent {
     /**
      * Whether the device's backups go to the cloud through the Patreon account signed in
      * (`Secrets.PATREON_TOKEN`), in the patreon build only. The default is `true`, so signing in
-     * is enough. Read by the cloud backup, which isn't built yet: for now only the Patreon page
-     * shows and changes it.
+     * is enough. The Patreon page shows and changes it; while it's off the Remote tab of the
+     * Backup page is grayed out. The cloud backup itself isn't built yet.
      */
     val CLOUD_BACKUP by lazy { boolean("cloud_backup", true) }
     //</editor-fold>

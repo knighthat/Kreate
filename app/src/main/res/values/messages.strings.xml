@@ -293,6 +293,7 @@
     <!-- %1$s is "Patreon" -->
     <string name="error_patreon_sign_in">Couldn\'t sign in to %1$s</string>
     <!-- %1$s is "Patreon" -->
+    <string name="error_patreon_check_membership">Couldn\'t check your %1$s membership</string>
     <string name="error_patreon_sign_in_again">The %1$s sign in expired, try again</string>
     <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
     <string name="snackbar_recognize_song_disabled">Disabled in settings</string>

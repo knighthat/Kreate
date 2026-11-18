@@ -18,8 +18,10 @@ the microphone and hands it raw PCM.
 `patreon` has it (`patreonImplementation`, app code in `app/src/patreon/`; each platform registers
 its own Koin `platformModule` in `app/src/<platform>/`, with its own screens as `PlatformEntries`
 so `main` never names them; UI checks `BuildConfig.FLAVOR_platform == "patreon"`);
-`:app` hands it a client and stores the tokens. Its address is `KREATE_API_URL` (environment, else
-`local.properties`) at build time, never a literal in code; a build without it has no API.
+`:app` hands it a client and stores the tokens. Its addresses are `KREATE_API_URL` and
+`KREATE_FILES_URL`
+(environment, else `local.properties`) at build time, never literals in code; a build without one
+has no such API.
 
 - Keep modules independent: a module depends only on `:model` plus libraries unless it truly can't
   work without another. Don't add `project(":x")` to reach one or two types.

@@ -32,7 +32,9 @@ Tests mirror the main paths under `src/test/`.
 - preferences: `CodecTest`, `PreferencesBackupTest`, `DataStorePreferenceStorageTest`,
   `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest` (device
   secrets too).
-- api: `PatreonAuthTest` (MockEngine: login URL and PKCE challenge, code trade, redirect and
+- api: `PatreonFilesTest` (pages through the cursor with the token, 401 vs `tier_too_low` vs other
+  errors, no address), `PatreonAuthTest` (MockEngine: login URL and PKCE challenge, code trade,
+  redirect and
   fragment results, refresh rotation, 401 vs other failures, no address, token claims and features,
   profile
   parsing and storing).

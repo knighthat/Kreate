@@ -30,6 +30,12 @@ import java.io.IOException
  */
 val API_URL: String = BuildConfig.API_URL
 
+/**
+ * Where the user's files are kept (`KREATE_FILES_URL`), without a trailing `/`. Empty in a build
+ * that has none.
+ */
+val FILES_URL: String = BuildConfig.FILES_URL
+
 /** Whether this build was given the API's address; without it every request fails. */
 val isApiAvailable: Boolean get() = API_URL.isNotEmpty()
 

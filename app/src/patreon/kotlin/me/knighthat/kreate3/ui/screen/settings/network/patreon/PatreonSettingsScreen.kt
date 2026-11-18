@@ -81,6 +81,7 @@ fun PatreonSettingsScreen(
 ) {
     val state by account.state.collectFlowAsState()
     val member by session.member.collectFlowAsState()
+    val checking by account.checking.collectFlowAsState()
     val cloudBackup by GlobalPreferences.CLOUD_BACKUP.collectAsStateWithLifecycle()
     val openLink = rememberOpenLink()
 
@@ -95,7 +96,9 @@ fun PatreonSettingsScreen(
         cloudBackup = cloudBackup,
         // From the token, the profile's copy is only shown
         backupUnlocked = member?.claims?.has(PatreonFeature.BACKUPS) == true,
+        checking = checking,
         onSignIn = { account.start()?.let(openLink) },
+        onCheckMembership = account::checkMembership,
         // The patreon build's homepage is its Patreon page, with the tiers
         onUpgrade = { openLink(BuildConfig.HOMEPAGE_URL) },
         onSignOut = account::signOut,
@@ -107,6 +110,7 @@ fun PatreonSettingsScreen(
 /**
  * @param cloudBackup see [GlobalPreferences.CLOUD_BACKUP]
  * @param backupUnlocked whether the signed in tier has [PatreonFeature.BACKUPS]
+ * @param checking whether the membership is being asked again, see [PatreonAccount.checkMembership]
  * @param onUpgrade opens the Patreon page with the tiers, from the switch while it's locked
  */
 @Composable
@@ -114,7 +118,9 @@ private fun PatreonSettingsContent(
     state: PatreonAccountState,
     cloudBackup: Boolean,
     backupUnlocked: Boolean,
+    checking: Boolean,
     onSignIn: () -> Unit,
+    onCheckMembership: () -> Unit,
     onUpgrade: () -> Unit,
     onSignOut: () -> Unit,
     onBack: () -> Unit,
@@ -158,6 +164,16 @@ private fun PatreonSettingsContent(
                     summary = renewal?.let(dateFormat::format)
                         ?: stringResource(R.string.setting_description_patreon_renewal_none),
                 )
+                // A pledge changed on Patreon shows only after a refresh
+                if (!backupUnlocked)
+                    SettingsItem(
+                        title = stringResource(R.string.setting_title_check_membership),
+                        summary = if (checking)
+                            stringResource(R.string.status_checking)
+                        else
+                            stringResource(R.string.setting_description_check_membership, patreon),
+                        onClick = if (checking) null else onCheckMembership,
+                    )
             }
         }
 
@@ -220,7 +236,9 @@ private fun PatreonSettingsPreview() = PreviewTheme {
         ),
         cloudBackup = true,
         backupUnlocked = true,
+        checking = false,
         onSignIn = {},
+        onCheckMembership = {},
         onUpgrade = {},
         onSignOut = {},
         onBack = {},

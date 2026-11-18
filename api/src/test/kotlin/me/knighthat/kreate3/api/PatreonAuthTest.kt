@@ -32,6 +32,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -171,12 +172,14 @@ class PatreonAuthTest {
             claims,
         )
         assertTrue(claims.has(PatreonFeature.BACKUPS))
+        assertTrue(claims.listsFeatures)
 
         val unknownStatus = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
             .encode("""{"tier":0,"patron_status":"new_value"}""".toByteArray())
         assertEquals(PatronStatus.NONE, PatreonClaims.of("h.$unknownStatus.s").status)
         // Issued before the claim existed
         assertEquals(emptySet<String>(), PatreonClaims.of("h.$unknownStatus.s").features)
+        assertFalse(PatreonClaims.of("h.$unknownStatus.s").listsFeatures)
         assertEquals(PatreonClaims.UNKNOWN, PatreonClaims.of("not a token"))
     }
 

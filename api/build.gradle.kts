@@ -18,24 +18,26 @@
 
 import java.util.Properties
 
-// Requests to the project's own API: signing in with Patreon and keeping the user signed in.
+// Requests to the project's own API: signing in with Patreon, keeping the user signed in and their
+// backups online.
 // Knows nothing of the app, which hands it a client and keeps the tokens
 plugins {
     alias(libs.plugins.android.library)
 }
 
-// Where the API is: the environment's KREATE_API_URL (CI), else the same key in local.properties
-// (local builds). A build with neither has no API, its requests fail as if offline
-val apiUrl: String = run {
+// Where the API is (sign in, refresh: KREATE_API_URL) and where the files are (backups:
+// KREATE_FILES_URL): the environment's value (CI), else the same key in local.properties (local
+// builds). A build without one has no such API, its requests fail as if offline
+fun urlOf(key: String): String {
     val localProperties = rootProject.layout.projectDirectory.file("local.properties")
-    providers.environmentVariable("KREATE_API_URL")
+    val url = providers.environmentVariable(key)
         .orElse(
             providers.fileContents(localProperties)
                 .asText
                 .map { text ->
                     Properties()
                         .apply { load(text.reader()) }
-                        .getProperty("KREATE_API_URL")
+                        .getProperty(key)
                         .orEmpty()
                 }
         )
@@ -43,10 +45,14 @@ val apiUrl: String = run {
         .orEmpty()
         .trim()
         .trimEnd('/')
+    require(url.isEmpty() || url.matches(Regex("https://[A-Za-z0-9.-]+(:[0-9]+)?(/[A-Za-z0-9._~/-]*)?"))) {
+        "$key must be an https:// address"
+    }
+    return url
 }
-require(apiUrl.isEmpty() || apiUrl.matches(Regex("https://[A-Za-z0-9.-]+(:[0-9]+)?(/[A-Za-z0-9._~/-]*)?"))) {
-    "KREATE_API_URL must be an https:// address"
-}
+
+val apiUrl: String = urlOf("KREATE_API_URL")
+val filesUrl: String = urlOf("KREATE_FILES_URL")
 
 android {
     namespace = "me.knighthat.kreate3.api"
@@ -56,6 +62,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
 
         buildConfigField("String", "API_URL", "\"$apiUrl\"")
+        buildConfigField("String", "FILES_URL", "\"$filesUrl\"")
     }
 
     buildFeatures {

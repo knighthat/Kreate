@@ -387,7 +387,7 @@ ui/screen/
     `platformModule` adds the `PatreonSettings` entry as `PlatformEntries`) (Account: sign in
     opens the API's login in the browser / tap to sign out with a dialog, then Tier (`tierTitle`,
     else "Not a patron") and Renewal date (day of `nextChargeDate`, else "None scheduled"), not
-    tappable; Backup: Cloud backup
+    tappable; Check membership again (refresh) while the tier lacks `backups`; Backup: Cloud backup
     switch `GlobalPreferences.CLOUD_BACKUP`, grayed while signed out or when the token's `features`
     lack `backups` (then a tap opens `HOMEPAGE_URL`, the Patreon page)),
     `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
@@ -406,7 +406,15 @@ ui/screen/
     segmented button per sign-in way (fields are `CredentialField`), Sign out / Save in the top
     bar), `backup/` (
   `BackupSettingsScreen.kt` +
-  `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
+    `BackupViewModel.kt`, SAF export/restore; with a `RemoteBackupPage` from Koin (patreon) a bottom
+    bar with Local / Remote tabs (Remote grayed and closed while `RemoteBackupPage.active` is off)
+    and its own `MessageHost`; `RemoteBackupPage.kt` is that hook;
+    under `app/src/patreon/`: `RemoteBackupsPage.kt` + `RemoteBackupsViewModel.kt`, the online list
+    (signed out → Sign in opens the Patreon page, no `backups` feature → Upgrade opens
+    `HOMEPAGE_URL` and Check again refreshes, failure → Retry, rows of name, size and upload time,
+    not tappable, 180-day note),
+    through `RemoteBackups`, so only when the tab opens), `about/` (`AboutScreen.kt` version,
+    license and the
     licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +
     `OpenSourceLicensesViewModel.kt`: libraries read
   from AboutLibraries' generated `R.raw.aboutlibraries`, search, license text sheet).

@@ -247,10 +247,11 @@ private val Route.hasMiniPlayer: Boolean
 
 /**
  * Whether the app's scaffold shows the [Notifier]'s messages over the screen. Search, its
- * results and the new playlist screen show them above their own bottom bar, see [MessageHost].
+ * results, the new playlist screen and Backup (its tabs in the patreon build) show them above their
+ * own bottom bar, see [MessageHost].
  */
 private val Route.showsMessages: Boolean
-    get() = this != Search && this !is SearchResults && this !is CreatePlaylist
+    get() = this != Search && this !is SearchResults && this !is CreatePlaylist && this != BackupSettings
 
 /**
  * @param openPlayer whether the full player was asked to open, like by a tap on the media

@@ -55,17 +55,26 @@ Root
   does nothing, the APK's texts).
 - `PlatformModule.kt` — one per platform in `app/src/<platform>/…` (`platformModule`, what only
   that build has; patreon: `PatreonAuth` on the app's `HttpClient` with `PATREON_REDIRECT`,
-  `PatreonSession` (at start), `PatreonAccount`, the Patreon page as `PlatformEntries`; foss,
+  `PatreonSession` (at start), `PatreonAccount` (at start), `PatreonFiles`, `RemoteBackups`,
+  `RemoteBackupsViewModel`, the
+  `RemoteBackupPage`, the Patreon page as `PlatformEntries`; foss,
   github: empty);
   `KreateApplication` adds it.
 - patreon/ (under `app/src/patreon/`, patreon build only; `:api` does the requests) —
   `PatreonSession.kt` (`member`: `PatreonMember(claims, profile)` decoded from the device
   secrets once per change, `null` signed out; `has(feature)` from the token's `features`),
+  `RemoteBackups.kt` (at start; `active`: signed in + `backups` feature + `CLOUD_BACKUP`;
+  `list()` keeps the files in memory with the token they were asked with, asks again only once
+  it changed, through `PatreonAccount.withToken`),
   `PatreonAccount.kt` (`PATREON_REDIRECT` = `kreate3://patreon/done`; device sign in in
   `Secrets.PATREON_*`, state from `PatreonSession`; `PatreonAccountState` (SignedOut, SigningIn,
   SignedIn (profile)); `start` →
   login URL (null + message without an API address), `finish(uri)` from the callback, `abandon`
-  on resume without an answer, `signOut` forgets the three secrets; no refresh yet),
+  on resume without an answer, `signOut` forgets the three secrets; `withToken(request)` refreshes a
+  token within 5 min of
+  expiry or refused (401) once, one refresh at a time (`Mutex`, reads the token again after
+  waiting), signs out on the refresh's 401; at start, refreshes a token without the `features`
+  claim once; `checkMembership` + `checking` refresh on request, failures told),
   `PatreonCallbackActivity.kt` (exported, `kreate3://patreon/done` in
   `app/src/patreon/AndroidManifest.xml`, hands the answer over and brings the app back).
 - presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only

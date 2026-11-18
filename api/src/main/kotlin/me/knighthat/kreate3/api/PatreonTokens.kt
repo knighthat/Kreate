@@ -20,6 +20,7 @@ package me.knighthat.kreate3.api
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -73,6 +74,8 @@ internal fun patronStatusOf(value: String?): PatronStatus =
  * @property tier membership tier, 0 for non-patrons; decide with [features] instead
  * @property features ids of what the tier unlocks ([PatreonFeature]), empty for tier 0 and for
  *   tokens issued before the claim existed (it fills in at the next refresh)
+ * @property listsFeatures whether the token has the `features` claim; one issued before it existed
+ *   doesn't, and a refresh gets one that does
  * @property expiresAt when the token expires, in seconds since the Unix epoch, 0 when unknown
  */
 data class PatreonClaims(
@@ -81,13 +84,15 @@ data class PatreonClaims(
     val features: Set<String>,
     val status: PatronStatus,
     val expiresAt: Long,
+    val listsFeatures: Boolean = true,
 ) {
 
     /** Whether the tier unlocks [feature], one of [PatreonFeature]. */
     fun has(feature: String): Boolean = feature in features
 
     override fun toString(): String =
-        "PatreonClaims(tier=$tier, features=$features, status=$status, expiresAt=$expiresAt)"
+        "PatreonClaims(tier=$tier, features=$features, status=$status, expiresAt=$expiresAt, " +
+                "listsFeatures=$listsFeatures)"
 
     companion object {
 
@@ -95,7 +100,8 @@ data class PatreonClaims(
         private val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT_OPTIONAL)
 
         /** Nothing known: tier 0, nothing unlocked, no membership, unknown expiry. */
-        val UNKNOWN = PatreonClaims(null, 0, emptySet(), PatronStatus.NONE, 0)
+        val UNKNOWN =
+            PatreonClaims(null, 0, emptySet(), PatronStatus.NONE, 0, listsFeatures = false)
 
         /** The claims of the JWT [token], [UNKNOWN] when it can't be read. */
         fun of(token: String): PatreonClaims {
@@ -113,6 +119,7 @@ data class PatreonClaims(
                 features = claims.texts("features"),
                 status = patronStatusOf(claims.text("patron_status")),
                 expiresAt = claims.number("exp") ?: 0,
+                listsFeatures = claims["features"] is JsonArray,
             )
         }
 
