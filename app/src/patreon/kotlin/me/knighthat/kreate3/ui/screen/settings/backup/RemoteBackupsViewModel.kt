@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.screen.settings.backup
 
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -238,13 +239,25 @@ class RemoteBackupsViewModel(
         _saving.value = file
 
         viewModelScope.launch {
+            // Called as the file picker closes, before the page shows messages again: a kept copy
+            // is saved before that, and its message would be dropped (or the failure sent to the
+            // system's notifications)
+            notifier.awaitScreen()
             try {
                 scope.async {
-                    val zip = backups.download(file)
-                    withContext(Dispatchers.IO) {
-                        val output = context.contentResolver.openOutputStream(target, "wt")
-                            ?: throw FileNotFoundException("Can't write to the file picked")
-                        output.use { out -> zip.inputStream().use { it.copyTo(out) } }
+                    try {
+                        val zip = backups.download(file)
+                        withContext(Dispatchers.IO) {
+                            val output = context.contentResolver.openOutputStream(target, "wt")
+                                ?: throw FileNotFoundException("Can't write to the file picked")
+                            output.use { out -> zip.inputStream().use { it.copyTo(out) } }
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        // The picker made the file already, it's left empty or half written
+                        deletePicked(target)
+                        throw e
                     }
                 }.await()
                 notifier.post(
@@ -267,6 +280,17 @@ class RemoteBackupsViewModel(
             } finally {
                 _saving.value = null
             }
+        }
+    }
+
+    /** Deletes [target], the file picked for a save that failed; kept when it can't be deleted. */
+    private suspend fun deletePicked(target: Uri) = withContext(Dispatchers.IO) {
+        try {
+            if (!DocumentsContract.deleteDocument(context.contentResolver, target))
+                Logger.w(tag = TAG) { "Couldn't delete the file picked" }
+        } catch (e: Exception) {
+            // Not a document that can be deleted, or no longer allowed to
+            Logger.w(e, TAG) { "Couldn't delete the file picked" }
         }
     }
 
