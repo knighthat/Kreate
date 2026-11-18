@@ -14,6 +14,9 @@ them). `:discord` (Discord's Rich Presence) depends on no module; `:app` keeps t
 it a
 client and the access token. `:shazam` (naming songs) depends on no module either; `:app` records
 the microphone and hands it raw PCM.
+`:api` (the project's own API: Patreon sign in, token refresh) depends on no module either; `:app`
+hands it a client and stores the tokens. Its address is `KREATE_API_URL` (environment, else
+`local.properties`) at build time, never a literal in code; a build without it has no API.
 
 - Keep modules independent: a module depends only on `:model` plus libraries unless it truly can't
   work without another. Don't add `project(":x")` to reach one or two types.
