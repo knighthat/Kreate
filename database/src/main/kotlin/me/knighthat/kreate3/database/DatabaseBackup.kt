@@ -19,13 +19,30 @@
 package me.knighthat.kreate3.database
 
 import android.content.Context
+import android.net.Uri
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import androidx.room.useWriterConnection
+import androidx.sqlite.SQLiteDriver
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.database.repository.CleanupRepository
+import me.knighthat.kreate3.database.repository.CleanupRepositoryImpl
 import java.io.File
+
+private const val TAG = "DatabaseBackup"
 
 /**
  * Takes the database out for a backup, and puts one back.
  */
-class DatabaseBackup internal constructor(private val database: AppDatabase) {
+class DatabaseBackup internal constructor(
+    private val context: Context,
+    private val database: AppDatabase,
+    // Tests open the copy with the framework's, the bundled one is built for devices only
+    private val copyDriver: SQLiteDriver = BundledSQLiteDriver(),
+) {
 
     /**
      * Writes a copy of the whole database to [target], replacing it. The copy is one file that
@@ -38,6 +55,30 @@ class DatabaseBackup internal constructor(private val database: AppDatabase) {
                 it.bindText(1, target.absolutePath)
                 it.step()
             }
+        }
+    }
+
+    /**
+     * Same as [export], then the copy is cleaned up like [CleanupRepository.cleanUp] and compacted,
+     * for a smaller backup. Only the copy: the database in use keeps everything.
+     *
+     * @return the pictures of the playlists the clean up deleted, to leave them out too
+     */
+    suspend fun exportCleaned(target: File): List<Uri> = withContext(Dispatchers.IO) {
+        export(target)
+        // One file when it's done, with no journal beside it
+        val copy = Room.databaseBuilder<AppDatabase>(context, target.path)
+            .setDriver(copyDriver)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
+        try {
+            val result = CleanupRepositoryImpl(copy, copy.cleanupDao()).cleanUp()
+            Logger.i(tag = TAG) { "Cleaned up the copy: $result" }
+            result.playlists.mapNotNull { it.thumbnail }
+        } finally {
+            copy.close()
+            File(target.path + "-journal").delete()
         }
     }
 

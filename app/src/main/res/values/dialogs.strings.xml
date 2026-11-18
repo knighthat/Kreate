@@ -65,6 +65,9 @@
     <string name="dialog_body_cached_song_worse_1">The cached copy is worse than the quality set now, so the song will be downloaded again.</string>
     <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
     <string name="dialog_body_cached_song_worse_2">Cached: %1$s\nDownloads in: %2$s</string>
+    <string name="dialog_title_delete_backup">Delete backup?</string>
+    <!-- %1$s is the backup's file name in quotes. It is deleted from the cloud (online storage) -->
+    <string name="dialog_body_delete_backup">%1$s will be deleted online. It can\'t be recovered.</string>
     <string name="dialog_title_delete_download">Delete download?</string>
     <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
     <string name="dialog_body_delete_download">%1$s will be removed from this device. It can still be streamed.</string>

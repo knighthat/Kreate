@@ -18,10 +18,14 @@
 
 package me.knighthat.kreate3.database
 
+import android.net.Uri
 import androidx.room.Room
+import androidx.room.useReaderConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.model.Origin
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -29,10 +33,23 @@ import org.junit.Test
 import org.robolectric.RuntimeEnvironment
 import java.io.File
 import java.nio.file.Files
+import kotlin.time.Instant
 
 internal class DatabaseBackupTest : DatabaseTest() {
 
     private val directory: File = Files.createTempDirectory("backup").toFile()
+
+    private val backup by lazy {
+        DatabaseBackup(RuntimeEnvironment.getApplication(), database, AndroidSQLiteDriver())
+    }
+
+    private suspend fun playlists(of: AppDatabase): Long =
+        of.useReaderConnection { connection ->
+            connection.usePrepared("SELECT COUNT(*) FROM user_playlist") {
+                it.step()
+                it.getLong(0)
+            }
+        }
 
     @After
     fun deleteDirectory() {
@@ -43,7 +60,7 @@ internal class DatabaseBackupTest : DatabaseTest() {
     fun restoredCopyHoldsWhatWasWritten() = runBlocking<Unit> {
         addUser(name = "Kept")
         val copy = File(directory, "copy.db")
-        DatabaseBackup(database).export(copy)
+        backup.export(copy)
 
         val target = File(directory, "kreate.db")
         File(target.path + "-wal").writeText("stale")
@@ -65,8 +82,40 @@ internal class DatabaseBackupTest : DatabaseTest() {
     @Test
     fun exportReplacesAnOldFile() = runBlocking<Unit> {
         val copy = File(directory, "copy.db").apply { writeText("old") }
-        DatabaseBackup(database).export(copy)
+        backup.export(copy)
 
         assertEquals("SQLite format 3", copy.readBytes().copyOf(15).decodeToString())
+    }
+
+    @Test
+    fun cleanedCopyLeavesTheDatabaseInUseAlone() = runBlocking<Unit> {
+        addUser()
+        val picture = Uri.parse("file:///covers/playlist-1.jpg")
+        database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "empty",
+                thumbnail = picture,
+                createdAt = Instant.fromEpochMilliseconds(0),
+                updatedAt = Instant.fromEpochMilliseconds(0),
+            )
+        )
+        val copy = File(directory, "copy.db")
+
+        assertEquals(listOf(picture), backup.exportCleaned(copy))
+        assertFalse(File(copy.path + "-journal").exists())
+
+        val cleaned =
+            Room.databaseBuilder<AppDatabase>(RuntimeEnvironment.getApplication(), copy.path)
+                .setDriver(AndroidSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.IO)
+                .build()
+        try {
+            assertEquals(0L, playlists(cleaned))
+        } finally {
+            cleaned.close()
+        }
+        assertEquals(1L, playlists(database))
     }
 }

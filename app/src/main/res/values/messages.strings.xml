@@ -293,6 +293,10 @@
     <!-- %1$s is "Patreon" -->
     <string name="error_patreon_sign_in">Couldn\'t sign in to %1$s</string>
     <!-- %1$s is "Patreon" -->
+    <string name="error_remote_backup_delete">Couldn\'t delete the backup</string>
+    <!-- %1$s is the backup's file name in quotes, e.g. "kreate_backup_2026-11-18_09-30-00.zip" -->
+    <string name="snackbar_remote_backup_deleted">Deleted %1$s</string>
+    <string name="error_remote_backup_download">Couldn\'t download the backup</string>
     <string name="error_patreon_check_membership">Couldn\'t check your %1$s membership</string>
     <string name="error_patreon_sign_in_again">The %1$s sign in expired, try again</string>
     <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->

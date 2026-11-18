@@ -119,7 +119,7 @@ val databaseModule = module {
     }
     // Injected so tests can replace it with a fixed clock and assert created_at / updated_at
     single<Clock> { Clock.System }
-    single { DatabaseBackup(get()) }
+    single { DatabaseBackup(get(), get()) }
 
     single { get<AppDatabase>().albumDao() }
     single { get<AppDatabase>().artistDao() }

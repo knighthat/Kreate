@@ -41,6 +41,7 @@
     <string name="action_create">Create</string>
     <string name="action_try_again">Try again</string>
     <string name="action_retry">Retry</string>
+    <string name="action_restore">Restore</string>
     <!-- Opens the Patreon page to pick a higher membership tier -->
     <string name="action_upgrade">Upgrade</string>
     <!-- Asks Patreon for the user's membership tier again -->

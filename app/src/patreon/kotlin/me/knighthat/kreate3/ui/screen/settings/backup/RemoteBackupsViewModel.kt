@@ -18,21 +18,31 @@
 
 package me.knighthat.kreate3.ui.screen.settings.backup
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.KreateApplication
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.api.PatreonFeature
+import me.knighthat.kreate3.api.PatreonFileMissingException
 import me.knighthat.kreate3.api.PatreonSignedOutException
 import me.knighthat.kreate3.api.PatreonTierException
 import me.knighthat.kreate3.api.RemoteFile
+import me.knighthat.kreate3.backup.Backup
+import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.notification.AppChannel
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.patreon.PatreonAccount
 import me.knighthat.kreate3.patreon.PatreonSession
 import me.knighthat.kreate3.patreon.RemoteBackups
@@ -60,16 +70,33 @@ sealed interface RemoteBackupsState {
 /**
  * The backups the user keeps online for the Remote tab, created when it opens: [RemoteBackups]
  * asks for them only when its token changed since (one request per page of 1000 files, the server
- * keeps 50 at most), again on [retry] after a failure.
+ * keeps 50 at most), again on [retry] after a failure. A tap [restore]s one.
  */
 class RemoteBackupsViewModel(
+    private val context: Context,
     private val account: PatreonAccount,
     session: PatreonSession,
     private val backups: RemoteBackups,
+    private val backup: Backup,
+    private val notifier: Notifier,
+    private val scope: CoroutineScope,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<RemoteBackupsState>(RemoteBackupsState.Loading)
+    private val _restoring = MutableStateFlow<Restoring?>(null)
+    private val _deleting = MutableStateFlow<RemoteFile?>(null)
     private var loading: Job? = null
+
+    /** A restore of [file] at [step]. */
+    data class Restoring(val file: RemoteFile, val step: Step) {
+        enum class Step { DOWNLOADING, READING }
+    }
+
+    /** The backup being restored, `null` while none is. */
+    val restoring: StateFlow<Restoring?> = _restoring.asStateFlow()
+
+    /** The backup being deleted, `null` while none is. */
+    val deleting: StateFlow<RemoteFile?> = _deleting.asStateFlow()
 
     val state: StateFlow<RemoteBackupsState> = _state.asStateFlow()
 
@@ -103,6 +130,90 @@ class RemoteBackupsViewModel(
      * changed: the list loads once the new token has it.
      */
     fun checkMembership() = account.checkMembership()
+
+    /**
+     * Restores [file], once the user agreed: downloaded unless a copy is kept, then restored like
+     * a file picked on the Backup page, and the app restarts. Runs on the app's scope, so leaving
+     * the page doesn't stop it.
+     */
+    fun restore(file: RemoteFile) {
+        if (_restoring.value != null || _deleting.value != null) return
+        _restoring.value = Restoring(file, Restoring.Step.DOWNLOADING)
+
+        viewModelScope.launch {
+            try {
+                scope.async {
+                    val zip = try {
+                        backups.download(file)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: PatreonFileMissingException) {
+                        // Gone online already, it just leaves the list
+                        drop(file)
+                        return@async
+                    } catch (e: IOException) {
+                        Logger.w(e, TAG) { "Couldn't download the backup" }
+                        notifier.post(context.getString(R.string.error_remote_backup_download))
+                        return@async
+                    }
+                    _restoring.value = Restoring(file, Restoring.Step.READING)
+                    zip.inputStream().use { backup.stage(it) }
+                    (context.applicationContext as KreateApplication).restart()
+                }.await()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: BackupException) {
+                notifier.post(e.describe(context), AppChannel.OTHER)
+            } catch (e: IOException) {
+                Logger.w(e, TAG) { "Couldn't restore the backup" }
+                notifier.post(
+                    context.getString(R.string.setting_description_restore_status_failed),
+                    AppChannel.OTHER,
+                )
+            } finally {
+                _restoring.value = null
+            }
+        }
+    }
+
+    /**
+     * Deletes [file] online once the user agreed, and takes it off the list without asking the
+     * server for the list again. Runs on the app's scope, so leaving the page doesn't stop it.
+     */
+    fun delete(file: RemoteFile) {
+        if (_deleting.value != null || _restoring.value != null) return
+        _deleting.value = file
+
+        viewModelScope.launch {
+            try {
+                val deleted = scope.async { backups.delete(file) }.await()
+                drop(file)
+                // One gone already just leaves the list
+                if (deleted) {
+                    notifier.post(
+                        context.getString(
+                            R.string.snackbar_remote_backup_deleted,
+                            context.getString(R.string.quoted, file.name)
+                        )
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                Logger.w(e, TAG) { "Couldn't delete the backup" }
+                notifier.post(context.getString(R.string.error_remote_backup_delete))
+            } finally {
+                _deleting.value = null
+            }
+        }
+    }
+
+    /** Takes [file] off the list shown, without asking for it again. */
+    private fun drop(file: RemoteFile) {
+        (_state.value as? RemoteBackupsState.Loaded)?.let {
+            _state.value = RemoteBackupsState.Loaded(it.files - file)
+        }
+    }
 
     /** Asks for the list again after it failed. */
     fun retry() {

@@ -412,7 +412,11 @@ ui/screen/
     under `app/src/patreon/`: `RemoteBackupsPage.kt` + `RemoteBackupsViewModel.kt`, the online list
     (signed out → Sign in opens the Patreon page, no `backups` feature → Upgrade opens
     `HOMEPAGE_URL` and Check again refreshes, failure → Retry, rows of name, size and upload time,
-    not tappable, 180-day note),
+    a tap asks to restore (download or the kept copy, `Backup.stage`, restart; the row says
+    Downloading… / Reading…), an ✕ at the end asks to delete it online (Deleting…, off the list
+    without a new request, "Deleted <name>" only when the server deleted it; one found gone, on
+    delete or restore,
+    just leaves the list), 180-day note),
     through `RemoteBackups`, so only when the tab opens), `about/` (`AboutScreen.kt` version,
     license and the
     licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +

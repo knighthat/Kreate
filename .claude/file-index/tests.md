@@ -22,7 +22,8 @@ Tests mirror the main paths under `src/test/`.
   `UnlikedMessageTest`
   (Undislike all's and Unlike all's message), playlist/`PlaylistCsvTest` (old and new headers,
   durations, quoting, missing headers, grouping, `LocalMatcher`).
-- database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
+- database: `DatabaseTest`, `DatabaseBackupTest` (cleaned copy too), `ConvertersTest`, paging/
+  `SortingTest`,
   repository/ `CleanupRepositoryTest`, `HistoryRepositoryTest`, `StatisticsRepositoryTest`,
   `LocalCatalogRepositoryTest`,
   `MappersTest`,
@@ -33,7 +34,9 @@ Tests mirror the main paths under `src/test/`.
   `PreferenceEngineTest`, `ProfileManagerTest`, `SchemaMigrationTest`, `SecretStoreTest` (device
   secrets too).
 - api: `PatreonFilesTest` (pages through the cursor with the token, 401 vs `tier_too_low` vs other
-  errors, no address), `PatreonAuthTest` (MockEngine: login URL and PKCE challenge, code trade,
+  errors, no address, upload link then PUT without the token and a retry on storage's 403, upload
+  refusals, download link then content without the token, missing file, delete tells a file already
+  gone), `PatreonAuthTest` (MockEngine: login URL and PKCE challenge, code trade,
   redirect and
   fragment results, refresh rotation, 401 vs other failures, no address, token claims and features,
   profile

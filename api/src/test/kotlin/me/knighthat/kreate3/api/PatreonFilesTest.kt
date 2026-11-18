@@ -23,14 +23,17 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.IOException
 import kotlin.time.Instant
 
 private const val FILES = "https://files.example.test"
@@ -111,5 +114,107 @@ class PatreonFilesTest {
         } catch (_: ApiUnavailableException) {
         }
         assertTrue(requests.isEmpty())
+    }
+
+    @Test
+    fun `upload asks for a link, then puts the body without the token`() = runBlocking {
+        val link = """{"url":"https://storage.example.test/put","method":"PUT",""" +
+                """"headers":{"Content-Type":"application/zip","x-amz-meta":"1"},"maxBytes":100,"expiresAt":"x"}"""
+        files(
+            HttpStatusCode.OK to link,
+            HttpStatusCode.Forbidden to "<Error/>",
+            HttpStatusCode.OK to link,
+            HttpStatusCode.OK to "",
+        ).upload("jwt", "a.zip", byteArrayOf(1, 2, 3))
+
+        assertEquals(4, requests.size)
+        val (ask, put) = requests[2] to requests[3]
+        assertEquals("a.zip", ask.url.parameters["name"])
+        assertEquals("3", ask.url.parameters["size"])
+        assertEquals("Bearer jwt", ask.headers[HttpHeaders.Authorization])
+        assertEquals("https://storage.example.test/put", put.url.toString())
+        assertNull(put.headers[HttpHeaders.Authorization])
+        assertEquals("1", put.headers["x-amz-meta"])
+        assertEquals(3L, put.body.contentLength)
+        assertEquals("application/zip", put.body.contentType.toString())
+    }
+
+    @Test
+    fun `upload refusals are told apart`() = runBlocking {
+        try {
+            files(HttpStatusCode.PayloadTooLarge to """{"error":"file_too_large","maxBytes":2}""")
+                .upload("jwt", "a.zip", byteArrayOf(1, 2, 3))
+            fail()
+        } catch (e: PatreonFileTooLargeException) {
+            assertEquals(2L, e.maxBytes)
+        }
+
+        try {
+            files(HttpStatusCode.Forbidden to """{"error":"file_limit_reached"}""")
+                .upload("jwt", "a.zip", byteArrayOf(1))
+            fail()
+        } catch (e: PatreonStorageFullException) {
+            assertEquals("file_limit_reached", e.error)
+        }
+
+        // Storage refusing a second link too is a failure, not a loop
+        val link = """{"url":"https://storage.example.test/put","headers":{}}"""
+        try {
+            files(
+                HttpStatusCode.OK to link,
+                HttpStatusCode.Forbidden to "",
+                HttpStatusCode.OK to link,
+                HttpStatusCode.Forbidden to "",
+            ).upload("jwt", "a.zip", byteArrayOf(1))
+            fail()
+        } catch (e: IOException) {
+            assertTrue(e !is ApiException)
+        }
+    }
+
+    @Test
+    fun `download gets the link, then the content without the token`() = runBlocking {
+        val link = """{"url":"https://storage.example.test/get","expiresAt":"x"}"""
+        val content = files(
+            HttpStatusCode.OK to link,
+            HttpStatusCode.Forbidden to "<Error/>",
+            HttpStatusCode.OK to link,
+            HttpStatusCode.OK to "zip",
+        ).download("jwt", "a.zip")
+
+        assertEquals("zip", content.decodeToString())
+        assertEquals("a.zip", requests[2].url.parameters["name"])
+        assertEquals("Bearer jwt", requests[2].headers[HttpHeaders.Authorization])
+        assertNull(requests[3].headers[HttpHeaders.Authorization])
+
+        try {
+            files(HttpStatusCode.OK to link, HttpStatusCode.NotFound to "").download("jwt", "a.zip")
+            fail()
+        } catch (_: PatreonFileMissingException) {
+        }
+    }
+
+    @Test
+    fun `delete tells a file already gone`() = runBlocking {
+        assertTrue(files(HttpStatusCode.NoContent to "").delete("jwt", "a.zip"))
+        assertEquals(HttpMethod.Delete, requests[0].method)
+        assertEquals("a.zip", requests[0].url.parameters["name"])
+        assertEquals("Bearer jwt", requests[0].headers[HttpHeaders.Authorization])
+
+        assertFalse(
+            files(HttpStatusCode.NotFound to """{"error":"file_not_found"}""").delete(
+                "jwt",
+                "a.zip"
+            )
+        )
+
+        try {
+            files(HttpStatusCode.Unauthorized to """{"error":"invalid_token"}""").delete(
+                "jwt",
+                "a.zip"
+            )
+            fail()
+        } catch (_: PatreonTokenRefusedException) {
+        }
     }
 }

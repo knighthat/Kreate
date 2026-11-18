@@ -33,4 +33,10 @@ written in the code.
 - `PatreonFiles.kt` — `PatreonFiles(http, filesUrl)`: `list(token)` (`/api/files`, every page
   through `cursor`) → `RemoteFile` (name, size, `lastModified` as `Instant`); 401 →
   `PatreonTokenRefusedException` (refresh, ask again), `tier_too_low` → `PatreonTierException`
-  (`patronStatus`, server `message`), others `ApiException`. No upload or download yet.
+  (`patronStatus`, server `message`), others `ApiException`. `upload(token, name, data)`: asks
+  `/api/upload` for the exact size, PUTs the bytes with the link's headers and no token, a 403 from
+  storage asks for a new link once; `file_too_large` → `PatreonFileTooLargeException(maxBytes)`,
+  `file_limit_reached`/`storage_limit_reached` → `PatreonStorageFullException`.
+  `download(token, name)`: link from `/api/download`, then the bytes without the token,
+  a 403 asks for a new link once, 404 → `PatreonFileMissingException`. `delete(token, name)`:
+  `DELETE /api/delete`, 204 → `true`, `file_not_found` → `false` (gone already).

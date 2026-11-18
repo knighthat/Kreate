@@ -20,6 +20,7 @@ package me.knighthat.kreate3
 
 import me.knighthat.kreate3.api.PatreonAuth
 import me.knighthat.kreate3.api.PatreonFiles
+import me.knighthat.kreate3.patreon.CloudBackups
 import me.knighthat.kreate3.patreon.PATREON_REDIRECT
 import me.knighthat.kreate3.patreon.PatreonAccount
 import me.knighthat.kreate3.patreon.PatreonSession
@@ -46,9 +47,13 @@ val platformModule = module {
     single(createdAtStart = true) { PatreonAccount(androidContext(), get(), get(), get(), get()) }
     single { PatreonFiles(get()) }
     // Created as the app starts too, so the Backup page knows at once whether Remote can open
-    single(createdAtStart = true) { RemoteBackups(get(), get(), get(), get()) }
-    viewModel { RemoteBackupsViewModel(get(), get(), get()) }
+    single(createdAtStart = true) { RemoteBackups(androidContext(), get(), get(), get(), get()) }
+    viewModel { RemoteBackupsViewModel(androidContext(), get(), get(), get(), get(), get(), get()) }
     single { RemoteBackupPage(get<RemoteBackups>().active) { RemoteBackupsPage(it) } }
+    // Checks as the app starts whether a cloud backup is due, see CloudBackups
+    single(createdAtStart = true) {
+        CloudBackups(androidContext(), get(), get(), get(), get()).also { it.start() }
+    }
     single<PlatformEntries> {
         PlatformEntries { onBack -> entry<PatreonSettings> { PatreonSettingsScreen(onBack) } }
     }

@@ -23,6 +23,8 @@ import androidx.annotation.StringRes
 import androidx.core.content.pm.PackageInfoCompat
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -90,14 +92,30 @@ class Backup(
     private val preferences: PreferencesBackup,
 ) {
 
+    // One export at a time: they share the database snapshot (the user's and the cloud backup's)
+    private val exporting = Mutex()
+
     /**
-     * Writes a backup to [output] and closes it.
+     * Writes a backup to [output] and closes it, after an export running already.
+     *
+     * @param cleanUp whether the backup's database is cleaned up first, like Clean up database
+     *   does, for a smaller file (the cloud backup's); the database in use keeps everything
      */
-    suspend fun export(output: OutputStream) = withContext(Dispatchers.IO) {
+    suspend fun export(output: OutputStream, cleanUp: Boolean = false) =
+        exporting.withLock { exportNow(output, cleanUp) }
+
+    private suspend fun exportNow(output: OutputStream, cleanUp: Boolean) =
+        withContext(Dispatchers.IO) {
         Logger.i(tag = TAG) { "Exporting a backup" }
         val snapshot = File(context.cacheDir, "backup_$DATABASE_ENTRY")
         try {
-            database.export(snapshot)
+            // The pictures of playlists the clean up deleted go nowhere
+            val removed = if (cleanUp) {
+                database.exportCleaned(snapshot).mapNotNullTo(mutableSetOf()) { it.path }
+            } else {
+                database.export(snapshot)
+                emptySet()
+            }
             ZipOutputStream(output.buffered()).use { zip ->
                 zip.putNextEntry(ZipEntry(MANIFEST_ENTRY))
                 zip.write(JSON.encodeToString(currentManifest(context)).toByteArray())
@@ -107,6 +125,7 @@ class Backup(
                 preferences.files().forEach { (path, file) -> zip.putFile(path, file) }
                 // Pictures the user picked, kept outside of the system's backups
                 CoverFiles(context).backupFiles()
+                    .filterValues { it.path !in removed }
                     .forEach { (path, file) -> zip.putFile(path, file) }
                 // The fonts users picked, kept outside of the system's backups too
                 FontFiles(context).backupFiles()
