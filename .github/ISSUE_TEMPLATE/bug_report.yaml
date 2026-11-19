@@ -1,0 +1,140 @@
+name: 🐛 Bug report
+description: Something in the app doesn't work the way it should
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The more of this form you fill, the faster the bug can be found.
+
+        - The app **crashed**? Use the **Crash report** form instead.
+        - A song **won't play**, plays the wrong song or stops? Use the **Playback or source issue** form.
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Existing issues
+      options:
+        - label: I searched the [existing issues](https://github.com/knighthat/Kreate/issues?q=is%3Aissue) and this one isn't reported yet
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Kreate version
+      description: Settings → About → Version. Copy it as shown.
+      placeholder: 3.0.0+github
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Where you got the app
+      options:
+        - GitHub
+        - F-Droid / IzzyOnDroid (foss)
+        - Patreon
+        - Other / not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      description: Which source the songs involved come from
+      multiple: true
+      options:
+        - YouTube Music
+        - OpenSubsonic server (Navidrome, Gonic, …)
+        - Songs on the device
+        - Not related to a source
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Part of the app
+      options:
+        - Player, queue or notification
+        - Lyrics
+        - Search
+        - Library (songs, albums, artists)
+        - Playlists
+        - Downloads
+        - Sync with an account
+        - Android Auto
+        - Import from old Kreate
+        - Backup and restore
+        - Settings
+        - Other
+  - type: dropdown
+    id: android
+    attributes:
+      label: Android version
+      options:
+        - 7.0 – 7.1 (Nougat)
+        - 8.0 – 8.1 (Oreo)
+        - 9 (Pie)
+        - "10"
+        - "11"
+        - 12 – 12L
+        - "13"
+        - "14"
+        - "15"
+        - "16"
+        - "17"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Maker and model, plus the system if it's not the maker's own (e.g. LineageOS, GrapheneOS)
+      placeholder: Pixel 8, Samsung Galaxy A54 (One UI 6), …
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Every step from a place anyone can start from (e.g. "open the app")
+      placeholder: |
+        1. Open …
+        2. Tap …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Screenshots or a screen recording help a lot, drop them here.
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often it happens
+      options:
+        - Every time
+        - Sometimes
+        - Happened once
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log
+      description: |
+        Settings → General → Logging → **Copy** puts the latest part of the log on the clipboard; paste it here. For a long session, use **Export** and attach the zip instead.
+        If the bug is hard to catch, set **Log level** to Debug there first, then make it happen again.
+      render: shell
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Did it start after an update? Does it happen on another device?

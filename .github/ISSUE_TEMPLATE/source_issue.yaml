@@ -1,0 +1,116 @@
+name: 🎵 Playback or source issue
+description: A song won't play, plays the wrong song, stops, or a source won't load
+labels:
+  - bug
+  - playback
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For songs that won't play, skip, stop in the middle, play the wrong audio, or a source (YouTube Music, your server) that won't load or sign in.
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Existing issues
+      options:
+        - label: I searched the [existing issues](https://github.com/knighthat/Kreate/issues?q=is%3Aissue) and this one isn't reported yet
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Kreate version
+      description: Settings → About → Version. Copy it as shown.
+      placeholder: 3.0.0+github
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Where you got the app
+      options:
+        - GitHub
+        - F-Droid / IzzyOnDroid (foss)
+        - Patreon
+        - Other / not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      options:
+        - YouTube Music
+        - OpenSubsonic server (Navidrome, Gonic, …)
+        - Songs on the device
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What goes wrong
+      options:
+        - Song doesn't start
+        - Song stops or stalls partway
+        - Wrong song or wrong audio plays
+        - Skips to the next song by itself
+        - Sound quality or volume is off
+        - Can't sign in or connect
+        - Pages or search won't load
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which songs
+      options:
+        - Every song
+        - Some songs
+        - One song
+    validations:
+      required: true
+  - type: textarea
+    id: songs
+    attributes:
+      label: Songs it happens with
+      description: |
+        YouTube Music: a link to the song (music.youtube.com/watch?v=…).
+        Server: the song's title and artist, and its file format if you know it.
+        Device: the file format (mp3, flac, …).
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Your setup
+      description: |
+        YouTube Music: signed in or not, the region set in the app, and whether you use a VPN or proxy.
+        Server: the server and its version (e.g. Navidrome 0.53), and whether it's reached through a reverse proxy or a self-signed certificate.
+        Leave out addresses, user names and passwords.
+    validations:
+      required: true
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network
+      options:
+        - Wi-Fi
+        - Mobile data
+        - Both
+        - Played from cache/download
+  - type: textarea
+    id: details
+    attributes:
+      label: What happens
+      description: What you see or hear, any message the app shows, and when it started
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log
+      description: |
+        Settings → General → Logging: set **Log level** to Debug, play the song again, then **Copy** and paste it here (or **Export** and attach the zip).
+        The log leaves out passwords, tokens and account ids.
+      render: shell

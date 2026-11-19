@@ -1,0 +1,30 @@
+name: 📦 Distribution issue
+description: For distributors only (F-Droid, IzzyOnDroid, …). Problems with the app itself go in a bug report.
+labels:
+  - distribution
+assignees:
+  - knighthat
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - F-Droid
+        - IzzyOnDroid
+        - OpenAPK
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or tag
+      placeholder: v3.0.0
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue
+      description: What's wrong (build failure, reproducibility, metadata, signing, …), with links to build logs. A fix you know of is welcome too.
+    validations:
+      required: true

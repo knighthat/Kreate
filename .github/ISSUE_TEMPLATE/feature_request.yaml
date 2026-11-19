@@ -1,0 +1,52 @@
+name: 🛠️ Feature request
+description: Suggest a new feature, a change to an existing one, or a design
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make Kreate better! Designers: put mockups or screenshots in the **Mockups** field.
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Existing requests
+      options:
+        - label: I searched the [existing requests](https://github.com/knighthat/Kreate/issues?q=is%3Aissue%20label%3Aenhancement) and this one isn't asked for yet
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you want to do
+      description: What you're trying to do, and what makes it hard or impossible today
+      placeholder: When I …, I can't …
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Your idea
+      description: How you picture it working
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      description: Which source it's about, if any
+      multiple: true
+      options:
+        - YouTube Music
+        - OpenSubsonic server (Navidrome, Gonic, …)
+        - Songs on the device
+        - The whole app
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Other ways
+      description: Other ways you've thought of, or how other apps do it
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups
+      description: Sketches, designs or screenshots that show the idea

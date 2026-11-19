@@ -1,0 +1,88 @@
+name: 💥 Crash report
+description: The app closed and showed the "Kreate stopped" screen
+labels:
+  - crash
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        When Kreate crashes, it opens a screen with the crash log. Share that log below, it says where the crash happened.
+
+        No crash screen came up (it can't open while the app is in the background on Android 10 and later)? The log is still saved, export it from Settings → General → Logging → **Export**.
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Existing issues
+      options:
+        - label: I searched the [existing crash reports](https://github.com/knighthat/Kreate/issues?q=is%3Aissue%20label%3Acrash) and this one isn't reported yet
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Kreate version
+      description: Settings → About → Version. Copy it as shown.
+      placeholder: 3.0.0+github
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Where you got the app
+      options:
+        - GitHub
+        - F-Droid / IzzyOnDroid (foss)
+        - Patreon
+        - Other / not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: android
+    attributes:
+      label: Android version
+      options:
+        - 7.0 – 7.1 (Nougat)
+        - 8.0 – 8.1 (Oreo)
+        - 9 (Pie)
+        - "10"
+        - "11"
+        - 12 – 12L
+        - "13"
+        - "14"
+        - "15"
+        - "16"
+        - "17"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: Pixel 8, Samsung Galaxy A54 (One UI 6), …
+    validations:
+      required: true
+  - type: textarea
+    id: doing
+    attributes:
+      label: What you were doing
+      description: The last things you did before the crash
+    validations:
+      required: true
+  - type: dropdown
+    id: reproducible
+    attributes:
+      label: Can you make it crash again?
+      options:
+        - Yes, every time with the steps above
+        - Sometimes
+        - No, it happened once
+    validations:
+      required: true
+  - type: textarea
+    id: crash-log
+    attributes:
+      label: Crash log
+      description: The whole text from the crash screen, or the exported crash log
+      render: shell
+    validations:
+      required: true

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🌐 Translations
+    url: https://translate.kreate.knighthat.me/project/kreate
+    about: Wrong or missing translations, typos in a language, or a new language. These are handled on Crowdin.
+  - name: 📖 Documentation
+    url: https://github.com/knighthat/Kreate-docs
+    about: Mistakes or gaps in the documentation at kreate.knighthat.me.
+  - name: 💬 Questions and help
+    url: https://discord.gg/WYr9ZgJzpx
+    about: Ask how something works or get help on the Discord server.
