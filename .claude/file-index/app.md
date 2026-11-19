@@ -153,6 +153,10 @@ Root
   seconds or `m:ss`), `groupPlaylistRows` (one playlist per playlist name, unnamed rows →
   the file's name, else
   `Playlist-<n>`), `readCsv` (RFC 4180 records via kotlin-csv).
+  `CreatedPlaylists.kt` — `CreatedPlaylists` (Koin single): YouTube playlists just made by
+  `CreatePlaylistViewModel`, placeholders (`CreatedPlaylist`) on the Playlists tab until
+  `libraryPlaylists` lists them, checked every 1 s up to `NETWORK_MAX_RETRIES` times; `settled`
+  makes `HomePlaylistsViewModel` reload the live list.
   `PlaylistImporter.kt` — `PlaylistImporter` (Koin single in `KreateApplication`): `readCsv(uri)`
   and the shared entry point `importPlaylists(List<PlaylistToImport>, lookUp)` (any file format's
   rows → new local playlists; YouTube stored from the row (album/artists when it has their ids,

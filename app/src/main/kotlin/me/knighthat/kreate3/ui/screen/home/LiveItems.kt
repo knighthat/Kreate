@@ -53,6 +53,18 @@ class LiveItems(
         job = scope.launch { _items.value = fetch() }
     }
 
+    /**
+     * Fetches the items again even when they are on their way: those were asked for before
+     * something changed. Runs after them.
+     */
+    fun reload() {
+        val running = job?.takeIf { it.isActive }
+        job = scope.launch {
+            running?.join()
+            _items.value = fetch()
+        }
+    }
+
     /** [refresh] asked by the user: [pulling] until the items arrived, also ones on their way. */
     fun pull() {
         if (_pulling.value) return

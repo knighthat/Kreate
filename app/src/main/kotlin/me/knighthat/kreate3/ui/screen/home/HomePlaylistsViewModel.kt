@@ -45,6 +45,8 @@ import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.isOnline
+import me.knighthat.kreate3.playlist.CreatedPlaylist
+import me.knighthat.kreate3.playlist.CreatedPlaylists
 import me.knighthat.kreate3.playlist.ImportStep
 import me.knighthat.kreate3.playlist.ImportTask
 import me.knighthat.kreate3.playlist.ImportingPlaylist
@@ -72,6 +74,7 @@ class HomePlaylistsViewModel internal constructor(
     private val importer: PlaylistImporter,
     private val notifier: Notifier,
     private val scope: CoroutineScope,
+    createdPlaylists: CreatedPlaylists,
 ) : ViewModel() {
 
     private val remote = LiveItems(viewModelScope) { livePlaylists(openSubsonic, youTube) }
@@ -123,6 +126,20 @@ class HomePlaylistsViewModel internal constructor(
      * the filter.
      */
     val importing: StateFlow<List<ImportingPlaylist>> = importer.importing
+
+    /**
+     * The playlists just made on YouTube that its library doesn't list yet, shown above the
+     * others while the filter shows YouTube's playlists.
+     */
+    val created: StateFlow<List<CreatedPlaylist>> =
+        combine(createdPlaylists.waiting, filter.selected, monthly) { list, origins, only ->
+            if (only || (origins.isNotEmpty() && Origin.YOUTUBE !in origins)) emptyList() else list
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    init {
+        // A playlist made on YouTube is listed now, or won't be soon: show its list as it is
+        viewModelScope.launch { createdPlaylists.settled.collect { remote.reload() } }
+    }
 
     /** Whether the user's pull to refresh is waiting for the items of the external sources. */
     val pulling: StateFlow<Boolean> = remote.pulling

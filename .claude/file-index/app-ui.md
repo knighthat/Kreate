@@ -29,7 +29,8 @@ ui/component/ (shared composables; each file that draws something ends with its 
   over the
   import's step (`ImportStep.labelRes`, or "Searching 120 of 1,722" while `searched`), a spinning
   ring for a cover, for a playlist a file import
-  hasn't made yet.
+  hasn't made yet, through `PendingPlaylistItem(name, status)` (any playlist not there yet, also
+  the YouTube ones `CreatedPlaylists` waits for).
 - `OpenSubsonicName.kt` — `openSubsonicName()`: what texts call the OpenSubsonic server (the
   software's name from `OpenSubsonicServer`, else `source_opensubsonic`); `Resources` variant for
   messages, composable one (reads `Preferences`) for screens to pass to their content.

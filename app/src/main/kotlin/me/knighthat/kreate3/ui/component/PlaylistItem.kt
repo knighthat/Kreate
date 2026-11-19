@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
@@ -173,7 +174,7 @@ private fun PlaylistRow(
 
 /**
  * A playlist called [name] that a file import hasn't made yet: its name over what the import is
- * doing ([step]), with a spinning ring for a cover. Tapping it does nothing.
+ * doing ([step]), see [PendingPlaylistItem].
  *
  * @param searched while searching, how many songs are done of how many, shown in place of the
  * step's name
@@ -186,8 +187,8 @@ fun ImportingPlaylistItem(
     modifier: Modifier = Modifier,
 ) {
     val resources = LocalResources.current
-    val item = remember(name, step, searched, resources) {
-        val status = if (step == ImportStep.SEARCHING && searched != null) {
+    val status = remember(step, searched, resources) {
+        if (step == ImportStep.SEARCHING && searched != null) {
             val numbers = NumberFormat.getIntegerInstance(resources.configuration.locales[0])
             resources.getString(
                 R.string.status_import_searched,
@@ -197,6 +198,21 @@ fun ImportingPlaylistItem(
         } else {
             resources.getString(step.labelRes)
         }
+    }
+    PendingPlaylistItem(name, status, modifier)
+}
+
+/**
+ * A playlist called [name] that isn't there yet, being imported or made: its name over [status],
+ * with a spinning ring for a cover. Tapping it does nothing.
+ */
+@Composable
+fun PendingPlaylistItem(
+    name: String,
+    status: String,
+    modifier: Modifier = Modifier,
+) {
+    val item = remember(name, status) {
         MediaItem.Builder()
             .setMediaId(name)
             .setMediaMetadata(
@@ -342,6 +358,13 @@ private fun PlaylistItemPreview() = PreviewTheme {
             PlaylistItem(withCovers(gym, GRID_COVERS), onClick = {})
             ImportingPlaylistItem("Road trip", ImportStep.READING)
             ImportingPlaylistItem("Drum & Bass", ImportStep.SEARCHING, SearchCount(120, 1722))
+            PendingPlaylistItem(
+                "Late night",
+                stringResource(
+                    R.string.status_waiting_for_source,
+                    stringResource(R.string.source_ytm),
+                ),
+            )
         }
     }
 }

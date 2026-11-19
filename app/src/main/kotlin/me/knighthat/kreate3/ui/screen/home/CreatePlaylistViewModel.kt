@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.stateIn
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.playlist.CreatedPlaylists
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.PlaylistPrivacy
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -78,6 +79,7 @@ class CreatePlaylistViewModel internal constructor(
     private val songs: SongStore,
     private val openSubsonic: OpenSubsonicProvider,
     private val youTube: YouTubeProvider,
+    private val created: CreatedPlaylists,
 ) : ViewModel() {
 
     /**
@@ -137,7 +139,12 @@ class CreatePlaylistViewModel internal constructor(
                         playlist.privacy,
                         ids,
                     )
-                    if (id == null) CreateOutcome.FAILED else CreateOutcome.CREATED
+                    if (id == null) {
+                        CreateOutcome.FAILED
+                    } else {
+                        created.add(id, name)
+                        CreateOutcome.CREATED
+                    }
                 }
             }
         } catch (e: CancellationException) {

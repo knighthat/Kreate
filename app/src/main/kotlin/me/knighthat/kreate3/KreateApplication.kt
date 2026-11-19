@@ -57,6 +57,7 @@ import me.knighthat.kreate3.notification.SystemNotifications
 import me.knighthat.kreate3.notification.createNotificationChannels
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.playback.playbackModule
+import me.knighthat.kreate3.playlist.CreatedPlaylists
 import me.knighthat.kreate3.playlist.PlaylistImporter
 import me.knighthat.kreate3.preferences.GlobalPreferences
 import me.knighthat.kreate3.preferences.preferencesModule
@@ -242,6 +243,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                             get()
                         )
                     }
+                    // YouTube playlists just made, shown until its library lists them
+                    single { CreatedPlaylists(get(), get()) }
                     single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     // Pictures of artists stored from song credits, which carry none
                     single { ArtistPictures(get(), get(), get()) }

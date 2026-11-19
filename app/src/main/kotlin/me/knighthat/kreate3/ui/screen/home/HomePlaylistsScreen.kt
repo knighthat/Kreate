@@ -68,6 +68,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.QueueAction
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playlist.ImportStep
+import me.knighthat.kreate3.playlist.CreatedPlaylist
 import me.knighthat.kreate3.playlist.ImportingPlaylist
 import me.knighthat.kreate3.playlist.SearchCount
 import me.knighthat.kreate3.preferences.Preferences
@@ -77,6 +78,7 @@ import me.knighthat.kreate3.ui.component.ConfigSheet
 import me.knighthat.kreate3.ui.component.ConfigToggle
 import me.knighthat.kreate3.ui.component.CreatePlaylistButton
 import me.knighthat.kreate3.ui.component.ImportingPlaylistItem
+import me.knighthat.kreate3.ui.component.PendingPlaylistItem
 import me.knighthat.kreate3.ui.component.LabeledIconButton
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlaylistItem
@@ -124,6 +126,7 @@ fun HomePlaylistsScreen(
     }
     val pendingImport by viewModel.pendingImport.collectAsStateWithLifecycle()
     val importing by viewModel.importing.collectAsStateWithLifecycle()
+    val created by viewModel.created.collectAsStateWithLifecycle()
     val searchesPerSecond by Preferences.YOUTUBE_SEARCHES_PER_SECOND.state
         .collectAsStateWithLifecycle()
     pendingImport?.let {
@@ -149,6 +152,7 @@ fun HomePlaylistsScreen(
     HomePlaylistsContent(
         playlists = viewModel.playlists.collectAsLazyPagingItems(),
         importing = importing,
+        created = created,
         live = live,
         choices = choices,
         selected = selected,
@@ -308,6 +312,7 @@ private fun Resources.roughLength(length: Duration): String {
 
 /**
  * @param importing the playlists of files not made yet, above all the others
+ * @param created the playlists just made on YouTube that it doesn't list yet, under [importing]
  * @param live the playlists of the external sources, after the ones of the database
  * @param monthlyOnly whether only the monthly playlists show
  * @param offersMonthly whether [monthlyOnly] can be changed: the app's own playlists show
@@ -317,6 +322,7 @@ private fun Resources.roughLength(length: Duration): String {
 private fun HomePlaylistsContent(
     playlists: LazyPagingItems<MediaItem>,
     importing: List<ImportingPlaylist>,
+    created: List<CreatedPlaylist>,
     live: List<MediaItem>,
     choices: List<Origin>,
     selected: Set<Origin>,
@@ -385,6 +391,10 @@ private fun HomePlaylistsContent(
         actions = { CreatePlaylistButton(onCreate) },
     ) { padding ->
         val gridState = rememberLazyGridState()
+        val waitingForYouTube = stringResource(
+            R.string.status_waiting_for_source,
+            stringResource(R.string.source_ytm),
+        )
         // The grid keeps its first item in view when items come in above it: scroll up when a
         // placeholder is made so it shows. Keys only grow, a larger one is a new placeholder;
         // one leaving doesn't move the grid, nor do those already there when the tab shows
@@ -410,6 +420,9 @@ private fun HomePlaylistsContent(
             items(importing, key = { "importing:${it.key}" }) {
                 ImportingPlaylistItem(it.name, it.step, it.searched)
             }
+            items(created, key = { "created:${it.key}" }) {
+                PendingPlaylistItem(it.name, waitingForYouTube)
+            }
             items(count = playlists.itemCount, key = playlists.itemKey { it.mediaId }) { index ->
                 playlists[index]?.let { PlaylistItem(it, onClick = { onOpen(it) }) }
             }
@@ -428,6 +441,7 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         importing = listOf(
             ImportingPlaylist(0, "Imported mix", ImportStep.SEARCHING, SearchCount(3, 12))
         ),
+        created = listOf(CreatedPlaylist(0, "PL0", "Late night")),
         live = previewPlaylists(Origin.YOUTUBE).take(3),
         choices = Origin.entries,
         selected = emptySet(),
