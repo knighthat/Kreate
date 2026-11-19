@@ -382,7 +382,7 @@ ui/screen/
     build" in foss), `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
     `discordSummary()` and `discordSettingsEntry` for `KreateApp`, foss has stand-ins in
     `app/src/foss/…/DiscordSettings.kt`: the FOSS text, no page) (main switch, account
-    row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches, largest
+    row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches with "Show private playlists" (`DISCORD_PRIVATE_PLAYLISTS`) under YouTube Music, largest
     cover `PixelSetting` filled from 1024, Wi-Fi / mobile size `SliderSetting`s on
     `DiscordCovers.sizes`), `network/youtube/` (`YouTubeSettingsScreen.kt`
     account

@@ -671,6 +671,13 @@ object Preferences : KoinComponent {
     val DISCORD_YOUTUBE by lazy { boolean("discord_youtube", true) }
 
     /**
+     * Whether Discord shows the user's private YouTube Music playlists while their page is open,
+     * with [DISCORD_YOUTUBE] on. Off by default: such a page shows nothing. Shown, a private
+     * playlist never gets the button that opens it on YouTube Music. Read by `DiscordPresence`.
+     */
+    val DISCORD_PRIVATE_PLAYLISTS by lazy { boolean("discord_private_playlists", false) }
+
+    /**
      * Like [DISCORD_YOUTUBE], for the OpenSubsonic server, whichever server it is: its songs and
      * searches only, its albums, artists and playlists never show (each would be a cover upload).
      */

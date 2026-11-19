@@ -120,20 +120,27 @@ class DiscordPresence internal constructor(
                 if (local) add(Origin.LOCAL)
             }
         }
-        val shown: Flow<Doing?> =
-            combine(state.listening, state.browsing, allowed) { listening, browsing, allowed ->
-                // Opened files have no origin, they are the device's
-                val shows = { origin: Origin? -> (origin ?: Origin.LOCAL) in allowed }
-                when {
-                    listening != null -> listening.takeIf { shows(it.item.origin) }
-                    // Only YouTube's pages show: any other picture would be an upload per page
-                    browsing is Doing.Browsing ->
-                        browsing.takeIf { it.origin == Origin.YOUTUBE && shows(it.origin) }
-
-                    browsing is Doing.Searching -> browsing.takeIf { shows(it.origin) }
-                    else -> null
+        val shown: Flow<Doing?> = combine(
+            state.listening,
+            state.browsing,
+            allowed,
+            Preferences.DISCORD_PRIVATE_PLAYLISTS.state,
+        ) { listening, browsing, allowed, privateShown ->
+            // Opened files have no origin, they are the device's
+            val shows = { origin: Origin? -> (origin ?: Origin.LOCAL) in allowed }
+            when {
+                listening != null -> listening.takeIf { shows(it.item.origin) }
+                // Only YouTube's pages show: any other picture would be an upload per page.
+                // A private playlist shows only when the user allowed it
+                browsing is Doing.Browsing -> browsing.takeIf {
+                    it.origin == Origin.YOUTUBE && shows(it.origin) &&
+                            (privateShown || !it.isPrivate)
                 }
+
+                browsing is Doing.Searching -> browsing.takeIf { shows(it.origin) }
+                else -> null
             }
+        }
 
         scope.launch {
             shown
@@ -264,7 +271,9 @@ class DiscordPresence internal constructor(
                 start = doing.since,
                 largeText = doing.name,
                 buttons = listOfNotNull(
-                    doing.link?.let { ActivityButton(DiscordTexts.VIEW_ON_YOUTUBE_MUSIC, it) },
+                    // Nobody but its owner could open a private one
+                    doing.link?.takeUnless { doing.isPrivate }
+                        ?.let { ActivityButton(DiscordTexts.VIEW_ON_YOUTUBE_MUSIC, it) },
                     getApp,
                 ),
             )

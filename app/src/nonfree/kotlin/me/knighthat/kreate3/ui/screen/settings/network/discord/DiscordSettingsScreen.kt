@@ -95,6 +95,7 @@ fun DiscordSettingsScreen(
     val enabled by Preferences.DISCORD_ENABLED.collectAsStateWithLifecycle()
     val state by account.state.collectFlowAsState()
     val youTube by Preferences.DISCORD_YOUTUBE.collectAsStateWithLifecycle()
+    val privatePlaylists by Preferences.DISCORD_PRIVATE_PLAYLISTS.collectAsStateWithLifecycle()
     val openSubsonic by Preferences.DISCORD_OPEN_SUBSONIC.collectAsStateWithLifecycle()
     val local by Preferences.DISCORD_LOCAL.collectAsStateWithLifecycle()
     val coverSize by Preferences.DISCORD_COVER_SIZE.collectAsStateWithLifecycle()
@@ -117,6 +118,7 @@ fun DiscordSettingsScreen(
         enabled = enabled,
         state = state,
         youTube = youTube,
+        privatePlaylists = privatePlaylists,
         openSubsonic = openSubsonic,
         local = local,
         coverSize = coverSize,
@@ -131,6 +133,8 @@ fun DiscordSettingsScreen(
 }
 
 /**
+ * @param privatePlaylists whether private YouTube playlists show, see
+ * [Preferences.DISCORD_PRIVATE_PLAYLISTS]
  * @param wifiBytes largest cover uploaded on Wi-Fi, see [Preferences.DISCORD_COVER_BYTES_WIFI]
  * @param binary whether sizes are in units of 1024, see [Preferences.BINARY_SIZES]
  */
@@ -139,6 +143,7 @@ private fun DiscordSettingsContent(
     enabled: Boolean,
     state: DiscordAccountState,
     youTube: Boolean,
+    privatePlaylists: Boolean,
     openSubsonic: Boolean,
     local: Boolean,
     coverSize: Int,
@@ -202,6 +207,14 @@ private fun DiscordSettingsContent(
             checked = youTube,
             onCheckedChange = { Preferences.DISCORD_YOUTUBE.update(it) },
             summary = sourceSummary,
+        )
+        // Only YouTube's playlist pages show, so only its private ones are asked about
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_discord_private_playlists),
+            checked = privatePlaylists,
+            onCheckedChange = { Preferences.DISCORD_PRIVATE_PLAYLISTS.update(it) },
+            summary = stringResource(R.string.setting_description_discord_private_playlists),
+            enabled = youTube,
         )
         SwitchSetting(
             title = stringResource(R.string.source_opensubsonic),
@@ -272,6 +285,7 @@ private fun DiscordSettingsPreview() = PreviewTheme {
         enabled = true,
         state = DiscordAccountState.Known(DiscordUser("1", "neoncoast", "Neon Coast", null)),
         youTube = true,
+        privatePlaylists = false,
         openSubsonic = true,
         local = false,
         coverSize = 1024,

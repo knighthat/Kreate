@@ -391,6 +391,10 @@
     <string name="setting_description_discord_source">Its songs, albums, artists, playlists and searches</string>
     <!-- Text under the OpenSubsonic and "On device" switches on the Discord page: their albums, artists and playlists don't show -->
     <string name="setting_description_discord_source_uploaded">Its songs and searches</string>
+    <!-- Switch under YouTube Music on the Discord page: whether the user's private YouTube Music playlists show while their page is open -->
+    <string name="setting_title_discord_private_playlists">Show private playlists</string>
+    <!-- Under "Show private playlists": a private playlist shows without the button that opens it -->
+    <string name="setting_description_discord_private_playlists">Their name shows, never a button to open them</string>
     <string name="setting_header_discord_covers">Uploaded covers</string>
     <!-- %1$s is litterbox, the host the covers go to. Text under the section's first slider: only some covers are uploaded -->
     <string name="setting_description_discord_covers">Covers only the app can open go to %1$s for an hour</string>

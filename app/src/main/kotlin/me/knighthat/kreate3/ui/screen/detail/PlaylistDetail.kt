@@ -177,6 +177,7 @@ private const val PANE_FIELD_ALPHA = 0.55f
  * @param reversed whether the songs run from the playlist's end, for the sort order button
  * @param onToggleOrder turns the songs around, `null` turns the button off
  * @param link where anyone can open the playlist, for Discord's button; `null` for none
+ * @param isPrivate whether only its owner can see the playlist, for Discord
  * @param pictureKey the cover's [playlistPictureKey], it moves from the row the page was opened
  * from; `null` for a cover that doesn't move
  */
@@ -200,6 +201,7 @@ fun PlaylistDetailScaffold(
     reversed: Boolean = false,
     onToggleOrder: (() -> Unit)? = null,
     link: String? = null,
+    isPrivate: Boolean = false,
     pictureKey: String? = null,
     content: LazyListScope.() -> Unit,
 ) {
@@ -213,6 +215,7 @@ fun PlaylistDetailScaffold(
         creator = owner,
         models = remember(models, songCovers) { models.ifEmpty { songCovers.take(1) } },
         link = link,
+        isPrivate = isPrivate,
     )
     val linkShare = rememberLinkShare(name, ShareKind.PLAYLIST) {
         share?.invoke() ?: Result.failure(IllegalStateException("Nothing to share"))

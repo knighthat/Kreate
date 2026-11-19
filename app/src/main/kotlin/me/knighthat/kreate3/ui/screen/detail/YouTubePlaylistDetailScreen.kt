@@ -218,7 +218,9 @@ private fun YouTubePlaylistDetailContent(
         onBack = { if (edit.dirty) confirmLeave = true else onBack() },
         onAction = onAction.takeIf { songs.isNotEmpty() },
         share = share,
-        link = link,
+        // A private playlist opens for its owner only, nobody else could follow the link
+        link = link.takeUnless { playlist?.isPrivate == true },
+        isPrivate = playlist?.isPrivate == true,
         pictureKey = pictureKey,
         modifier = modifier,
         contentPadding = contentPadding,

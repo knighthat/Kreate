@@ -54,6 +54,7 @@ sealed interface Doing {
      * artist or when unknown
      * @property models what the image loader takes for its picture, in the order to try
      * @property link where anyone can open it, `null` when there is none
+     * @property isPrivate whether only its owner can see it, a private playlist
      * @property since when it was opened, in milliseconds since the epoch
      */
     data class Browsing(
@@ -63,6 +64,7 @@ sealed interface Doing {
         val creator: String?,
         val models: List<Any>,
         val link: String?,
+        val isPrivate: Boolean = false,
         val since: Long = System.currentTimeMillis(),
     ) : Doing
 
@@ -127,6 +129,7 @@ fun ShowOnDiscord(doing: Doing?) {
  * @param creator who made it, see [Doing.Browsing.creator]
  * @param models what the image loader takes for its picture
  * @param link where anyone can open it, `null` for none
+ * @param isPrivate whether only its owner can see it, see [Doing.Browsing.isPrivate]
  */
 @Composable
 fun ShowBrowsingOnDiscord(
@@ -136,12 +139,13 @@ fun ShowBrowsingOnDiscord(
     creator: String?,
     models: List<Any>,
     link: String? = null,
+    isPrivate: Boolean = false,
 ) {
     // Counted from when the page opened, not from each time it loads more
     val since = remember { System.currentTimeMillis() }
-    val doing = remember(kind, origin, name, creator, models, link) {
+    val doing = remember(kind, origin, name, creator, models, link, isPrivate) {
         name.takeIf { it.isNotBlank() }
-            ?.let { Doing.Browsing(kind, origin, it, creator, models, link, since) }
+            ?.let { Doing.Browsing(kind, origin, it, creator, models, link, isPrivate, since) }
     }
     ShowOnDiscord(doing)
 }

@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.provider.youtube.PlaylistPrivacy
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubePlaylistEntry
@@ -56,6 +57,7 @@ import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
  * A playlist of YouTube as its screen shows it, its songs are [YouTubePlaylistDetailViewModel.songs].
  *
  * @property editable whether the signed in user may change or delete it: it is theirs
+ * @property isPrivate whether only its owner can see it; YouTube tells only the owner
  */
 data class YouTubePlaylistDetail(
     val name: String,
@@ -63,6 +65,7 @@ data class YouTubePlaylistDetail(
     val subtitle: String?,
     val summary: String? = null,
     val editable: Boolean = false,
+    val isPrivate: Boolean = false,
     val shuffle: YouTubeQueueStart? = null,
 )
 
@@ -169,6 +172,7 @@ class YouTubePlaylistDetailViewModel(
             subtitle = page.author,
             summary = page.summary,
             editable = page.editable,
+            isPrivate = page.privacy == PlaylistPrivacy.PRIVATE,
             shuffle = page.shuffle,
         )
     }
