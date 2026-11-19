@@ -206,8 +206,14 @@ abstract class EditItemViewModel(
         val original = state.original
         val owner = PickedCovers.ownerOf(kind, origin, itemId)
 
-        // A picture from the device is copied, one already stored stays as it is
-        val picture = pictures.keep(owner, draft.thumbnail)
+        // Only a picture just picked from the device is copied. The item's own and one already
+        // stored stay as they are: a device song's own cover is a content:// address too, and
+        // it may have no picture behind it
+        val picture =
+            if (draft.thumbnail == original.thumbnail || draft.thumbnail == state.saved.thumbnail)
+                draft.thumbnail
+            else
+                pictures.keep(owner, draft.thumbnail)
         val name = draft.name.trim()
         try {
             store(
