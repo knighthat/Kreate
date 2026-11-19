@@ -100,7 +100,6 @@ fun PlayerSettingsScreen(
     val searchTapRadio by Preferences.SEARCH_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
     val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
     val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
-    val preloadSeconds by Preferences.PLAYBACK_PRELOAD_SECONDS.collectAsStateWithLifecycle()
     val failureAction by Preferences.PLAYBACK_FAILURE_ACTION.collectAsStateWithLifecycle()
     val stallSeconds by Preferences.PLAYBACK_STALL_SECONDS.collectAsStateWithLifecycle()
     val loudnessNormalization by Preferences.LOUDNESS_NORMALIZATION.collectAsStateWithLifecycle()
@@ -128,7 +127,6 @@ fun PlayerSettingsScreen(
         searchTapRadio = searchTapRadio,
         queuePersisted = queuePersisted,
         queueSaveInterval = queueSaveInterval,
-        preloadSeconds = preloadSeconds,
         failureAction = failureAction,
         stallSeconds = stallSeconds,
         loudnessNormalization = loudnessNormalization,
@@ -175,7 +173,6 @@ private fun PlayerSettingsContent(
     searchTapRadio: Boolean,
     queuePersisted: Boolean,
     queueSaveInterval: Int,
-    preloadSeconds: Int,
     failureAction: PlaybackFailureAction,
     stallSeconds: Int,
     loudnessNormalization: Boolean,
@@ -257,20 +254,6 @@ private fun PlayerSettingsContent(
         val resources = LocalResources.current
         // Always a line under these titles, so the row keeps its height as the value changes
         val seconds = { it: Int -> resources.getQuantityString(R.plurals.second, it, it) }
-        SecondSetting(
-            title = stringResource(R.string.setting_title_load_next_song_ahead),
-            value = preloadSeconds,
-            range = 0..MAX_SECONDS,
-            summary = if (preloadSeconds == 0) {
-                stringResource(R.string.setting_description_load_next_song_ahead_off)
-            } else {
-                stringResource(
-                    R.string.setting_description_load_next_song_ahead,
-                    seconds(preloadSeconds)
-                )
-            },
-            onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
-        )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_when_a_song_fails),
             value = failureAction,
@@ -499,7 +482,6 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         searchTapRadio = false,
         queuePersisted = true,
         queueSaveInterval = 10,
-        preloadSeconds = 5,
         failureAction = PlaybackFailureAction.SKIP,
         stallSeconds = 15,
         loudnessNormalization = true,

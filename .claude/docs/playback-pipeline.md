@@ -26,15 +26,23 @@ open items are at the end.
   read, Media3 retries a progressive load 3 more times with growing delays, and resets its error
   count whenever bytes arrive.
 - Wake mode is NETWORK.
-- Preload: `PLAYBACK_PRELOAD_SECONDS` (Player settings → Queue, 0 = off, default 5 s) →
-  `ExoPlayer.PreloadConfiguration`, applied by `PlaybackService`. Media3 preloads one item, the one
-  after the period being loaded (shuffle/repeat order), once the current one stops loading
-  (`DefaultLoadControl.shouldContinuePreloading`). Opening it runs the resolver, so the format and
-  gain are recorded before the song starts. Songs use `ProgressiveMediaSource` with a 128 KiB
-  check interval (Media3's 1 MiB would overshoot a short preload by about a minute of audio).
-  The setting applies live: off drops the preloaded song at once, but a new length only applies
-  from the following song (each preload keeps the length it started with,
-  `MediaPeriodHolder.targetPreloadBufferDurationUs` is final and the pool reuses it).
+- The shared OkHttp client pings HTTP/2 connections every 15 s (`NetworkModule`): a proxy or
+  router that drops a quiet connection without a word (3proxy after 180 s) otherwise gets every
+  later request of that server sent down it, each waiting for the read timeout (seen on the
+  emulator with a test proxy). An unanswered ping closes the connection.
+- `StreamDataSource` reopens an http (s) stream left unread for 30 s at its read position before
+  reading on (a pause): the test server's nginx cuts a stream left unread 60-90 s. Not covered by a
+  unit test.
+- No Media3 preload (`ExoPlayer.PreloadConfiguration` stays off; the "Load the next song ahead"
+  setting is gone, its stored `playback_preload_seconds` is left unread). With it, the next song
+  often stalled at the change until `PlaybackRecovery`'s retry: on the emulator (2026-11-19,
+  Media3 1.11.1) the preloaded song's loader waited for Media3 to continue it
+  (`ExtractingLoadable.load` in `ConditionVariable.block`) with the network idle, whether it
+  preloaded early or only in the last 60 s. The next song loads as Media3's ordinary next period
+  instead, once the playing one is fully loaded, "Load ahead" (30 s at least) before its end;
+  that runs the resolver, so its format and gain are recorded before it starts. Songs use
+  `ProgressiveMediaSource` with a 128 KiB check interval (Media3's 1 MiB would overshoot "Load
+  ahead" by about a minute of a 128 kbps stream).
 - A remote song not yet in the DB is stored when it starts playing (`PlayedSongRecorder`), then
   `SongFormatRecorder.flush` stores the format found while it loaded and `PersistentQueue.refresh`
   re-saves the queue. Queued remote songs are already in `song` (`QueueWriter`, no `user_song`), so

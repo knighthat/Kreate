@@ -29,8 +29,8 @@ playback/
   into its queue in `onSetMediaItems` (items without `EXTRA_ORIGIN` whose id parses); a voice
   request (Auto's playFromSearch = an item with `requestMetadata.searchQuery`, or
   `VOICE_SEARCH_ACTION` from the activity) plays `voiceQueue`: `VoiceSearch` for a query, else the
-  player's/saved queue, else `VoiceSearch.anything()`; nothing → `sendError` / a message; follows
-  `PLAYBACK_PRELOAD_SECONDS` into the player's preload. `onPlaybackResumption` plays
+  player's/saved queue, else `VoiceSearch.anything()`; nothing → `sendError` / a message.
+  `onPlaybackResumption` plays
   `PersistentQueue.saved()` again when play comes with nothing queued (headphones, system media
   controls; `MediaButtonReceiver` in the manifest), going foreground first under
   `RESUME_FOREGROUND_ID` 5000 (`AppChannel.OTHER`, silent); for System UI's card after a reboot only
@@ -88,7 +88,9 @@ playback/
   read one is whole.
 - `SongDataSource.kt` — `songDataSourceFactory`: local → direct, remote → downloads (read-only) →
   cache → ResolvingDataSource → `StreamDataSource` (app/OpenSubsonic OkHttp, 403 → `refused`, server
-  Content-Type → `answered`); router sets the `CacheCopies` copy as DataSpec key + customData,
+  Content-Type → `answered`; an http (s) stream unread for `REOPEN_AFTER_MS` 30 s is reopened at
+  its read position before the next read); router sets the `CacheCopies` copy as DataSpec key +
+  customData,
   OpenSubsonic direct play skips the cache.
 - `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in noBackupFilesDir,
   no eviction); `caching` (size 0 = off: the router streams without the cache, what it kept is
@@ -161,7 +163,7 @@ playback/
   playWhenReady, applied to the next player in `createSession` before `PersistentQueue` restores.
 - `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`; `SongLoadErrorPolicy`
   (no Media3 load retries for `ERROR_CODE_UNAVAILABLE`, so it reaches `PlaybackRecovery`);
-  `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`,
+  `ProgressiveMediaSource` (128 KiB check interval),
   `SongLoadControl` (back buffer from the `PlayerBuild` parameter of the player factory).
 - `SongLoadControl.kt` — `DefaultLoadControl` buffering by time: min = max = 60 s ceiling, the
   buffer handed to the parent scaled to `PLAYBACK_BUFFER_AHEAD_SECONDS` (read each call; kept within

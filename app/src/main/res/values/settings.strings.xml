@@ -214,10 +214,6 @@
     <string name="setting_title_save_interval">Save interval</string>
     <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How often the playback queue is saved; "the song plays" = is being played -->
     <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>
-    <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
-    <!-- %1$s is a duration, e.g. "10 seconds". How much of the next song is fetched before the current one ends ("load" = download into memory, not upload) -->
-    <string name="setting_description_load_next_song_ahead">Load the first %1$s of the next song early</string>
-    <string name="setting_description_load_next_song_ahead_off">Only load the next song when it starts</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
     <string name="setting_title_login_for_playback">Login for playback</string>
     <string name="setting_description_login_for_playback_never">Don\'t use login for playback</string>

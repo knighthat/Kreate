@@ -115,7 +115,8 @@ Root
   `PlaybackLifecycle.restartAround` (inside it `LocalMusicScheduler.cancelScans` first, instant +
   periodic), waits for `ActiveUser` + `Preferences.awaitProfile`, then in `finally` `scanNow` +
   `schedule` with the new profile's interval.
-- `NetworkModule.kt` — Koin: shared `OkHttpClient` (timeouts/retries from Preferences), Ktor/JSON.
+- `NetworkModule.kt` — Koin: shared `OkHttpClient` (timeouts/retries from Preferences, HTTP/2 pings
+  every 15 s), Ktor/JSON.
 - musicbrainz/`MusicBrainz.kt` — MusicBrainz web service client (Koin single in
   `KreateApplication`): recording `search` (phrase, then loose words), `identify` (`best`: top
   scores, length within 5 s, not live, most releases, earliest), `recording` lookup (credits, ISRCs,

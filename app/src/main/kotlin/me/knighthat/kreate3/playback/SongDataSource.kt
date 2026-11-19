@@ -20,6 +20,7 @@ package me.knighthat.kreate3.playback
 
 import android.content.Context
 import android.net.Uri
+import android.os.SystemClock
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
@@ -31,6 +32,7 @@ import androidx.media3.datasource.TransferListener
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheKeyFactory
 import androidx.media3.datasource.okhttp.OkHttpDataSource
+import co.touchlab.kermit.Logger
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
@@ -243,6 +245,11 @@ private class SongDataSource(
  * Reads a song resolved by [resolver] with the client of its source, [server] for an OpenSubsonic
  * server, [youTube] for YouTube, [app] for anything else, and tells [resolver] when YouTube
  * refuses an address and what the server answered.
+ *
+ * A stream left unread for [REOPEN_AFTER_MS] or more is opened again where it was before the next
+ * read: the player keeps a stream open while it doesn't need more (a pause), and the server may
+ * have cut it meanwhile (nginx does after a minute or so), or a proxy or router dropped the
+ * connection without a word, so the read would hang until the read timeout or the stall limit.
  */
 @OptIn(UnstableApi::class)
 private class StreamDataSource(
@@ -250,9 +257,15 @@ private class StreamDataSource(
     private val server: DataSource,
     private val youTube: DataSource,
     private val resolver: DataSourceResolver,
+    private val now: () -> Long = SystemClock::elapsedRealtime,
 ) : DataSource {
 
     private var current: DataSource? = null
+
+    /** What [current] was opened with, `null` for a stream that isn't reopened. */
+    private var reopenable: DataSpec? = null
+    private var bytesRead = 0L
+    private var lastReadAt = 0L
 
     override fun addTransferListener(transferListener: TransferListener) {
         app.addTransferListener(transferListener)
@@ -269,6 +282,33 @@ private class StreamDataSource(
         }
         current = source
 
+        val length = open(source, dataSpec, song)
+        val scheme = dataSpec.uri.scheme
+        reopenable = dataSpec.takeIf { scheme == "http" || scheme == "https" }
+        bytesRead = 0
+        lastReadAt = now()
+        return length
+    }
+
+    override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+        val source = checkNotNull(current) { "Read before open" }
+        val spec = reopenable
+        if (spec != null && now() - lastReadAt >= REOPEN_AFTER_MS) {
+            Logger.i(tag = TAG) {
+                "Opening ${(spec.customData as? QueuedSong)?.id} again at $bytesRead, " +
+                        "unread for ${(now() - lastReadAt) / 1000} s"
+            }
+            source.close()
+            open(source, spec.subrange(bytesRead), spec.customData as? QueuedSong)
+        }
+
+        val read = source.read(buffer, offset, length)
+        if (read > 0) bytesRead += read
+        lastReadAt = now()
+        return read
+    }
+
+    private fun open(source: DataSource, dataSpec: DataSpec, song: QueuedSong?): Long {
         val length = try {
             source.open(dataSpec)
         } catch (e: HttpDataSource.InvalidResponseCodeException) {
@@ -285,9 +325,6 @@ private class StreamDataSource(
         return length
     }
 
-    override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
-        checkNotNull(current) { "Read before open" }.read(buffer, offset, length)
-
     override fun getUri(): Uri? = current?.uri
 
     override fun getResponseHeaders(): Map<String, List<String>> =
@@ -298,11 +335,19 @@ private class StreamDataSource(
             current?.close()
         } finally {
             current = null
+            reopenable = null
         }
     }
 
-    private companion object {
-        const val HTTP_FORBIDDEN = 403
-        const val CONTENT_TYPE = "Content-Type"
+    companion object {
+        /**
+         * Milliseconds a stream may stay unread before it is opened again: shorter than nginx's
+         * 60 s `send_timeout` and the idle limits of common proxies (3proxy's 180 s).
+         */
+        const val REOPEN_AFTER_MS = 30_000L
+
+        private const val HTTP_FORBIDDEN = 403
+        private const val CONTENT_TYPE = "Content-Type"
+        private const val TAG = "StreamDataSource"
     }
 }

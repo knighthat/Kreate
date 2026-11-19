@@ -10,6 +10,8 @@ paths:
 
 - How a queued song becomes bytes (resolver, caches, quality copies, formats):
   `.claude/docs/playback-pipeline.md`. Check it before changing playback resolution.
+- Media3 preload (`ExoPlayer.PreloadConfiguration`) stays off: a preloaded song stalled at the song
+  change (maintainer's choice, 2026-11-19, see that doc).
 - `PlaybackController` calls are fine from any thread; the `MediaController` stays on main.
 - `play()` from the background (notification button, widget) on Android 16 is refused audio focus
   unless the service is already foreground: `startForeground` with an id of its own **before**

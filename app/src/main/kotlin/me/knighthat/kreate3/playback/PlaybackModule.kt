@@ -45,7 +45,6 @@ import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import kotlin.time.Duration.Companion.seconds
 
 
 val playbackModule = module {
@@ -155,8 +154,8 @@ val playbackModule = module {
 
 /**
  * Bytes a song loads between two checks of whether to go on. Media3's 1 MiB is a minute of a
- * 128 kbps stream, so a preload of a few seconds would load that much anyway: this lets it stop
- * within about 8 seconds of what [Preferences.PLAYBACK_PRELOAD_SECONDS] asks.
+ * 128 kbps stream: this lets loading stop within about 8 seconds of what
+ * [Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS] asks.
  */
 private const val LOADING_CHECK_INTERVAL_BYTES = 128 * 1024
 
@@ -181,10 +180,3 @@ private object SongLoadErrorPolicy : DefaultLoadErrorHandlingPolicy() {
         return if (unavailable) C.TIME_UNSET else super.getRetryDelayMsFor(loadErrorInfo)
     }
 }
-
-/** Loads [seconds] of the next song ahead, nothing when it isn't positive. */
-internal fun preloadConfiguration(seconds: Int): ExoPlayer.PreloadConfiguration =
-    if (seconds <= 0)
-        ExoPlayer.PreloadConfiguration.DEFAULT
-    else
-        ExoPlayer.PreloadConfiguration(seconds.seconds.inWholeMicroseconds)

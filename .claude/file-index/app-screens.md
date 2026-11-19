@@ -351,7 +351,7 @@ ui/screen/
     user; `clearPlays`, Undo puts them back), Clean up database (grayed out with a
     note for other profiles, `CleanupRepository`, deletes removed playlists' picked pictures)),
     `player/PlayerSettingsScreen.kt` (player behavior/UI
-  only: Queue incl. preload slider, failure action + stall limit, Sound (even out loudness switch,
+    only: Queue, failure action + stall limit, Sound (even out loudness switch,
   target loudness slider), Buffering (load ahead incl.
   Unlimited / before
   playing sliders, keep played switch), History; Android Auto section with

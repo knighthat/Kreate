@@ -158,12 +158,6 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         playbackLifecycle.playerMade(build)
         // Before the saved queue would be restored, which is skipped then
         playbackLifecycle.takeCarried()?.applyTo(player)
-        // How much of the next song loads ahead follows the setting
-        scope.launch {
-            Preferences.PLAYBACK_PRELOAD_SECONDS.state.collect {
-                player.preloadConfiguration = preloadConfiguration(it)
-            }
-        }
         normalizer = LoudnessNormalizer(
             player = player,
             songs = get(),

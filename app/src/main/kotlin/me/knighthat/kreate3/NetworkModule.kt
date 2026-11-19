@@ -34,6 +34,9 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
 
+/** Seconds between the pings of an HTTP/2 connection, see the [OkHttpClient] of [networkModule]. */
+private const val PING_INTERVAL_SECONDS = 15L
+
 /**
  * Networking shared by the whole app. Timeouts and retries come from [Preferences] when the
  * clients are built, so a change applies from the next launch.
@@ -59,6 +62,11 @@ val networkModule = module {
                 AppRestart.readOnce(Preferences.NETWORK_READ_TIMEOUT).toLong(),
                 TimeUnit.SECONDS
             )
+            // A proxy or router drops a connection left quiet (3proxy after 180 s) without a
+            // word, and OkHttp would send every request of that server down it, each waiting
+            // for the read timeout. The pings keep an HTTP/2 connection busy, and one that isn't
+            // answered closes it, so the next request opens another.
+            .pingInterval(PING_INTERVAL_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 
