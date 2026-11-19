@@ -13,6 +13,9 @@ local.properties
 captures/
 .DS_Store
 
+# Translations of the patreon-only texts, which that build reads from Crowdin (see crowdin.yml)
+app/src/patreon/crowdin/
+
 # Claude Code (per-user)
 .claude/settings.local.json
 .claude/worktrees

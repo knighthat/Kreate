@@ -72,9 +72,6 @@
     <string name="semantic_remove_bookmark">Remove bookmark</string>
     <string name="semantic_remove_dislike">Remove dislike</string>
     <string name="semantic_undislike_all">Undislike all</string>
-    <string name="semantic_delete_backup">Delete backup</string>
-    <!-- Downloads a backup kept online to a file the user picks, without restoring it -->
-    <string name="semantic_save_backup">Download backup</string>
     <string name="semantic_delete_all_downloads">Delete all downloads</string>
     <string name="semantic_cancel_download">Cancel the download</string>
     <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>

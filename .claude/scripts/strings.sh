@@ -35,7 +35,7 @@ if not args:
     sys.exit("usage: strings.sh <key>... | -t <text> | -c")
 
 entries = []  # (file, line, key, kind, text)
-for path in sorted(glob.glob(os.path.join(root, "*/src/main/res/values/*.xml"))):
+for path in sorted(glob.glob(os.path.join(root, "*/src/*/res/values/*.xml"))):
     content = open(path).read()
     rel = os.path.relpath(path, root)
     line = lambda m: content.count("\n", 0, m.start()) + 1

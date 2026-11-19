@@ -42,12 +42,4 @@
     <string name="status_import_searched">Searching %1$s of %2$s</string>
     <!-- %1$s is the name of the app's build, e.g. FOSS (free and open source software, the build made for F-Droid). Shown for a feature that build leaves out: under the Discord and song recognition rows of Network settings, and as a message when the Songs tab is held to recognize a song -->
     <string name="status_not_available_in">Not available in %1$s build</string>
-    <string name="status_downloading">Downloading…</string>
-    <string name="status_deleting">Deleting…</string>
-    <string name="status_no_remote_backups">No backups online yet</string>
-    <string name="status_couldnt_load_remote_backups">Couldn\'t load the online backups</string>
-    <string name="status_remote_backups_kept">Each backup is deleted 180 days after it was uploaded</string>
-    <string name="status_remote_backups_not_in_tier">Your tier doesn\'t include cloud backup</string>
-    <!-- %1$s is the backup's size, e.g. 4.8 MB; %2$s is when it was uploaded, e.g. Nov 15, 2026, 9:30 AM -->
-    <string name="status_remote_backup">%1$s · %2$s</string>
 </resources>

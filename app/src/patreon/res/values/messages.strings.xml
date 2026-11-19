@@ -1,0 +1,36 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Errors shown to the user and snackbar messages. -->
+<!-- Only in the patreon build. -->
+<resources>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_patreon_sign_in">Couldn\'t sign in to %1$s</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_cloud_backup_too_large">Couldn\'t back up to the cloud, the backup is too big</string>
+    <string name="error_cloud_backup_full">Couldn\'t back up to the cloud, it\'s full. Delete old backups on the Backup page</string>
+    <string name="error_remote_backup_save">Couldn\'t save the backup</string>
+    <!-- %1$s is the backup's file name in quotes, saved to a file the user picked -->
+    <string name="snackbar_remote_backup_saved">Saved %1$s</string>
+    <string name="error_remote_backup_delete">Couldn\'t delete the backup</string>
+    <!-- %1$s is the backup's file name in quotes, e.g. "kreate_backup_2026-11-18_09-30-00.zip" -->
+    <string name="snackbar_remote_backup_deleted">Deleted %1$s</string>
+    <string name="error_remote_backup_download">Couldn\'t download the backup</string>
+    <string name="error_patreon_check_membership">Couldn\'t check your %1$s membership</string>
+    <string name="error_patreon_sign_in_again">The %1$s sign in expired, try again</string>
+</resources>

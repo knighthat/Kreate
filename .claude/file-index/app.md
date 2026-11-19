@@ -357,7 +357,8 @@ English texts: `res/values/*.strings.xml` by kind (`common` app name, sources, u
 `settings`; `actions` buttons and menus; `screens` titles, tabs, section headers, screen texts;
 `semantics` icon descriptions; `wizard`; `dialogs`; `messages` errors and snackbars; `statistics`;
 `notifications`; `constants` enum values), `res/values/plurals.xml`; which prefix goes where:
-`.claude/rules/strings.md`.
+`.claude/rules/strings.md`. Texts only the patreon build uses (sign in, cloud and remote backups)
+sit in `app/src/patreon/res/values/`, same file names.
 
 res: `res/resources.properties` (default `en-US`, for the generated locale config),
 `res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated
