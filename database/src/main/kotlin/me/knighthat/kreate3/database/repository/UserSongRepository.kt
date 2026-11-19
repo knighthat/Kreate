@@ -263,7 +263,8 @@ interface UserSongRepository {
     /**
      * The song [songId] is no longer downloaded by the active user, or by any user when
      * [everyUser]. Their cover [thumbnail] goes with it. A row that keeps nothing else about the
-     * song is deleted, the song leaves that user's library.
+     * song, with no play of that user and in none of their playlists, is deleted: the song leaves
+     * that user's library.
      */
     suspend fun forgetDownload(songId: String, thumbnail: Uri?, everyUser: Boolean = false)
 

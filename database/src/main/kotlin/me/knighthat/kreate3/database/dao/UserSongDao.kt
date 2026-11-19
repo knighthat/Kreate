@@ -166,7 +166,8 @@ internal interface UserSongDao {
     /**
      * Deletes the rows of the song [songId] downloaded by the user [userId], or by any when
      * `null`, that keep nothing else: no name, artists, reaction, album position, MusicBrainz id,
-     * and no cover but [thumbnail].
+     * no cover but [thumbnail], no play of that user and in none of their playlists (their lists
+     * read the library).
      */
     @Query(
         """
@@ -175,6 +176,15 @@ internal interface UserSongDao {
         AND name IS NULL AND artists IS NULL AND liked_at IS NULL
         AND album_position IS NULL AND music_brainz_id IS NULL
         AND (thumbnail IS NULL OR thumbnail = :thumbnail)
+        AND NOT EXISTS (
+            SELECT 1 FROM playback_history h
+            WHERE h.user_id = user_song.user_id AND h.song_id = user_song.song_id
+        )
+        AND NOT EXISTS (
+            SELECT 1 FROM song_playlist_map m
+            JOIN user_playlist p ON p.playlist_id = m.playlist_id
+            WHERE p.user_id = user_song.user_id AND m.song_id = user_song.song_id
+        )
         """
     )
     suspend fun deleteKeepingOnlyDownload(songId: String, userId: String?, thumbnail: Uri?)

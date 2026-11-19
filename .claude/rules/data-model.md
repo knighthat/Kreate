@@ -70,4 +70,6 @@ the song's `kreate://` address) is shared and kept while any user marks it. A us
 song another has gets it at once, or a better copy (best quality any user asked for, never
 lowered). Leaving a download (menu, notification Cancel) is the active user's only;
 pause stays device-wide. A row keeping only the download (and its download cover) is deleted when
-it's left. All by the maintainer's choice (2026-10-26).
+it's left, unless the user played the song or has it in a playlist (their lists read the library).
+All by the maintainer's choice (2026-10-26), except the play/playlist exception (a bug fix,
+2026-11-19: deleting downloads took played and listed songs out of the library and playlists).

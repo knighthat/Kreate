@@ -143,6 +143,41 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun forgetDownloadKeepsSongsPlayedOrInAPlaylist() = runBlocking {
+        val cover = Uri.parse("file:///data/download_covers/a-1440.jpg")
+        addSong("played")
+        addSong("listed")
+        addSong("only")
+        listOf("played", "listed", "only").forEach {
+            songs.save(UserSong(it, thumbnail = cover, downloadedAt = liked))
+        }
+        play("played", 1_000)
+        val playlistId = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "Mix",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("listed", playlistId, 0))
+
+        listOf("played", "listed", "only").forEach {
+            songs.forgetDownload(it, cover, everyUser = true)
+        }
+
+        // A play or a playlist keeps the song in the library, without the download
+        listOf("played", "listed").forEach {
+            val kept = database.userSongDao().get(USER, it)
+            assertNotNull(kept)
+            assertNull(kept?.downloadedAt)
+            assertNull(kept?.thumbnail)
+        }
+        assertNull(database.userSongDao().get(USER, "only"))
+    }
+
+    @Test
     fun downloadedSongsComeInTheOrderTheyWereDownloaded() = runBlocking {
         addUser("other")
         addSong("old")
