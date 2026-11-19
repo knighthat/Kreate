@@ -142,6 +142,9 @@ class KreateActivity : ComponentActivity() {
     // A screen a link asks for, kept like openPlayer until the content opened it
     private val openRoute = MutableStateFlow<Route?>(null)
 
+    // Read again on every resume: a grant from a prompt or the system settings lands there
+    private val audioGranted = MutableStateFlow(false)
+
     // In the language picked in the app, see AppLanguage, with texts translated since the build
     override fun attachBaseContext(newBase: Context) =
         super.attachBaseContext(TranslationUpdates.wrap(AppLanguage.wrap(newBase)))
@@ -161,6 +164,7 @@ class KreateActivity : ComponentActivity() {
 
         // Requires context, must run after `super.onCreate(savedInstanceState)`
         isSetup = setupCompletedFile().exists()
+        audioGranted.value = hasAudioPermission()
         // Don't run subsequent tasks if not yet setup
         if (!isSetup) {
             //<editor-fold defaultstate="collapsed" desc="Skip wizard">
@@ -254,19 +258,19 @@ class KreateActivity : ComponentActivity() {
             isReady = true
 
             //<editor-fold defaultstate="collapsed" desc="Scan local media">
-            // Without the permission there is nothing to scan, so nothing is asked or scheduled
-            if (!hasAudioPermission()) return@launch
             // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
             var scanFirst = savedInstanceState == null
-            // Keep the scan schedule in step with the switch and the interval, `null` while off
+            // Keep the scan schedule in step with the permission, the switch and the interval,
+            // `null` while any is off: without the permission there is nothing to scan
             combine(
+                audioGranted,
                 Preferences.LOCAL_SCAN.state,
                 Preferences.LOCAL_SCAN_INTERVAL.state
-            ) { on, interval ->
-                interval.takeIf { on }
+            ) { granted, on, interval ->
+                interval.takeIf { granted && on }
             }.distinctUntilChanged().collect { interval ->
                 if (interval == null) {
-                    // Turned on later, it scans at once like at start-up
+                    // Turned on or granted later, it scans at once like at start-up
                     scanFirst = true
                     LocalMusicScheduler.cancelScans(this@KreateActivity)
                 } else {
@@ -309,6 +313,11 @@ class KreateActivity : ComponentActivity() {
                 SetupWizardScreen()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        audioGranted.value = hasAudioPermission()
     }
 
     override fun onNewIntent(intent: Intent) {
