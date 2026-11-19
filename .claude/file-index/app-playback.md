@@ -98,7 +98,8 @@ playback/
 - `ReadOnlyCache.kt` — `Cache` delegate whose writes/removals/release throw; playback reads
   `downloads` through it.
 - `LoudnessNormalizer.kt` — volume change in dB from a song's gain (`normalizationDb`,
-  `cutToVolume`, `replayGainLoudness`), from the recorder's in-memory formats first, then the DB;
+  `cutToVolume`, `replayGainLoudness`), from the recorder's in-memory formats first, then the
+  gains of the previous/next songs read ahead, then the DB (muted until it answers);
   to `LOUDNESS_TARGET_LUFS`, OpenSubsonic `raw` gains read against `OPEN_SUBSONIC_REPLAY_GAIN_LUFS`,
   unchanged while `LOUDNESS_NORMALIZATION` is off (all followed live).
 - `PresenceReporter.kt` — listener created in `PlaybackService`: the current song, `playWhenReady`,

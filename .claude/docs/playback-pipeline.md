@@ -94,6 +94,11 @@ open items are at the end.
 - Songs not in the DB can't hold rows (FK): their formats wait in memory (`pending`, 50 songs)
   until `flush` stores them. `LoudnessNormalizer` reads `pendingFormatsOf` at the song change and
   follows `pendingFormats` + the DB, keeping a found gain while the formats move to the DB.
+- Cached, downloaded and device songs skip the resolver, so their gain is only in the DB, whose
+  answer comes after such a song has started. `LoudnessNormalizer` follows the gains of the
+  previous and next songs (`readAhead`, after shuffle and repeat) so a change to them applies the
+  gain at once; a song whose gain isn't in memory (a jump, the first song) plays muted until the DB
+  answers, and plays as it is when the DB has no gain.
 
 ## Navidrome observations
 

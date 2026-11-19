@@ -23,13 +23,16 @@ import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.SongFormat
@@ -72,6 +75,10 @@ internal fun cutToVolume(db: Float): Float = 10f.pow(db.coerceAtMost(0f) / 20f)
  * A song not stored yet has its formats in [formats] until it is, they are looked up there first,
  * so the gain is applied as soon as the song starts instead of once it is stored.
  *
+ * The gain of a stored song is in the database, which answers after a cached or downloaded song
+ * has started. So the gains of the songs before and after the one playing are read ahead and kept
+ * in memory, and a song whose gain isn't in memory plays muted until the database has answered.
+ *
  * A cut is made with the volume of the player. A boost is made by a [LoudnessEnhancer], which is
  * attached to the audio session of the player. The gain is followed while the song plays, so a
  * measurement that finishes meanwhile is applied at once.
@@ -98,7 +105,16 @@ class LoudnessNormalizer(
 
     /** The format of the song playing that holds its gain. */
     private var gainFormat: SongFormat? = null
-    private var adjustmentDb = 0f
+
+    /** Whether the gain of the song playing is known, or it has none. It plays muted until it is. */
+    private var gainKnown = true
+
+    /**
+     * Gain formats of the songs before and after the one playing, `null` for a song with none,
+     * read from the database ahead of their turn. Changed on the main thread only.
+     */
+    private val readAhead = HashMap<String, SongFormat?>()
+    private var readingAhead: Job? = null
     private val settings = scope.launch {
         combine(enabled, targetLufs, replayGainLufs) { _, _, _ -> }.collect { apply() }
     }
@@ -113,9 +129,16 @@ class LoudnessNormalizer(
 
     override fun onAudioSessionIdChanged(audioSessionId: Int) = attach(audioSessionId)
 
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) = readAhead()
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = readAhead()
+
+    override fun onRepeatModeChanged(repeatMode: Int) = readAhead()
+
     fun release() {
         player.removeListener(this)
         following?.cancel()
+        readingAhead?.cancel()
         settings.cancel()
         enhancer?.release()
         enhancer = null
@@ -124,19 +147,65 @@ class LoudnessNormalizer(
     private fun follow(item: MediaItem?) {
         following?.cancel()
         val songId = item?.mediaId
-        // Never the last song's gain, the one of this song when it's in memory already, like
-        // when it was read ahead of the song before
-        gainFormat = songId?.let { gainFormatOf(formats.pendingFormatsOf(it)) }
+        // Never the last song's gain, the one of this song when it's in memory already: kept
+        // while it isn't stored, or read ahead of its turn
+        val pending = songId?.let { gainFormatOf(formats.pendingFormatsOf(it)) }
+        gainKnown = songId == null || pending != null || songId in readAhead
+        gainFormat = pending ?: songId?.let { readAhead[it] }
         apply()
+        readAhead()
 
         songId ?: return
         following = scope.launch {
-            // Its formats move from memory to the database once it is stored, for a moment it
-            // has neither: a gain found stays until another one is
-            merge(songs.formatsOf(songId), formats.pendingFormats(songId)).collect { found ->
-                gainFormatOf(found)?.let {
-                    gainFormat = it
-                    apply()
+            try {
+                // Its formats move from memory to the database once it is stored, for a moment
+                // it has neither: a gain found stays until another one is
+                merge(
+                    songs.formatsOf(songId).map { it to true },
+                    formats.pendingFormats(songId).map { it to false },
+                ).collect { (found, fromDatabase) ->
+                    val format = gainFormatOf(found)
+                    if (format != null) gainFormat = format
+                    // Memory without a gain doesn't tell, the database may still have one
+                    if (format != null || fromDatabase) {
+                        gainKnown = true
+                        apply()
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.w(e, TAG) { "Couldn't read the gain of $songId" }
+                // Never left muted
+                gainKnown = true
+                apply()
+            }
+        }
+    }
+
+    /**
+     * Reads the gains of the songs before and after the one playing into [readAhead] and follows
+     * them, so they are in memory when their turn comes. The ones of other songs are dropped.
+     */
+    private fun readAhead() {
+        readingAhead?.cancel()
+        val ids = listOf(player.previousMediaItemIndex, player.nextMediaItemIndex)
+            .filter { it != C.INDEX_UNSET }
+            .map { player.getMediaItemAt(it).mediaId }
+            .toSet()
+        readAhead.keys.retainAll(ids)
+        if (ids.isEmpty()) return
+
+        readingAhead = scope.launch {
+            ids.forEach { id ->
+                launch {
+                    try {
+                        songs.formatsOf(id).collect { readAhead[id] = gainFormatOf(it) }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Logger.w(e, TAG) { "Couldn't read the gain of $id ahead" }
+                    }
                 }
             }
         }
@@ -150,7 +219,17 @@ class LoudnessNormalizer(
         val gain = gainFormat?.gain?.let {
             if (gainFormat?.tag == RAW_FORMAT) replayGainLoudness(it, replayGainLufs.value) else it
         }
-        adjust(if (enabled.value) normalizationDb(gain, targetLufs.value) else 0f)
+        when {
+            !enabled.value -> adjust(0f)
+            gainKnown -> adjust(normalizationDb(gain, targetLufs.value))
+            else -> mute()
+        }
+    }
+
+    /** Silences the song until its gain is read, so it never starts at the wrong volume. */
+    private fun mute() {
+        player.volume = 0f
+        Logger.d(tag = TAG) { "Muted until the gain is read" }
     }
 
     /**
@@ -163,7 +242,6 @@ class LoudnessNormalizer(
      * volume is a plain multiplication and always there.
      */
     private fun adjust(db: Float) {
-        adjustmentDb = db
         player.volume = cutToVolume(db)
         enhancer?.let {
             try {
@@ -191,7 +269,7 @@ class LoudnessNormalizer(
             Logger.w(e, TAG) { "No loudness enhancer on this device" }
             null
         }
-        adjust(adjustmentDb)
+        apply()
     }
 
     private companion object {
