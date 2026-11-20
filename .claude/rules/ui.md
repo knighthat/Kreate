@@ -21,6 +21,9 @@ charts: `.claude/docs/charts.md`.
 - `ItemRow` (`ItemParts.kt`) already pads rows (16dp × 6dp): never add padding to `SongItem`,
   `PlaylistItem` or other row items, or horizontal `contentPadding` to a list of them. Grid cards
   (`AlbumItem`, `ArtistItem`) have no padding of their own.
+- Every item of a lazy list or grid shown in the UI is animated: keyed, with
+  `Modifier.animateItem()` on the item (`ReorderableItem` already has it), so items that leave,
+  arrive or move fade and slide instead of jumping (Songs tab under Cached only, the queue).
 - Helpers shared across files are `internal` top-level extensions (
   `internal fun Context.restart()`),
   not companion-object functions; companions are for the class's own constants and factories.
