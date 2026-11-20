@@ -192,13 +192,10 @@ private fun RemoteBackupsContent(
                         saving == file -> stringResource(R.string.status_downloading)
                         step == Step.DOWNLOADING -> stringResource(R.string.status_downloading)
                         step == Step.READING ->
-                            stringResource(R.string.setting_description_restore_status_reading)
+                            stringResource(R.string.status_reading)
 
-                        uploaded != null -> stringResource(
-                            R.string.status_remote_backup,
-                            size,
-                            dateFormat.format(Date(uploaded.toEpochMilliseconds()))
-                        )
+                        uploaded != null ->
+                            "$size · ${dateFormat.format(Date(uploaded.toEpochMilliseconds()))}"
 
                         else -> size
                     }

@@ -186,7 +186,7 @@ class RemoteBackupsViewModel(
             } catch (e: IOException) {
                 Logger.w(e, TAG) { "Couldn't restore the backup" }
                 notifier.post(
-                    context.getString(R.string.setting_description_restore_status_failed),
+                    context.getString(R.string.status_couldnt_read_backup),
                     AppChannel.BACKUP,
                 )
             } finally {
@@ -262,7 +262,7 @@ class RemoteBackupsViewModel(
                 }.await()
                 notifier.post(
                     context.getString(
-                        R.string.snackbar_remote_backup_saved,
+                        R.string.snackbar_file_saved,
                         context.getString(R.string.quoted, file.name)
                     )
                 )

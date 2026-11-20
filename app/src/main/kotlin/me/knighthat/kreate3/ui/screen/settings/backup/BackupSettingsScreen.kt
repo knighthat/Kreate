@@ -196,7 +196,7 @@ private fun LocalBackups(
 
     TileButton(
         icon = R.drawable.upload,
-        title = if (working == BackupTask.RESTORE) stringResource(R.string.setting_description_restore_status_reading) else stringResource(
+        title = if (working == BackupTask.RESTORE) stringResource(R.string.status_reading) else stringResource(
             R.string.setting_title_restore
         ),
         subtitle = stringResource(R.string.setting_description_restore),
@@ -209,7 +209,7 @@ private fun LocalBackups(
     )
     TileButton(
         icon = R.drawable.download,
-        title = if (working == BackupTask.EXPORT) stringResource(R.string.setting_description_back_up_status_saving) else stringResource(
+        title = if (working == BackupTask.EXPORT) stringResource(R.string.status_saving) else stringResource(
             R.string.setting_title_back_up
         ),
         subtitle = stringResource(R.string.setting_description_back_up),

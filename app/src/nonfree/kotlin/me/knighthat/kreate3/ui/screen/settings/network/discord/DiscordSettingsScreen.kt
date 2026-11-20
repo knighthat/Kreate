@@ -36,7 +36,6 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.discord.DiscordUser
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -47,6 +46,7 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.fileSize
 import me.knighthat.kreate3.ui.component.rememberOpenLink
+import me.knighthat.kreate3.ui.navigation.DiscordSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.PixelSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
@@ -60,8 +60,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 /** Who is signed in to Discord, for the row that opens its page. */
 @Composable
 private fun DiscordAccountState.summary(): String = when (this) {
-    DiscordAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
-    DiscordAccountState.SigningIn -> stringResource(R.string.setting_description_sign_in_status_waiting)
+    DiscordAccountState.SignedOut -> stringResource(R.string.status_not_signed_in)
+    DiscordAccountState.SigningIn -> stringResource(R.string.status_waiting_for_sign_in_page)
     DiscordAccountState.SignedIn -> stringResource(R.string.status_signed_in)
     is DiscordAccountState.Known -> stringResource(
         R.string.setting_description_sign_in_status_signed_in_as,
@@ -180,7 +180,7 @@ private fun DiscordSettingsContent(
             DiscordAccountState.SignedOut, DiscordAccountState.SigningIn -> SettingsItem(
                 title = stringResource(R.string.setting_title_sign_in),
                 summary = if (state == DiscordAccountState.SigningIn)
-                    stringResource(R.string.setting_description_sign_in_status_waiting)
+                    stringResource(R.string.status_waiting_for_sign_in_page)
                 else
                     stringResource(R.string.setting_description_sign_in_discord, discord),
                 // Again while waiting, in case the page was closed

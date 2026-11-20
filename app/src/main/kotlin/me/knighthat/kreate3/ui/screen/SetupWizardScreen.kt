@@ -221,9 +221,9 @@ private suspend fun Context.importBackup(uri: Uri): ImportResult =
     } catch (e: BackupException) {
         ImportResult(e.describe(this))
     } catch (_: IOException) {
-        ImportResult(getString(R.string.setting_description_restore_status_failed))
+        ImportResult(getString(R.string.status_couldnt_read_backup))
     } catch (_: SecurityException) {
-        ImportResult(getString(R.string.setting_description_restore_status_failed))
+        ImportResult(getString(R.string.status_couldnt_read_backup))
     }
 
 @Composable

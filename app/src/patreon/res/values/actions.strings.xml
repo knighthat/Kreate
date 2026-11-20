@@ -19,9 +19,6 @@
 <!-- Button texts and menu items. -->
 <!-- Only in the patreon build. -->
 <resources>
-    <string name="action_restore">Restore</string>
     <!-- Opens the Patreon page to pick a higher membership tier -->
     <string name="action_upgrade">Upgrade</string>
-    <!-- Asks Patreon for the user's membership tier again -->
-    <string name="action_check_again">Check again</string>
 </resources>

@@ -79,10 +79,10 @@ class BackupViewModel(
 
     fun export(uri: Uri) = run(
         BackupTask.EXPORT,
-        context.getString(R.string.setting_description_back_up_status_failed)
+        context.getString(R.string.status_couldnt_save_backup)
     ) {
         backup.export(openStream { context.contentResolver.openOutputStream(uri, "wt") })
-        notifier.post(context.getString(R.string.setting_description_back_up_status_saved))
+        notifier.post(context.getString(R.string.status_backup_saved))
     }
 
     /**
@@ -91,7 +91,7 @@ class BackupViewModel(
      */
     fun restore(uri: Uri) = run(
         BackupTask.RESTORE,
-        context.getString(R.string.setting_description_restore_status_failed),
+        context.getString(R.string.status_couldnt_read_backup),
         AppChannel.OTHER,
     ) {
         val isLegacy = openStream { context.contentResolver.openInputStream(uri) }

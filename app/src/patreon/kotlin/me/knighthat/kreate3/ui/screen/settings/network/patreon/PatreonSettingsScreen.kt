@@ -136,7 +136,7 @@ private fun PatreonSettingsContent(
             PatreonAccountState.SignedOut, PatreonAccountState.SigningIn -> SettingsItem(
                 title = stringResource(R.string.setting_title_sign_in),
                 summary = if (state == PatreonAccountState.SigningIn)
-                    stringResource(R.string.setting_description_sign_in_status_waiting)
+                    stringResource(R.string.status_waiting_for_sign_in_page)
                 else
                     stringResource(R.string.setting_description_sign_in_patreon, patreon),
                 // Again while waiting, in case the page was closed
@@ -155,14 +155,14 @@ private fun PatreonSettingsContent(
                 SettingsItem(
                     title = stringResource(R.string.setting_title_tier),
                     summary = state.profile?.tierTitle
-                        ?: stringResource(R.string.setting_description_patreon_tier_none),
+                        ?: stringResource(R.string.status_not_a_patron),
                 )
                 val renewal = remember(state.profile) { state.profile.renewalDate }
                 val dateFormat = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
                 SettingsItem(
                     title = stringResource(R.string.setting_title_renewal_date),
                     summary = renewal?.let(dateFormat::format)
-                        ?: stringResource(R.string.setting_description_patreon_renewal_none),
+                        ?: stringResource(R.string.status_none_scheduled),
                 )
                 // A pledge changed on Patreon shows only after a refresh
                 if (!backupUnlocked)

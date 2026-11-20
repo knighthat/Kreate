@@ -102,7 +102,7 @@ private fun patreonSummary(token: String, profile: String): String {
 /** Who is signed in, for the row that opens the YouTube page. */
 @Composable
 private fun YouTubeAccountState.summary(): String = when (this) {
-    YouTubeAccountState.SignedOut -> stringResource(R.string.setting_description_status_not_signed_in)
+    YouTubeAccountState.SignedOut -> stringResource(R.string.status_not_signed_in)
     YouTubeAccountState.Checking -> stringResource(R.string.status_checking)
     is YouTubeAccountState.SignedIn ->
         stringResource(
@@ -111,7 +111,7 @@ private fun YouTubeAccountState.summary(): String = when (this) {
         )
 
     YouTubeAccountState.Ended -> stringResource(
-        R.string.setting_description_configure_youtube_status_signed_out,
+        R.string.status_signed_out,
         stringResource(R.string.source_ytm)
     )
     is YouTubeAccountState.Failed -> reason ?: stringResource(
@@ -128,7 +128,7 @@ private fun YouTubeAccountState.summary(): String = when (this) {
 @Composable
 private fun CheckState.serverName(server: String): String = when (this) {
     CheckState.Idle, CheckState.Checking ->
-        stringResource(R.string.setting_description_server_status_checking, server)
+        stringResource(R.string.status_checking_server, server)
 
     is CheckState.Done -> when (val result = result) {
         // Without the build tag, the server's page has the version as it said it
@@ -137,17 +137,17 @@ private fun CheckState.serverName(server: String): String = when (this) {
             .ifEmpty { stringResource(R.string.status_online) }
 
         is ServerCheck.Unreachable -> stringResource(
-            R.string.setting_description_configure_opensubsonic_status_unreachable,
+            R.string.status_unreachable,
             server
         )
 
         is ServerCheck.UntrustedCertificate -> stringResource(
-            R.string.setting_description_status_certificate_untrusted,
+            R.string.status_certificate_untrusted,
             server
         )
 
         is ServerCheck.CertificateChanged -> stringResource(
-            R.string.setting_description_status_certificate_changed,
+            R.string.status_certificate_changed,
             server
         )
 

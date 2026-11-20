@@ -295,8 +295,6 @@
     <string name="setting_description_direct_play">Streams songs from %1$s without keeping them in the song cache</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The song cache (temporary copies of songs) is switched off -->
     <string name="setting_description_direct_play_status_cache_off">The song cache is off, songs from %1$s always stream directly</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
-    <string name="setting_title_account_status_signed_out">%1$s signed you out</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may change this shared setting -->
     <string name="setting_description_default_profile_only">Shared by every profile, only %1$s can change it</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may create or restore a backup -->
@@ -315,16 +313,7 @@
     <string name="setting_description_allow_self_signed_certificate_status_changed">Certificate changed. Tap to approve</string>
     <!-- "Sign in" is the name of a settings row; the address is entered there -->
     <string name="setting_description_server_status_no_server">No server address, add it in Sign in</string>
-    <string name="setting_description_status_not_signed_in">Not signed in</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
-    <string name="setting_description_configure_youtube_status_signed_out">%1$s signed you out</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">No server set</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
-    <string name="setting_description_configure_opensubsonic_status_unreachable">Can\'t reach %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_status_certificate_changed">%1$s\'s certificate changed</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Not an %1$s server</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
@@ -332,8 +321,6 @@
     <string name="setting_description_account_status_failed">%1$s, tap to try again</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection -->
     <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
-    <string name="setting_description_server_status_checking">Checking %1$s…</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
     <string name="setting_description_server_status_unreachable">Can\'t reach %1$s: %2$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "its own" = a self-signed certificate that the server made itself -->
@@ -342,7 +329,6 @@
     <string name="setting_description_server_status_certificate_changed">%1$s\'s certificate changed. Tap to review it</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). "This address" = the address the user entered, which isn't a server that speaks it -->
     <string name="setting_description_server_status_not_opensubsonic">This address is not an %1$s server</string>
-    <string name="setting_description_sign_in_status_checking">Signing in…</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Wrong username or password</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Invalid API key</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
@@ -352,11 +338,6 @@
     <string name="setting_description_sign_in_status_signed_in_as">Signed in as %1$s</string>
     <string name="setting_description_sign_in_status_signed_in_with_api_key">Signed in with an API key</string>
     <string name="setting_description_sign_in_status_waiting_for_server">Waiting for server to complete authentication</string>
-    <string name="setting_description_restore_status_reading">Reading…</string>
-    <string name="setting_description_restore_status_failed">Couldn\'t read the backup</string>
-    <string name="setting_description_back_up_status_saving">Saving…</string>
-    <string name="setting_description_back_up_status_saved">Backup saved</string>
-    <string name="setting_description_back_up_status_failed">Couldn\'t save the backup</string>
     <string name="setting_header_logging">Logging</string>
     <string name="setting_title_log_level">Log level</string>
     <string name="setting_title_log_rollover_size">Rollover size</string>
@@ -390,7 +371,6 @@
     <string name="setting_description_configure_patreon_status_signed_out">Sign in to enable cloud backup</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). The Patreon account belongs to the device, so only that profile may sign in or out -->
     <string name="setting_description_patreon_status_default_profile_only">Only %1$s can sign in or out</string>
-    <string name="setting_description_sign_in_status_waiting">Waiting for the sign in page…</string>
     <!-- Text under each source's switch on the Discord page -->
     <string name="setting_description_discord_source">Its songs, albums, artists, playlists and searches</string>
     <!-- Text under the OpenSubsonic and "On device" switches on the Discord page: their albums, artists and playlists don't show -->

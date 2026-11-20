@@ -27,8 +27,6 @@
     <string name="setting_title_check_membership">Check membership again</string>
     <!-- %1$s is Patreon. Shown when the tier lacks cloud backup: a pledge changed there shows only after this -->
     <string name="setting_description_check_membership">Gets your tier from %1$s again after a pledge change</string>
-    <string name="setting_description_patreon_tier_none">Not a patron</string>
-    <string name="setting_description_patreon_renewal_none">None scheduled</string>
     <!-- %1$s is "Patreon" -->
     <string name="setting_description_cloud_backup">Saves your backups online with your %1$s account</string>
     <string name="setting_description_cloud_backup_status_not_in_tier">Your tier doesn\'t include cloud backup, tap to upgrade</string>

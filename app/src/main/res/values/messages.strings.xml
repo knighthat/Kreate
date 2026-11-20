@@ -223,6 +223,8 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Removed %1$s from playlist</string>
     <string name="snackbar_playlist_deleted">Deleted %1$s</string>
+    <!-- %1$s is a file name in quotes; the file was written where the user picked -->
+    <string name="snackbar_file_saved">Saved %1$s</string>
     <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is a counted plural of playlists, e.g. "2 playlists". The songs of a playlist file went into new playlists -->
     <string name="snackbar_playlists_imported">Imported %1$s into %2$s</string>
     <!-- %1$s is a counted plural of songs, e.g. "3 songs"; %2$s is the reason, a lowercase fragment from the error_reason_import_* strings. Shown under the import's result, one line per reason -->

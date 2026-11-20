@@ -25,8 +25,6 @@
     <string name="error_cloud_backup_too_large">Couldn\'t back up to the cloud, the backup is too big</string>
     <string name="error_cloud_backup_full">Couldn\'t back up to the cloud, it\'s full. Delete old backups on the Backup page</string>
     <string name="error_remote_backup_save">Couldn\'t save the backup</string>
-    <!-- %1$s is the backup's file name in quotes, saved to a file the user picked -->
-    <string name="snackbar_remote_backup_saved">Saved %1$s</string>
     <string name="error_remote_backup_delete">Couldn\'t delete the backup</string>
     <!-- %1$s is the backup's file name in quotes, e.g. "kreate_backup_2026-11-18_09-30-00.zip" -->
     <string name="snackbar_remote_backup_deleted">Deleted %1$s</string>

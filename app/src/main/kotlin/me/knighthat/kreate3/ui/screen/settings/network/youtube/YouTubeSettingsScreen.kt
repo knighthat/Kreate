@@ -215,7 +215,7 @@ private fun YouTubeSettingsContent(
 
                 YouTubeAccountState.Ended -> SettingsItem(
                     title = stringResource(
-                        R.string.setting_title_account_status_signed_out,
+                        R.string.status_signed_out,
                         stringResource(R.string.source_ytm)
                     ),
                     summary = stringResource(R.string.setting_description_account_status_session_ended),

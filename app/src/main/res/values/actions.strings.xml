@@ -40,6 +40,10 @@
     <string name="action_search">Search</string>
     <string name="action_create">Create</string>
     <string name="action_try_again">Try again</string>
+    <!-- Runs a check that already ran once again, e.g. asks an online service for the user's membership -->
+    <string name="action_check_again">Check again</string>
+    <!-- Puts the app's data back from a backup -->
+    <string name="action_restore">Restore</string>
     <string name="action_retry">Retry</string>
     <string name="action_show_matches">Show matches</string>
     <string name="action_view_on">View on %1$s</string>

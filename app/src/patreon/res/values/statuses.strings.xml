@@ -19,12 +19,10 @@
 <!-- Single-word statuses that are not tied to one setting (off, on, ...). -->
 <!-- Only in the patreon build. -->
 <resources>
-    <string name="status_downloading">Downloading…</string>
-    <string name="status_deleting">Deleting…</string>
     <string name="status_no_remote_backups">No backups online yet</string>
     <string name="status_couldnt_load_remote_backups">Couldn\'t load the online backups</string>
     <string name="status_remote_backups_kept">Each backup is deleted 180 days after it was uploaded</string>
     <string name="status_remote_backups_not_in_tier">Your tier doesn\'t include cloud backup</string>
-    <!-- %1$s is the backup's size, e.g. 4.8 MB; %2$s is when it was uploaded, e.g. Nov 15, 2026, 9:30 AM -->
-    <string name="status_remote_backup">%1$s · %2$s</string>
+    <!-- Value of the Tier row on the Patreon page when the account pledges to no tier -->
+    <string name="status_not_a_patron">Not a patron</string>
 </resources>
