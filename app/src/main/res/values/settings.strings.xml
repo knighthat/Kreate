@@ -386,6 +386,10 @@
     <string name="setting_description_discord_enabled_off">Nothing shows on your %1$s profile</string>
     <!-- %1$s is Discord. Row to sign in, with what signing in does under it -->
     <string name="setting_description_sign_in_discord">Lets the app set your %1$s status, nothing else</string>
+    <!-- Network page row of the Patreon account while nobody is signed in -->
+    <string name="setting_description_configure_patreon_status_signed_out">Sign in to enable cloud backup</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). The Patreon account belongs to the device, so only that profile may sign in or out -->
+    <string name="setting_description_patreon_status_default_profile_only">Only %1$s can sign in or out</string>
     <string name="setting_description_sign_in_status_waiting">Waiting for the sign in page…</string>
     <!-- Text under each source's switch on the Discord page -->
     <string name="setting_description_discord_source">Its songs, albums, artists, playlists and searches</string>

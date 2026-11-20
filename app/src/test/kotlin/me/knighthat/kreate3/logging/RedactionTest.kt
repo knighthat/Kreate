@@ -47,6 +47,18 @@ class RedactionTest {
     }
 
     @Test
+    fun signedStorageLinksLoseTheirSignature() {
+        val redacted = redact(
+            "PUT https://x.r2.cloudflarestorage.com/b/f.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256" +
+                    "&X-Amz-Credential=KEY%2F20261118&X-Amz-Signature=abc123&X-Amz-Expires=600"
+        )
+
+        assertTrue("X-Amz-Expires=600" in redacted)
+        assertFalse("KEY" in redacted)
+        assertFalse("abc123" in redacted)
+    }
+
+    @Test
     fun userInfoOfAnAddressIsHidden() {
         assertEquals(
             "via http://<redacted>@proxy.lan:8080/",

@@ -46,6 +46,10 @@ Zip backup and restore: `backup.md`.
   stable.
 - Code that acts on a secret reads it with the suspend `current()`: an empty value at startup (e.g.
   the channel page id) would make like sync act on the wrong account and null out likes.
+- What belongs to the device rather than a profile (the Patreon sign in) is a device secret
+  (`secret(name, device = true)`): `noBackupFilesDir/device_secrets.preferences_pb`, the same for
+  every profile, kept by `clearAll` and profile deletion. Only the default profile changes it, like
+  `GlobalPreferences`.
 - The file isn't encrypted; Keystore encryption hasn't been asked for.
 
 ## Files that must stay on the device

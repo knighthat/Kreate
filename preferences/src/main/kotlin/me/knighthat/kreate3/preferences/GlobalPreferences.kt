@@ -104,11 +104,24 @@ object GlobalPreferences : KoinComponent {
     val CRASH_LOG_RETENTION_DAYS by lazy { int("crash_log_retention_days", 30) }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Cloud backup">
+    /**
+     * Whether the device's backups go to the cloud through the Patreon account signed in
+     * (`Secrets.PATREON_TOKEN`), in the patreon build only. The default is `true`, so signing in
+     * is enough. The Patreon page shows and changes it; while it's off the weekly cloud backup
+     * (`CloudBackups`) skips and the Remote tab of the Backup page is grayed out.
+     */
+    val CLOUD_BACKUP by lazy { boolean("cloud_backup", true) }
+    //</editor-fold>
+
     internal val isLoaded: Boolean get() = engine.isLoaded
 
     internal suspend fun awaitLoaded() = engine.awaitLoaded()
 
     internal suspend fun flush() = engine.flush()
+
+    private fun boolean(name: String, default: Boolean) =
+        Preference(name, default, codec<Boolean, Boolean>({ it }, { it }), engine)
 
     private fun int(name: String, default: Int) =
         Preference(name, default, codec<Int, Int>({ it }, { it }), engine)

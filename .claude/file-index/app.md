@@ -53,6 +53,41 @@ Root
   forgotten; `delivered` makes `KreateActivity` recreate after a language's first download;
   `wrap` in both activities' `attachBaseContext`) and `app/src/crowdin/kotlin/…` (foss, github:
   does nothing, the APK's texts).
+- `PlatformModule.kt` — one per platform in `app/src/<platform>/…` (`platformModule`, what only
+  that build has; patreon: `PatreonAuth` on the app's `HttpClient` with `PATREON_REDIRECT`,
+  `PatreonSession` (at start), `PatreonAccount` (at start), `PatreonFiles`, `RemoteBackups`,
+  `CloudBackups` (at start), `RemoteBackupsViewModel`, the
+  `RemoteBackupPage`, the Patreon page as `PlatformEntries`; foss,
+  github: empty);
+  `KreateApplication` adds it.
+- patreon/ (under `app/src/patreon/`, patreon build only; `:api` does the requests) —
+  `PatreonSession.kt` (`member`: `PatreonMember(claims, profile)` decoded from the device
+  secrets once per change, `null` signed out; `has(feature)` from the token's `features`),
+  `CloudBackups.kt` (at start: `start` enqueues `CloudBackupWorker.kt` now, network + battery not
+  low; `run` skips while signed out, `CLOUD_BACKUP` off or no `backups` feature; backs up when
+  `noBackupFilesDir/cloud_backup_last` (epoch ms) is a week old or more: cleaned `Backup.export` to
+  `cacheDir/cloud_backup.zip`, `PatreonFiles.upload` as `kreate_backup_<date_time>.zip`, writes
+  the time, `RemoteBackups.forget`; then a delayed `cloud_backup_next` worker for the rest of the
+  week; offline → retry with backoff, too large / storage full → failure told on
+  `AppChannel.BACKUP`, tried next week),
+  `RemoteBackups.kt` (at start; `active`: signed in + `backups` feature + `CLOUD_BACKUP`;
+  `list()` keeps the files in memory with the token they were asked with, asks again only once
+  it changed, through `PatreonAccount.withToken`, and each time deletes downloaded copies no
+  longer online; `download(file)` to `<external files>/cloud_backups/<name>` (`.part` until
+  whole), a kept copy of the same size is used again; `delete(file)` deletes online; a deleted
+  one, or one `download` finds gone (404), is taken off the kept list without asking for it
+  again, and its copy deleted),
+  `PatreonAccount.kt` (`PATREON_REDIRECT` = `kreate3://patreon/done`; device sign in in
+  `Secrets.PATREON_*`, state from `PatreonSession`; `PatreonAccountState` (SignedOut, SigningIn,
+  SignedIn (profile)); `start` →
+  login URL (null + message without an API address), `finish(uri)` from the callback, `abandon`
+  on resume without an answer, `signOut` forgets the three secrets; `withToken(request)` refreshes a
+  token within 5 min of
+  expiry or refused (401) once, one refresh at a time (`Mutex`, reads the token again after
+  waiting), signs out on the refresh's 401; at start, refreshes a token without the `features`
+  claim once; `checkMembership` + `checking` refresh on request, failures told),
+  `PatreonCallbackActivity.kt` (exported, `kreate3://patreon/done` in
+  `app/src/patreon/AndroidManifest.xml`, hands the answer over and brings the app back).
 - presence/ — Discord's Rich Presence on the app's side (`:discord` does the protocol). Only
   `Doing.kt` and `DiscordCovers.kt` are in `main`; the rest is under `app/src/nonfree/`, left out
   of foss. `PresenceState` is registered in `KreateApplication` for every build.
@@ -104,7 +139,8 @@ Root
 - logging/ — `AppLog.kt` (Kermit setup: Logcat + `FileLogWriter`, rolls `kreate.log` over in
   `externalCacheDir/logs`, queues until the level is known, `follow` applies the `GlobalPreferences`
   log settings), `LogFiles.kt` (folders, tail, zip), `LogActions.kt` (Copy/Export of the settings),
-  `Redaction.kt` (`redact` for every written text, `isSecretHeader`), `CrashHandler.kt` (uncaught
+  `Redaction.kt` (`redact` for every written text, signed storage links too, `isSecretHeader`),
+  `CrashHandler.kt` (uncaught
   handler, crash log in `getExternalFilesDir/crashlogs`, `deleteExpired`), `CrashActivity.kt`
   (`:crash` process screen: Copy/Export/Close/Restart, no Koin), `NetworkLogger.kt` (Ktor
   `Logging`), `CoilLogger.kt` (Coil `Logger`), `WorkerLogging.kt` (`logged` for workers).
@@ -129,7 +165,9 @@ Root
   <slot>-<id>.font`: `stage` (copy + check), `keep`, `forget`, `backupFiles`/`restore`/
   `isBackupPath` for the zip), `Sfnt.kt` (reads a font's table directory: is it a font, is it
   variable).
-- backup/`Backup.kt` — zip export (`manifest.json`, `kreate.db` via VACUUM INTO, preference files;
+- backup/`Backup.kt` — zip export (one at a time, `Mutex`; `cleanUp = true` for the cloud backup:
+  `exportCleaned`, removed playlists' pictures left out; `manifest.json`, `kreate.db` via VACUUM
+  INTO, preference files;
   no secrets), `stage` (validate + unpack to `noBackupFilesDir/restore`, export current state to
   `cacheDir/rollback.zip`), `applyPendingRestore` (called in `KreateApplication.onCreate` before
   Koin; on failure stages the rollback for the next start, a failed rollback is dropped),
@@ -187,6 +225,8 @@ notification/
   channel goes to `SystemNotifications`, one without is dropped.
 - `AppChannel.kt` — notification channels (PLAYBACK default importance, OTHER default (one-off
   notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, PLAYLIST_IMPORT low,
+  BACKUP default (every build; for now only the cloud backup's failures and the Remote tab's
+  restore/save/delete failures, later the local backup too),
   SLEEP_TIMER low +
   `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`); the brief foreground
   notification of playback resumption goes to OTHER with `setSilent(true)`, the old `resume` channel
@@ -322,7 +362,8 @@ English texts: `res/values/*.strings.xml` by kind (`common` app name, sources, u
 `settings`; `actions` buttons and menus; `screens` titles, tabs, section headers, screen texts;
 `semantics` icon descriptions; `wizard`; `dialogs`; `messages` errors and snackbars; `statistics`;
 `notifications`; `constants` enum values), `res/values/plurals.xml`; which prefix goes where:
-`.claude/rules/strings.md`.
+`.claude/rules/strings.md`. Texts only the patreon build uses (sign in, cloud and remote backups)
+sit in `app/src/patreon/res/values/`, same file names.
 
 res: `res/resources.properties` (default `en-US`, for the generated locale config),
 `res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated

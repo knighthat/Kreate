@@ -10,13 +10,17 @@ on
   (`PreferenceEngine.reset`).
   `Preference.kt` — single setting following the active profile.
 - `preferences/GlobalPreferences.kt` — settings shared by every profile (cache/download sizes, image
-  memory cache, log level/rollover/keep, crash log retention), default profile edits them.
+  memory cache, log level/rollover/keep, crash log retention, `CLOUD_BACKUP` (patreon build, nothing
+  reads it yet)), default profile edits them.
   `GlobalPreferenceStorage.kt` — `global.preferences_pb`
   (these + the profile list), its engine, damaged file rebuilt from profile folders.
 - `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens (Discord's OAuth2
   ones too) in
   `noBackupFilesDir/profiles/<id>/secrets.preferences_pb` (`.claude/rules/storage.md`);
-  `Secrets.clearAll` deletes the active profile's (settings reset).
+  `Secrets.clearAll` deletes the active profile's (settings reset). Device secrets
+  (`secret(name, device = true)`: `PATREON_TOKEN`, `PATREON_REFRESH`, `PATREON_PROFILE`) are in
+  `noBackupFilesDir/device_secrets.preferences_pb`, the same for every profile, kept through resets
+  and profile deletion.
 - `app/res/xml/backup_rules.xml` (API ≤30) + `data_extraction_rules.xml` (API 31+) — backup/transfer
   exclusions (`.claude/rules/storage.md`).
 - `preferences/PreferencesBackup.kt` — preference files for a backup (global + profiles/<id>

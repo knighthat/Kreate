@@ -379,7 +379,18 @@ ui/screen/
     Configure YouTube/OpenSubsonic" rows, their status read from `YouTubeAccountStore` and
     `OpenSubsonicServer`, nothing asked there; Integrations: "Configure Discord" with
     `discordSummary()`, the Shazam switch `SHAZAM_ENABLED`; both dimmed with "Not available in FOSS
-    build" in foss), `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
+    build" in foss; "Configure Patreon" with `patreonSummary()` (from the device secrets
+    `PATREON_TOKEN`/`PATREON_PROFILE`: "Sign in to enable cloud backup" / "Signed in as" name, else
+    username), dimmed with "Not available in …
+    build" outside patreon and for profiles other than the default one (naming it)),
+    `network/patreon/PatreonSettingsScreen.kt` (under `app/src/patreon/`; its
+    `platformModule` adds the `PatreonSettings` entry as `PlatformEntries`) (Account: sign in
+    opens the API's login in the browser / tap to sign out with a dialog, then Tier (`tierTitle`,
+    else "Not a patron") and Renewal date (day of `nextChargeDate`, else "None scheduled"), not
+    tappable; Check membership again (refresh) while the tier lacks `backups`; Backup: Cloud backup
+    switch `GlobalPreferences.CLOUD_BACKUP`, grayed while signed out or when the token's `features`
+    lack `backups` (then a tap opens `HOMEPAGE_URL`, the Patreon page)),
+    `network/discord/DiscordSettingsScreen.kt` (under `app/src/nonfree/`; also
     `discordSummary()` and `discordSettingsEntry` for `KreateApp`, foss has stand-ins in
     `app/src/foss/…/DiscordSettings.kt`: the FOSS text, no page) (main switch, account
     row: sign in opens Discord's page / tap to sign out with a dialog, per-source switches with "Show private playlists" (`DISCORD_PRIVATE_PLAYLISTS`) under YouTube Music, largest
@@ -395,7 +406,21 @@ ui/screen/
     segmented button per sign-in way (fields are `CredentialField`), Sign out / Save in the top
     bar), `backup/` (
   `BackupSettingsScreen.kt` +
-  `BackupViewModel.kt`, SAF export/restore), `about/` (`AboutScreen.kt` version, license and the
+    `BackupViewModel.kt`, SAF export/restore; with a `RemoteBackupPage` from Koin (patreon) a bottom
+    bar with Local / Remote tabs (Remote grayed and closed while `RemoteBackupPage.active` is off)
+    and its own `MessageHost`; `RemoteBackupPage.kt` is that hook;
+    under `app/src/patreon/`: `RemoteBackupsPage.kt` + `RemoteBackupsViewModel.kt`, the online list
+    (signed out → Sign in opens the Patreon page, no `backups` feature → Upgrade opens
+    `HOMEPAGE_URL` and Check again refreshes, failure → Retry, rows of name, size and upload time,
+    a tap asks to restore (download or the kept copy, `Backup.stage`, restart; the row says
+    Downloading… / Reading…), a download button saves it to a file picked (`CreateDocument`, the
+    kept copy or a download, "Saved <name>"), an ✕ at the end asks to
+    delete it online (Deleting…, off the list
+    without a new request, "Deleted <name>" only when the server deleted it; one found gone, on
+    delete or restore,
+    just leaves the list), 180-day note),
+    through `RemoteBackups`, so only when the tab opens), `about/` (`AboutScreen.kt` version,
+    license and the
     licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +
     `OpenSourceLicensesViewModel.kt`: libraries read
   from AboutLibraries' generated `R.raw.aboutlibraries`, search, license text sheet).

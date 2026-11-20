@@ -54,6 +54,10 @@ import java.util.concurrent.ConcurrentHashMap
  * Reads and writes run one after another in the order they were asked, so a change made before
  * a profile switch is saved to the profile it was made in.
  *
+ * Device secrets ([secret] with `device`) belong to no profile: they're in
+ * `<root>/device_secrets.preferences_pb`, the same whichever profile is active, and survive a
+ * profile's reset or deletion.
+ *
  * Settings that were preferences before they became secrets, [MOVED_FROM_PREFERENCES], are moved
  * out of every profile's preferences file before anything else is read, so nothing reads a secret
  * as empty while its value is still on the other side.
@@ -72,6 +76,7 @@ internal class SecretStore(
     private class OpenStore(val scope: CoroutineScope, val dataStore: DataStore<Preferences>)
 
     private val states = ConcurrentHashMap<String, MutableStateFlow<String>>()
+    private val deviceNames: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private val stores = mutableMapOf<String, OpenStore>()
     private val tasks = Channel<suspend () -> Unit>(Channel.UNLIMITED)
 
@@ -91,14 +96,15 @@ internal class SecretStore(
         }
         scope.launch {
             profiles.activeId.filterNotNull().distinctUntilChanged().collect { profileId ->
-                states.forEach { (name, state) -> load(profileId, name, state) }
+                states.filterKeys { it !in deviceNames }
+                    .forEach { (name, state) -> load(profileId, name, state) }
             }
         }
         scope.launch {
             // Release and delete the files of deleted profiles, also those deleted while no store ran
             profiles.ids.filter { it.isNotEmpty() }.collect { ids ->
                 tasks.trySend {
-                    stores.keys.filter { it !in ids }.forEach(::close)
+                    stores.keys.filter { it != DEVICE && it !in ids }.forEach(::close)
                     File(rootDirectory, Profile.DIRECTORY_NAME)
                         .listFiles()
                         ?.filter { it.name !in ids }
@@ -108,15 +114,17 @@ internal class SecretStore(
         }
     }
 
-    fun secret(name: String): Secret {
+    /** @param device whether it belongs to the device instead of the active profile */
+    fun secret(name: String, device: Boolean = false): Secret {
         require(NAME.matches(name)) { "\"$name\" must be lowercase letters, digits and _" }
+        if (device) deviceNames += name
         return Secret(name, this)
     }
 
     fun stateOf(name: String): StateFlow<String> = states.getOrPut(name) {
         MutableStateFlow("").also { state ->
             // Without an active profile the first switch loads it
-            profiles.activeId.value?.let { load(it, name, state) }
+            storeIdOf(name)?.let { load(it, name, state) }
         }
     }
 
@@ -134,7 +142,7 @@ internal class SecretStore(
 
     fun write(name: String, value: String) {
         val state = states.getOrPut(name) { MutableStateFlow("") }
-        val profileId = profiles.activeId.value ?: return
+        val profileId = storeIdOf(name) ?: return
 
         tasks.trySend {
             val error = retrying {
@@ -146,7 +154,7 @@ internal class SecretStore(
             // The state shows what is on disk, a failed write leaves it as it was
             if (error != null)
                 profiles.reports.report(SECRETS, saving = true, failureReasonOf(error))
-            else if (profiles.activeId.value == profileId)
+            else if (profileId == DEVICE || profiles.activeId.value == profileId)
                 state.value = value
         }
     }
@@ -171,7 +179,7 @@ internal class SecretStore(
                 if (error != null) {
                     profiles.reports.report(SECRETS, saving = true, failureReasonOf(error))
                 } else {
-                    states.values.forEach { it.value = "" }
+                    states.filterKeys { it !in deviceNames }.values.forEach { it.value = "" }
                     done.complete(true)
                 }
             } finally {
@@ -210,7 +218,7 @@ internal class SecretStore(
     private fun load(profileId: String, name: String, state: MutableStateFlow<String>) {
         tasks.trySend {
             // A profile switched meanwhile has nothing to show
-            if (profiles.activeId.value != profileId) return@trySend
+            if (profileId != DEVICE && profiles.activeId.value != profileId) return@trySend
 
             state.value = try {
                 storeOf(profileId).data.first()[stringPreferencesKey(name)].orEmpty()
@@ -242,9 +250,18 @@ internal class SecretStore(
                     )
                     emptyPreferences()
                 },
-            ) { File(Profile.directory(rootDirectory, profileId), FILE_NAME) }
+            ) {
+                if (profileId == DEVICE)
+                    File(rootDirectory, DEVICE_FILE_NAME)
+                else
+                    File(Profile.directory(rootDirectory, profileId), FILE_NAME)
+            }
             OpenStore(storeScope, dataStore)
         }.dataStore
+
+    /** The store [name] is in: [DEVICE], or the active profile's (`null` while there is none). */
+    private fun storeIdOf(name: String): String? =
+        if (name in deviceNames) DEVICE else profiles.activeId.value
 
     private fun close(profileId: String) {
         stores.remove(profileId)?.scope?.cancel()
@@ -253,6 +270,11 @@ internal class SecretStore(
     private companion object {
 
         const val FILE_NAME = "secrets.preferences_pb"
+
+        const val DEVICE_FILE_NAME = "device_secrets.preferences_pb"
+
+        /** Key of the device's store among the profiles' ones, never a profile id (those have no `/`). */
+        const val DEVICE = "/device"
 
         val NAME = Regex("[a-z0-9_]+")
 

@@ -14,6 +14,14 @@ them). `:discord` (Discord's Rich Presence) depends on no module; `:app` keeps t
 it a
 client and the access token. `:shazam` (naming songs) depends on no module either; `:app` records
 the microphone and hands it raw PCM.
+`:api` (the project's own API: Patreon sign in, token refresh) depends on no module either; only
+`patreon` has it (`patreonImplementation`, app code in `app/src/patreon/`; each platform registers
+its own Koin `platformModule` in `app/src/<platform>/`, with its own screens as `PlatformEntries`
+so `main` never names them; UI checks `BuildConfig.FLAVOR_platform == "patreon"`);
+`:app` hands it a client and stores the tokens. Its addresses are `KREATE_API_URL` and
+`KREATE_FILES_URL`
+(environment, else `local.properties`) at build time, never literals in code; a build without one
+has no such API.
 
 - Keep modules independent: a module depends only on `:model` plus libraries unless it truly can't
   work without another. Don't add `project(":x")` to reach one or two types.

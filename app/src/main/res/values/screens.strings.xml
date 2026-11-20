@@ -62,6 +62,10 @@
     <string name="tab_lyrics">Lyrics</string>
     <string name="tab_player">Player</string>
     <string name="tab_queue">Queue</string>
+    <!-- Backup page tab: backups saved as files on this device -->
+    <string name="tab_local">Local</string>
+    <!-- Backup page tab: backups kept online with the Patreon account -->
+    <string name="tab_remote">Remote</string>
 
     <string name="section_header_top_songs">Top songs</string>
     <string name="section_header_top_albums">Top albums</string>

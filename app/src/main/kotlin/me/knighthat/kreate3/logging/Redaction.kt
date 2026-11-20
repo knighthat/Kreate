@@ -21,7 +21,9 @@ package me.knighthat.kreate3.logging
 private val SECRET_PARAMETER = Regex(
     "([?&;](?:u|p|t|s|pass|password|passwd|token|access_token|refresh_token|id_token|apikey|api_key|" +
             "key|sig|signature|pot|po_token|auth|authorization|session|sid|cookie|secret|" +
-            "visitordata|visitor_data|username|user)=)[^&#\\s\"'<>]*",
+            "visitordata|visitor_data|username|user|" +
+            // Signed storage links (S3, Cloudflare R2): whoever has one may upload or download
+            "x-amz-signature|x-amz-credential|x-amz-security-token)=)[^&#\\s\"'<>]*",
     RegexOption.IGNORE_CASE,
 )
 

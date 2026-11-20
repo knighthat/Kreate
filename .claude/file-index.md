@@ -18,6 +18,7 @@ part for the folder you work in. Module shape and rules: `.claude/rules/modules.
 | `lyrics.md`       | `:lyrics`: lyrics sources, finder, parser                                                                                                   |
 | `shazam.md`       | `:shazam`: Shazam's signature from raw PCM and the lookup on its server                                                                     |
 | `discord.md`      | `:discord`: OAuth2 sign in, gateway client and presence of Discord's Rich Presence                                                          |
+| `api.md`          | `:api`: the project's own API (Patreon sign in, token refresh), address given at build time                                                 |
 | `tests.md`        | unit tests of every module                                                                                                                  |
 
 A new file goes in the part for its folder; a new folder of `:app` big enough to need its own part

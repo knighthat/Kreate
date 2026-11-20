@@ -68,5 +68,6 @@
     <string name="discord" translatable="false">Discord</string>
     <string name="shazam" translatable="false">Shazam</string>
     <string name="litterbox" translatable="false">litterbox</string>
+    <string name="patreon" translatable="false">Patreon</string>
     <string name="pixel_symbol" translatable="false">px</string>
 </resources>

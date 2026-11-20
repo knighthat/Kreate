@@ -9,7 +9,9 @@ Room schema: `database/schemas/me.knighthat.kreate3.database.AppDatabase/<versio
 
 - `AppDatabase.kt` — Room DB (internal), entity/view/DAO list. `DatabaseModule.kt` — Koin,
   BundledSQLiteDriver (`.claude/rules/database.md`), repositories.
-- `DatabaseBackup.kt` — `export` (VACUUM INTO), `restore` (before the DB opens), `VERSION` (=
+- `DatabaseBackup.kt` — `export` (VACUUM INTO), `exportCleaned` (same, then `CleanupRepositoryImpl`
+  on the copy only, returns removed playlists' pictures), `restore` (before the DB opens), `VERSION`
+  (=
   `DATABASE_VERSION` in DatabaseModule.kt).
 - `ActiveUser.kt` — interface the app provides to say whose data to use. `repository/UserScope.kt` —
   restarts queries on user change.

@@ -8,10 +8,15 @@ paths:
 
 # Zip backup / restore (`backup/Backup.kt`)
 
+- The patreon build's weekly cloud backup (`CloudBackups`) uploads this same zip, so whatever goes
+  in it goes online too; its database is cleaned up first (`export(cleanUp = true)`, in the copy
+  only) to send less. `Backup.export` runs one export at a time (they share the database
+  snapshot).
+
 - Contents: `manifest.json`, `kreate.db`, global prefs, `profiles/<id>/preferences.preferences_pb`,
   and the pictures users picked, `profiles/<id>/custom_thumbnails/<file>` (`CoverFiles.backupFiles`;
-  they live in `noBackupFilesDir`, so only this zip carries them, never the system's or the cloud's
-  backup) and the fonts users picked, `profiles/<id>/fonts/<app|lyrics>-<id>.font`
+  they live in `noBackupFilesDir`, so only this zip carries them, never Android's own backup or
+  device transfer) and the fonts users picked, `profiles/<id>/fonts/<app|lyrics>-<id>.font`
   (`FontFiles.backupFiles`, same rules). A restore replaces them with the zip's. Never secrets. An
   older app refuses a zip with
   them as "not a backup" (unknown paths are refused).

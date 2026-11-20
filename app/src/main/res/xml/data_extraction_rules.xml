@@ -33,6 +33,14 @@
         <exclude
             domain="database"
             path="exoplayer_internal.db-journal" />
+        <!-- Cloud backups downloaded to restore (RemoteBackups, patreon only), in the app's folder of
+             external storage, or the internal one without it; the cloud keeps them -->
+        <exclude
+            domain="external"
+            path="cloud_backups" />
+        <exclude
+            domain="file"
+            path="cloud_backups" />
         <!-- Crash logs, in the app's folder of external storage (CrashHandler) -->
         <exclude
             domain="external"
@@ -57,6 +65,14 @@
         <exclude
             domain="database"
             path="exoplayer_internal.db-journal" />
+        <!-- Cloud backups downloaded to restore (RemoteBackups, patreon only), in the app's folder of
+             external storage, or the internal one without it; the cloud keeps them -->
+        <exclude
+            domain="external"
+            path="cloud_backups" />
+        <exclude
+            domain="file"
+            path="cloud_backups" />
         <!-- Crash logs, in the app's folder of external storage (CrashHandler) -->
         <exclude
             domain="external"
