@@ -20,8 +20,9 @@ its next sync.
 English texts sit in `values/*.strings.xml`, one file per kind of text, picked by the key prefix
 (`plurals.xml` stays one file). Add a string to its file; Crowdin sees a moved string as new, so
 never move keys between files. A text only the patreon build uses goes in the file of the same name
-in `app/src/patreon/res/values/` (Crowdin takes those too, `crowdin.yml`); one that main code
-uses too stays in `app/src/main/res/values/`.
+in `app/src/patreon/res/values/` (Crowdin takes those too, `crowdin.yml`) when it's about Patreon or
+cloud backup; a general one ("Downloading…", "Restore") goes in `app/src/main/res/values/` so every
+build can reuse it, as does one that main code uses too.
 
 | File                        | Prefixes                                             |
 |-----------------------------|------------------------------------------------------|
