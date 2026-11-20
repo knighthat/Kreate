@@ -150,7 +150,11 @@ private fun HomeSongsContent(
                 count = songs.itemCount,
                 key = songs.itemKey { it.mediaId }
             ) { index ->
-                songs[index]?.let { SongItem(it, onClick = { onSongClick(it) }) }
+                // A song leaving the list (Cached only / Downloaded only) fades out and the rows
+                // below slide up, as in the queue
+                songs[index]?.let {
+                    SongItem(it, onClick = { onSongClick(it) }, modifier = Modifier.animateItem())
+                }
             }
         }
     }
