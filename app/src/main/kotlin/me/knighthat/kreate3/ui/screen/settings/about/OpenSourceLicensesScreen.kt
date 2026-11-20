@@ -104,7 +104,7 @@ private fun OpenSourceLicensesContent(
     if (open != null) LicenseSheet(open, onDismiss = { openId = null })
 
     DetailScaffold(
-        title = stringResource(R.string.screen_title_open_source_licenses),
+        title = stringResource(R.string.screen_title_licenses),
         onBack = onBack,
         modifier = modifier,
         actions = {

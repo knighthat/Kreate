@@ -159,7 +159,12 @@ private fun UiSettingsContent(
             title = stringResource(R.string.setting_title_playlist_initial),
             checked = playlistInitial,
             onCheckedChange = { Preferences.PLAYLIST_INITIAL.update(it) },
-            summary = stringResource(R.string.setting_description_playlist_initial),
+            summary = stringResource(
+                if (playlistInitial)
+                    R.string.setting_description_playlist_initial_on
+                else
+                    R.string.setting_description_playlist_initial_off
+            ),
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_binary_sizes),

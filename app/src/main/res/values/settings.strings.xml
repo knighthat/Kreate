@@ -69,6 +69,7 @@
     <string name="setting_title_version">Version</string>
     <string name="setting_title_license">License</string>
     <string name="setting_description_license">GNU General Public License v3.0 or later</string>
+    <string name="setting_title_open_source_licenses">Open source licenses</string>
     <string name="setting_description_open_source_licenses">The libraries the app is built with and their licenses</string>
     <string name="setting_title_source_code">Source code</string>
     <string name="setting_description_source_code">See how the app is made, on GitHub</string>
@@ -143,7 +144,8 @@
     <string name="setting_title_icon_only">Icon only</string>
     <string name="setting_description_icon_only">Hide button labels</string>
     <string name="setting_title_playlist_initial">Playlist initial</string>
-    <string name="setting_description_playlist_initial">Playlists without covers show the first letter of their name instead of an icon</string>
+    <string name="setting_description_playlist_initial_on">The initial is used as the cover if there isn\'t one</string>
+    <string name="setting_description_playlist_initial_off">A placeholder is shown in place of a missing cover</string>
     <string name="setting_title_app_icon">App icon</string>
     <string name="setting_title_app_font">App font</string>
     <string name="setting_title_lyrics_font">Lyrics font</string>
@@ -240,7 +242,7 @@
     <string name="setting_description_pause_history_on">What you listen to isn\'t recorded</string>
     <string name="setting_description_pause_history_off">Keeps track of what you listen to</string>
     <string name="setting_title_minimum_play_time">Minimum play time</string>
-    <string name="setting_description_minimum_play_time">Songs played for less aren\'t added to the history. Pauses and loading don\'t count</string>
+    <string name="setting_description_minimum_play_time">Minimum seconds played before adding to playback history</string>
     <string name="setting_title_lyrics_source">Lyrics source</string>
     <string name="setting_title_preferred_timing">Preferred timing</string>
     <string name="setting_title_always_fetch_lyrics">Always fetch lyrics</string>
@@ -323,8 +325,8 @@
     <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
     <string name="setting_description_server_status_unreachable">Can\'t reach %1$s: %2$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "its own" = a self-signed certificate that the server made itself -->
-    <string name="setting_description_server_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted. If it uses its own, allow self-signed certificates</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Presents" = the server hands over its security certificate when the app connects; "self-signed ones" = certificates a server made itself; "below" = the Allow self-signed certificate switch, the next row on the page -->
+    <string name="setting_description_server_status_certificate_untrusted">%1$s presents an untrusted certificate. Allow self-signed ones below</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "review" = look at the new certificate and decide whether to trust it -->
     <string name="setting_description_server_status_certificate_changed">%1$s\'s certificate changed. Tap to review it</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). "This address" = the address the user entered, which isn't a server that speaks it -->

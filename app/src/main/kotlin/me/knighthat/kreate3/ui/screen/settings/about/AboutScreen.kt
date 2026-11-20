@@ -77,7 +77,7 @@ private fun AboutContent(
             onClick = { openLink(ISSUES_URL) },
         )
         SettingsItem(
-            title = stringResource(R.string.screen_title_open_source_licenses),
+            title = stringResource(R.string.setting_title_open_source_licenses),
             summary = stringResource(R.string.setting_description_open_source_licenses),
             onClick = onOpenLicenses,
         )
