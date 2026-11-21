@@ -66,6 +66,8 @@ internal object LogActions {
             co.touchlab.kermit.Logger.w(e, "LogActions") { "Couldn't export the log files" }
             false
         }
+        // The file picker just closed, the screen listens again only a moment later
+        notifier.awaitScreen()
         notifier.post(
             context.getString(if (saved) R.string.snackbar_log_saved else R.string.snackbar_log_save_failed)
         )
