@@ -68,6 +68,7 @@ import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.player.labelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.CountSetting
 import me.knighthat.kreate3.ui.screen.settings.LufsSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.PercentSetting
@@ -100,6 +101,7 @@ fun PlayerSettingsScreen(
     val searchTapRadio by Preferences.SEARCH_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
     val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
     val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
+    val queueFetchAhead by Preferences.QUEUE_FETCH_AHEAD_SONGS.collectAsStateWithLifecycle()
     val failureAction by Preferences.PLAYBACK_FAILURE_ACTION.collectAsStateWithLifecycle()
     val stallSeconds by Preferences.PLAYBACK_STALL_SECONDS.collectAsStateWithLifecycle()
     val loudnessNormalization by Preferences.LOUDNESS_NORMALIZATION.collectAsStateWithLifecycle()
@@ -127,6 +129,7 @@ fun PlayerSettingsScreen(
         searchTapRadio = searchTapRadio,
         queuePersisted = queuePersisted,
         queueSaveInterval = queueSaveInterval,
+        queueFetchAhead = queueFetchAhead,
         failureAction = failureAction,
         stallSeconds = stallSeconds,
         loudnessNormalization = loudnessNormalization,
@@ -173,6 +176,7 @@ private fun PlayerSettingsContent(
     searchTapRadio: Boolean,
     queuePersisted: Boolean,
     queueSaveInterval: Int,
+    queueFetchAhead: Int,
     failureAction: PlaybackFailureAction,
     stallSeconds: Int,
     loudnessNormalization: Boolean,
@@ -239,6 +243,17 @@ private fun PlayerSettingsContent(
             checked = queuePersisted,
             onCheckedChange = { Preferences.PERSISTENT_QUEUE_ENABLED.update(it) },
             summary = stringResource(R.string.setting_description_keep_the_queue),
+        )
+        CountSetting(
+            title = stringResource(R.string.setting_title_fetch_more_songs),
+            value = queueFetchAhead,
+            range = 1..20,
+            unit = { pluralStringResource(R.plurals.unit_song, it) },
+            onSelect = { Preferences.QUEUE_FETCH_AHEAD_SONGS.update(it) },
+            summary = stringResource(
+                R.string.setting_description_fetch_more_songs,
+                pluralStringResource(R.plurals.song, queueFetchAhead, queueFetchAhead),
+            ),
         )
         if (queuePersisted)
             SecondSetting(
@@ -482,6 +497,7 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         searchTapRadio = false,
         queuePersisted = true,
         queueSaveInterval = 10,
+        queueFetchAhead = 5,
         failureAction = PlaybackFailureAction.SKIP,
         stallSeconds = 15,
         loudnessNormalization = true,

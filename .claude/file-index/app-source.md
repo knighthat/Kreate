@@ -61,10 +61,11 @@ source/ (app-side glue for sources)
   sizing.
 - youtube/`YouTubeBrowse.kt` — `browseYouTube` paging for "See more" pages.
 - youtube/`YouTubeQueues.kt` — `YouTubeProvider.shuffledQueue` (first part of a playlist's
-  "Shuffle play" from `next`), `queuePart(tail)` (the part after a `QueueTail`: `next` ~25 or the
-  playlist page ~100), both playable and not disliked, the last song carrying the next tail, up to
-  3 empty parts in a row; `List.continuedBy(playlistId, continuation)` (the shown songs with the
-  page's continuation as tail).
+  "Shuffle play" from `next`), `queuePart(continuation)` (the part after a `QueueContinuation`:
+  `next` ~25, the
+  playlist page ~100 or the radio), all as `QueuePart`s of playable, not disliked songs with the
+  next continuation, up to 3 empty parts in a row; `List.continuedBy(playlistId, continuation)`
+  (the shown songs with the page's continuation).
 - youtube/`BatchSearches.kt` — `BatchSearches` (Koin single): paces searches of many songs
   (`searchAll`: a worker on the app scope, batches take turns, one at a time, at most
   `YOUTUBE_SEARCHES_PER_SECOND` starting a second); single searches skip it; batches queue in call

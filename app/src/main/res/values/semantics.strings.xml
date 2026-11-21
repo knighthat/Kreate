@@ -24,6 +24,7 @@
     <string name="semantic_bookmark">Bookmark</string>
     <string name="semantic_change_source">Change source</string>
     <string name="semantic_clear_the_queue">Clear the queue</string>
+    <string name="semantic_loading_more_songs">Loading more songs</string>
     <string name="semantic_config">Config</string>
     <string name="semantic_copy_the_lyrics">Copy the lyrics</string>
     <string name="semantic_create_playlist">Create playlist</string>

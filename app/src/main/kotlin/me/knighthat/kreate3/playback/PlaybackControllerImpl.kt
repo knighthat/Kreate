@@ -59,7 +59,13 @@ class PlaybackControllerImpl(
     private val context: Context,
     private val scope: CoroutineScope,
     private val radio: Radio,
+    private val continuationState: QueueContinuationState,
 ) : PlaybackController {
+
+    override val continuation: StateFlow<QueueContinuation?> = continuationState.current
+    override val isLoadingMore: StateFlow<Boolean> = continuationState.loading
+
+    override fun loadMore() = continuationState.requestMore()
 
     private val _state = MutableStateFlow(PlaybackState())
     override val state: StateFlow<PlaybackState> = _state.asStateFlow()
@@ -124,6 +130,7 @@ class PlaybackControllerImpl(
     override fun clear() {
         // A radio still looking would queue its songs again
         radioSearch?.cancel()
+        continuationState.clear()
         run("clear the queue") { controller ->
             val index = controller.currentMediaItemIndex
             val count = controller.mediaItemCount
@@ -187,33 +194,51 @@ class PlaybackControllerImpl(
         ?.getInt(EXTRA_AUDIO_SESSION_ID, C.AUDIO_SESSION_ID_UNSET)
         ?.takeIf { it != C.AUDIO_SESSION_ID_UNSET }
 
-    override fun play(items: List<MediaItem>, index: Int) =
+    override fun play(items: List<MediaItem>, index: Int, continuation: QueueContinuation?) =
         run("play ${items.size} items") { controller ->
             if (items.isEmpty()) return@run
             controller.setMediaItems(items, index.coerceIn(0, items.lastIndex), C.TIME_UNSET)
+            // The service dropped the old one with the queue, this reaches it after
+            continuation?.let { controller.continueWith(it, items.size) }
             controller.prepare()
             controller.play()
         }
+
+    /**
+     * Gives the queue [continuation], see [SetContinuationCommand]. The service waits for the
+     * queue to be [count] songs long before it judges how many are left.
+     */
+    private fun MediaController.continueWith(continuation: QueueContinuation, count: Int) {
+        sendCustomCommand(
+            SetContinuationCommand.COMMAND,
+            SetContinuationCommand.args(continuation, count),
+        )
+    }
 
     override fun radio(seed: MediaItem, append: Boolean) {
         radioSearch?.cancel()
         if (!append) play(listOf(seed))
         radioSearch = scope.launch {
             val similar = try {
-                radio.after(seed, RADIO_SIZE)
+                radio.start(seed, RADIO_SIZE)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Logger.w(e, TAG) { "Couldn't find songs like ${seed.mediaId}" }
                 return@launch
             }
-            run("queue ${similar.size} songs like ${seed.mediaId}") { controller ->
+            run("queue ${similar.items.size} songs like ${seed.mediaId}") { controller ->
                 if (append) {
                     val queued = (0 until controller.mediaItemCount)
                         .mapTo(HashSet()) { controller.getMediaItemAt(it).mediaId }
-                    val added = similar.filter { it.mediaId !in queued }
+                    val added = similar.items.filter { it.mediaId !in queued }
                     val wasEmpty = controller.mediaItemCount == 0
+                    val count = controller.mediaItemCount + added.size
                     controller.addMediaItems(added)
+                    // The radio goes on once the queue runs low, unless something else does
+                    similar.next
+                        ?.takeIf { continuationState.current.value == null }
+                        ?.let { controller.continueWith(it, count) }
                     // Ready to play, the user starts it
                     if (wasEmpty && added.isNotEmpty()) controller.prepare()
                     return@run
@@ -222,7 +247,9 @@ class PlaybackControllerImpl(
                 if (controller.mediaItemCount == 0 ||
                     controller.getMediaItemAt(0).mediaId != seed.mediaId
                 ) return@run
-                controller.addMediaItems(similar)
+                val count = controller.mediaItemCount + similar.items.size
+                controller.addMediaItems(similar.items)
+                similar.next?.let { controller.continueWith(it, count) }
             }
         }
     }
@@ -236,7 +263,7 @@ class PlaybackControllerImpl(
             controller.addMediaItems(items)
         }
 
-    override fun add(items: List<MediaItem>, index: Int) =
+    override fun add(items: List<MediaItem>, index: Int, continuation: QueueContinuation?) =
         run("add ${items.size} items at $index") { controller ->
             if (items.isEmpty()) return@run
             val count = controller.mediaItemCount
@@ -251,6 +278,9 @@ class PlaybackControllerImpl(
             } else {
                 controller.addMediaItems(at, items)
             }
+            // The queue didn't have a continuation yet, or this is its first songs
+            if (continuation != null && continuationState.current.value == null)
+                controller.continueWith(continuation, count + items.size)
             // Ready to play, the user starts it
             if (count == 0) controller.prepare()
         }

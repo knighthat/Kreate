@@ -78,14 +78,34 @@ interface PlaybackController {
      */
     val shuffledOrder: StateFlow<List<Int>?>
 
+    /**
+     * How the queue goes on once few songs are left, `null` while it has nothing more to give:
+     * a radio's next songs, the rest of a playlist. The player asks for the next part by itself,
+     * [me.knighthat.kreate3.preferences.Preferences.QUEUE_FETCH_AHEAD_SONGS] songs before the end.
+     * It belongs to the queue as it is: replacing or clearing the queue drops it, and it isn't
+     * saved, so it is gone after the app or the player closes.
+     */
+    val continuation: StateFlow<QueueContinuation?>
+
+    /** Whether the next part of the queue is being fetched, see [continuation]. */
+    val isLoadingMore: StateFlow<Boolean>
+
+    /**
+     * Fetches the next part of the queue now, without waiting for few songs to be left. Nothing
+     * happens while the queue has no [continuation] or a part is already coming.
+     */
+    fun loadMore()
+
     /** When playback pauses by itself, `null` while the sleep timer is off. */
     val sleepTimer: StateFlow<SleepTimer?>
 
     /**
      * Replaces the queue with [items] and plays them from the item at [index], from its start.
      * Nothing happens without [items].
+     *
+     * @param continuation how the queue goes on after [items], `null` for nothing
      */
-    fun play(items: List<MediaItem>, index: Int = 0)
+    fun play(items: List<MediaItem>, index: Int = 0, continuation: QueueContinuation? = null)
 
     /**
      * Fills the queue with songs like [seed] once they are found: from the library for a song of
@@ -112,8 +132,11 @@ interface PlaybackController {
      * `queue.value.size`, right after the current item `state.value.index + 1`: while shuffling,
      * items put there play next in the shuffled order too, anywhere else they take a random spot.
      * An item already in the queue, even the one playing, is added again.
+     *
+     * @param continuation how the queue goes on, taken only while the queue has none: the songs
+     * of one source don't push out what another still has to give
      */
-    fun add(items: List<MediaItem>, index: Int)
+    fun add(items: List<MediaItem>, index: Int, continuation: QueueContinuation? = null)
 
     /**
      * Replaces the queue with [items], at the item [index] from [positionMs], playing when

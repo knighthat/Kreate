@@ -18,8 +18,8 @@
 package me.knighthat.kreate3.source.youtube
 
 import androidx.media3.common.MediaItem
-import me.knighthat.kreate3.playback.QueueTail
-import me.knighthat.kreate3.playback.withQueueTail
+import me.knighthat.kreate3.playback.QueueContinuation
+import me.knighthat.kreate3.playback.QueuePart
 import me.knighthat.kreate3.provider.youtube.YouTubePage
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeQueueStart
@@ -31,59 +31,83 @@ private const val EMPTY_PARTS = 3
 
 /**
  * The first part of what [shuffle], a playlist's "Shuffle play", plays: about 25 songs in an order
- * YouTube picks, the last one carrying where the next part is, see [queuePart].
+ * YouTube picks, with where the next part is, see [queuePart].
  *
  * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
  */
 suspend fun YouTubeProvider.shuffledQueue(
     shuffle: YouTubeQueueStart,
     disliked: Set<String>,
-): List<MediaItem> = parts(disliked, null, { QueueTail.of(shuffle, it) }) { token ->
+): QueuePart = parts(
+    disliked,
+    null,
+    { QueueContinuation.YouTubeNext(shuffle.playlistId, shuffle.params, shuffle.videoId, it) },
+) { token ->
     queue(shuffle, token).let { page ->
         YouTubePage(page.items.map { it.toMediaItem(this) }, page.continuation)
     }
 }
 
 /**
- * The part of the queue after [tail]: the songs that can be played and aren't [disliked], the last
- * one carrying where the part after it is, see [QueueTail]. Nothing is stored.
+ * The part of the queue after [continuation]: the songs that can be played and aren't [disliked],
+ * with where the part after it is. Nothing is stored. [QueueContinuation.Similar] isn't
+ * YouTube's to answer, see `Radio`.
  *
  * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
  */
-suspend fun YouTubeProvider.queuePart(tail: QueueTail, disliked: Set<String>): List<MediaItem> =
-    when (tail.source) {
-        QueueTail.Source.NEXT -> parts(disliked, tail.token, { QueueTail.of(tail.start, it) }) {
-            queue(tail.start, it).let { page ->
-                YouTubePage(page.items.map { item -> item.toMediaItem(this) }, page.continuation)
-            }
+suspend fun YouTubeProvider.queuePart(
+    continuation: QueueContinuation,
+    disliked: Set<String>,
+): QueuePart = when (continuation) {
+    is QueueContinuation.YouTubeNext -> parts(
+        disliked,
+        continuation.token,
+        { continuation.copy(token = it) },
+    ) {
+        queue(continuation.start, it).let { page ->
+            YouTubePage(page.items.map { item -> item.toMediaItem(this) }, page.continuation)
         }
-
-        QueueTail.Source.PLAYLIST ->
-            parts(disliked, tail.token, { QueueTail.ofPlaylist(tail.playlistId, it) }) { token ->
-                // The page asks for the first part, a tail always has a token
-                val page = playlistSongs(checkNotNull(token))
-                YouTubePage(
-                    page.items.map {
-                        it.toLiveMediaItem(
-                            artwork(it.song.thumbnail ?: it.album?.thumbnail, SONG_ARTWORK)
-                        )
-                    },
-                    page.continuation,
-                )
-            }
     }
+
+    is QueueContinuation.YouTubePlaylist -> parts(
+        disliked,
+        continuation.token,
+        { continuation.copy(token = it) },
+    ) { token ->
+        // The page asks for the first part, a continuation always has a token
+        val page = playlistSongs(checkNotNull(token))
+        YouTubePage(
+            page.items.map {
+                it.toLiveMediaItem(artwork(it.song.thumbnail ?: it.album?.thumbnail, SONG_ARTWORK))
+            },
+            page.continuation,
+        )
+    }
+
+    is QueueContinuation.YouTubeRadio -> parts(
+        disliked,
+        continuation.token,
+        { continuation.copy(token = it) },
+    ) { token ->
+        radio(continuation.songId, token).let { page ->
+            YouTubePage(page.items.map { it.toMediaItem(this) }, page.continuation)
+        }
+    }
+
+    is QueueContinuation.Similar -> QueuePart(emptyList(), null)
+}
 
 /**
  * The next part [fetch] gives after [token], without the songs that can't be played or are
- * [disliked]; the last one carries the tail [tailOf] makes of the token after it. A part left
+ * [disliked], with the continuation [continuationOf] makes of the token after it. A part left
  * empty is skipped, up to [EMPTY_PARTS] in a row.
  */
 private suspend fun parts(
     disliked: Set<String>,
     token: String?,
-    tailOf: (String) -> QueueTail,
+    continuationOf: (String) -> QueueContinuation,
     fetch: suspend (token: String?) -> YouTubePage<MediaItem>,
-): List<MediaItem> {
+): QueuePart {
     var continuation = token
     repeat(EMPTY_PARTS) {
         val page = fetch(continuation)
@@ -91,16 +115,18 @@ private suspend fun parts(
             .filter { it.mediaMetadata.isPlayable == true }
             .withoutDisliked(disliked)
         continuation = page.continuation
-        if (songs.isNotEmpty()) return songs.withQueueTail(continuation?.let(tailOf))
-        if (continuation == null) return emptyList()
+        if (songs.isNotEmpty()) return QueuePart(songs, continuation?.let(continuationOf))
+        if (continuation == null) return QueuePart(emptyList(), null)
     }
-    return emptyList()
+    return QueuePart(emptyList(), null)
 }
 
 /**
- * The songs of a playlist that can be played, the last one carrying [continuation] of its page
- * when it has more, so the rest comes as it plays, see [QueueTail].
+ * The songs of a playlist that can be played, with the rest of the playlist's page after them
+ * when [continuation] says it has more, so the rest comes as it plays.
  */
-fun List<MediaItem>.continuedBy(playlistId: String, continuation: String?): List<MediaItem> =
-    filter { it.mediaMetadata.isPlayable == true }
-        .withQueueTail(continuation?.let { QueueTail.ofPlaylist(playlistId, it) })
+fun List<MediaItem>.continuedBy(playlistId: String, continuation: String?): QueuePart =
+    QueuePart(
+        filter { it.mediaMetadata.isPlayable == true },
+        continuation?.let { QueueContinuation.YouTubePlaylist(playlistId, it) },
+    )

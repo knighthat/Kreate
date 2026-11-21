@@ -61,6 +61,8 @@ import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.undoMessage
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.QueueContinuation
+import me.knighthat.kreate3.playback.QueuePart
 import me.knighthat.kreate3.playback.songTitle
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
@@ -74,13 +76,18 @@ import org.koin.compose.koinInject
  * Does [action] with the songs of [songs] that can be played. Play and Shuffle start the list
  * with shuffling and repeating off, see [PlaybackController.resetModes].
  *
+ * @param continuation how the queue goes on after [songs]: Play and Add to queue hand it to the
+ * queue (Add keeps one the queue already has), Shuffle and Play next leave it out, the songs
+ * shuffled or put in the middle aren't followed by their rest
+
  * @return what to tell the user, with an Undo button for songs added to the queue, `null` when
  * the player shows the result
  */
 fun PlaybackController.queue(
     resources: Resources,
     action: QueueAction,
-    songs: List<MediaItem>
+    songs: List<MediaItem>,
+    continuation: QueueContinuation? = null,
 ): Message? {
     val playable = songs.filter { it.mediaMetadata.isPlayable == true }
     if (playable.isEmpty())
@@ -98,7 +105,7 @@ fun PlaybackController.queue(
     when (action) {
         QueueAction.PLAY -> {
             resetModes()
-            play(playable)
+            play(playable, continuation = continuation)
         }
 
         QueueAction.SHUFFLE -> {
@@ -106,7 +113,8 @@ fun PlaybackController.queue(
             play(playable.shuffled())
         }
 
-        QueueAction.ENQUEUE, QueueAction.PLAY_NEXT -> add(playable, start)
+        QueueAction.ENQUEUE -> add(playable, start, continuation)
+        QueueAction.PLAY_NEXT -> add(playable, start)
     }
     val text = when (action) {
         QueueAction.ENQUEUE ->
@@ -275,7 +283,7 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
  * own "Shuffle play" plays, in YouTube's order, about 25 songs at first. The other actions take
  * the songs [songs] gives, the ones shown, and the rest of the playlist after them follows from
  * its page as it plays. Either way the next part comes as playback gets close to it, see
- * [me.knighthat.kreate3.playback.QueueTail]. Without "Shuffle play", or when YouTube can't be
+ * [me.knighthat.kreate3.playback.QueueContinuation]. Without "Shuffle play", or when YouTube can't be
  * reached, Shuffle shuffles the songs shown.
  *
  * @param shuffle the playlist's "Shuffle play", `null` while it has none
@@ -312,19 +320,20 @@ fun rememberYouTubePlaylistActions(
                         null
                     }
                 }
-                val (played, list) = if (shuffled != null) {
+                val (played, part) = if (shuffled != null) {
                     // YouTube shuffled them already
                     QueueAction.PLAY to shuffled
                 } else {
                     val shown = currentSongs()
                     // Shuffled here, the rest of the playlist can't join in
                     if (action == QueueAction.SHUFFLE)
-                        action to shown
+                        action to QueuePart(shown, null)
                     else
                         action to shown.continuedBy(playlistId, currentContinuation())
                 }
-                withContext(Dispatchers.Default) { playback.queue(resources, played, list) }
-                    ?.let(notifier::post)
+                withContext(Dispatchers.Default) {
+                    playback.queue(resources, played, part.items, part.next)
+                }?.let(notifier::post)
             }
         }
     }

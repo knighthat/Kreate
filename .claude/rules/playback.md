@@ -21,6 +21,13 @@ paths:
   a controller: only the player can place the songs in the shuffled
   order. Pinned songs lose their spot on every shuffle toggle (a one-shot "next", maintainer's
   design).
+- Player calls and session commands reach the service in no fixed order: a custom command
+  overtakes the `addMediaItems`/`setMediaItems` sent before it (those wait on
+  `onAddMediaItems`/`onSetMediaItems`), and the `MediaController`'s own item count is optimistic,
+  so waiting on it proves nothing. Whatever judges the queue after a command has to wait for the
+  songs that came with it: `SetContinuationCommand` carries `readyAt` (the queue size it applies
+  to), `QueueExtender` doesn't count the songs left before the queue is that long, and
+  `QueueContinuationState.replaced(size)` keeps a continuation given for exactly that queue.
 - `LoudnessNormalizer` cuts via `player.volume` and boosts via `LoudnessEnhancer`
   (`MAX_BOOST_DB = 6`). Don't change it unasked.
 - A dislike, wherever it's made (player, song menu), takes every copy of the song out of the

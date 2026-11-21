@@ -20,8 +20,10 @@ package me.knighthat.kreate3.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteColumn
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
 import me.knighthat.kreate3.database.dao.AlbumDao
 import me.knighthat.kreate3.database.dao.ArtistDao
 import me.knighthat.kreate3.database.dao.CleanupDao
@@ -54,6 +56,10 @@ import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.view.UserAlbumViewEntity
 import me.knighthat.kreate3.database.view.UserArtistViewEntity
 import me.knighthat.kreate3.database.view.UserSongViewEntity
+
+/** Drops the column of version 5 that kept what a saved queue goes on with. */
+@DeleteColumn(tableName = "persistent_queue", columnName = "queue_tail")
+internal class DropQueueTail : AutoMigrationSpec
 
 @Database(
     entities = [
@@ -88,6 +94,8 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
         AutoMigration(from = 3, to = 4),
         // `persistent_queue.queue_tail`, null for the songs queued so far
         AutoMigration(from = 4, to = 5),
+        // `persistent_queue.queue_tail` is gone: what a queue goes on with isn't saved
+        AutoMigration(from = 5, to = 6, spec = DropQueueTail::class),
     ],
 )
 @TypeConverters(Converters::class)

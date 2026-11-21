@@ -65,6 +65,7 @@ val playbackModule = module {
     }
     single { CacheCopies(get<SongCaches>(), androidContext(), get<YouTubeProvider>()) }
 
+    single { QueueContinuationState() }
     single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
     single { OpenedFiles(androidContext(), get<UserSongRepository>()) }
     single {
@@ -97,6 +98,7 @@ val playbackModule = module {
         PlaybackControllerImpl(
             context = androidContext(),
             radio = get(),
+            continuationState = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         )
     } bind PlaybackController::class
@@ -108,7 +110,8 @@ val playbackModule = module {
         val openSubsonic = get<OpenSubsonicProvider>()
         val youTube = get<YouTubeProvider>()
         KreatePlayer(
-            ExoPlayer.Builder(androidContext())
+            onQueueReplaced = get<QueueContinuationState>()::replaced,
+            player = ExoPlayer.Builder(androidContext())
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(C.USAGE_MEDIA)

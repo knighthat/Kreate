@@ -53,26 +53,53 @@ class Radio(
      * @throws me.knighthat.kreate3.provider.opensubsonic.ServerException when the server can't be used
      * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
      */
-    suspend fun after(seed: MediaItem, limit: Int): List<MediaItem> =
-        // Called from the controller, on the main thread
-        withContext(Dispatchers.Default) { similar(seed, limit) }
+    suspend fun after(seed: MediaItem, limit: Int): List<MediaItem> = start(seed, limit).items
 
-    private suspend fun similar(seed: MediaItem, limit: Int): List<MediaItem> {
-        val id = seed.mediaId
-        val found = when (seed.origin) {
+    /**
+     * Like [after], with how the radio goes on: YouTube's own token, or [QueueContinuation.Similar]
+     * for the origins that answer again with other songs. `null` when the origin of [seed] is
+     * unknown.
+     *
+     * @throws me.knighthat.kreate3.provider.opensubsonic.ServerException when the server can't be used
+     * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
+     */
+    suspend fun start(seed: MediaItem, limit: Int): QueuePart =
+        // Called from the controller, on the main thread
+        withContext(Dispatchers.Default) { similar(seed.mediaId, seed.origin, limit) }
+
+    /**
+     * The next songs of [continuation], for the one that asks the radio again. Dislikes and the
+     * seed are left out like in [start].
+     *
+     * @throws me.knighthat.kreate3.provider.opensubsonic.ServerException when the server can't be used
+     * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
+     */
+    suspend fun more(continuation: QueueContinuation.Similar, limit: Int): QueuePart =
+        withContext(Dispatchers.Default) {
+            similar(continuation.songId, continuation.origin, limit)
+        }
+
+    private suspend fun similar(id: String, origin: Origin?, limit: Int): QueuePart {
+        var next: QueueContinuation? = origin?.let { QueueContinuation.Similar(id, it) }
+        val found = when (origin) {
             Origin.LOCAL -> songs.similar(id, limit).mapNotNull { it.toMediaItem() }
 
             Origin.OPEN_SUBSONIC ->
                 openSubsonic.similarSongs(id, limit)?.map { it.toLiveMediaItem() }.orEmpty()
 
-            // The radio starts with the seed, and it is endless: the first part is enough
-            Origin.YOUTUBE -> youTube.radio(id).items.map { it.toMediaItem(youTube) }
+            // The radio starts with the seed, and it is endless: it goes on from its token
+            Origin.YOUTUBE -> youTube.radio(id).let { page ->
+                next = page.continuation?.let { QueueContinuation.YouTubeRadio(id, it) }
+                page.items.map { it.toMediaItem(youTube) }
+            }
 
             null -> emptyList()
         }
-        return found.filter { it.mediaId != id }
+        val items = found.filter { it.mediaId != id }
             .withoutDisliked(songs.listDislikedIds())
             .distinctBy { it.mediaId }
-            .take(limit)
+            // YouTube's token is past everything the page gave, none of it is left out
+            .let { if (next is QueueContinuation.YouTubeRadio) it else it.take(limit) }
+        return QueuePart(items, next)
     }
 }

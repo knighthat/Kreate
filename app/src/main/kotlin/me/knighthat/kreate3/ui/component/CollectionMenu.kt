@@ -66,6 +66,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.QueuePart
 import me.knighthat.kreate3.playlist.CreatedPlaylists
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
@@ -203,19 +204,20 @@ internal class CollectionSongs(
 
     /**
      * The songs [action] queues of [item]. For a playlist of YouTube only the first part is
-     * fetched, the rest comes as it plays, see [me.knighthat.kreate3.playback.QueueTail]:
+     * fetched, the rest comes as it plays, see [me.knighthat.kreate3.playback.QueueContinuation]:
      * Shuffle takes what the playlist's own "Shuffle play" plays, in YouTube's order; the other
      * actions the songs of its page. [of] for the others, and for Shuffle on a playlist without
      * that button.
      *
-     * @return the songs, and whether they are in the order they play in already
+     * @return the songs with how the queue goes on after them, and whether they are in the order
+     * they play in already
      * @throws Exception when the source can't be asked
      */
     suspend fun forQueue(
         kind: CollectionKind,
         item: MediaItem,
         action: QueueAction,
-    ): Pair<List<MediaItem>, Boolean>? = withContext(Dispatchers.Default) {
+    ): Pair<QueuePart, Boolean>? = withContext(Dispatchers.Default) {
         if (item.origin == Origin.YOUTUBE && kind == CollectionKind.PLAYLIST) {
             val playlistId = item.remoteId ?: item.mediaId
             val page = youTube.playlistPage(playlistId) ?: return@withContext null
@@ -231,7 +233,7 @@ internal class CollectionSongs(
             }
             page.shuffle?.let { return@withContext youTube.shuffledQueue(it, disliked) to true }
         }
-        of(kind, item)?.let { it to false }
+        of(kind, item)?.let { QueuePart(it, null) to false }
     }
 
     /**
@@ -412,13 +414,13 @@ internal fun CollectionMenuContent(
         withFetched(key, { songSource.of(kind, item) }, then)
 
     fun queue(action: QueueAction) =
-        withFetched(action, { songSource.forQueue(kind, item, action) }) { (songs, ordered) ->
+        withFetched(action, { songSource.forQueue(kind, item, action) }) { (part, ordered) ->
             close {
                 appScope.launch(Dispatchers.Default) {
                     // YouTube shuffled them already
                     val played =
                         if (ordered && action == QueueAction.SHUFFLE) QueueAction.PLAY else action
-                    playback.queue(resources, played, songs)?.let(notifier::post)
+                    playback.queue(resources, played, part.items, part.next)?.let(notifier::post)
                 }
             }
         }

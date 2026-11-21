@@ -20,11 +20,13 @@ package me.knighthat.kreate3.ui.screen.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,11 +35,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +57,8 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -66,6 +73,9 @@ import me.knighthat.kreate3.ui.component.clearUndoable
 import me.knighthat.kreate3.ui.component.stopUndoable
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+
+/** Key of the row after the last song, where the queue shows that more songs are coming. */
+private const val LOADING_KEY = "loading_more"
 
 /** How strongly the song playing stands out from the rest of the queue. */
 private const val CURRENT_HIGHLIGHT_ALPHA = 0.16f
@@ -91,7 +101,9 @@ private fun List<MediaItem>.toEntries(): List<QueueEntry> {
  * Every song of the queue, the one playing highlighted, in the order they play: shuffled while
  * shuffle is on, see [PlaybackController.shuffledOrder]. It opens with that song near the top,
  * the one before it above. Tapping a song plays it. In [mode] the covers turn into handles to
- * drag songs to another place, or into buttons to remove them.
+ * drag songs to another place, or into buttons to remove them. While the queue has more to give
+ * ([PlaybackController.continuation]), scrolling to its end asks for the next part, with a
+ * spinner under the last song until it is there.
  *
  * @param currentIndex where the song playing is in the queue, `-1` when none is
  */
@@ -105,6 +117,8 @@ internal fun QueuePage(
     modifier: Modifier = Modifier,
 ) {
     val queue by controller.queue.collectAsStateWithLifecycle()
+    val continuation by controller.continuation.collectAsStateWithLifecycle()
+    val loadingMore by controller.isLoadingMore.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
     val resources = LocalResources.current
     val removedFromQueue = stringResource(R.string.snackbar_removed_from_queue)
@@ -143,6 +157,15 @@ internal fun QueuePage(
     }
     val highlight = MaterialTheme.colorScheme.primary.copy(alpha = CURRENT_HIGHLIGHT_ALPHA)
     val lifted = MaterialTheme.colorScheme.surfaceContainerHighest
+
+    // Asked again after each part, the new songs push the row off the screen; a part that failed
+    // is asked again once the row comes back
+    val endShown by remember(listState) {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.any { it.key == LOADING_KEY } }
+    }
+    LaunchedEffect(endShown, continuation, entries.size) {
+        if (endShown && continuation != null) controller.loadMore()
+    }
 
     LazyColumn(
         state = listState,
@@ -193,6 +216,24 @@ internal fun QueuePage(
                 )
             }
         }
+        if (continuation != null)
+            item(key = LOADING_KEY) {
+                val description = stringResource(R.string.semantic_loading_more_songs)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                ) {
+                    if (loadingMore)
+                        CircularProgressIndicator(
+                            strokeWidth = 2.dp,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .semantics { contentDescription = description },
+                        )
+                }
+            }
     }
 }
 

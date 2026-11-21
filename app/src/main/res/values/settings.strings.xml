@@ -213,6 +213,9 @@
     <string name="setting_title_radio_from_search">Radio from search</string>
     <string name="setting_title_keep_the_queue">Keep the queue</string>
     <string name="setting_description_keep_the_queue">Pick up where you left off after the app closes</string>
+    <string name="setting_title_fetch_more_songs">Fetch more songs</string>
+    <!-- %1$s is a counted plural of songs, e.g. "5 songs". Radio and long playlists add songs to the queue as it plays; "left" = still to play after the current one -->
+    <string name="setting_description_fetch_more_songs">Look for the next songs when %1$s are left in the queue</string>
     <string name="setting_title_save_interval">Save interval</string>
     <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How often the playback queue is saved; "the song plays" = is being played -->
     <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>

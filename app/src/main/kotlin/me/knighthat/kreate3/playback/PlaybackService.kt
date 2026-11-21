@@ -157,7 +157,13 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         Logger.i(tag = TAG) { "Playback session created, keeping played songs: ${build.keepPlayed}" }
         playbackLifecycle.playerMade(build)
         // Before the saved queue would be restored, which is skipped then
-        playbackLifecycle.takeCarried()?.applyTo(player)
+        val continuationState = get<QueueContinuationState>()
+        playbackLifecycle.takeCarried()?.let {
+            // The same queue on a new player goes on with what it did
+            val continuation = continuationState.current.value
+            it.applyTo(player)
+            continuationState.set(continuation)
+        }
         normalizer = LoudnessNormalizer(
             player = player,
             songs = get(),
@@ -183,11 +189,20 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             store = get<SongStore>()::storeInCatalog,
             queued = { it.queued() },
         )
-        // The next part of a playlist YouTube Music plays, as playback gets close to it
+        // The next part of a radio or a playlist, as playback gets close to it
         val songs = get<UserSongRepository>()
-        queueExtender = QueueExtender(player, scope) { tail ->
-            youTube.queuePart(tail, songs.listDislikedIds())
-                .mapNotNull { it.queued() }
+        val radio = get<Radio>()
+        queueExtender = QueueExtender(
+            player = player,
+            scope = scope,
+            state = continuationState,
+            lookahead = { Preferences.QUEUE_FETCH_AHEAD_SONGS.value },
+        ) { continuation ->
+            val part = if (continuation is QueueContinuation.Similar)
+                radio.more(continuation, RADIO_SIZE)
+            else
+                youTube.queuePart(continuation, songs.listDislikedIds())
+            QueuePart(part.items.mapNotNull { it.queued() }, part.next)
         }
         PlayedSongRecorder(
             player = player,
@@ -409,6 +424,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 .apply {
                     SleepTimerCommands.all.forEach(::add)
                     add(PlayNextCommand.COMMAND)
+                    add(SetContinuationCommand.COMMAND)
                 }
                 .build()
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session, controller)
@@ -423,6 +439,13 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             args: Bundle,
         ): ListenableFuture<SessionResult> {
             if (customCommand == PlayNextCommand.COMMAND) return playNext(args)
+            if (customCommand == SetContinuationCommand.COMMAND) {
+                get<QueueContinuationState>().set(
+                    SetContinuationCommand.continuationOf(args),
+                    SetContinuationCommand.readyAtOf(args),
+                )
+                return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+            }
 
             val timer = sleepTimer
             val action = SleepTimerCommands.actionOf(customCommand.customAction)

@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
+import me.knighthat.kreate3.playback.QueueContinuation
 import me.knighthat.kreate3.playback.SleepTimer
 import me.knighthat.kreate3.playback.SleepTimerAction
 import me.knighthat.kreate3.ui.component.ComponentPreviews
@@ -160,12 +161,15 @@ private class PreviewController(
     override val state: StateFlow<PlaybackState> = MutableStateFlow(PlaybackState())
     override val queue: StateFlow<List<MediaItem>> = MutableStateFlow(emptyList())
     override val shuffledOrder: StateFlow<List<Int>?> = MutableStateFlow(null)
+    override val continuation: StateFlow<QueueContinuation?> = MutableStateFlow(null)
+    override val isLoadingMore: StateFlow<Boolean> = MutableStateFlow(false)
     override val sleepTimer: StateFlow<SleepTimer?> = MutableStateFlow(null)
 
-    override fun play(items: List<MediaItem>, index: Int) = Unit
+    override fun play(items: List<MediaItem>, index: Int, continuation: QueueContinuation?) = Unit
+    override fun loadMore() = Unit
     override fun radio(seed: MediaItem, append: Boolean) = Unit
     override fun follow(seed: MediaItem, items: List<MediaItem>) = Unit
-    override fun add(items: List<MediaItem>, index: Int) = Unit
+    override fun add(items: List<MediaItem>, index: Int, continuation: QueueContinuation?) = Unit
     override fun restore(items: List<MediaItem>, index: Int, positionMs: Long, play: Boolean) =
         Unit
     override fun progress(): Float = durationMs?.let { positionMs.toFloat() / it } ?: 0f

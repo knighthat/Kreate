@@ -33,9 +33,15 @@ import androidx.media3.exoplayer.ExoPlayer
  * Songs added with [playNext] while shuffling play next in the shuffled order too, until shuffling
  * is turned on or off: the shuffle then takes them like any other song still to play. Added while
  * not shuffling, they sit at a random spot of the shuffled order, as every added song does.
+ *
+ * Replacing the whole queue or emptying it runs [onQueueReplaced] with how many songs the new one
+ * has: what the old queue was to go on with, see [QueueContinuation], doesn't belong to it.
  */
 @OptIn(UnstableApi::class)
-class KreatePlayer(private val player: ExoPlayer) : ExoPlayer by player {
+class KreatePlayer(
+    private val player: ExoPlayer,
+    private val onQueueReplaced: (size: Int) -> Unit = {},
+) : ExoPlayer by player {
 
     private val placement = NextPlacement()
 
@@ -44,6 +50,30 @@ class KreatePlayer(private val player: ExoPlayer) : ExoPlayer by player {
     }
 
     override fun getAudioSessionId(): Int = player.audioSessionId
+
+    override fun setMediaItems(mediaItems: List<MediaItem>) {
+        onQueueReplaced(mediaItems.size)
+        player.setMediaItems(mediaItems)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
+        onQueueReplaced(mediaItems.size)
+        player.setMediaItems(mediaItems, resetPosition)
+    }
+
+    override fun setMediaItems(
+        mediaItems: List<MediaItem>,
+        startIndex: Int,
+        startPositionMs: Long,
+    ) {
+        onQueueReplaced(mediaItems.size)
+        player.setMediaItems(mediaItems, startIndex, startPositionMs)
+    }
+
+    override fun clearMediaItems() {
+        onQueueReplaced(0)
+        player.clearMediaItems()
+    }
 
     override fun setRepeatMode(repeatMode: Int) {
         if (repeatMode == Player.REPEAT_MODE_ONE) shuffleModeEnabled = false

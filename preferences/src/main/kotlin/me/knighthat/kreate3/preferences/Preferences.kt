@@ -563,6 +563,14 @@ object Preferences : KoinComponent {
     val PERSISTENT_QUEUE_SAVE_INTERVAL by lazy { int("persistent_queue_interval", 10) }
 
     /**
+     * Songs left in the queue, after the one playing, at which the player asks for the next
+     * ones, from 1 to 20, 5 by default. It only matters while the queue has more to give, like a
+     * radio or a playlist of YouTube Music that is longer than what was queued. `QueueExtender`
+     * reads it each time the queue or the song playing changes.
+     */
+    val QUEUE_FETCH_AHEAD_SONGS by lazy { int("queue_fetch_ahead_songs", 5) }
+
+    /**
      * What the remove button of the sleep timer, in the full player and its notification, takes
      * off the time left. [SleepTimerStep.FIVE_MINUTES] by default.
      */

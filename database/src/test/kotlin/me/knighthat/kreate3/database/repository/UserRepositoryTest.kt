@@ -176,23 +176,6 @@ internal class UserRepositoryTest : DatabaseTest() {
     }
 
     @Test
-    fun aSongOfTheQueueKeepsItsTailAsItMoves() = runBlocking {
-        addUser()
-        listOf("a", "b", "c", "x").forEach { addSong(it) }
-        queue.replace(listOf("a", "b"), current = 0, position = 0, tails = listOf(null, "after-b"))
-
-        queue.insert(1, listOf("x"), listOf("after-x"))
-        queue.setTail(2, null)
-        queue.setTail(0, "after-a")
-        queue.move(0, 1, 2)
-
-        assertEquals(
-            listOf("x" to "after-x", "b" to null, "a" to "after-a"),
-            queue.details().map { it.song.songId to it.tail },
-        )
-    }
-
-    @Test
     fun replacingTheQueueLeavesOtherUsersAlone() = runBlocking {
         addUser()
         addUser("other")
