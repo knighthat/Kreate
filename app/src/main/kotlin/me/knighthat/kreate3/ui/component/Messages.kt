@@ -18,17 +18,32 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
@@ -43,6 +58,8 @@ import me.knighthat.kreate3.notification.Notifier
 val LocalNotifier = staticCompositionLocalOf { Notifier() }
 
 /** Where the [Notifier]'s messages show, see [MessageHost]. */
+private val SNACKBAR_MARGIN = 12.dp
+
 val LocalMessageHost = staticCompositionLocalOf { SnackbarHostState() }
 
 /** How long a [MessageDuration.SHORT] message stays, shorter than Material's 4 s. */
@@ -56,7 +73,42 @@ private const val LONG_MILLIS = 5_000L
  * screen with a bottom bar of its own puts it in its scaffold instead, or messages cover that bar.
  */
 @Composable
-fun MessageHost(modifier: Modifier = Modifier) = SnackbarHost(LocalMessageHost.current, modifier)
+fun MessageHost(modifier: Modifier = Modifier) =
+    SnackbarHost(LocalMessageHost.current, modifier) { MessageSnackbar(it) }
+
+/** A message in the theme's surface colors with an outline, instead of Material's inverse ones. */
+@Composable
+private fun MessageSnackbar(data: SnackbarData) {
+    val shape = MaterialTheme.shapes.medium
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
+    Snackbar(
+        snackbarData = data,
+        // Snackbar keeps 12dp of margin inside its modifier's bounds, so the border is drawn
+        // inset by that margin to sit on the snackbar's own edge
+        modifier = Modifier.drawWithContent {
+            drawContent()
+            val inset = SNACKBAR_MARGIN.toPx()
+            val stroke = 1.dp.toPx()
+            val inner = Size(
+                size.width - 2 * inset - stroke,
+                size.height - 2 * inset - stroke
+            )
+            translate(inset + stroke / 2, inset + stroke / 2) {
+                drawOutline(
+                    outline = shape.createOutline(inner, layoutDirection, this@drawWithContent),
+                    color = borderColor,
+                    style = Stroke(stroke)
+                )
+            }
+        },
+        shape = shape,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        actionColor = MaterialTheme.colorScheme.primary,
+        actionContentColor = MaterialTheme.colorScheme.primary,
+        dismissActionContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
 
 /**
  * Shows each message of [notifier] in [host] while the app is on screen. A new message replaces
@@ -108,3 +160,52 @@ fun ShowMessages(notifier: Notifier, host: SnackbarHostState) {
         }
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+
+private class PreviewSnackbarData(
+    message: String,
+    actionLabel: String?,
+    withDismissAction: Boolean,
+) : SnackbarData {
+
+    override val visuals = object : SnackbarVisuals {
+        override val message = message
+        override val actionLabel = actionLabel
+        override val withDismissAction = withDismissAction
+        override val duration = SnackbarDuration.Indefinite
+    }
+
+    override fun performAction() {}
+
+    override fun dismiss() {}
+}
+
+@ComponentPreviews
+@Composable
+private fun MessagesPreview() = PreviewTheme {
+    Surface {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            MessageSnackbar(PreviewSnackbarData("Song added to the queue", null, false))
+            MessageSnackbar(PreviewSnackbarData("Removed from the playlist", "Undo", true))
+            // PlainTooltip only composes inside a TooltipBox, so its look is copied
+            Surface(
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                shadowElevation = 4.dp,
+            ) {
+                Text(
+                    "Add to playlist",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+}
+
+//</editor-fold>

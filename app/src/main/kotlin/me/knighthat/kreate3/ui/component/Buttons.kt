@@ -52,6 +52,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TooltipScope
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
@@ -98,8 +99,21 @@ internal fun Tooltip(
             TooltipSide.BELOW -> TooltipAnchorPosition.Below
         }
     ),
-    tooltip = { PlainTooltip(caretShape = TooltipDefaults.caretShape()) { Text(text) } },
+    tooltip = { ThemedTooltip { Text(text) } },
     state = rememberTooltipState(),
+    content = content,
+)
+
+/**
+ * A [PlainTooltip] in the theme's surface colors, like the app's messages, instead of Material's
+ * inverse ones. Goes in a [TooltipBox]'s `tooltip`.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun TooltipScope.ThemedTooltip(content: @Composable () -> Unit) = PlainTooltip(
+    caretShape = TooltipDefaults.caretShape(),
+    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    contentColor = MaterialTheme.colorScheme.onSurface,
     content = content,
 )
 

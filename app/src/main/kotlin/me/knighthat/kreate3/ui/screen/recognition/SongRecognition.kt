@@ -49,7 +49,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -97,6 +96,7 @@ import me.knighthat.kreate3.recognition.RecognizedSong
 import me.knighthat.kreate3.ui.component.ComponentPreviews
 import me.knighthat.kreate3.ui.component.ExplicitBadge
 import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ThemedTooltip
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.rememberOpenLink
 import me.knighthat.kreate3.ui.component.thumbnailModel
@@ -257,7 +257,7 @@ fun ListenOverlay(viewModel: SongRecognitionViewModel) {
             spacingBetweenTooltipAndAnchor = BUBBLE_GAP,
         ),
         tooltip = {
-            PlainTooltip(caretShape = TooltipDefaults.caretShape()) {
+            ThemedTooltip {
                 // Keeps the last value while the bubble fades out
                 val since = listening?.since
                 val heard = if (since == null) MAX_LISTEN else rememberHeard(since).value
@@ -610,8 +610,8 @@ private fun ListenProgressPreview() = PreviewTheme {
                 listOf(4.seconds, 10.seconds, 14.seconds).forEach {
                     Surface(
                         shape = RoundedCornerShape(4.dp),
-                        color = TooltipDefaults.plainTooltipContainerColor,
-                        contentColor = TooltipDefaults.plainTooltipContentColor,
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
                     ) {
                         Box(Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
                             ListenBubbleContent(it)
