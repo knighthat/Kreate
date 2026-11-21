@@ -66,6 +66,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playlist.CreatedPlaylists
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
@@ -233,6 +234,38 @@ internal class CollectionSongs(
         of(kind, item)?.let { it to false }
     }
 
+    /**
+     * Whether the user may delete the playlist [item] of YouTube or the server, which only its
+     * page tells: their own playlists, not the ones saved from others.
+     *
+     * @return `null` when the source is off or doesn't have it
+     * @throws Exception when the source can't be asked
+     */
+    suspend fun canDelete(item: MediaItem): Boolean? = withContext(Dispatchers.Default) {
+        val playlistId = item.remoteId ?: item.mediaId
+        when (item.origin) {
+            Origin.YOUTUBE -> youTube.playlistPage(playlistId)?.editable
+            Origin.OPEN_SUBSONIC -> openSubsonic.playlistWithSongs(playlistId)?.editable
+            else -> null
+        }
+    }
+
+    /**
+     * Deletes the playlist [item] of YouTube or the server there.
+     *
+     * @throws Exception when the source refuses or can't be asked
+     */
+    suspend fun deletePlaylist(item: MediaItem) {
+        val playlistId = item.remoteId ?: item.mediaId
+        when (item.origin) {
+            Origin.YOUTUBE -> youTube.deletePlaylist(playlistId)
+            Origin.OPEN_SUBSONIC ->
+                check(openSubsonic.deletePlaylist(playlistId)) { "The server is off" }
+
+            else -> error("${item.origin} playlists aren't deleted on a source")
+        }
+    }
+
     private suspend fun fromDevice(kind: CollectionKind, item: MediaItem): List<MediaItem> =
         when (kind) {
             CollectionKind.ALBUM -> library.listOfAlbum(item.mediaId)
@@ -302,6 +335,12 @@ private enum class CollectionPage { ACTIONS, ARTISTS, PLAYLISTS }
 
 /** What a control waits for while the songs are fetched, the artists row or the picked playlist. */
 private object FindingArtists
+
+/** What the Delete row waits for while the playlist's page tells whether it is the user's. */
+private object CheckingOwner
+
+/** Origins whose playlists are deleted on their source, when they are the user's own. */
+private val REMOTE_PLAYLISTS = setOf(Origin.YOUTUBE, Origin.OPEN_SUBSONIC)
 
 /**
  * The buttons and rows of the menu of an album, artist or playlist: Play, Shuffle and Share on top
@@ -520,10 +559,51 @@ internal fun CollectionMenuContent(
                     loading = export.loading,
                     enabled = waiting == null,
                 ) { export.start() }
-            if (kind == CollectionKind.PLAYLIST && origin == Origin.LOCAL)
+            if (kind == CollectionKind.PLAYLIST && origin == Origin.LOCAL) {
                 MenuRow(R.drawable.delete, stringResource(R.string.semantic_delete_playlist)) {
                     confirmDelete = true
                 }
+            } else if (kind == CollectionKind.PLAYLIST && origin in REMOTE_PLAYLISTS) {
+                // Whether it is the user's own shows only on its page, fetched on the tap
+                MenuRow(
+                    icon = R.drawable.delete,
+                    label = stringResource(R.string.semantic_delete_playlist),
+                    loading = waiting === CheckingOwner,
+                    enabled = waiting == null,
+                ) {
+                    waiting = CheckingOwner
+                    scope.launch {
+                        val own = try {
+                            songSource.canDelete(item)
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            Logger.w(e, "CollectionMenu") { "Couldn't open ${item.mediaId}" }
+                            null
+                        }
+                        waiting = null
+                        when (own) {
+                            true -> confirmDelete = true
+                            false -> close {
+                                notifier.post(
+                                    Message(
+                                        resources.getString(
+                                            R.string.error_playlist_delete_not_owner,
+                                            name
+                                        )
+                                    )
+                                )
+                            }
+
+                            null -> close {
+                                notifier.post(
+                                    Message(resources.getString(R.string.error_playlist_delete))
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         CollectionPage.ARTISTS -> ArtistPicker(
@@ -543,6 +623,7 @@ internal fun CollectionMenuContent(
 
     if (confirmDelete) {
         val repository = koinInject<PlaylistRepository>()
+        val created = koinInject<CreatedPlaylists>()
 
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
@@ -561,7 +642,13 @@ internal fun CollectionMenuContent(
                     close {
                         appScope.launch {
                             val deleted = try {
-                                repository.delete(item.mediaId.toLong())
+                                if (origin == Origin.LOCAL) {
+                                    repository.delete(item.mediaId.toLong())
+                                } else {
+                                    songSource.deletePlaylist(item)
+                                    // The tab shows the source's list, it has one less now
+                                    created.listChanged()
+                                }
                                 true
                             } catch (e: CancellationException) {
                                 throw e

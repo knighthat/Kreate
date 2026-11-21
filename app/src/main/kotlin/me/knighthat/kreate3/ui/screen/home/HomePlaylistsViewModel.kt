@@ -137,7 +137,8 @@ class HomePlaylistsViewModel internal constructor(
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
-        // A playlist made on YouTube is listed now, or won't be soon: show its list as it is
+        // A playlist made on YouTube is listed now, or won't be soon, or one was deleted from a
+        // menu: show the list as it is
         viewModelScope.launch { createdPlaylists.settled.collect { remote.reload() } }
     }
 

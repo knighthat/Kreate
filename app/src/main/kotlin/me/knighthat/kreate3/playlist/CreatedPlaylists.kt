@@ -50,6 +50,7 @@ data class CreatedPlaylist(val key: Long, val id: String, val name: String)
  * the Playlists tab shows a placeholder for each until it does. The library is checked every
  * second, as many times as `Preferences.NETWORK_MAX_RETRIES` says; the placeholder goes once the
  * playlist is listed or the checks ran out, and [settled] tells the tab to fetch its list again.
+ * A playlist deleted outside its page tells the tab the same way, see [listChanged].
  *
  * @param scope outlives the screen that made the playlist
  */
@@ -65,8 +66,16 @@ class CreatedPlaylists(
     /** The playlists made that YouTube doesn't list yet, newest first. */
     val waiting: StateFlow<List<CreatedPlaylist>> = _waiting.asStateFlow()
 
-    /** Emits each time a playlist leaves [waiting]: the list of YouTube's playlists changed. */
+    /**
+     * Emits each time a playlist leaves [waiting] or [listChanged] is called: the list of
+     * YouTube's or the server's playlists changed.
+     */
     val settled: SharedFlow<Unit> = _settled.asSharedFlow()
+
+    /** Tells the Playlists tab to fetch its list again, like after a playlist was deleted. */
+    fun listChanged() {
+        _settled.tryEmit(Unit)
+    }
 
     /**
      * Shows the playlist [id] called [name], just made on YouTube, until its library lists it.

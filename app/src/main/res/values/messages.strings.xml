@@ -40,6 +40,8 @@
     <string name="error_move_song">Couldn\'t move song</string>
     <string name="error_playlist_remove_song">Couldn\'t remove song</string>
     <string name="error_playlist_delete">Couldn\'t delete the playlist</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="error_playlist_delete_not_owner">Only the owner can delete %1$s</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">Couldn\'t save the changes: %1$s</string>
     <string name="error_edit_apply">Couldn\'t save the changes</string>
