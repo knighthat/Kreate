@@ -541,6 +541,16 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         }
 
     /** @return `null` when [response] is not a playlist, like for an id YouTube doesn't know */
+    /**
+     * The album whose songs the page of a playlist is, from what its items lead to: the playlist
+     * YouTube keeps for an album (`OLAK5uy_…`) has no header of its own, its page is the album's.
+     * `null` when nothing on the page leads to an album.
+     */
+    fun playlistAlbumId(response: JsonElement?): String? =
+        response.findAll("browseId").firstNotNullOfOrNull { element ->
+            element.asString?.takeIf { it.startsWith(ALBUM_PREFIX) }
+        }
+
     fun playlistPage(playlistId: String, response: JsonElement?): YouTubePlaylistPage? {
         val header = responsiveHeader(response) ?: return null
         val shelf = shelves(response).firstNotNullOfOrNull { it.path("musicPlaylistShelfRenderer") }

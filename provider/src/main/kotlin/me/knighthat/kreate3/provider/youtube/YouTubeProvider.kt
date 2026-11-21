@@ -695,6 +695,16 @@ class YouTubeProvider internal constructor(
         parser.playlistPage(playlistId, innerTube.browse(PLAYLIST_BROWSE_PREFIX + playlistId))
 
     /**
+     * The id of the album the playlist YouTube keeps for it is, like the `OLAK5uy_…` of an
+     * album's shared link: that playlist has no page of its own, it shows as the album.
+     *
+     * @param playlistId id of the playlist, without `VL`
+     * @return `null` when YouTube doesn't lead from it to an album
+     */
+    suspend fun albumOfPlaylist(playlistId: String): String? =
+        parser.playlistAlbumId(innerTube.browse(PLAYLIST_BROWSE_PREFIX + playlistId))
+
+    /**
      * The next songs of a playlist.
      *
      * @param continuation of [YouTubePlaylistPage] or of the previous call

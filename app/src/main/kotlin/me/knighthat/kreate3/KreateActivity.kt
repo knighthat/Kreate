@@ -378,6 +378,21 @@ class KreateActivity : ComponentActivity() {
             is YouTubeLink.Album -> openRoute.value = YouTubeAlbum(link.albumId)
             is YouTubeLink.Artist -> openRoute.value = YouTubeArtist(link.artistId)
             is YouTubeLink.Playlist -> openRoute.value = YouTubePlaylist(link.playlistId)
+            is YouTubeLink.AlbumPlaylist -> lifecycleScope.launch {
+                val albumId = try {
+                    get<YouTubeProvider>().albumOfPlaylist(link.playlistId)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Logger.w(e, TAG) { "Couldn't find the album of $link" }
+                    null
+                }
+                if (albumId == null) {
+                    postMessage(R.string.error_open_link)
+                    return@launch
+                }
+                openRoute.value = YouTubeAlbum(albumId)
+            }
             is YouTubeLink.Song -> lifecycleScope.launch {
                 val song = try {
                     get<YouTubeProvider>().songDetails(link.songId)

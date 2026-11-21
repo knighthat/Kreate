@@ -39,6 +39,9 @@ object YouTubeLinks {
     /** Start of the id of a channel, an artist's page. */
     private const val CHANNEL_PAGE = "UC"
 
+    /** Start of the id of the playlist YouTube keeps for an album, which shows as the album. */
+    private const val ALBUM_PLAYLIST = "OLAK5uy_"
+
     private val LINK = Regex("""https?://\S+""", RegexOption.IGNORE_CASE)
 
     fun song(songId: String): String = "$BASE/watch?v=$songId"
@@ -75,14 +78,13 @@ object YouTubeLinks {
         return when (path.first()) {
             "watch" -> query["v"]?.takeIf { it.isNotBlank() }?.let(YouTubeLink::Song)
             "playlist" -> query["list"]?.takeIf { it.isNotBlank() }
-                ?.let { YouTubeLink.Playlist(it.removePrefix(PLAYLIST_PAGE)) }
+                ?.let { playlistLink(it.removePrefix(PLAYLIST_PAGE)) }
 
             "channel" -> id?.let(YouTubeLink::Artist)
             "browse" -> when {
                 id == null -> null
                 id.startsWith(ALBUM_PAGE) -> YouTubeLink.Album(id)
-                id.startsWith(PLAYLIST_PAGE) ->
-                    YouTubeLink.Playlist(id.removePrefix(PLAYLIST_PAGE))
+                id.startsWith(PLAYLIST_PAGE) -> playlistLink(id.removePrefix(PLAYLIST_PAGE))
 
                 id.startsWith(CHANNEL_PAGE) -> YouTubeLink.Artist(id)
                 else -> null
@@ -91,6 +93,13 @@ object YouTubeLinks {
             else -> null
         }
     }
+
+    /** The playlist [playlistId], or the album it stands for, see [YouTubeLink.AlbumPlaylist]. */
+    private fun playlistLink(playlistId: String): YouTubeLink =
+        if (playlistId.startsWith(ALBUM_PLAYLIST))
+            YouTubeLink.AlbumPlaylist(playlistId)
+        else
+            YouTubeLink.Playlist(playlistId)
 
     /** The first YouTube Music link in [text] that [parse] knows, like the text an app shares. */
     fun find(text: String): YouTubeLink? =
@@ -108,6 +117,14 @@ sealed interface YouTubeLink {
 
     /** @property playlistId id of the playlist, without `VL` */
     data class Playlist(val playlistId: String) : YouTubeLink
+
+    /**
+     * The playlist YouTube keeps for an album, what the album's shared link names: it has no page
+     * of its own, the album's id comes from [YouTubeProvider.albumOfPlaylist].
+     *
+     * @property playlistId id of the playlist, `OLAK5uy_…`
+     */
+    data class AlbumPlaylist(val playlistId: String) : YouTubeLink
 }
 
 private val VIDEO_PICTURE = Regex("""^https?://i\d*\.ytimg\.com/(?:vi|vi_webp)/([^/]+)/""")

@@ -442,4 +442,17 @@ class YouTubeParserTest {
         assertTrue(parser.searchPage(empty).items.isEmpty())
         assertTrue(parser.queue(empty).items.isEmpty())
     }
+
+    @Test
+    fun albumPlaylistLeadsToItsAlbum() {
+        // The page of an album's own playlist: songs whose items lead to the album, no header
+        val response = Json.parseToJsonElement(
+            """{"contents":{"items":[
+                {"navigationEndpoint":{"browseEndpoint":{"browseId":"UCartist"}}},
+                {"navigationEndpoint":{"browseEndpoint":{"browseId":"MPREb_album"}}}
+            ]}}"""
+        )
+        assertEquals("MPREb_album", parser.playlistAlbumId(response))
+        assertNull(parser.playlistAlbumId(Json.parseToJsonElement("""{"contents":{}}""")))
+    }
 }

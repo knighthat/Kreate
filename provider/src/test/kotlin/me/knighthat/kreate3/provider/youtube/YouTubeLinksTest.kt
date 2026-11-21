@@ -54,8 +54,12 @@ class YouTubeLinksTest {
             YouTubeLinks.parse("http://MUSIC.youtube.com/browse/VLPL1"),
         )
         assertEquals(
-            YouTubeLink.Playlist("OLAK5uy_1"),
+            YouTubeLink.AlbumPlaylist("OLAK5uy_1"),
             YouTubeLinks.parse("https://music.youtube.com/playlist?list=OLAK5uy_1&si=x"),
+        )
+        assertEquals(
+            YouTubeLink.AlbumPlaylist("OLAK5uy_1"),
+            YouTubeLinks.parse("https://music.youtube.com/browse/VLOLAK5uy_1"),
         )
         assertEquals(
             YouTubeLink.Artist("UC1"),
