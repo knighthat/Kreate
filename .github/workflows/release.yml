@@ -1,0 +1,253 @@
+# Builds a stable version tag (vX.Y.Z) and publishes it as one GitHub release. Pre-release tags
+# (vX.Y.Z-alpha.N, vX.Y.Z-beta.N, any suffix) start nothing and a manual run refuses them:
+#   tag      picks the tag: the pushed one, or on a manual run the given one or else the latest
+#            stable tag
+#   build    one job per APK, in parallel: foss universal + github universal and its four ABIs
+#   release  the release named after the tag, every APK attached, the body from the fastlane
+#            changelog of the tag's versionCode
+# Every job builds the tagged source, never the tip of a branch. A failed build creates no release.
+#
+# Under nektos/act (local runs) nothing is built or published: each build job uploads a phony APK
+# named like the real one, and the release job prints the tag, APKs and notes it would have used.
+#
+# Tags reach GitHub through the GitLab pipeline (.gitlab/ci/release.yml, github-sync) with a deploy
+# key, and a push made with a deploy key starts workflows. A tag push runs this file as it is in the
+# tagged commit, so tags older than this file only build through a manual run (Actions > Release >
+# Run workflow), which reads the file from the default branch.
+#
+# Repository secrets (Settings > Secrets and variables > Actions):
+#   PROD_KEYSTORE        the production.jks keystore, base64 (`base64 -w0 production.jks`)
+#   STORE_PASSWORD       the keystore's password
+#   PROD_KEY_PASSWORD    the password of the "kreate" key, the same for github and foss
+# Gradle reads the passwords as PRODUCTION_STORE_PASSWORD and PRODUCTION_KEY_PASSWORD, the build
+# job hands the secrets over under those names.
+# Without them the build fails instead of releasing unsigned APKs.
+#
+# Cache: read-only. GitHub scopes a cache to the ref that saved it, so what a tag's run saves is
+# invisible to the next tag, and only the default branch's entries reach all. The build jobs restore
+# the one the scheduled cache.yml saves there and never save one themselves.
+
+name: Build all flavors for release
+
+on:
+  push:
+    # Matches the whole tag, so a suffix (-beta.1) doesn't match
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to build (vX.Y.Z; empty = the latest stable tag)
+        required: false
+        type: string
+
+# One run per tag; a second run of the same tag waits instead of racing the first to the release
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.pick.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: pick
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            TAG="$GITHUB_REF_NAME"
+          elif [ -n "$INPUT_TAG" ]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)
+          fi
+          # A manual run under nektos/act takes any tag: it publishes nothing, so a beta can be tried
+          if [ -n "$ACT" ] && [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "Running under act, any tag is allowed"
+          elif ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Only stable tags (vX.Y.Z) are released, got '$TAG'"
+            exit 1
+          fi
+          if [ -z "$TAG" ] || ! git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
+            echo "::error::No tag to build (got '$TAG')"
+            exit 1
+          fi
+          echo "Building $TAG ($(git rev-parse --short "$TAG^{commit}"))"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      # One failed APK stops the others: no release would be made anyway
+      fail-fast: true
+      # The two flavor dimensions of app/build.gradle.kts, capitalized as in the task names. github
+      # builds every ABI, foss only the universal APK
+      matrix:
+        platform: [ Github ]
+        abi: [ Universal, Armv7, Arm64, X86, X86_64 ]
+        include:
+          # Matches no github job, so it is a job of its own
+          - platform: Foss
+            abi: Universal
+    name: build (${{ matrix.platform }} | ${{ matrix.abi }})
+    env:
+      PRODUCTION_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+      PRODUCTION_KEY_PASSWORD: ${{ secrets.PROD_KEY_PASSWORD }}
+    steps:
+      # Under nektos/act nothing is built: every step up to the upload is skipped and a phony APK of the
+      # same name stands in, so the release job still finds all six
+      - uses: actions/checkout@v5
+        if: ${{ !env.ACT }}
+        with:
+          ref: refs/tags/${{ needs.tag.outputs.tag }}
+
+      - uses: actions/setup-java@v5
+        if: ${{ !env.ACT }}
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Checks the wrapper jar and sets up Gradle, without saving or restoring a cache
+      - uses: gradle/actions/setup-gradle@v5
+        if: ${{ !env.ACT }}
+        with:
+          cache-disabled: true
+
+      # Restore only (cache/restore never saves); the cache is filled by cache.yml, keep key and paths
+      # in sync with it. No cache found is fine, the build then starts from scratch
+      - uses: actions/cache/restore@v5
+        if: ${{ !env.ACT }}
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'gradle.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Decode keystore
+        if: ${{ !env.ACT }}
+        env:
+          PROD_KEYSTORE: ${{ secrets.PROD_KEYSTORE }}
+        run: |
+          # Each pair is the variable and the secret it comes from
+          for pair in PROD_KEYSTORE:PROD_KEYSTORE PRODUCTION_STORE_PASSWORD:STORE_PASSWORD PRODUCTION_KEY_PASSWORD:PROD_KEY_PASSWORD; do
+            if [ -z "$(printenv "${pair%%:*}")" ]; then echo "::error::Secret ${pair#*:} is not set"; exit 1; fi
+          done
+          mkdir -p .ignore.d/keystores
+          echo "$PROD_KEYSTORE" | base64 -d > .ignore.d/keystores/production.jks
+
+      - name: Build
+        if: ${{ !env.ACT }}
+        run: ./gradlew --console=plain "assemble${{ matrix.platform }}${{ matrix.abi }}Release"
+
+      - name: Collect APK
+        if: ${{ !env.ACT }}
+        run: |
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/*/release/*.apk)
+          if [ "${#apks[@]}" != 1 ]; then echo "::error::Expected one APK, found: ${apks[*]}"; exit 1; fi
+          # foss and github both name theirs kreate-universal.apk, so foss gets its own name
+          name=$(basename "${apks[0]}")
+          if [ "${{ matrix.platform }}" = Foss ]; then name="kreate-foss-${name#kreate-}"; fi
+          mkdir dist
+          cp "${apks[0]}" "dist/$name"
+          apksigner=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner
+          "$apksigner" verify --print-certs "dist/$name" | grep 'certificate SHA-256'
+
+      - name: Remove keystore
+        if: ${{ always() && !env.ACT }}
+        run: rm -f .ignore.d/keystores/production.jks
+
+      # Named like the real one: kreate-<abi>.apk, foss as kreate-foss-universal.apk
+      - name: Phony APK (act)
+        if: ${{ env.ACT }}
+        run: |
+          abi=$(echo "${{ matrix.abi }}" | tr '[:upper:]' '[:lower:]')
+          name="kreate-$abi.apk"
+          if [ "${{ matrix.platform }}" = Foss ]; then name="kreate-foss-$abi.apk"; fi
+          mkdir dist
+          echo "Phony APK from act, ${{ matrix.platform }} ${{ matrix.abi }}, ${{ needs.tag.outputs.tag }}" > "dist/$name"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: apk-${{ matrix.platform }}-${{ matrix.abi }}
+          # The one APK of this job
+          path: dist/*.apk
+          if-no-files-found: error
+          retention-days: 3
+          # APKs are zip files already
+          compression-level: 0
+
+  release:
+    needs: [ tag, build ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.tag.outputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+        if: ${{ !env.ACT }}
+        with:
+          ref: refs/tags/${{ needs.tag.outputs.tag }}
+      # nektos/act copies the local folder in place of a checkout without a ref, but clones one with
+      # a ref from GitHub, where this repository isn't (it lives on GitLab). So under act the local
+      # copy is taken and the tag checked out in it; the copy is act's, the working tree is untouched
+      - uses: actions/checkout@v5
+        if: ${{ env.ACT }}
+      - name: Check out the tag (act)
+        if: ${{ env.ACT }}
+        run: git checkout --force --detach "refs/tags/${{ needs.tag.outputs.tag }}"
+
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: apk-*
+          path: dist
+          merge-multiple: true
+
+      - name: Release notes
+        run: |
+          ls -l dist
+          test "$(ls dist/*.apk | wc -l)" = 6
+          # The stores' changelog is named after the universal APK's code, versionCode × 10
+          CODE=$(sed -n 's/^versionCode *= *"\([0-9]*\)".*/\1/p' gradle/libs.versions.toml)
+          FILE="fastlane/metadata/android/en-US/changelogs/$((CODE * 10)).txt"
+          if [ -f "$FILE" ]; then
+            echo "Notes from $FILE"
+            cp "$FILE" notes.md
+          else
+            # Every stable release has one (bump.sh writes it)
+            echo "::error::No $FILE for versionCode $CODE"
+            exit 1
+          fi
+
+      # nektos/act sets ACT=true: a local run builds and prepares everything but publishes nothing
+      - name: Publish (skipped under act)
+        if: ${{ env.ACT }}
+        run: |
+          echo "Running under act, no release made. It would be $TAG with:"
+          ls -l dist
+          cat notes.md
+
+      - name: Publish
+        if: ${{ !env.ACT }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            # A rerun replaces the APKs and the notes of the existing release
+            gh release edit "$TAG" --title "$TAG" --notes-file notes.md
+            gh release upload "$TAG" dist/*.apk --clobber
+          else
+            gh release create "$TAG" dist/*.apk --verify-tag --title "$TAG" --notes-file notes.md
+          fi

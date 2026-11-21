@@ -1,0 +1,57 @@
+# Fills the Gradle cache that the release workflow (release.yml) restores. GitHub lets every ref read
+# the caches of the default branch, so a scheduled run here speeds up the builds of every tag.
+# Only this workflow saves the cache; release.yml restores it and never writes.
+#
+# The cache holds ~/.gradle/caches and ~/.gradle/wrapper: downloaded and dexed dependencies, shared by
+# every flavor, so github and foss are built once each to store the union in a single cache.
+# It builds unsigned release APKs (no secrets, no keystore) and publishes nothing.
+#
+# The key follows the build files. When they change, the new key starts from the latest older cache
+# (restore-keys) and saves the result under the new key. GitHub deletes caches unused for 7 days, so
+# the weekly schedule keeps it alive.
+#
+# Keep the key and paths in sync with the restore step of release.yml.
+
+name: Fill the Gradle cache
+
+on:
+  schedule:
+    # Mondays, 03:17 UTC
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gradle-cache
+  cancel-in-progress: false
+
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Checks the wrapper jar and sets up Gradle; the cache below is the only one
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+
+      # Restores the latest cache and saves a new one under this key when the key is new
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'gradle.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build
+        run: ./gradlew --console=plain assembleGithubUniversalRelease assembleFossUniversalRelease
