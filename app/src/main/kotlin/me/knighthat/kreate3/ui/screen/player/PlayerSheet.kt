@@ -381,11 +381,14 @@ fun PlayerSheet(
         modifier = modifier
             .fillMaxSize()
             .onSizeChanged { size ->
+                // Stays where it is: the nearest anchor to the old offset can be the other one
+                // once the height changes, like collapsed in landscape turning upright
                 state.draggable.updateAnchors(
                     DraggableAnchors {
                         PlayerSheetValue.COLLAPSED at size.height.toFloat()
                         PlayerSheetValue.EXPANDED at 0f
-                    }
+                    },
+                    state.draggable.targetValue,
                 )
             },
     ) {
