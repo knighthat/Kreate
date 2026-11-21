@@ -74,6 +74,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -130,6 +131,9 @@ import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.StagedOpenSubsonic
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.HttpClientFactory
+import me.knighthat.kreate3.provider.opensubsonic.stagedOpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.CheckState
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -425,30 +429,23 @@ private fun Permissions() {
  *
  * @param youTubeSignedIn whether a YouTube Music session is kept
  * @param youTubeChannelChoice whether its account has several channels, a tap changes the one used
- * @param openSubsonicSignedIn whether OpenSubsonic credentials are kept
+ * @param openSubsonicStatus how the sign in kept for OpenSubsonic went when its server was asked,
+ * `null` while none is kept
  */
 @Composable
 private fun SignIn(
     youTubeSignedIn: Boolean,
     youTubeChannelChoice: Boolean,
-    openSubsonicSignedIn: Boolean,
+    openSubsonicStatus: String?,
     onYouTube: () -> Unit,
     onOpenSubsonic: () -> Unit,
 ) {
     @Composable
-    fun Tile(
-        origin: Origin,
-        name: String,
-        signedIn: Boolean,
-        onClick: () -> Unit,
-        signedInText: Int = R.string.status_signed_in,
-    ) =
+    fun Tile(origin: Origin, name: String, status: String?, onClick: () -> Unit) =
         TileButton(
             icon = origin.icon,
             title = name,
-            subtitle = stringResource(
-                if (signedIn) signedInText else R.string.wizard_sign_in_tile_description
-            ),
+            subtitle = status ?: stringResource(R.string.wizard_sign_in_tile_description),
             onClick = onClick,
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
             modifier = Modifier.fillMaxWidth(),
@@ -459,19 +456,59 @@ private fun SignIn(
         Tile(
             Origin.YOUTUBE,
             stringResource(R.string.source_ytm),
-            youTubeSignedIn,
+            when {
+                !youTubeSignedIn -> null
+                youTubeChannelChoice ->
+                    stringResource(R.string.setting_description_tap_to_change_channel)
+
+                else -> stringResource(R.string.status_signed_in)
+            },
             onYouTube,
-            signedInText = if (youTubeChannelChoice)
-                R.string.setting_description_tap_to_change_channel
-            else
-                R.string.status_signed_in,
         )
         Tile(
             Origin.OPEN_SUBSONIC,
             stringResource(R.string.source_opensubsonic),
-            openSubsonicSignedIn,
+            openSubsonicStatus,
             onOpenSubsonic
         )
+    }
+}
+
+/**
+ * What the server said to the sign in kept in the wizard, for its tile: signed in only once the
+ * server took it, else why not. The certificate can't be allowed in the wizard, the settings do it.
+ */
+@Composable
+private fun CheckState.wizardSummary(): String {
+    val server = stringResource(R.string.source_opensubsonic)
+    return when (this) {
+        CheckState.Idle, CheckState.Checking ->
+            stringResource(R.string.status_checking_server, server)
+
+        is CheckState.Done -> when (val result = result) {
+            is ServerCheck.Success, ServerCheck.Disabled ->
+                stringResource(R.string.status_signed_in)
+
+            ServerCheck.NotConfigured -> stringResource(R.string.wizard_sign_in_tile_description)
+            is ServerCheck.Rejected -> when (result.code) {
+                40 -> stringResource(R.string.setting_description_sign_in_status_wrong_credentials)
+                44 -> stringResource(R.string.setting_description_sign_in_status_invalid_api_key)
+                else -> stringResource(
+                    R.string.setting_description_sign_in_status_refused,
+                    server,
+                    result.code
+                )
+            }
+
+            is ServerCheck.Unreachable -> stringResource(R.string.status_unreachable, server)
+            is ServerCheck.UntrustedCertificate, is ServerCheck.CertificateChanged ->
+                stringResource(R.string.wizard_sign_in_status_certificate_untrusted, server)
+
+            ServerCheck.NotSubsonic -> stringResource(
+                R.string.setting_description_configure_opensubsonic_status_not_opensubsonic,
+                server
+            )
+        }
     }
 }
 
@@ -939,6 +976,19 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
     var openSubsonicSignedIn by rememberSaveable { mutableStateOf(false) }
     var openSubsonicUrl by rememberSaveable { mutableStateOf("") }
     var openSubsonicAuth by rememberSaveable { mutableStateOf(OpenSubsonicAuth.PASSWORD) }
+    var openSubsonicCheck by remember { mutableStateOf<CheckState>(CheckState.Idle) }
+    val base = koinInject<OkHttpClient>()
+    val json = koinInject<Json>()
+    // The server is asked once the sign in is kept, its tile says whether it took it
+    LaunchedEffect(openSubsonicSignedIn, openSubsonicUrl, openSubsonicAuth) {
+        if (!openSubsonicSignedIn) {
+            openSubsonicCheck = CheckState.Idle
+            return@LaunchedEffect
+        }
+        openSubsonicCheck = CheckState.Checking
+        val provider = stagedOpenSubsonicProvider(base, json, openSubsonicUrl, openSubsonicAuth)
+        openSubsonicCheck = CheckState.Done(provider.checkCredentials())
+    }
     var youTubeWifi by rememberSaveable { mutableStateOf(StreamQuality.HIGH) }
     var youTubeMobile by rememberSaveable { mutableStateOf(StreamQuality.MEDIUM) }
     var openSubsonicWifi by rememberSaveable { mutableStateOf(StreamQuality.ORIGINAL) }
@@ -1075,7 +1125,10 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                     PAGE_SIGN_IN -> SignIn(
                         youTubeSignedIn = youTubeSignedIn,
                         youTubeChannelChoice = youTubeChannelChoice,
-                        openSubsonicSignedIn = openSubsonicSignedIn,
+                        openSubsonicStatus = if (openSubsonicSignedIn)
+                            openSubsonicCheck.wizardSummary()
+                        else
+                            null,
                         onYouTube = {
                             if (youTubeSignedIn && youTubeChannelChoice) {
                                 scope.launch {
@@ -1184,7 +1237,7 @@ private fun WizardSignInPreview() = WizardPreview(PAGE_SIGN_IN) {
     SignIn(
         youTubeSignedIn = true,
         youTubeChannelChoice = true,
-        openSubsonicSignedIn = false,
+        openSubsonicStatus = null,
         onYouTube = {},
         onOpenSubsonic = {},
     )

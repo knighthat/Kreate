@@ -34,6 +34,8 @@
     <string name="wizard_notifications_description">Allow app to inform you what is going on within the app</string>
     <string name="wizard_sign_in_intro">Sign in to bring your accounts along. You can skip this and sign in later in the settings.</string>
     <string name="wizard_sign_in_tile_description">Tap to sign in</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; the user can allow it in the app's settings once setup is done -->
+    <string name="wizard_sign_in_status_certificate_untrusted">%1$s\'s certificate isn\'t trusted, allow it in the settings after setup</string>
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <string name="wizard_import_intro">Have a backup of %1$s? Choose it to bring your profiles, settings and library along. You can skip this.</string>
     <string name="wizard_reading_the_backup">Reading the backup…</string>

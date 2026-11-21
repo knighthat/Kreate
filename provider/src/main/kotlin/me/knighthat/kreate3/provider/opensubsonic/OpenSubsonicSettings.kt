@@ -18,11 +18,13 @@
 
 package me.knighthat.kreate3.provider.opensubsonic
 
+import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.SourceProxy
 import me.knighthat.kreate3.provider.sourceProxy
+import okhttp3.OkHttpClient
 
 /**
  * What the user set up for the server, read at the time of each request so a change applies at once.
@@ -95,4 +97,41 @@ internal object ProfileOpenSubsonicSettings : OpenSubsonicSettings {
         Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
         Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
     )
+}
+
+/**
+ * A server not saved yet, like the one of the setup wizard: on at [url], signed in with [auth]
+ * and the credentials kept as secrets. No preference is read, they aren't loaded then: no
+ * self-signed certificate is trusted and no proxy of the source is used.
+ */
+private class StagedOpenSubsonicSettings(
+    override val url: String,
+    override val auth: OpenSubsonicAuth,
+) : OpenSubsonicSettings {
+
+    override val enabled = true
+    override val allowSelfSigned = false
+    override val pinnedCertificate: CertificatePin? = null
+
+    override suspend fun username() = Secrets.OPEN_SUBSONIC_USERNAME.current()
+    override suspend fun password() = Secrets.OPEN_SUBSONIC_PASSWORD.current()
+    override suspend fun apiKey() = Secrets.OPEN_SUBSONIC_API_KEY.current()
+    override fun pin(pin: CertificatePin?) = Unit
+}
+
+/**
+ * A provider for the server at [url] signed in with [auth] before they are saved, to check them
+ * with [OpenSubsonicProvider.checkCredentials], see [StagedOpenSubsonicSettings].
+ *
+ * @param base the app's client, see the provider's main constructor
+ */
+fun stagedOpenSubsonicProvider(
+    base: OkHttpClient,
+    json: Json,
+    url: String,
+    auth: OpenSubsonicAuth,
+): OpenSubsonicProvider {
+    val settings = StagedOpenSubsonicSettings(url, auth)
+    val clients = OpenSubsonicClients(base, settings)
+    return OpenSubsonicProvider(clients::current, json, settings, okHttp = clients::currentOkHttp)
 }
