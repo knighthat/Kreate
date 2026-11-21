@@ -357,10 +357,14 @@ internal fun CollectionMenuContent(
                 null
             }
             waiting = null
-            if (fetched == null)
-                notifier.post(Message(resources.getString(R.string.error_collection_songs, name)))
-            else
+            // Shown on the screen once the sheet is gone, under it the message would be hidden
+            if (fetched == null) {
+                close {
+                    notifier.post(Message(resources.getString(R.string.error_collection_songs, name)))
+                }
+            } else {
                 then(fetched)
+            }
         }
     }
 
@@ -474,14 +478,16 @@ internal fun CollectionMenuContent(
                     withSongs(FindingArtists) { songs ->
                         val found = albumArtists(item, songs)
                         when (found.size) {
-                            0 -> notifier.post(
-                                Message(
-                                    resources.getString(
-                                        R.string.error_artist_not_found,
-                                        name
+                            0 -> close {
+                                notifier.post(
+                                    Message(
+                                        resources.getString(
+                                            R.string.error_artist_not_found,
+                                            name
+                                        )
                                     )
                                 )
-                            )
+                            }
 
                             1 -> close { openRoute(found.single().route) }
 
