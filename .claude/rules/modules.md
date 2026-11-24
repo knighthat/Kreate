@@ -3,6 +3,10 @@ paths:
   - "**/build.gradle.kts"
   - "settings.gradle.kts"
   - "model/**"
+  - "app/src/foss/**"
+  - "app/src/github/**"
+  - "app/src/patreon/**"
+  - "app/src/nonfree/**"
 ---
 
 # Modules
@@ -54,10 +58,13 @@ in `app/src/foss/` too (same name, a stand-in); `main` checks `BuildConfig.NON_F
 says "Not available in FOSS build"; foss turns their settings off in each profile at start
 (`NonFreeNetOff`), so they read as off. `app/src/foss/AndroidManifest.xml` removes what only those
 services need (the Discord callback, `RECORD_AUDIO`). A new non-free service follows the same
-split. Only `github` updates itself (`AppUpdater` in Koin, the others show its settings dimmed as
-not available and keep `AUTO_UPDATE_MODE` at OFF with `AutoUpdateOff`; its install permissions are
-in `app/src/github/AndroidManifest.xml`): F-Droid forbids it in
-`foss`. Translations split by platform: `foss` and `github` get `app/src/crowdin/` (the merged
+split. Any feature a build leaves out keeps its settings on screen there, dimmed and doing nothing,
+with `status_not_available_in` (the platform, uppercase) as the summary, never hidden; its stored
+values are written off at start and whenever they come back (after `Preferences.awaitProfile` for
+a profile's, `Preferences.awaitLoaded` for `GlobalPreferences`). Only `github` updates itself
+(`AppUpdater` in Koin; the others keep `AUTO_UPDATE_MODE` at OFF with `AutoUpdateOff`; its install
+permissions are in `app/src/github/AndroidManifest.xml`): F-Droid forbids it in `foss`. Translations
+split by platform: `foss` and `github` get `app/src/crowdin/` (the merged
 `values-*` in `res/`, a `TranslationUpdates` that does nothing in `kotlin/`); `patreon` ships
 English alone (`BuildConfig.LANGUAGES` = `en`) and gets its languages from Crowdin's manifest and
 their texts from the Crowdin SDK (`patreonImplementation` only), its `TranslationUpdates` and
