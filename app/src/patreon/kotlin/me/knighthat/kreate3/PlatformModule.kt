@@ -31,13 +31,14 @@ import me.knighthat.kreate3.ui.screen.settings.backup.RemoteBackupPage
 import me.knighthat.kreate3.ui.screen.settings.backup.RemoteBackupsPage
 import me.knighthat.kreate3.ui.screen.settings.backup.RemoteBackupsViewModel
 import me.knighthat.kreate3.ui.screen.settings.network.patreon.PatreonSettingsScreen
+import me.knighthat.kreate3.update.AutoUpdateOff
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /**
  * What only the patreon build has: its Patreon sign in, what it tells, its page and the backups
- * kept online.
+ * kept online. It doesn't update itself, its Auto update mode is kept off.
  */
 val platformModule = module {
     single { PatreonAuth(get(), PATREON_REDIRECT) }
@@ -54,6 +55,7 @@ val platformModule = module {
     single(createdAtStart = true) {
         CloudBackups(androidContext(), get(), get(), get(), get(), get()).also { it.start() }
     }
+    single(createdAtStart = true) { AutoUpdateOff(get()) }
     single<PlatformEntries> {
         PlatformEntries { onBack -> entry<PatreonSettings> { PatreonSettingsScreen(onBack) } }
     }

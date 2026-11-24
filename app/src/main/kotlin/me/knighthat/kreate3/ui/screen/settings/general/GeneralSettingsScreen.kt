@@ -50,6 +50,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.AutoUpdateMode
 import me.knighthat.kreate3.constant.LogLevel
 import me.knighthat.kreate3.constant.PlaylistButton
 import me.knighthat.kreate3.constant.QueueAction
@@ -79,9 +80,11 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SettingsSummary
 import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import me.knighthat.kreate3.update.AppUpdater
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
 import me.knighthat.kreate3.utils.IS_ANDROID_11_AND_UP
 import me.knighthat.kreate3.utils.hasAudioPermission
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlow
 
@@ -93,10 +96,10 @@ private val SCAN_INTERVALS = 10..120
 private const val SCAN_STEP = 10
 
 /**
- * How the app behaves: scanning the device, leaving the app, opening it from the media
- * notification, the button of album and artist pages and the buttons of playlist pages, then
- * logging. What is kept on the device
- * is on the Data page. The logging settings are [GlobalPreferences], only the default profile
+ * How the app behaves: first the app's updates (shown unavailable unless the build updates
+ * itself), then scanning the device, leaving the app, opening it from the media notification, the
+ * button of album and artist pages and the buttons of playlist pages, then logging. What is kept
+ * on the device is on the Data page. The logging settings are [GlobalPreferences], only the default profile
  * changes them; exporting and copying the log are open to every profile.
  */
 @Composable
@@ -130,6 +133,10 @@ fun GeneralSettingsScreen(
     val activeId by profileManager.activeId.collectFlow()
     val defaultUser by remember(userRepository) { userRepository.find(Profile.DEFAULT_ID) }
         .collectFlow(null)
+
+    // Only a build that updates itself has one, see AppUpdater
+    val koin = getKoin()
+    val updater = remember(koin) { koin.getOrNull<AppUpdater>() }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -188,6 +195,12 @@ fun GeneralSettingsScreen(
         defaultProfileName = defaultUser?.name,
         onExportLogs = { exportTo.launch(LogActions.exportName()) },
         onCopyLog = { scope.launch { LogActions.copy(context, notifier) } },
+        updates = {
+            if (updater != null)
+                UpdateSettings(updater, activeId == Profile.DEFAULT_ID, defaultUser?.name)
+            else
+                UpdatesNotAvailable()
+        },
         onBack = onBack,
         modifier = modifier,
     )
@@ -202,6 +215,8 @@ fun GeneralSettingsScreen(
  * while it loads and the note stays hidden
  * @param onExportLogs asks where to save the log files
  * @param onCopyLog copies the latest part of the log
+ * @param updates the Updates section, [UpdateSettings] in a build that updates itself,
+ * [UpdatesNotAvailable] in the others
  */
 @Composable
 private fun GeneralSettingsContent(
@@ -228,12 +243,15 @@ private fun GeneralSettingsContent(
     defaultProfileName: String?,
     onExportLogs: () -> Unit,
     onCopyLog: () -> Unit,
+    updates: @Composable () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val resources = LocalResources.current
 
     SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
+        updates()
+
         SettingsSection(stringResource(R.string.setting_header_library))
         // Without the permission there is nothing to scan: off and out of reach
         val scanOn = localScan && audioGranted
@@ -497,6 +515,16 @@ private fun GeneralSettingsPreview() = PreviewTheme {
         defaultProfileName = "Default",
         onExportLogs = {},
         onCopyLog = {},
+        updates = {
+            UpdateSettings(
+                mode = AutoUpdateMode.ASK,
+                checking = false,
+                appWide = true,
+                defaultProfileName = "Default",
+                onSelect = {},
+                onCheck = {},
+            )
+        },
         onBack = {},
     )
 }

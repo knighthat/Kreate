@@ -43,6 +43,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -219,12 +220,14 @@ import me.knighthat.kreate3.ui.screen.settings.player.VoiceSearchSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.FontPreviewScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.LanguageSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.ui.UiSettingsScreen
+import me.knighthat.kreate3.ui.screen.update.UpdateDialogs
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.LocalLyricsFont
 import me.knighthat.kreate3.ui.theme.fontFamilyOf
 import me.knighthat.kreate3.ui.theme.interFontFamily
 import me.knighthat.kreate3.ui.theme.rememberInstalledFont
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
+import me.knighthat.kreate3.update.AppUpdater
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
@@ -298,6 +301,14 @@ fun KreateApp(
     LaunchedEffect(legacyDownloads) { legacyDownloads.load() }
     val offered by legacyDownloads.pending.collectFlowAsState()
 
+    // A build that updates itself checks each time the app comes on screen, see AppUpdater
+    val updater = remember(koin) { koin.getOrNull<AppUpdater>() }
+    if (updater != null)
+        LifecycleStartEffect(updater) {
+            updater.checkOnOpen()
+            onStopOrDispose {}
+        }
+
     val playerSheet = rememberPlayerSheetState()
     val miniPlayer = rememberMiniPlayerSpace()
     LaunchedEffect(openPlayer) {
@@ -364,6 +375,7 @@ fun KreateApp(
                 onSelect = { topLevel.push(LegacyDownloadsSelect) },
                 onSkip = legacyDownloads::dismiss,
             )
+        updater?.let { UpdateDialogs(it, notifier) }
         CompositionLocalProvider(
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,

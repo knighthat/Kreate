@@ -7,7 +7,11 @@ Paths are relative to `app/src/main/kotlin/me/knighthat/kreate3/`; checked again
 ui/screen/
 
 - `KreateApp.kt` — top-level scaffold: bottom bar, Navigation 3 `NavDisplay` entry → screen mapping,
-  MiniPlayer. `Route.hasMiniPlayer` puts the mini player at the window bottom; a screen with its own
+  MiniPlayer; with an `AppUpdater` (github) calls `checkOnOpen` on every start and shows
+  `update/UpdateDialogs.kt` (Available: notes, Download & install / Ignore this version / Close;
+  Downloading/Installing: progress dialog that can't be closed, opens the system's confirmation;
+  Failed: reason + Close; a settings check's answer as a snackbar). `Route.hasMiniPlayer` puts the
+  mini player at the window bottom; a screen with its own
   bottom bar (Search, SearchResults) must opt out there and draw `PlaybackMiniPlayer` above its bar
   itself, or the mini player lands under that bar.
 - player/`SongReaction.kt` — `rememberSongReaction(item)`: like/dislike state of a song (player,
@@ -338,8 +342,12 @@ ui/screen/
   Clear (saves an empty proxy) / Save in the top bar; answers a `ProxyConfig` through
   `rememberRouteResult`),
   `CredentialField.kt` (one-line credential field with show/hide eye, optional placeholder).
-  `general/GeneralSettingsScreen.kt` (library scan, navigation, album and
-  artist page buttons, privacy: screenshots of credential screens), `data/DataSettingsScreen.kt`
+  `general/GeneralSettingsScreen.kt` (Updates slot first, library scan, navigation, album and
+  artist page buttons, privacy: screenshots of credential screens, logging),
+  `general/UpdateSettings.kt` (github: Auto update mode choice, `GlobalPreferences`, picking
+  Automatic without the install permission opens the system's page and sets it only once allowed;
+  Check for update with the installed version / Checking…; other builds: `UpdatesNotAvailable`, both
+  rows dimmed with "Not available in X build", mode shown Off), `data/DataSettingsScreen.kt`
   + `DataSettingsViewModel.kt` (Storage: `DeviceStorageUsage.kt` bar of the device with the app's
     parts (`StoragePart`: image cache, song cache, downloads, download covers, lyrics) and other
     apps, then image disk cache, song cache, song downloads as `StorageUsage` bars, polled every 2

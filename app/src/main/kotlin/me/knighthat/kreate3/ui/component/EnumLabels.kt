@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.AppIcon
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
+import me.knighthat.kreate3.constant.AutoUpdateMode
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.LogLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
@@ -185,6 +186,14 @@ val PlaybackFailureAction.labelRes: Int
         PlaybackFailureAction.RETRY_THEN_SKIP -> R.string.constant_playback_failure_action_retry_then_skip
         PlaybackFailureAction.RETRY_THEN_STOP -> R.string.constant_playback_failure_action_retry_then_stop
         PlaybackFailureAction.STOP -> R.string.constant_playback_failure_action_stop
+    }
+
+@get:StringRes
+val AutoUpdateMode.labelRes: Int
+    get() = when (this) {
+        AutoUpdateMode.OFF -> R.string.constant_auto_update_mode_off
+        AutoUpdateMode.AUTOMATIC -> R.string.constant_auto_update_mode_automatic
+        AutoUpdateMode.ASK -> R.string.constant_auto_update_mode_ask
     }
 
 @get:StringRes

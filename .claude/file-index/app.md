@@ -56,10 +56,25 @@ Root
 - `PlatformModule.kt` — one per platform in `app/src/<platform>/…` (`platformModule`, what only
   that build has; patreon: `PatreonAuth` on the app's `HttpClient` with `PATREON_REDIRECT`,
   `PatreonSession` (at start), `PatreonAccount` (at start), `PatreonFiles`, `RemoteBackups`,
-  `CloudBackups` (at start), `RemoteBackupsViewModel`, the
-  `RemoteBackupPage`, the Patreon page as `PlatformEntries`; foss,
-  github: empty);
+  `CloudBackups` (at start), `AutoUpdateOff` (at start), `RemoteBackupsViewModel`, the
+  `RemoteBackupPage`, the Patreon page as `PlatformEntries`; github: `GitHubUpdater` as
+  `AppUpdater`; foss: `AutoUpdateOff` (at start));
   `KreateApplication` adds it.
+- update/ — `AppUpdater.kt` (in `main`: the interface a self-updating build registers in Koin,
+  `UpdateState` (Idle, Checking, UpToDate, CheckFailed, Available, Downloading, Installing with the
+  system's confirmation, Failed with `UpdateFailure`), `AppRelease`, `AppVersion` (tag/versionName
+  parse and order, betas before their release), `parseReleaseNotes` (`### Added`/`Added:` headings
+  into a `Changelog`)); under `app/src/github/`: `GitHubUpdater.kt` (`releases/latest` of
+  knighthat/kreate on screen once a day unless `AUTO_UPDATE_MODE` is OFF, `checkNow` from the
+  settings; deletes `cacheDir/updates/` before each check, downloads `kreate-<abi>.apk` there,
+  checks size + sha256 digest, installs with a `PackageInstaller` session (no prompt on Android 12+
+  once it installed itself); `noBackupFilesDir/update_check_last` (epoch ms of the last answer) and
+  `update_ignored_version`; reopens a confirmation left unanswered, fails when its session is
+  gone), `GitHubRelease.kt` (answer model, `updateFor(versionName, abi)`),
+  `UpdateInstallReceiver.kt` (session answers → `onInstallStatus`);
+  `app/src/github/AndroidManifest.xml`
+  (REQUEST_INSTALL_PACKAGES, UPDATE_PACKAGES_WITHOUT_USER_ACTION, the receiver); `AutoUpdateOff.kt`
+  (in `main`, registered by foss and patreon: keeps `AUTO_UPDATE_MODE` at OFF once loaded).
 - patreon/ (under `app/src/patreon/`, patreon build only; `:api` does the requests) —
   `PatreonSession.kt` (`member`: `PatreonMember(claims, profile)` decoded from the device
   secrets once per change, `null` signed out; `has(feature)` from the token's `features`),

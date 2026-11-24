@@ -139,4 +139,9 @@
     <string name="dialog_body_clean_up_database">For every profile: songs never played or changed and in no playlist, albums and artists never changed, and playlists without songs are removed. Songs on the device stay.</string>
     <!-- Title of the app's release notes, opened from About > Version. %1$s is a version number, e.g. 3.1.0 -->
     <string name="dialog_title_changelog">What\'s new in %1$s</string>
+    <string name="dialog_title_update_available">New update available</string>
+    <!-- %1$s is the new version, %2$s the one installed, e.g. 3.1.0 and 3.0.2. The release notes follow it -->
+    <string name="dialog_body_update_available">Version %1$s is out, you have %2$s.</string>
+    <!-- Title of the dialog shown while an update downloads and installs. %1$s is the new version, e.g. 3.1.0 -->
+    <string name="dialog_title_updating">Updating to %1$s</string>
 </resources>

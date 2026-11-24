@@ -18,7 +18,8 @@
 
 package me.knighthat.kreate3
 
+import me.knighthat.kreate3.update.AutoUpdateOff
 import org.koin.dsl.module
 
-/** What only the foss build has: nothing yet. */
-val platformModule = module { }
+/** What only the foss build has: no updating itself, its Auto update mode kept off. */
+val platformModule = module { single(createdAtStart = true) { AutoUpdateOff(get()) } }

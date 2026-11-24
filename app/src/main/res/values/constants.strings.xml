@@ -99,4 +99,8 @@
     <string name="constant_playlist_privacy_public">Public</string>
     <string name="constant_playlist_privacy_unlisted">Anyone with the link</string>
     <string name="constant_playlist_privacy_private">Private</string>
+    <!-- Values of the Auto update mode setting: never check on its own, install updates by itself, ask the user about each one -->
+    <string name="constant_auto_update_mode_off">Off</string>
+    <string name="constant_auto_update_mode_automatic">Automatic</string>
+    <string name="constant_auto_update_mode_ask">Ask</string>
 </resources>

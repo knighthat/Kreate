@@ -18,7 +18,12 @@
 
 package me.knighthat.kreate3
 
+import me.knighthat.kreate3.update.AppUpdater
+import me.knighthat.kreate3.update.GitHubUpdater
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-/** What only the github build has: nothing yet. */
-val platformModule = module { }
+/** What only the github build has: updating itself from GitHub's releases. */
+val platformModule = module {
+    single<AppUpdater> { GitHubUpdater(androidContext(), get(), get()) }
+}

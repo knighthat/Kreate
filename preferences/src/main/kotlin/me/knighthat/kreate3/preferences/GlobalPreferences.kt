@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import me.knighthat.kreate3.constant.AutoUpdateMode
 import me.knighthat.kreate3.constant.LogLevel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -112,6 +113,15 @@ object GlobalPreferences : KoinComponent {
      * (`CloudBackups`) skips and the Remote tab of the Backup page is grayed out.
      */
     val CLOUD_BACKUP by lazy { boolean("cloud_backup", true) }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Updates">
+    /**
+     * What the app does about a new release when it comes on screen, once a day at most, in the
+     * github build only (`GitHubUpdater` reads it). The default is [AutoUpdateMode.ASK].
+     * [AutoUpdateMode.AUTOMATIC] is only set once the app may install apps.
+     */
+    val AUTO_UPDATE_MODE by lazy { enum("auto_update_mode", AutoUpdateMode.ASK) }
     //</editor-fold>
 
     internal val isLoaded: Boolean get() = engine.isLoaded

@@ -26,9 +26,10 @@ The highest qualifying change wins; the parts below it reset to 0 (`3.0.4` + a f
 
 ## Changelog
 
-`app/changelogs.yml` (not in git) holds the notes of the release being cut, English only, never
-translated:
-lists `adds`, `removes`, `changes`, `fixes`. An item only some platform flavors have starts with
+`app/changelogs.yml` (not in git) holds the notes of the release being cut, covering every change
+since the last stable release (betas between them don't start a new range), English only, never
+translated: lists `adds`, `removes`, `changes`, `fixes`. An item only some platform flavors have
+starts with
 their names in brackets (`- "[github, patreon] Discord status"`, `- "[patreon] Weekly cloud
 backup"`); an untagged item goes to every flavor, and the script refuses a name that isn't a
 flavor. Describe the feature

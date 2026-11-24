@@ -307,4 +307,12 @@
     <string name="snackbar_database_cleaned_up">Unused data removed</string>
     <string name="snackbar_database_nothing_to_clean_up">Nothing to clean up</string>
     <string name="snackbar_database_not_cleaned_up">Couldn\'t clean up the database</string>
+    <string name="snackbar_up_to_date">You have the latest version</string>
+    <string name="snackbar_update_check_failed">Couldn\'t check for updates</string>
+    <string name="error_update_download">Couldn\'t download the update</string>
+    <!-- The downloaded file isn't the one the release lists (size or checksum differ) -->
+    <string name="error_update_damaged">The downloaded update is damaged</string>
+    <!-- The user turned down the system's install confirmation -->
+    <string name="error_update_canceled">Update canceled</string>
+    <string name="error_update_install">Couldn\'t install the update</string>
 </resources>

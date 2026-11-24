@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Only in the github build, the one that updates itself from GitHub's releases -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Installs the downloaded update, see GitHubUpdater -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Android 12+: updates the app without asking once it installed itself -->
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
+
+    <application>
+        <!-- The system's answers to an update's install session -->
+        <receiver
+            android:name=".update.UpdateInstallReceiver"
+            android:exported="false" />
+    </application>
+
+</manifest>

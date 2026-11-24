@@ -131,4 +131,7 @@
     <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
     <string name="menu_import_from_file">Import from file</string>
     <string name="action_clean_up">Clean up</string>
+    <string name="action_download_and_install">Download &amp; install</string>
+    <!-- Never offers this version of the app again on its own -->
+    <string name="action_ignore_this_version">Ignore this version</string>
 </resources>

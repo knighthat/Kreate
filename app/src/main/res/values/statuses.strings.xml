@@ -69,4 +69,6 @@
     <string name="status_waiting_for_sign_in_page">Waiting for the sign in page…</string>
     <!-- Value of a date row (e.g. a membership's renewal date) when no date is coming -->
     <string name="status_none_scheduled">None scheduled</string>
+    <!-- An update of the app is being installed -->
+    <string name="status_installing">Installing…</string>
 </resources>

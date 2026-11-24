@@ -21,7 +21,8 @@ Tests mirror the main paths under `src/test/`.
   ui/screen/account/`HistoryBucketsTest`, `TimeTicksTest`, `UndislikedMessageTest`,
   `UnlikedMessageTest`
   (Undislike all's and Unlike all's message), playlist/`PlaylistCsvTest` (old and new headers,
-  durations, quoting, missing headers, grouping, `LocalMatcher`).
+  durations, quoting, missing headers, grouping, `LocalMatcher`), update/`AppUpdateTest` (version
+  order, `releases/latest` answer → update of an ABI, release note formats).
 - database: `DatabaseTest`, `DatabaseBackupTest` (cleaned copy too), `ConvertersTest`, paging/
   `SortingTest`,
   repository/ `CleanupRepositoryTest`, `HistoryRepositoryTest`, `StatisticsRepositoryTest`,

@@ -399,4 +399,15 @@
     <string name="setting_description_clean_up_database">Remove songs, albums, artists and empty playlists nothing uses</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). The cleanup covers every profile's library, so only that profile may run it -->
     <string name="setting_description_clean_up_database_status_default_profile_only">Only %1$s can clean up</string>
+    <!-- Settings header of the app's own updates, in the build that updates itself from GitHub -->
+    <string name="setting_header_updates">Updates</string>
+    <string name="setting_title_auto_update_mode">Auto update mode</string>
+    <!-- %1$s is the app's name -->
+    <string name="setting_description_auto_update_mode_off">%1$s will not automatically check for updates</string>
+    <string name="setting_description_auto_update_mode_automatic">Download and install updates automatically when you open the app</string>
+    <string name="setting_description_auto_update_mode_ask">Let you know when a new update is available</string>
+    <string name="setting_title_check_for_update">Check for update</string>
+    <!-- %1$s is the version of the app installed, e.g. 3.1.0 -->
+    <string name="setting_description_check_for_update">You\'re currently on version %1$s</string>
+    <string name="setting_description_check_for_update_status_checking">Checking…</string>
 </resources>

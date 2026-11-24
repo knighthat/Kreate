@@ -11,7 +11,7 @@ on
   `Preference.kt` — single setting following the active profile.
 - `preferences/GlobalPreferences.kt` — settings shared by every profile (cache/download sizes, image
   memory cache, log level/rollover/keep, crash log retention, `CLOUD_BACKUP` (patreon build, nothing
-  reads it yet)), default profile edits them.
+  reads it yet), `AUTO_UPDATE_MODE` (github build, default ASK)), default profile edits them.
   `GlobalPreferenceStorage.kt` — `global.preferences_pb`
   (these + the profile list), its engine, damaged file rebuilt from profile folders.
 - `preferences/Secrets.kt` + `Secret.kt` + `SecretStore.kt` — passwords/tokens (Discord's OAuth2
@@ -42,4 +42,4 @@ on
   (SKIP/RETRY_THEN_SKIP/RETRY_THEN_STOP/STOP, `retries`/`skips`), `PlaybackLogin`
   (NEVER/ON_FAILURE/ALWAYS, YouTube streams in the session), `QueueAction`
   (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT, quick actions of lists and the album/artist page button),
-  `LogLevel` (VERBOSE/DEBUG/INFO/WARNING/ERROR) enums.
+  `LogLevel` (VERBOSE/DEBUG/INFO/WARNING/ERROR), `AutoUpdateMode` (OFF/AUTOMATIC/ASK) enums.
