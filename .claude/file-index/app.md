@@ -366,7 +366,9 @@ English texts: `res/values/*.strings.xml` by kind (`common` app name, sources, u
 sit in `app/src/patreon/res/values/`, same file names.
 
 res: `res/resources.properties` (default `en-US`, for the generated locale config),
-`res/raw/terms_of_service.txt`, `res/raw/keep.xml` (keeps AboutLibraries' generated
+`res/raw/terms_of_service.txt`, `res/raw/changelog.json` (empty release notes; each platform
+flavor's own `app/src/<flavor>/res/raw/changelog.json`, written by `bump.sh` from
+`app/changelogs.yml`, replaces it), `res/raw/keep.xml` (keeps AboutLibraries' generated
 `raw/aboutlibraries` through resource shrinking; overrides for POMs lacking details in
 `app/aboutlibraries/licenses/`), `res/font/inter.ttf`; source SVGs for launcher/splash in
 repo-root `assets/`.

@@ -3,8 +3,9 @@
 #   tag      picks the tag: the pushed one, or on a manual run the given one or else the latest
 #            stable tag
 #   build    one job per APK, in parallel: foss universal + github universal and its four ABIs
-#   release  the release named after the tag, every APK attached, the body from the fastlane
-#            changelog of the tag's versionCode
+#   release  the release named after the tag, every APK attached, the body from the github
+#            flavor's notes (app/src/github/res/raw/changelog.json, bump.sh writes it); the
+#            fastlane changelog holds foss's notes for F-Droid
 # Every job builds the tagged source, never the tip of a branch. A failed build creates no release.
 #
 # Under nektos/act (local runs) nothing is built or published: each build job uploads a phony APK
@@ -221,17 +222,16 @@ jobs:
         run: |
           ls -l dist
           test "$(ls dist/*.apk | wc -l)" = 6
-          # The stores' changelog is named after the universal APK's code, versionCode × 10
-          CODE=$(sed -n 's/^versionCode *= *"\([0-9]*\)".*/\1/p' gradle/libs.versions.toml)
-          FILE="fastlane/metadata/android/en-US/changelogs/$((CODE * 10)).txt"
-          if [ -f "$FILE" ]; then
-            echo "Notes from $FILE"
-            cp "$FILE" notes.md
-          else
-            # Every stable release has one (bump.sh writes it)
-            echo "::error::No $FILE for versionCode $CODE"
+          # The github flavor's notes, which bump.sh writes for every stable release
+          FILE=app/src/github/res/raw/changelog.json
+          if [ ! -f "$FILE" ] || [ "$(jq -r .version "$FILE")" != "${TAG#v}" ]; then
+            echo "::error::$FILE has no notes for ${TAG#v}"
             exit 1
           fi
+          echo "Notes from $FILE"
+          jq -r '[["Added", .adds], ["Removed", .removes], ["Changed", .changes], ["Fixed", .fixes]]
+            | map(select(.[1] | length > 0) | "### \(.[0])\n" + (.[1] | map("- " + .) | join("\n")))
+            | join("\n\n")' "$FILE" > notes.md
 
       # nektos/act sets ACT=true: a local run builds and prepares everything but publishes nothing
       - name: Publish (skipped under act)

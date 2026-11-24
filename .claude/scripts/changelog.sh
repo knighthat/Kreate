@@ -27,7 +27,7 @@
 #   scripts are dropped without asking the model.
 # - Each section lists the most important items first. --max N (default 20) keeps only the N most
 #   important of adds, removes and changes together; fixes are never dropped.
-# - The draft goes to stdout. --write puts it in app/src/main/res/raw/changelogs.yml instead
+# - The draft goes to stdout. --write puts it in app/changelogs.yml instead
 #   (replacing it), so run it before editing that file.
 # - SKIM_MODEL (default qwen2.5-coder:7b) and OLLAMA_URL (default http://localhost:11434) override.
 # - A small model misjudges: read the draft. It can't see that a later commit fixes or reworks an
@@ -38,7 +38,7 @@ cd "$(dirname "$0")/../.."
 
 model=${SKIM_MODEL:-qwen2.5-coder:7b}
 url=${OLLAMA_URL:-http://localhost:11434}
-yml=app/src/main/res/raw/changelogs.yml
+yml=app/changelogs.yml
 
 from=""
 write=false

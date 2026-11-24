@@ -137,4 +137,6 @@
     <string name="dialog_body_clear_listening_history">Every song this profile played is taken out of its history, and its statistics start over.</string>
     <string name="dialog_title_clean_up_database">Clean up the database?</string>
     <string name="dialog_body_clean_up_database">For every profile: songs never played or changed and in no playlist, albums and artists never changed, and playlists without songs are removed. Songs on the device stay.</string>
+    <!-- Title of the app's release notes, opened from About > Version. %1$s is a version number, e.g. 3.1.0 -->
+    <string name="dialog_title_changelog">What\'s new in %1$s</string>
 </resources>

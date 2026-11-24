@@ -419,7 +419,9 @@ ui/screen/
     without a new request, "Deleted <name>" only when the server deleted it; one found gone, on
     delete or restore,
     just leaves the list), 180-day note),
-    through `RemoteBackups`, so only when the tab opens), `about/` (`AboutScreen.kt` version,
+    through `RemoteBackups`, so only when the tab opens), `about/` (`AboutScreen.kt` version (a tap
+    opens `ChangelogSheet.kt`: `Changelog` read from `R.raw.changelog`, its lists under Added /
+    Removed / Changed / Fixed; no tap when the flavor's notes are empty),
     license and the
     licenses row, links through `rememberOpenLink`; `OpenSourceLicensesScreen.kt` +
     `OpenSourceLicensesViewModel.kt`: libraries read

@@ -78,6 +78,11 @@
     <string name="section_header_listening_over_time">Listening over time</string>
     <string name="section_header_listening_by_hour">By hour of the day</string>
     <string name="section_header_listening_by_weekday">By day of the week</string>
+    <!-- Headings of the lists in the app's release notes (About > Version): features added, features removed, features that work differently, bugs fixed -->
+    <string name="section_header_changelog_added">Added</string>
+    <string name="section_header_changelog_removed">Removed</string>
+    <string name="section_header_changelog_changed">Changed</string>
+    <string name="section_header_changelog_fixed">Fixed</string>
     <string name="section_header_source">Source</string>
     <string name="section_header_look_for">Look for</string>
     <string name="section_header_suggested_searches">Suggested searches</string>

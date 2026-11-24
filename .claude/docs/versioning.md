@@ -26,12 +26,16 @@ The highest qualifying change wins; the parts below it reset to 0 (`3.0.4` + a f
 
 ## Changelog
 
-`app/src/main/res/raw/changelogs.yml` holds the notes of the release being cut (the app shows it),
-English only, never translated: lists `adds`, `removes`, `changes`, `fixes`. Describe the feature
+`app/changelogs.yml` (not in git) holds the notes of the release being cut, English only, never
+translated:
+lists `adds`, `removes`, `changes`, `fixes`. An item only some platform flavors have starts with
+their names in brackets (`- "[github, patreon] Discord status"`, `- "[patreon] Weekly cloud
+backup"`); an untagged item goes to every flavor, and the script refuses a name that isn't a
+flavor. Describe the feature
 change, not the library that changed. Entries are short phrases without a trailing period and
 never start with Added/Removed/Changed/Fixed: the list name already says it. Write it before running
-the script; the script doesn't clear
-it.
+the script, which deletes it once the notes are written (not on `--dry-run`); it's never committed,
+the release's notes live in the files made from it.
 
 `.claude/scripts/changelog.sh [<from-ref>] [--write] [--max N]` drafts it with the local Ollama
 model, one commit at a time, from the last stable tag. It keeps only what users directly see or
@@ -40,10 +44,15 @@ drops a fix. It prints the draft (`--write` replaces the file). A
 small model misjudges and can't see that a later commit fixes or reworks an earlier one of the same
 release: read the draft and merge such lines by hand.
 
-The script checks it against the bump (any adds/removes/changes needs at least a minor; a major is
-never inferred) and writes the shortened notes for the stores to
+The script checks it against the bump from the last stable tag (any adds/removes/changes needs at
+least a minor; a major is never inferred; no check before the first stable tag), writes each
+flavor's notes to `app/src/<flavor>/res/raw/changelog.json` (the app
+shows them when the version row in About is tapped, titled with the release's version; betas keep
+the last stable's) and the shortened `foss` notes for the stores to
 `fastlane/metadata/android/en-US/changelogs/<versionCode × 10>.txt` (500 bytes at most, labels
-Added/Removed/Changed/Fixed). Stores get the universal APK, whose code is `versionCode × 10`.
+Added/Removed/Changed/Fixed). Stores get the universal APK, whose code is `versionCode × 10`. Each
+release page shows its own flavor's notes: the GitHub release `github`'s (`release.yml`), the
+GitLab (Patreon) release `patreon`'s (`.gitlab/ci/release.yml`; a beta's is the tag's annotation).
 
 ## Betas
 
@@ -62,4 +71,5 @@ stores) ships the universal one only.
 1. Draft `changelogs.yml` with `changelog.sh`, then edit it (stable only).
 2. `./gradlew test lint`, a release build on an emulator.
 3. `.claude/scripts/bump.sh <minor|patch|major|beta|X.Y.Z> [--dry-run]`.
-4. Commit `bump version to X.Y.Z` (with the new fastlane file), tag `vX.Y.Z`.
+4. Commit `bump version to X.Y.Z` (with the new fastlane file and the flavors' `changelog.json`),
+   tag `vX.Y.Z`.
