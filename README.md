@@ -139,3 +139,31 @@ by** [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=
 
 Kreate is not affiliated with, funded, authorized or endorsed by YouTube, Google LLC or any of their
 affiliates.
+
+# 🤖 AI Usage Disclosure
+
+> This app is built with the assistance of Artificial Intelligence (AI).
+
+For this project, AI is used primarily to hunt down bugs, write basic tests,
+and polish code documentation (e.g., grammar correction and phrasing).
+
+**Artwork & Media:** None of the images in the app screenshots are AI-generated. All visuals are
+curated from external artists
+(see [credits](fastlane/metadata/android/en-US/images/phoneScreenshots/CREDITS.md) for details).
+
+### Other Use Cases
+
+1. **UI Mockups:** Generating preview screens for screenshots to provide visual context for human
+   translators. _**AI is never used to translate text.**_
+2. **Library Analysis:** Reverse-engineering and navigating large third-party libraries to integrate
+   them with Kreate.
+3. **Code Porting:** Adapting external code that wasn't originally written for Java or Kotlin.
+
+### Limiting AI Access to the Codebase (For Developers)
+
+To minimize the amount of raw source code exposed to AI, I maintain a set of helper scripts,
+indexes, and architectural docs inside the [.claude](.claude) directory.
+
+These files act as an abstraction layer—allowing agents like Claude to understand the high-level
+intent of a function or module without reading the underlying implementation.
+This approach speeds up routine tasks while strictly limiting what AI tools are permitted to access.
