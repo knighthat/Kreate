@@ -117,11 +117,12 @@ by** [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=
 
 # 🫂 Credits
 
-| Type     | Authors                                                                                                                                | Notes                                                         |
-|----------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
-| Icons    | [Ionicons](https://github.com/ionic-team/ionicons), [FlatIcon.com](https://www.flaticon.com/), [jaimtres](https://github.com/jaimtres) | **jaimtres** designed RiMusic's Logo, many current icons      |
-| App logo | [Nicouschulas](https://github.com/Nicouschulas)                                                                                        | Previous logos from [MedieroAF](https://github.com/MedieroAF) |
-| Badges   | [Shields.IO](https://shields.io/), [dcbadge](https://github.com/gitlimes/dcbadge)                                                      |                                                               |
+| Type                | Authors                                                                                                                                | Notes                                                                                |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| Icons               | [Ionicons](https://github.com/ionic-team/ionicons), [FlatIcon.com](https://www.flaticon.com/), [jaimtres](https://github.com/jaimtres) | **jaimtres** designed RiMusic's Logo, many current icons                             |
+| App logo            | [Nicouschulas](https://github.com/Nicouschulas)                                                                                        | Previous logos from [MedieroAF](https://github.com/MedieroAF)                        |
+| Badges              | [Shields.IO](https://shields.io/), [dcbadge](https://github.com/gitlimes/dcbadge)                                                      |                                                                                      |
+| Screenshot contents | [Pexels](https://www.pexels.com), [Pixabay](https://pixabay.com), [Unsplash](https://unsplash.com)                                     | [Thumbnails](fastlane/metadata/android/en-US/images/phoneScreenshots) in screenshots |
 
 # 💸 Donation
 
