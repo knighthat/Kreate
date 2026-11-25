@@ -279,9 +279,16 @@ androidComponents {
             tasks.matching { it.name == "pre${variant.name.replaceFirstChar { c -> c.uppercase() }}Build" }
                 .configureEach { dependsOn(verify) }
         }
-        val abi = variant.productFlavors.toMap().getValue("abi")
+        val flavors = variant.productFlavors.toMap()
+        val abi = flavors.getValue("abi")
+        // foss is released as its universal APK alone, under its own name
+        val apkName = when {
+            flavors["platform"] != "foss" -> "kreate-$abi.apk"
+            abi == "universal" -> "kreate-foss.apk"
+            else -> "kreate-foss-$abi.apk"
+        }
         // The public API has no way to rename an APK yet
-        variant.outputs.forEach { (it as VariantOutputImpl).outputFileName.set("kreate-$abi.apk") }
+        variant.outputs.forEach { (it as VariantOutputImpl).outputFileName.set(apkName) }
     }
 }
 

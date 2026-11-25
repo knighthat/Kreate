@@ -70,4 +70,5 @@ English alone (`BuildConfig.LANGUAGES` = `en`) and gets its languages from Crowd
 their texts from the Crowdin SDK (`patreonImplementation` only), its `TranslationUpdates` and
 manifest (removing the
 SDK's unused sign in) in `app/src/patreon/`. APKs are
-`app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`.
+`app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`, foss's
+`kreate-foss.apk` (universal, the one released) or `kreate-foss-<abi>.apk`.

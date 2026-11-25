@@ -157,9 +157,8 @@ jobs:
           shopt -s nullglob
           apks=(app/build/outputs/apk/*/release/*.apk)
           if [ "${#apks[@]}" != 1 ]; then echo "::error::Expected one APK, found: ${apks[*]}"; exit 1; fi
-          # foss and github both name theirs kreate-universal.apk, so foss gets its own name
+          # Gradle names them: kreate-<abi>.apk, foss's kreate-foss.apk
           name=$(basename "${apks[0]}")
-          if [ "${{ matrix.platform }}" = Foss ]; then name="kreate-foss-${name#kreate-}"; fi
           mkdir dist
           cp "${apks[0]}" "dist/$name"
           apksigner=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner
@@ -169,13 +168,13 @@ jobs:
         if: ${{ always() && !env.ACT }}
         run: rm -f .ignore.d/keystores/production.jks
 
-      # Named like the real one: kreate-<abi>.apk, foss as kreate-foss-universal.apk
+      # Named like the real one: kreate-<abi>.apk, foss as kreate-foss.apk
       - name: Phony APK (act)
         if: ${{ env.ACT }}
         run: |
           abi=$(echo "${{ matrix.abi }}" | tr '[:upper:]' '[:lower:]')
           name="kreate-$abi.apk"
-          if [ "${{ matrix.platform }}" = Foss ]; then name="kreate-foss-$abi.apk"; fi
+          if [ "${{ matrix.platform }}" = Foss ]; then name="kreate-foss.apk"; fi
           mkdir dist
           echo "Phony APK from act, ${{ matrix.platform }} ${{ matrix.abi }}, ${{ needs.tag.outputs.tag }}" > "dist/$name"
 
