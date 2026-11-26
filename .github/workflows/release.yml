@@ -119,7 +119,7 @@ jobs:
           java-version: 21
 
       # Checks the wrapper jar and sets up Gradle, without saving or restoring a cache
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
         if: ${{ !env.ACT }}
         with:
           cache-disabled: true
