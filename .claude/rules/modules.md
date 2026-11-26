@@ -63,12 +63,8 @@ with `status_not_available_in` (the platform, uppercase) as the summary, never h
 values are written off at start and whenever they come back (after `Preferences.awaitProfile` for
 a profile's, `Preferences.awaitLoaded` for `GlobalPreferences`). Only `github` updates itself
 (`AppUpdater` in Koin; the others keep `AUTO_UPDATE_MODE` at OFF with `AutoUpdateOff`; its install
-permissions are in `app/src/github/AndroidManifest.xml`): F-Droid forbids it in `foss`. Translations
-split by platform: `foss` and `github` get `app/src/crowdin/` (the merged
-`values-*` in `res/`, a `TranslationUpdates` that does nothing in `kotlin/`); `patreon` ships
-English alone (`BuildConfig.LANGUAGES` = `en`) and gets its languages from Crowdin's manifest and
-their texts from the Crowdin SDK (`patreonImplementation` only), its `TranslationUpdates` and
-manifest (removing the
-SDK's unused sign in) in `app/src/patreon/`. APKs are
+permissions are in `app/src/github/AndroidManifest.xml`): F-Droid forbids it in `foss`. Every
+platform ships the merged translations of `app/src/crowdin/res/values-*` (a resource dir of `main`),
+patreon's own texts' translations sit in `app/src/patreon/res/values-*`. APKs are
 `app/build/outputs/apk/<platform><Abi>/<type>/kreate-<abi>.apk`, foss's
 `kreate-foss.apk` (universal, the one released) or `kreate-foss-<abi>.apk`.

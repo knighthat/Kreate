@@ -206,9 +206,9 @@ class ProfilesActivity : ComponentActivity() {
         }
     }
 
-    // In the language picked in the app, see AppLanguage, with texts translated since the build
+    // In the language picked in the app, see AppLanguage
     override fun attachBaseContext(newBase: Context) =
-        super.attachBaseContext(TranslationUpdates.wrap(AppLanguage.wrap(newBase)))
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

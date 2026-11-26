@@ -12,7 +12,7 @@
 #
 # Both name the Crowdin branch after the git branch. A scheduled pipeline always starts from the
 # default branch; pick another one in Build > Pipelines > New pipeline, together with the variable
-# CROWDIN_ACTION (upload or download, download when left out; release is crowdin-release.yml's).
+# CROWDIN_ACTION (upload or download, download when left out).
 #
 # Needs the CI/CD variables CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN (masked) and
 # CROWDIN_DEPLOY_KEY (type File, the private half of a deploy key with write access). The public
@@ -62,6 +62,7 @@ download:
     # Every translation comes fresh from Crowdin: the files crowdin.yml writes go first, English
     # (values/, en-US/) and the other resources stay
     - find app/src/crowdin/res -path 'app/src/crowdin/res/values-*/*' \( -name '*.strings.xml' -o -name plurals.xml \) -delete
+    - find app/src/patreon/res -path 'app/src/patreon/res/values-*/*' -name '*.strings.xml' -delete
     - find fastlane/metadata/android -mindepth 2 -maxdepth 2 ! -path '*/en-US/*' \( -name full_description.txt -o -name short_description.txt \) -delete
     # A file that isn't fully translated comes down too, with its translated texts only, whatever
     # the project settings say: without it Crowdin left those files out and the step above deleted them

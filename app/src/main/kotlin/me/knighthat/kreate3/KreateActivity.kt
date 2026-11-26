@@ -145,22 +145,15 @@ class KreateActivity : ComponentActivity() {
     // Read again on every resume: a grant from a prompt or the system settings lands there
     private val audioGranted = MutableStateFlow(false)
 
-    // In the language picked in the app, see AppLanguage, with texts translated since the build
+    // In the language picked in the app, see AppLanguage
     override fun attachBaseContext(newBase: Context) =
-        super.attachBaseContext(TranslationUpdates.wrap(AppLanguage.wrap(newBase)))
+        super.attachBaseContext(AppLanguage.wrap(newBase))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
         installSplashScreen().setKeepOnScreenCondition { !isReady }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        // A language got its first texts after this screen was made (patreon)
-        val delivered = TranslationUpdates.delivered.value
-        lifecycleScope.launch {
-            TranslationUpdates.delivered.first { it != delivered }
-            recreate()
-        }
 
         // Requires context, must run after `super.onCreate(savedInstanceState)`
         isSetup = setupCompletedFile().exists()

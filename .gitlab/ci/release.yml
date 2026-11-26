@@ -33,8 +33,6 @@
 #   PRODUCTION_KEYSTORE                type File, the production.jks keystore
 #   PRODUCTION_STORE_PASSWORD          the keystore's password
 #   PRODUCTION_PATREON_KEY_PASSWORD    the password of the "kreate" key
-#   CROWDIN_DISTRIBUTION_HASH          the hash of the Crowdin distribution patreon's languages come
-#                                      from (Crowdin > Distributions)
 #   KREATE_API_URL                     https://api.knighthat.me, the Patreon sign in (:api reads it
 #                                      when it builds; without it the build has no sign in)
 #   KREATE_FILES_URL                   https://kreate.knighthat.me, the cloud backups (the same)
@@ -86,7 +84,7 @@ build:
     - yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
   script:
     - |
-      for v in PRODUCTION_KEYSTORE PRODUCTION_STORE_PASSWORD PRODUCTION_PATREON_KEY_PASSWORD CROWDIN_DISTRIBUTION_HASH KREATE_API_URL KREATE_FILES_URL; do
+      for v in PRODUCTION_KEYSTORE PRODUCTION_STORE_PASSWORD PRODUCTION_PATREON_KEY_PASSWORD KREATE_API_URL KREATE_FILES_URL; do
         if [ -z "$(printenv "$v")" ]; then echo "$v is not set (is the tag protected?)"; exit 1; fi
       done
     - mkdir -p .ignore.d/keystores

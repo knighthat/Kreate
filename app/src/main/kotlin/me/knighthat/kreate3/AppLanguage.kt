@@ -27,7 +27,6 @@ import androidx.core.content.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.AppLanguage.FILE
 import me.knighthat.kreate3.AppLanguage.displayName
@@ -52,28 +51,15 @@ object AppLanguage {
     private const val FILE = "app_language"
     private const val KEY_TAG = "tag"
 
-    // The last list of TranslationUpdates and the locales sorted with it
-    @Volatile
-    private var sorted: Pair<List<Locale>?, List<Locale>>? = null
-
     /**
-     * Languages the app has texts in: English and every translation Crowdin merged into
-     * `src/crowdin/res/` before the build (foss, github; see `crowdin.yml` and
-     * `app/build.gradle.kts`), or English and the languages of Crowdin's distribution (patreon,
-     * see [TranslationUpdates.languages]). Sorted by [displayName].
+     * Languages the APK has texts in: English and every translation Crowdin merged into `res/`
+     * before the build, see `crowdin.yml` and `app/build.gradle.kts`. Sorted by [displayName].
      */
-    val available: List<Locale>
-        get() {
-            val online = TranslationUpdates.languages.value
-            sorted?.takeIf { it.first === online }?.let { return it.second }
-
-            val locales = (BuildConfig.LANGUAGES.split(',').map(Locale::forLanguageTag)
-                    + online.orEmpty()).distinct()
-            val collator = Collator.getInstance(Locale.ROOT)
-            val result = locales.sortedWith(compareBy(collator) { displayName(it, locales) })
-            sorted = online to result
-            return result
-        }
+    val available: List<Locale> by lazy {
+        val locales = BuildConfig.LANGUAGES.split(',').map(Locale::forLanguageTag)
+        val collator = Collator.getInstance(Locale.ROOT)
+        locales.sortedWith(compareBy(collator) { displayName(it, locales) })
+    }
 
     /**
      * One of [available] for a language [tag], `null` for an empty one (the device's) or a
@@ -104,8 +90,6 @@ object AppLanguage {
      */
     fun follow(context: Context, scope: CoroutineScope, profiles: ProfileManager) =
         scope.launch {
-            // Patreon's languages are known once its kept manifest was read
-            TranslationUpdates.languages.first { it != null }
             profiles.activeId.filterNotNull().collectLatest { profileId ->
                 Preferences.awaitProfile(profileId)
 

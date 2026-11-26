@@ -19,7 +19,6 @@
 import com.android.build.api.variant.DeviceTestBuilder
 import com.android.build.api.variant.HostTestBuilder
 import com.android.build.api.variant.impl.VariantOutputImpl
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -42,7 +41,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Translations are merged into src/crowdin/res/ before each release (crowdin.yml), a
-        // resource dir of foss and github only. This only counts the supported languages: English
+        // resource dir of every platform. This only counts the supported languages: English
         // and every folder with texts, "values-pt-rBR" as "pt-BR", "values-b+sr+Latn" as "sr-Latn"
         val languages = file("src/crowdin/res")
             .listFiles { dir ->
@@ -124,31 +123,6 @@ android {
             versionNameSuffix = "+$name"
             buildConfigField("String", "HOMEPAGE_URL", "\"https://patreon.com/knighthat\"")
             buildConfigField("boolean", "NON_FREE_NET", "true")
-            // Has no translations in its APK (src/crowdin stays out), its others come from Crowdin's
-            // distribution (src/patreon's TranslationUpdates)
-            buildConfigField("String", "LANGUAGES", "\"en\"")
-            // The Crowdin distribution those come from: the environment's CROWDIN_DISTRIBUTION_HASH
-            // (CI), else the same key in local.properties (local builds); a build with neither has
-            // English only
-            val localProperties = rootProject.layout.projectDirectory.file("local.properties")
-            val crowdinHash = providers.environmentVariable("CROWDIN_DISTRIBUTION_HASH")
-                .orElse(
-                    providers.fileContents(localProperties)
-                        .asText
-                        .map { text ->
-                            Properties()
-                                .apply { load(text.reader()) }
-                                .getProperty("CROWDIN_DISTRIBUTION_HASH")
-                                .orEmpty()
-                        }
-                )
-                .orNull
-                .orEmpty()
-                .trim()
-            require(crowdinHash.matches(Regex("[0-9a-z]*"))) {
-                "CROWDIN_DISTRIBUTION_HASH isn't a hash"
-            }
-            buildConfigField("String", "CROWDIN_DISTRIBUTION_HASH", "\"$crowdinHash\"")
         }
 
         // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
@@ -177,8 +151,7 @@ android {
     }
 
     // What talks to non-free network services (Discord's presence, Shazam's recognition), in every
-    // platform but foss, which has its own src/foss in their place. Crowdin's texts translated after
-    // the build are patreon's own (src/patreon). Stays after
+    // platform but foss, which has its own src/foss in their place. Stays after
     // productFlavors:
     // a flavor's source set exists only once the flavor does ("AndroidSourceSet with name … not
     // found" otherwise)
@@ -186,12 +159,8 @@ android {
         listOf("github", "patreon").forEach {
             getByName(it).kotlin.directories.add("src/nonfree/kotlin")
         }
-        // The translations Crowdin merges, with a TranslationUpdates that keeps them; patreon ships
-        // none and gets its texts from the Crowdin SDK instead (src/patreon)
-        listOf("foss", "github").forEach {
-            getByName(it).res.directories.add("src/crowdin/res")
-            getByName(it).kotlin.directories.add("src/crowdin/kotlin")
-        }
+        // The translations Crowdin merges, in every platform
+        getByName("main").res.directories.add("src/crowdin/res")
     }
 
     compileOptions {
@@ -310,8 +279,6 @@ dependencies {
     "githubImplementation"(project(":shazam"))
     "patreonImplementation"(project(":discord"))
     "patreonImplementation"(project(":shazam"))
-    // Texts translated after the build, see src/patreon's TranslationUpdates
-    "patreonImplementation"(libs.crowdin.sdk)
     // The project's own API: the Patreon sign in, see src/patreon
     "patreonImplementation"(project(":api"))
 

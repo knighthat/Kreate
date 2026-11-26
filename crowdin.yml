@@ -3,11 +3,10 @@
 #
 # Only the English texts (app/src/main/res/values/, and app/src/patreon/res/values/ for the patreon
 # build's own) are written in this repo. Translations are
-# downloaded into app/src/crowdin/res/values-<code>/ before each release, a resource dir of the foss
-# and github builds only (patreon ships none); the app counts every folder it finds there as a
-# supported language (see app/build.gradle.kts). The patreon build pulls its texts from the
-# "android-app-texts" distribution instead (TranslationUpdates in app/src/patreon), which serves what
-# it had at its last release.
+# downloaded into app/src/crowdin/res/values-<code>/ before each release, a resource dir of every
+# build; the app counts every folder it finds there as a supported language (see
+# app/build.gradle.kts). The patreon build's own texts download next to their source, into
+# app/src/patreon/res/values-<code>/.
 #
 # Credentials come from the environment, never from this file:
 #   CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN
@@ -25,10 +24,9 @@ files:
     translation: /app/src/crowdin/res/values-%android_code%/%original_file_name%
     # Untranslated texts are left out, Android shows the English ones in their place
     skip_untranslated_strings: true
-  # Texts only the patreon build has. It reads them from the distribution like the rest, so the
-  # copies downloaded here go nowhere (git-ignored): the foss and github builds don't have these keys
+  # Texts only the patreon build has, the foss and github builds don't have these keys
   - source: /app/src/patreon/res/values/*.strings.xml
-    translation: /app/src/patreon/crowdin/values-%android_code%/%original_file_name%
+    translation: /app/src/patreon/res/values-%android_code%/%original_file_name%
     skip_untranslated_strings: true
   - source: /app/src/main/res/values/plurals.xml
     translation: /app/src/crowdin/res/values-%android_code%/plurals.xml

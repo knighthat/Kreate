@@ -30,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.AppIcon
 import me.knighthat.kreate3.AppLanguage
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.TranslationUpdates
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
@@ -47,7 +46,6 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import java.util.Locale
-import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /** The Crowdin project, where the app is translated and new languages are asked for. */
 private const val CROWDIN_PROJECT_URL = "https://translate.kreate.knighthat.me/project/kreate"
@@ -69,8 +67,6 @@ fun UiSettingsScreen(
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
     val language by Preferences.LANGUAGE.collectAsStateWithLifecycle()
-    // Patreon's languages are known once its kept manifest was read
-    val online by TranslationUpdates.languages.collectFlowAsState()
     val openLink = rememberOpenLink()
 
     UiSettingsContent(
@@ -84,7 +80,7 @@ fun UiSettingsScreen(
             it.apply(context)
             appIcon = it
         },
-        language = remember(language, online) { AppLanguage.of(language) },
+        language = AppLanguage.of(language),
         onOpenLanguages = onOpenLanguages,
         onOpenCrowdin = { openLink(CROWDIN_PROJECT_URL) },
         fontSettings = { FontSettings() },

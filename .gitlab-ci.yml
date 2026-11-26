@@ -7,6 +7,5 @@ variables:
 
 include:
   - local: .gitlab/ci/crowdin.yml
-  - local: .gitlab/ci/crowdin-release.yml
   - local: .gitlab/ci/release.yml
   - local: .gitlab/ci/renovate.yml

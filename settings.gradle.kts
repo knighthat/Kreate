@@ -37,14 +37,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // InnerTubeX, its cipher engine QuackJS and the Crowdin SDK are only published on JitPack,
-        // nothing else is fetched from it
+        // InnerTubeX and its cipher engine QuackJS are only published on JitPack, nothing else
+        // is fetched from it
         exclusiveContent {
             forRepository { maven("https://jitpack.io") }
             filter {
                 includeGroup("com.github.MetrolistGroup.innertubex")
                 includeGroup("com.github.MetrolistGroup.quackjs")
-                includeGroup("com.github.crowdin.mobile-sdk-android")
             }
         }
     }
