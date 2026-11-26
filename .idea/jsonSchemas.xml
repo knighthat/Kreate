@@ -44,7 +44,7 @@
               <option name="patterns">
                 <list>
                   <Item>
-                    <option name="path" value=".gitlab/ci/crowdin.yml" />
+                    <option name="path" value="crowdin.yml" />
                   </Item>
                 </list>
               </option>
@@ -83,6 +83,9 @@
                   </Item>
                   <Item>
                     <option name="path" value=".gitlab/ci/crowdin-release.yml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value=".gitlab/ci/crowdin.yml" />
                   </Item>
                   <Item>
                     <option name="path" value=".gitlab-ci.yml" />
