@@ -178,7 +178,7 @@ jobs:
           mkdir dist
           echo "Phony APK from act, ${{ matrix.platform }} ${{ matrix.abi }}, ${{ needs.tag.outputs.tag }}" > "dist/$name"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: apk-${{ matrix.platform }}-${{ matrix.abi }}
           # The one APK of this job
