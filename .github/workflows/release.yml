@@ -126,7 +126,7 @@ jobs:
 
       # Restore only (cache/restore never saves); the cache is filled by cache.yml, keep key and paths
       # in sync with it. No cache found is fine, the build then starts from scratch
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         if: ${{ !env.ACT }}
         with:
           path: |
