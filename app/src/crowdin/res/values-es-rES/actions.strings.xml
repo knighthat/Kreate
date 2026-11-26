@@ -26,21 +26,31 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_ok">OK</string>
     <string name="action_skip">Saltar</string>
+    <!-- Confirms looking up the songs of a playlist file again on the music source before importing them -->
+    <string name="action_look_up">Buscar</string>
     <string name="action_forget">Olvidar</string>
     <string name="action_sign_in">Iniciar sesión</string>
     <string name="action_update">Actualizar</string>
     <string name="action_sign_out">Cerrar sesión</string>
     <string name="action_pick_backup">Elegir copia de seguridad</string>
-    <string name="action_trust_new_certificate">Confiar en nuevo certificado</string>
+    <string name="action_trust_new_certificate">Confiar en el certificado</string>
     <string name="action_not_now">Ahora no</string>
     <string name="action_accept">Aceptar</string>
     <string name="action_deny">Rechazar</string>
     <string name="action_search">Buscar</string>
     <string name="action_create">Crear</string>
     <string name="action_try_again">Intentar de nuevo</string>
+    <!-- Runs a check that already ran once again, e.g. asks an online service for the user's membership -->
+    <string name="action_check_again">Comprobar de nuevo</string>
+    <!-- Puts the app's data back from a backup -->
+    <string name="action_restore">Restaurar</string>
     <string name="action_retry">Reintentar</string>
+    <string name="action_show_matches">Mostrar coincidencias</string>
+    <string name="action_view_on">Ver en %1$s</string>
     <string name="action_undo">Deshacer</string>
     <string name="action_reload">Recargar</string>
+    <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
+    <string name="action_import_lyrics_file">Importar desde archivo</string>
     <string name="action_account_switch">Cambiar</string>
     <string name="action_delete">Borrar</string>
     <string name="action_add">Añadir</string>
@@ -52,9 +62,11 @@
     <string name="action_reset">Restablecer</string>
     <string name="action_choose_image">Elegir imagen</string>
     <string name="menu_edit">Editar</string>
+    <string name="menu_recognize_song">Reconocer canción</string>
+    <string name="menu_remove_imported_lyrics">Eliminar letra importada</string>
     <string name="action_use_original">Usar original</string>
-    <string name="action_clear">Restablecer</string>
-    <string name="action_undislike">Quitar el no me gusta</string>
+    <string name="action_clear">Borrar</string>
+    <string name="action_undislike">Quitar dislike</string>
     <string name="action_unlike">Quitar me gusta</string>
     <string name="action_grant">Permitir</string>
     <string name="action_go_back">Volver</string>
@@ -64,9 +76,9 @@
     <string name="action_move_to_downloads">Mover a descargas</string>
     <string name="action_remove_from_cache">Eliminar del caché</string>
     <string name="action_play">Reproducir</string>
-    <string name="action_play_next">Siguiente</string>
+    <string name="action_play_next">Oír a cont.</string>
     <string name="action_queue">Cola</string>
-    <string name="action_pause">Pausa</string>
+    <string name="action_pause">Pausar</string>
     <string name="action_resume">Reanudar</string>
     <string name="menu_shortcut_dislike">No me gusta</string>
     <string name="menu_shortcut_like">Me gusta</string>
@@ -76,31 +88,37 @@
     <string name="menu_shortcut_downloading">Descargando</string>
     <string name="menu_shortcut_downloaded">Descargada</string>
     <string name="menu_shortcut_paused">En pausa</string>
-    <string name="menu_play_next">Reproducir siguiente</string>
-    <string name="menu_shortcut_play_next">Siguiente</string>
-    <string name="menu_add_to_queue">Añadir a la cola</string>
-    <string name="menu_add_to_playlist">Añadir a lista de reproducción</string>
+    <string name="menu_play_next">Escuchar a continuación</string>
+    <string name="menu_shortcut_play_next">Oír a cont.</string>
+    <string name="menu_add_to_queue">Último en la cola</string>
+    <string name="menu_shortcut_add_to_queue">Últ. en cola</string>
+    <string name="menu_add_to_playlist">Añadir a listas</string>
     <string name="menu_start_radio">Iniciar radio</string>
     <string name="menu_details">Detalles</string>
     <string name="menu_shortcut_play">Reproducir</string>
     <string name="menu_shortcut_follow">Seguir</string>
     <string name="menu_shortcut_bookmark">Favorito</string>
+    <string name="menu_shortcut_add_to_library">A biblioteca</string>
     <string name="menu_statistics">Estadísticas</string>
     <string name="menu_go_to_album">Ir al álbum</string>
     <string name="menu_title_artists">Artistas</string>
-    <string name="menu_title_add_to_playlist">Añadir a lista de reproducción</string>
-    <string name="menu_remove_from_playlist">Eliminar de la lista de reproducción</string>
+    <string name="menu_title_add_to_playlist">Añadir a listas</string>
+    <string name="menu_remove_from_playlist">Eliminar de la lista</string>
     <string name="menu_delete_from_history">Eliminar del historial</string>
+    <string name="menu_shortcut_play_all">Oír todo</string>
     <string name="menu_shuffle">Aleatorio</string>
     <string name="menu_shortcut_shuffle">Aleatorio</string>
-    <string name="menu_shortcut_create_playlist">Nueva lista</string>
+    <string name="menu_shortcut_open_random">Abre al azar</string>
+    <string name="menu_shortcut_play_random">Oír en aleatorio</string>
     <string name="menu_show_disliked">Mostrar no me gusta</string>
     <string name="menu_cached_only">Solo en caché</string>
     <string name="menu_downloaded_only">Solo descargadas</string>
-    <string name="menu_bookmarked_only">Solo favoritas</string>
+    <string name="menu_bookmarked_only">Solo en favoritos</string>
     <string name="menu_followed_only">Solo seguidos</string>
     <string name="menu_monthly_only">Solo mensual</string>
-    <string name="menu_shortcut_delete_all">Borrar todos</string>
+    <string name="menu_delete_all">Borrar todo</string>
+    <string name="menu_shortcut_undislike_all">Quitar dislikes</string>
+    <string name="menu_shortcut_unlike_all">Quitar likes</string>
     <string name="menu_off">Apagado</string>
     <string name="menu_end_of_song">Fin de la canción</string>
     <string name="action_copy">Copiar</string>
@@ -109,4 +127,8 @@
     <string name="action_select">Seleccionar</string>
     <string name="action_clear_all">Borrar todo</string>
     <string name="action_select_all">Seleccionar todo</string>
+    <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
+    <string name="menu_import_from_file">Importar desde archivo</string>
+    <string name="action_clean_up">Limpieza</string>
+    <!-- Never offers this version of the app again on its own -->
 </resources>

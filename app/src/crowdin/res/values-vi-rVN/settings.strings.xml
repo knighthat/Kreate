@@ -66,6 +66,7 @@
     <string name="setting_title_version">Phiên bản</string>
     <string name="setting_title_license">Giấy phép</string>
     <string name="setting_description_license">GNU General Public License v3.0 hoặc mới hơn</string>
+    <string name="setting_title_open_source_licenses">Giấy phép mã nguồn mở</string>
     <string name="setting_description_open_source_licenses">Thư viện đã dùng để phát triển ứng dụng kèm với giấy phép</string>
     <string name="setting_title_source_code">Mã nguồn</string>
     <string name="setting_description_source_code">Xem chi tiết trên GitHub</string>
@@ -124,6 +125,10 @@
     <string name="setting_description_confirm_exit_status_off">Không cần xác nhận</string>
     <string name="setting_title_notification_opens_player">Mở trình phát từ thanh thông báo</string>
     <string name="setting_description_notification_opens_player">Nhấn trình phát trên thanh thông báo mở ứng dụng và trình phát</string>
+    <string name="setting_header_privacy">Bảo mật</string>
+    <string name="setting_title_screenshot_credentials">Chụp hình thông tin</string>
+    <string name="setting_description_screenshot_credentials_on">Cho phép chụp tất cả màn hình</string>
+    <string name="setting_description_screenshot_credentials_off">Chụp hình sẽ bị khóa và ứng dụng gần đây sẽ không hiển thị gì</string>
     <string name="setting_title_page_button">Nút tác vụ</string>
     <string name="setting_title_first_button">Nút chính</string>
     <string name="setting_title_second_button">Nút phụ</string>
@@ -132,7 +137,8 @@
     <string name="setting_title_icon_only">Chỉ hiện nút</string>
     <string name="setting_description_icon_only">Ẩn tên của các nút</string>
     <string name="setting_title_playlist_initial">Lấy chữ cài đầu làm ảnh bìa</string>
-    <string name="setting_description_playlist_initial">Khi danh sách nhạc không có ảnh bìa, chữ cái đầu tiên của tên sẽ được dùng</string>
+    <string name="setting_description_playlist_initial_on">Dùng từ đầu tiên làm ảnh đại diện</string>
+    <string name="setting_description_playlist_initial_off">Đặt ảnh thay thế thành ảnh đại diện</string>
     <string name="setting_title_app_icon">Biểu tượng</string>
     <string name="setting_title_app_font">Phông chữ ứng dụng</string>
     <string name="setting_title_lyrics_font">Phông chữ lời</string>
@@ -145,6 +151,10 @@
     <string name="setting_description_read_timeout">Chờ nếu kết nối không ổn định</string>
     <string name="setting_title_retries">Số lần thử lại</string>
     <string name="setting_description_retries">Thử lại nếu yêu cầu bị trả về lỗi</string>
+    <!-- Title of a slider: how many song searches may start in a second when many songs are searched one after another -->
+    <string name="setting_title_searches_per_second">Tốc độ tìm kiếm</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Under the slider of how many song searches may start in a second when many songs are searched one after another, like the songs of a playlist file being imported -->
+    <string name="setting_description_searches_per_second">Kiểm soát bao nhiêu lượt tìm tới %1$s mỗi giây</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Configure" is a verb (imperative), the title of a row that opens that source's settings -->
     <string name="setting_title_configure_source">Thiết lập %1$s</string>
     <!-- proxy -->
@@ -191,13 +201,10 @@
     <string name="setting_title_radio_from_search">Radio trang tìm kiếm</string>
     <string name="setting_title_keep_the_queue">Lưu nhạc đang phát</string>
     <string name="setting_description_keep_the_queue">Khôi phục danh sách nhạc đang phát khi mở ứng dụng</string>
+    <!-- %1$s is a counted plural of songs, e.g. "5 songs". Radio and long playlists add songs to the queue as it plays; "left" = still to play after the current one -->
     <string name="setting_title_save_interval">Khoảng chờ trước khi lưu</string>
     <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). How often the playback queue is saved; "the song plays" = is being played -->
     <string name="setting_description_save_interval">Lưu nhạc đang phát mỗi %1$s khi trình phát đang chạy</string>
-    <string name="setting_title_load_next_song_ahead">Tải bài nhạc kế tiếp</string>
-    <!-- %1$s is a duration, e.g. "10 seconds". How much of the next song is fetched before the current one ends ("load" = download into memory, not upload) -->
-    <string name="setting_description_load_next_song_ahead">Tải trước %1$s của bài hát kế tiếp</string>
-    <string name="setting_description_load_next_song_ahead_off">Chỉ tải khi nhạc bắt đầu</string>
     <string name="setting_title_when_a_song_fails">Khi bài hát tải thất bại</string>
     <string name="setting_title_login_for_playback">Dùng đăng nhập khi phát</string>
     <string name="setting_description_login_for_playback_never">Không dùng thông tin đăng nhập</string>
@@ -214,8 +221,6 @@
     <string name="setting_title_load_ahead">Tải trước đoạn kế tiếp</string>
     <!-- %1$s is a duration, e.g. "30 seconds". How far ahead of the playback position the song is loaded (downloaded into memory) -->
     <string name="setting_description_load_ahead">Tải trước %1$s khi đang phát</string>
-    <!-- %1$s is the name of this app, Kreate. With no limit the app loads the whole song -->
-    <string name="setting_description_load_ahead_unlimited">%1$s tải nhiều nhất có thể</string>
     <string name="setting_title_load_before_playing">Tải trước khi bắt đầu phát</string>
     <string name="setting_title_keep_what_was_played">Lưu phân khúc đã phát</string>
     <!-- %1$s is a duration with its unit, e.g. "30 seconds" (a counted plural). Seeking back = moving the playback position backwards; "it" = the part of the song already played -->
@@ -226,7 +231,7 @@
     <string name="setting_description_pause_history_on">Không ghi nhạc đã nghe vào lịch sử</string>
     <string name="setting_description_pause_history_off">Ghi chép lịch sử nghe</string>
     <string name="setting_title_minimum_play_time">Tối thiểu</string>
-    <string name="setting_description_minimum_play_time">Thời gian nghe tối thiểu để lưu vào lịch sử nghe</string>
+    <string name="setting_description_minimum_play_time">Thời gian nghe tối thiểu để ghi nhận vào lịch sử nghe</string>
     <string name="setting_title_lyrics_source">Từ</string>
     <string name="setting_title_preferred_timing">Đồng bộ lời bài hát</string>
     <string name="setting_title_always_fetch_lyrics">Luôn tải lời bài hát</string>
@@ -278,8 +283,6 @@
     <string name="setting_description_direct_play">Nhạc nghe tự %1$s sẽ không được lưu vào kho tạm thời</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The song cache (temporary copies of songs) is switched off -->
     <string name="setting_description_direct_play_status_cache_off">Bộ nhớ tạm đã bị tắt, nhạc từ %1$s sẽ không bao giờ được lưu khi nghe</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
-    <string name="setting_title_account_status_signed_out">%1$s đã vô hiệu hóa phiên này</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may change this shared setting -->
     <string name="setting_description_default_profile_only">Áp dụng cho mọi hồ sơ, chỉ %1$s mới có thể chỉnh</string>
     <!-- %1$s is the name of the default profile in quotes (the user's own text). A profile is a separate set of settings and library; only that profile may create or restore a backup -->
@@ -297,16 +300,7 @@
     <string name="setting_description_allow_self_signed_certificate_status_changed">Chứng chỉ đã thay đổi. Nhấn đế xem thay đổi</string>
     <!-- "Sign in" is the name of a settings row; the address is entered there -->
     <string name="setting_description_server_status_no_server">Chưa thêm máy chủ, vào Đăng nhập để thêm</string>
-    <string name="setting_description_status_not_signed_in">Chưa đăng nhập</string>
-    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session -->
-    <string name="setting_description_configure_youtube_status_signed_out">%1$s đã vô hiệu hóa phiên này</string>
     <string name="setting_description_configure_opensubsonic_status_no_server">Chưa nhập máy chủ</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Can't reach" = no network connection to the server -->
-    <string name="setting_description_configure_opensubsonic_status_unreachable">Không thể truy cập %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_status_certificate_untrusted">Chứng chỉ của %1$s chưa được tin</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
-    <string name="setting_description_status_certificate_changed">Chứng chỉ của %1$s đã thay đổi</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). The address entered doesn't belong to a server that speaks it -->
     <string name="setting_description_configure_opensubsonic_status_not_opensubsonic">Không phải máy chủ %1$s</string>
     <string name="setting_description_account_status_session_ended">Phiên bản đã kết thúc, nhấn để đăng nhập lại</string>
@@ -314,17 +308,14 @@
     <string name="setting_description_account_status_failed">%1$s, nhấn để thử lại</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection -->
     <string name="setting_description_account_status_unreachable">Không thể truy cập %1$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
-    <string name="setting_description_server_status_checking">Đang kiểm tra %1$s…</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
     <string name="setting_description_server_status_unreachable">Không thể truy cập %1$s: %2$s</string>
-    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "its own" = a self-signed certificate that the server made itself -->
-    <string name="setting_description_server_status_certificate_untrusted">%1$s cung cấp chứng chỉ chưa được tin. Nếu dùng chứng chỉ tự ký, hãy bật cho phép chứng chỉ tự ký</string>
+    <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "Presents" = the server hands over its security certificate when the app connects; "self-signed ones" = certificates a server made itself; "below" = the Allow self-signed certificate switch, the next row on the page -->
+    <string name="setting_description_server_status_certificate_untrusted">%1$s trình chứng chỉ chưa được tin. Chấp nhận chứng chỉ này bên dưới</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; "review" = look at the new certificate and decide whether to trust it -->
     <string name="setting_description_server_status_certificate_changed">%1$s đã thay đổi chứng chỉ. Bấm để xem</string>
     <!-- %1$s is the name of a protocol, OpenSubsonic (proper noun). "This address" = the address the user entered, which isn't a server that speaks it -->
     <string name="setting_description_server_status_not_opensubsonic">Địa chỉ không phải là máy chủ %1$s</string>
-    <string name="setting_description_sign_in_status_checking">Đang đăng nhập…</string>
     <string name="setting_description_sign_in_status_wrong_credentials">Sai tên đăng nhập hoặc mật khẩu</string>
     <string name="setting_description_sign_in_status_invalid_api_key">Mã API không hợp lệ</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$d is a status code (a number) the server answered with, e.g. 401. The login was rejected -->
@@ -334,11 +325,6 @@
     <string name="setting_description_sign_in_status_signed_in_as">Đăng nhập với tên %1$s</string>
     <string name="setting_description_sign_in_status_signed_in_with_api_key">Đăng nhập bằng mã API</string>
     <string name="setting_description_sign_in_status_waiting_for_server">Đang chờ máy chủ xác nhận thông tin đăng nhập</string>
-    <string name="setting_description_restore_status_reading">Đang đọc…</string>
-    <string name="setting_description_restore_status_failed">Không để đọc sao lưu</string>
-    <string name="setting_description_back_up_status_saving">Đang lưu…</string>
-    <string name="setting_description_back_up_status_saved">Sao lưu thành công</string>
-    <string name="setting_description_back_up_status_failed">Không thể tạo bản sao lưu</string>
     <string name="setting_header_logging">Nhật ký</string>
     <string name="setting_title_log_level">Mức độ hiển thị</string>
     <string name="setting_title_log_rollover_size">Ngưỡng chuyển log</string>
@@ -356,4 +342,46 @@
     <string name="setting_title_public_playlist">Công khai</string>
     <string name="setting_description_public_playlist">Người dùng khác trên máy chủ có thể xem</string>
     <string name="setting_title_playlist_privacy">Ai có thể xem</string>
+    <string name="setting_header_integrations">Tích Hợp</string>
+    <!-- %1$s is Shazam, the song recognition service -->
+    <string name="setting_title_shazam_enabled">Nhận diện nhạc bằng %1$s</string>
+    <!-- %1$s is Shazam. Holding the Songs tab at the bottom of the library listens to the song playing nearby -->
+    <string name="setting_description_shazam_enabled">Nhấn giữ nút Nhạc trên màn hình chính để gửi ghi âm tới %1$s</string>
+    <!-- Main switch of the Discord page; "activity" = what the user plays and browses, shown on their Discord profile -->
+    <string name="setting_title_discord_enabled">Hiển thị hoạt động trên %1$s</string>
+    <!-- %1$s is Discord. Text under the main switch while it is on -->
+    <string name="setting_description_discord_enabled_on">Nhạc đang phát hoặc trang đang xem sẽ được hiển thị trên %1$s</string>
+    <string name="setting_description_discord_enabled_off">Không đăng gì lên %1$s</string>
+    <!-- %1$s is Discord. Row to sign in, with what signing in does under it -->
+    <string name="setting_description_sign_in_discord">Cho phép ứng dụng thay đổi trang thái trên %1$s</string>
+    <!-- Network page row of the Patreon account while nobody is signed in -->
+    <string name="setting_description_configure_patreon_status_signed_out">Đăng nhập để tạo bản sao lưu trên đám mây</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). The Patreon account belongs to the device, so only that profile may sign in or out -->
+    <string name="setting_description_patreon_status_default_profile_only">Chỉ %1$s mới có thể đăng nhập hoặc đăng xuất</string>
+    <!-- Text under each source's switch on the Discord page -->
+    <string name="setting_description_discord_source">Nhạc, album, nghệ sĩ, danh sách nhạc, và tìm kiếm</string>
+    <!-- Text under the OpenSubsonic and "On device" switches on the Discord page: their albums, artists and playlists don't show -->
+    <string name="setting_description_discord_source_uploaded">Chỉ nhạc và tìm kiếm</string>
+    <!-- Switch under YouTube Music on the Discord page: whether the user's private YouTube Music playlists show while their page is open -->
+    <string name="setting_title_discord_private_playlists">Chiếu danh sách mật</string>
+    <!-- Under "Show private playlists": a private playlist shows without the button that opens it -->
+    <string name="setting_description_discord_private_playlists">Chỉ hiển thị tên, nút xem danh sách thì không</string>
+    <string name="setting_header_discord_covers">Ảnh bìa</string>
+    <!-- %1$s is litterbox, the host the covers go to. Text under the section's first slider: only some covers are uploaded -->
+    <string name="setting_description_discord_covers">Ảnh bìa sẽ được tải lên %1$s và giữ trong một tiếng</string>
+    <string name="setting_title_discord_cover_resolution">Kích thước tối đa</string>
+    <!-- Section of the Data settings with the rows that delete stored searches and unused library data -->
+    <string name="setting_header_database">Cơ sở dữ liệu</string>
+    <!-- Row of the main Settings list: puts every setting of the active profile back to its default -->
+    <string name="setting_title_reset_settings">Khôi phục về mặc định</string>
+    <string name="setting_description_reset_settings">Đặt cài đặt trên hồ sơ về giá trị mặc định</string>
+    <string name="setting_title_clear_search_history">Xóa lịch sử tìm kiếm</string>
+    <string name="setting_title_clear_listening_history">Xóa lịch sử nghe</string>
+    <string name="setting_title_clean_up_database">Dọn cơ sở dữ liệu</string>
+    <string name="setting_description_clean_up_database">Xóa nhạc, album, nghệ sĩ nếu chưa thay đổi và danh sách nhạc nếu trống</string>
+    <!-- %1$s is the name of the default profile in quotes (the user's own text). The cleanup covers every profile's library, so only that profile may run it -->
+    <string name="setting_description_clean_up_database_status_default_profile_only">Chỉ %1$s mới được dọn</string>
+    <!-- Settings header of the app's own updates, in the build that updates itself from GitHub -->
+    <!-- %1$s is the app's name -->
+    <!-- %1$s is the version of the app installed, e.g. 3.1.0 -->
 </resources>

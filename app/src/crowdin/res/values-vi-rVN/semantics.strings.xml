@@ -80,6 +80,7 @@
     <string name="semantic_remove_songs">Xoá các bài hát</string>
     <string name="semantic_delete_playlist">Xóa danh sách này</string>
     <string name="semantic_edit_playlist">Chỉnh sửa danh sách nhạc</string>
+    <string name="semantic_export_playlist">Xuất danh sách nhạc</string>
     <string name="semantic_restart_the_app">Khởi động lại ứng dụng</string>
     <string name="semantic_restart_the_player">Khỏi động lại trình phát</string>
     <string name="semantic_resume_the_sleep_timer">Tiếp tục hẹn giờ ngủ</string>
@@ -101,4 +102,6 @@
     <string name="semantic_unfollow">Ngưng theo dõi</string>
     <string name="semantic_app_crashed">Kreate đã ngừng hoạt động</string>
     <string name="semantic_selected">Đã chọn</string>
+    <!-- A button that listens to the song playing nearby while held -->
+    <string name="semantic_recognize_song">Nhấn và giữ để ghi âm</string>
 </resources>

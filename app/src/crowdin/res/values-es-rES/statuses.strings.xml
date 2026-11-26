@@ -25,14 +25,49 @@
     <string name="status_signed_in">Sesión iniciada</string>
     <string name="status_unlimited">Ilimitado</string>
     <string name="status_not_set">No establecida</string>
+    <!-- Under a menu entry that is grayed out because its feature is switched off in settings -->
+    <string name="status_disabled_in_settings">Deshabilitado en ajustes</string>
     <string name="optional">Opcional</string>
     <!-- %1$s is a counted time period, e.g. "3 days" or "1 hour", from the plurals day, week, month and year. English word order: the period comes first, then "ago" -->
     <string name="status_ago">Hace %1$s</string>
     <string name="status_granted">Concedido</string>
     <string name="status_unknown_artist">Artista desconocido</string>
+    <string name="status_unknown_file">Archivo desconocido</string>
     <string name="status_no_playlists_yet">Aún no hay listas de reproducción</string>
     <string name="status_no_playlists_to_add_to">No hay listas a las que puedas añadir</string>
     <string name="status_couldnt_load_playlists">No se pudieron cargar las listas</string>
     <string name="status_playlist_empty">Esta lista de reproducción no tiene canciones</string>
     <string name="status_nothing_played">Todavía no has reproducido nada</string>
+    <!-- Under a playlist being imported: %1$s songs of %2$s have been searched for on YouTube Music so far, both numbers formatted, e.g. "Searching 120 of 1,722" -->
+    <string name="status_import_searched">Buscando %1$s de %2$s</string>
+    <!-- Under a playlist just made on a music source that the source doesn't list yet; %1$s is the name of the source, e.g. YouTube Music (proper noun, don't decline it) -->
+    <string name="status_waiting_for_source">Esperando a %1$s</string>
+    <!-- %1$s is the name of the app's build, e.g. FOSS (free and open source software, the build made for F-Droid). Shown for a feature that build leaves out: under the Discord and song recognition rows of Network settings, and as a message when the Songs tab is held to recognize a song -->
+    <string name="status_not_available_in">No disponible en la versión %1$s</string>
+    <string name="status_not_signed_in">Sesión no iniciada</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="status_certificate_untrusted">El certificado de %1$s no es de confianza</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="status_certificate_changed">El certificado de %1$s cambió</string>
+    <!-- %1$s is the name of a music source or the user's server, e.g. YouTube Music or Navidrome (proper noun, don't decline it). "Can't reach" = no network connection to it -->
+    <string name="status_unreachable">No se puede alcanzar %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
+    <string name="status_signed_out">%1$s cerró tu sesión</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
+    <string name="status_checking_server">Comprobando %1$s…</string>
+    <string name="status_signing_in">Iniciando sesión…</string>
+    <string name="status_reading">Leyendo…</string>
+    <string name="status_saving">Guardando…</string>
+    <string name="status_downloading">Descargando…</string>
+    <string name="status_deleting">Borrando…</string>
+    <string name="status_backup_saved">Copia de seguridad guardada</string>
+    <!-- A backup file of the app (profiles, settings and library) couldn't be opened or read -->
+    <string name="status_couldnt_read_backup">No se pudo leer la copia de seguridad</string>
+    <!-- A backup file of the app (profiles, settings and library) couldn't be written -->
+    <string name="status_couldnt_save_backup">No se pudo guardar la copia de seguridad</string>
+    <!-- The sign in page of an online service (e.g. Discord, Patreon) is open in the browser and the app waits for it to finish -->
+    <string name="status_waiting_for_sign_in_page">Esperando a la página de inicio de sesión…</string>
+    <!-- Value of a date row (e.g. a membership's renewal date) when no date is coming -->
+    <string name="status_none_scheduled">No se ha programado nada</string>
+    <!-- An update of the app is being installed -->
 </resources>

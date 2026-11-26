@@ -21,6 +21,7 @@
     <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
     <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
     <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
+    <!-- %1$s is the name of the user's server as the server calls itself, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; the user can allow it in the app's settings once setup is done -->
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
     <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->

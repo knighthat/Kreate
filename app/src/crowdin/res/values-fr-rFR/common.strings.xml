@@ -29,6 +29,7 @@
     <string name="sleep_timer_to_end_of_song">Jusqu\'à la fin du morceau</string>
     <string name="playlist_type_monthly">Mensuel</string>
     <string name="source_local">Sur l\'appareil</string>
+    <!-- Shown as a lyrics source, next to LRCLIB etc.: lyrics the user imported from a file on the device for one song -->
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="bytes">%1$s B</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->

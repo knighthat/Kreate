@@ -18,12 +18,61 @@
   -->
 <!-- Icon descriptions for accessibility and the entries of overflow menus. -->
 <resources>
+    <string name="semantic_add_to_queue">Aggiungi alla coda</string>
+    <string name="semantic_bookmark">Preferito</string>
+    <string name="semantic_clear_the_queue">Svuota la coda</string>
+    <string name="semantic_copy_the_lyrics">Copia il testo</string>
     <string name="semantic_create_playlist">Crea playlist</string>
+    <string name="semantic_dislike">Non mi piace</string>
+    <string name="semantic_show_text">Mostra testo</string>
+    <string name="semantic_hide_text">Nascondi testo</string>
+    <string name="semantic_drag_to_move">Trascina per spostare</string>
+    <string name="semantic_equalizer">Equalizzatore</string>
+    <string name="semantic_explicit">Esplicito</string>
+    <string name="semantic_downloaded">Scaricato</string>
+    <string name="semantic_cached">In cache</string>
+    <string name="semantic_follow">Segui</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
+    <string name="semantic_from_opensubsonic">Dal server di %1$s</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
+    <string name="semantic_from_youtube">Da %1$s</string>
+    <string name="semantic_go_to_the_song_playing">Vai al brano in riproduzione</string>
+    <string name="semantic_larger">Più grande</string>
+    <string name="semantic_lock_the_order">Blocca l\'ordine</string>
+    <string name="semantic_unlock_to_move_songs">Sblocca per spostare i brani</string>
+    <string name="semantic_reorder">Riordina</string>
+    <string name="semantic_like">Mi piace</string>
+    <string name="semantic_more">Di più</string>
+    <string name="semantic_skip_next">Riproduci successivo</string>
+    <string name="semantic_on_this_device">Sul dispositivo</string>
+    <string name="semantic_pause">Pausa</string>
+    <string name="semantic_play">Riproduci</string>
+    <string name="semantic_play_all">Riproduci tutti</string>
+    <string name="semantic_play_next">Riproduci successivo</string>
+    <string name="semantic_profile">Profilo</string>
+    <string name="semantic_playlist_order">Ordine della playlist</string>
+    <string name="semantic_reversed_order">Ordine inverso</string>
+    <string name="semantic_remove_bookmark">Rimuovi dai preferiti</string>
+    <string name="semantic_remove_dislike">Rimuovi \"Non mi piace\"</string>
+    <string name="semantic_undislike_all">Togli \"Non mi piace\" a tutto</string>
+    <string name="semantic_delete_all_downloads">Elimina tutti gli scaricamenti</string>
+    <string name="semantic_cancel_download">Annulla lo scaricamento</string>
     <string name="semantic_remove_from_the_playlist">Rimuovi dalla playlist</string>
+    <string name="semantic_remove_from_the_queue">Rimuovi dalla coda</string>
+    <string name="semantic_remove_like">Rimuovi \"Mi piace\"</string>
+    <string name="semantic_remove_songs">Rimuovi brani</string>
     <string name="semantic_delete_playlist">Elimina playlist</string>
+    <string name="semantic_edit_playlist">Modifica playlist</string>
+    <string name="semantic_export_playlist">Esporta playlist</string>
+    <string name="semantic_restart_the_app">Riavvia l\'app</string>
+    <string name="semantic_restart_the_player">Riavvia il lettore</string>
     <string name="semantic_search">Cerca</string>
+    <string name="semantic_see_more">Mostra altro</string>
+    <string name="semantic_set">Imposta</string>
     <string name="semantic_settings">Impostazioni</string>
     <string name="semantic_share">Condividi</string>
+    <string name="semantic_text_size">Dimensione carattere</string>
+    <string name="semantic_unfollow">Non seguire più</string>
+    <string name="semantic_selected">Selezionato</string>
+    <!-- A button that listens to the song playing nearby while held -->
 </resources>

@@ -65,6 +65,10 @@
         <item quantity="one">canzone</item>
         <item quantity="other">canzoni</item>
     </plurals>
+    <plurals name="unit_search">
+        <item quantity="one">ricerca</item>
+        <item quantity="other">ricerche</item>
+    </plurals>
     <plurals name="unit_album">
         <item quantity="one">album</item>
         <item quantity="other">album</item>
@@ -76,6 +80,10 @@
     <plurals name="unit_file">
         <item quantity="one">file</item>
         <item quantity="other">file</item>
+    </plurals>
+    <plurals name="playlist">
+        <item quantity="one">%1$d playlist</item>
+        <item quantity="other">%1$d playlist</item>
     </plurals>
     <plurals name="unit_playlist">
         <item quantity="one">playlist</item>

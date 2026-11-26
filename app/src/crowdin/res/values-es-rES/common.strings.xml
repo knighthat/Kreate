@@ -29,6 +29,8 @@
     <string name="sleep_timer_to_end_of_song">Hasta que acabe la canción</string>
     <string name="playlist_type_monthly">Mensual</string>
     <string name="source_local">En el dispositivo</string>
+    <!-- Shown as a lyrics source, next to LRCLIB etc.: lyrics the user imported from a file on the device for one song -->
+    <string name="source_lyrics_file">Archivo importado</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="bytes">%1$s B</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->

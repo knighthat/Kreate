@@ -18,17 +18,36 @@
   -->
 <!-- Texts that appear only in the setup wizard. -->
 <resources>
+    <string name="wizard_dear_user">Lieber Nutzer,</string>
+    <string name="wizard_intro">Ein paar schnelle Schritte, und schon kannst du deine Songs hören. So geht\'s weiter:</string>
     <!-- %1$s is the name of this app, Kreate. A line on the setup wizard's start page about permissions -->
+    <string name="wizard_permissions_entry">Bestimme, was %1$s tun oder sehen darf und was nicht.</string>
     <!-- A line on the setup wizard's start page about signing in to accounts of music services -->
+    <string name="wizard_sign_in_entry">Melde dich mit deinen Musikkonten an.</string>
+    <string name="wizard_import_entry">Übertrage bestehende Daten von einem anderen Gerät oder einem Backup.</string>
     <string name="wizard_profile_entry">Passe die App deinem Geschmack nach an.</string>
     <!-- %1$s is the name of this app, Kreate. "The following" = a list of permission requests below -->
+    <string name="wizard_permissions_intro">%1$s benötigt deine Zustimmung für die folgenden Punkte. Du kannst jeden einzelnen davon überspringen und die Zustimmung später erteilen.</string>
     <string name="wizard_music">Musik</string>
     <string name="wizard_music_description">Die Audiodateien auf diesem Gerät lesen, um deine Bibliothek zu erstellen</string>
     <string name="wizard_notifications">Benachrichtigungen</string>
+    <string name="wizard_notifications_description">Erlaube der App, dir mitzuteilen, was innerhalb der App vor sich geht</string>
+    <string name="wizard_sign_in_intro">Melde dich an, um deine Konten zu synchronisieren. Du kannst diesen Schritt überspringen und dich später in den Einstellungen anmelden.</string>
+    <string name="wizard_sign_in_tile_description">Zum Anmelden antippen</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; the user can allow it in the app's settings once setup is done -->
+    <string name="wizard_sign_in_status_certificate_untrusted">Das Zertifikat von %1$s ist nicht vertrauenswürdig, erlaube es nach der Einrichtung in den Einstellungen</string>
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
+    <string name="wizard_import_intro">Hast du ein Backup von %1$s? Wähle es aus, um deine Profile, Einstellungen und Bibliothek zu übertragen. Du kannst diesen Schritt auch überspringen.</string>
+    <string name="wizard_reading_the_backup">Das Backup wird gelesen…</string>
+    <string name="wizard_backup_ready">Backup geladen</string>
+    <string name="wizard_backup_ready_description">Das Backup wird nach Abschluss der Einrichtung wiederhergestellt. Tippe hier, um ein anderes Backup auszuwählen</string>
     <string name="wizard_restore_a_backup">Backup wiederherstellen</string>
+    <string name="wizard_restore_a_backup_description">Wähle ein Backup aus einer vorherigen Version</string>
     <!-- %1$s is the default profile name in quotes (the user's own text, a name made by the app, e.g. "Default"). A profile is a separate set of settings and library -->
+    <string name="wizard_profile_intro">Lass den Namen leer, um %1$s beizubehalten. Du kannst das alles später ändern.</string>
     <!-- The profile came from the old version of the app and keeps its own name unless a new one is typed. A profile is a separate set of settings and library -->
+    <string name="wizard_profile_intro_migrated">Dein Profil behält seinen Namen, außer du gibst einen neuen Namen ein. Du kannst das alles später verändern.</string>
+    <string name="wizard_quality_intro">Wie gut sollen sich gestreamte Songs anhören? Du kannst dies später in den Einstellungen jeder Quelle jeweils anpassen.</string>
     <!-- %1$s is the license name, e.g. "GPL 3.0 License", shown as a link; its position in the sentence can change in translation -->
     <string name="wizard_distributed_under">Unter der %1$s verteilt.</string>
     <string name="wizard_get_started">Erste Schritte</string>

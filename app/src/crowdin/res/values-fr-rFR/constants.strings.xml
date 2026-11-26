@@ -28,6 +28,9 @@
     <string name="constant_history_range_this_year">Cette année</string>
     <string name="constant_statistics_period_all_time">Tout le temps</string>
     <string name="constant_statistics_period_this_month">Ce mois-ci</string>
+    <string name="constant_statistics_period_last_3_months">3 mois</string>
+    <string name="constant_statistics_period_last_6_months">6 mois</string>
+    <string name="constant_statistics_period_this_year">Cette année</string>
     <string name="constant_theme_mode_light_dynamic">Luminosité dynamique</string>
     <string name="constant_theme_mode_dark">Sombre</string>
     <string name="constant_theme_mode_dark_dynamic">Dynamique sombre</string>
@@ -58,10 +61,19 @@
     <string name="constant_stream_quality_ytm_medium">Moyen, environ 128 kbps</string>
     <string name="constant_stream_quality_ytm_high">Élevée, environ 160 kbps</string>
     <string name="constant_stream_quality_ytm_original">Version originale, 256 kbps avec l\'abonnement Premium, sinon qualité « Élevée »</string>
+    <string name="constant_stream_quality_opensubsonic_low">Faible, jusqu\'à 64 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_medium">Moyenne, jusqu\'à 128 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_high">Les morceaux sans perte, avec un débit pouvant atteindre 320 kbps, sont convertis</string>
+    <string name="constant_stream_quality_opensubsonic_original">Original, le fichier tel quel</string>
+    <string name="constant_stream_quality_low">Faible</string>
+    <string name="constant_stream_quality_medium">Moyenne</string>
+    <string name="constant_stream_quality_high">Élevée</string>
+    <string name="constant_stream_quality_original">Originale</string>
     <string name="constant_lyrics_sync_word">Mot à mot</string>
     <string name="constant_lyrics_sync_line">Ligne par ligne</string>
     <string name="constant_lyrics_sync_none">Texte brut</string>
     <string name="constant_log_level_warning">Avertissement</string>
     <string name="constant_log_level_error">Erreur</string>
     <string name="constant_playlist_privacy_public">Public</string>
+    <!-- Values of the Auto update mode setting: never check on its own, install updates by itself, ask the user about each one -->
 </resources>

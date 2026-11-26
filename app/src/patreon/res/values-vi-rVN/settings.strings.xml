@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Settings screens: titles, descriptions, headers and the status of one setting. -->
+<!-- Only in the patreon build. -->
+<resources>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_sign_in_patreon">Cho phép xem tên và cấp độ thành viên của %1$s</string>
+    <string name="setting_title_cloud_backup">Sao lưu trên đám mây</string>
+    <string name="setting_title_tier">Cấp</string>
+    <string name="setting_title_renewal_date">Ngày làm mới</string>
+    <string name="setting_title_check_membership">Kiếm tra lại</string>
+    <!-- %1$s is Patreon. Shown when the tier lacks cloud backup: a pledge changed there shows only after this -->
+    <string name="setting_description_check_membership">Tải lại cấp độ %1$s nếu có thay đổi</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_cloud_backup">Lưu bản sao lưu bằng tài khoản %1$s</string>
+    <string name="setting_description_cloud_backup_status_not_in_tier">Cấp độ này không có chức năng sao lưu đám mây, nhấn để nâng cấp</string>
+</resources>

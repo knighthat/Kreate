@@ -19,7 +19,7 @@
 <!-- Icon descriptions for accessibility and the entries of overflow menus. -->
 <resources>
     <string name="semantic_most_listened">Más escuchado</string>
-    <string name="semantic_add_to_queue">Añadir a la cola</string>
+    <string name="semantic_add_to_queue">Último de la cola</string>
     <string name="semantic_back">Atrás</string>
     <string name="semantic_bookmark">Favorito</string>
     <string name="semantic_change_source">Cambiar fuente</string>
@@ -57,12 +57,12 @@
     <string name="semantic_more">Más</string>
     <string name="semantic_skip_next">Siguiente</string>
     <string name="semantic_on_this_device">En el dispositivo</string>
-    <string name="semantic_open_one_at_random">Abrir una al azar</string>
+    <string name="semantic_open_one_at_random">Abrir al azar</string>
     <string name="semantic_pause">Pausa</string>
     <string name="semantic_pause_the_sleep_timer">Pausar el temporizador de apagado</string>
     <string name="semantic_play">Reproducir</string>
     <string name="semantic_play_all">Reproducir todo</string>
-    <string name="semantic_play_next">Reproducir siguiente</string>
+    <string name="semantic_play_next">Oír a continuación</string>
     <string name="semantic_previous">Anterior</string>
     <string name="semantic_profile">Perfil</string>
     <string name="semantic_newest_first">Más reciente primero</string>
@@ -71,7 +71,7 @@
     <string name="semantic_reversed_order">Orden inverso</string>
     <string name="semantic_remove_bookmark">Eliminar favorito</string>
     <string name="semantic_remove_dislike">Quitar no me gusta</string>
-    <string name="semantic_undislike_all">No me gusta ninguna</string>
+    <string name="semantic_undislike_all">Quitar dislikes</string>
     <string name="semantic_delete_all_downloads">Borrar todas las descargas</string>
     <string name="semantic_cancel_download">Cancelar descarga</string>
     <string name="semantic_remove_from_the_playlist">Eliminar de la lista de reproducción</string>
@@ -80,6 +80,7 @@
     <string name="semantic_remove_songs">Eliminar canciones</string>
     <string name="semantic_delete_playlist">Eliminar lista de reproducción</string>
     <string name="semantic_edit_playlist">Editar lista de reproducción</string>
+    <string name="semantic_export_playlist">Exportar lista</string>
     <string name="semantic_restart_the_app">Reiniciar aplicación</string>
     <string name="semantic_restart_the_player">Reiniciar reproductor</string>
     <string name="semantic_resume_the_sleep_timer">Reanudar el temporizador de apagado</string>
@@ -101,4 +102,6 @@
     <string name="semantic_unfollow">Dejar de seguir</string>
     <string name="semantic_app_crashed">Kreate se detuvo</string>
     <string name="semantic_selected">Selección</string>
+    <!-- A button that listens to the song playing nearby while held -->
+    <string name="semantic_recognize_song">Mantén para reconocer la canción</string>
 </resources>

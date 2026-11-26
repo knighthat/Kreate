@@ -28,6 +28,9 @@
     <string name="constant_history_range_this_year">Este año</string>
     <string name="constant_statistics_period_all_time">Desde siempre</string>
     <string name="constant_statistics_period_this_month">Este mes</string>
+    <string name="constant_statistics_period_last_3_months">3 meses</string>
+    <string name="constant_statistics_period_last_6_months">6 meses</string>
+    <string name="constant_statistics_period_this_year">Este año</string>
     <string name="constant_theme_mode_light_dynamic">Claro dinámico</string>
     <string name="constant_theme_mode_dark">Oscuro</string>
     <string name="constant_theme_mode_dark_dynamic">Oscuro dinámico</string>
@@ -47,20 +50,20 @@
     <string name="constant_opensubsonic_auth_password">Contraseña</string>
     <string name="constant_opensubsonic_auth_api_key">Clave API</string>
     <string name="constant_auto_tap_action_open">Muestra sus canciones</string>
-    <string name="constant_auto_tap_action_play_from_start">Reproduce desde el principio</string>
-    <string name="constant_auto_tap_action_play_randomly">Reproduce en orden aleatorio</string>
+    <string name="constant_auto_tap_action_play_from_start">Suena desde el principio</string>
+    <string name="constant_auto_tap_action_play_randomly">Suena en orden aleatorio</string>
     <string name="constant_queue_action_play">Reproducir</string>
     <string name="constant_queue_action_shuffle">Aleatorio</string>
-    <string name="constant_queue_action_enqueue">Añadir a cola</string>
-    <string name="constant_queue_action_play_next">Reproducir siguiente</string>
+    <string name="constant_queue_action_enqueue">Último de la cola</string>
+    <string name="constant_queue_action_play_next">Escuchar a continuación</string>
     <string name="constant_playlist_button_play">Reproducir</string>
     <string name="constant_playlist_button_shuffle">Aleatorio</string>
-    <string name="constant_playlist_button_play_next">Reproducir siguiente</string>
-    <string name="constant_playlist_button_enqueue">Añadir a cola</string>
+    <string name="constant_playlist_button_play_next">Escuchar a continuación</string>
+    <string name="constant_playlist_button_enqueue">Último en cola</string>
     <string name="constant_playlist_button_share">Compartir</string>
     <string name="constant_playback_failure_action_skip">Saltar a la canción siguiente</string>
-    <string name="constant_playback_failure_action_retry_then_skip">Volver a intentar, luego saltar</string>
-    <string name="constant_playback_failure_action_retry_then_stop">Volver a intentar, luego pausar</string>
+    <string name="constant_playback_failure_action_retry_then_skip">Reintentar, luego saltar</string>
+    <string name="constant_playback_failure_action_retry_then_stop">Reintentar, luego pausar</string>
     <string name="constant_playback_failure_action_stop">Pausar</string>
     <string name="constant_playback_login_never">Nunca</string>
     <string name="constant_playback_login_on_failure">Cuando haya un error</string>
@@ -68,10 +71,10 @@
     <string name="constant_stream_quality_ytm_low">Baja, unos 48 kbps</string>
     <string name="constant_stream_quality_ytm_medium">Media, unos 128 kbps</string>
     <string name="constant_stream_quality_ytm_high">Alta, unos 160 kbps</string>
-    <string name="constant_stream_quality_ytm_original">Original, 256 kbps con Premium, si no Alto</string>
-    <string name="constant_stream_quality_opensubsonic_low">Bajo, hasta 64 kbps</string>
-    <string name="constant_stream_quality_opensubsonic_medium">Medio, hasta 128 kbps</string>
-    <string name="constant_stream_quality_opensubsonic_high">Alto, hasta 320 kbps, las canciones sin pérdida se convierten</string>
+    <string name="constant_stream_quality_ytm_original">Original, 256 kbps con Premium, si no Alta</string>
+    <string name="constant_stream_quality_opensubsonic_low">Baja, hasta 64 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_medium">Media, hasta 128 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_high">Alta, hasta 320 kbps, las canciones sin pérdida se convierten</string>
     <string name="constant_stream_quality_opensubsonic_original">Original, el archivo tal como es</string>
     <string name="constant_stream_quality_low">Baja</string>
     <string name="constant_stream_quality_medium">Media</string>
@@ -80,7 +83,11 @@
     <string name="constant_download_stage_downloading">Descargando</string>
     <string name="constant_download_stage_queued">En espera</string>
     <string name="constant_download_stage_paused">En pausa</string>
-    <string name="constant_download_stage_failed">Fallido</string>
+    <string name="constant_download_stage_failed">Error</string>
+    <string name="constant_import_step_reading">Leyendo archivo</string>
+    <string name="constant_import_step_waiting">Esperando tu respuesta</string>
+    <string name="constant_import_step_searching">Buscando letra ausente</string>
+    <string name="constant_import_step_saving">Guardando lista de reproducción</string>
     <string name="constant_lyrics_sync_word">Palabra por palabra</string>
     <string name="constant_lyrics_sync_line">Línea a línea</string>
     <string name="constant_lyrics_sync_none">Texto sin formato</string>
@@ -92,4 +99,5 @@
     <string name="constant_playlist_privacy_public">Pública</string>
     <string name="constant_playlist_privacy_unlisted">Quien tenga el enlace</string>
     <string name="constant_playlist_privacy_private">Privada</string>
+    <!-- Values of the Auto update mode setting: never check on its own, install updates by itself, ask the user about each one -->
 </resources>

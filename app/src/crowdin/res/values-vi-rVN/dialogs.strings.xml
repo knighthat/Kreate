@@ -40,6 +40,21 @@
     <string name="dialog_title_delete_playlist">Xóa danh sách này?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">Xóa danh sách nhạc %1$s. Nhạc vẫn sẽ được trên máy.</string>
+    <!-- Asked before importing a playlist file that has songs of YouTube Music -->
+    <string name="dialog_title_look_up_songs">Cập nhật nhạc?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Skip" (action_skip) imports the songs as the file has them -->
+    <string name="dialog_body_look_up_songs">Tệp chứa %1$s từ %2$s. Chạy duyệt để tìm các bài nhạc đã bị thay thế. Bỏ qua sẽ nhập danh sách y như tệp cung cấp.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_look_up_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds". Songs that source no longer has are searched for one by one, which takes this long at most -->
+    <string name="dialog_body_look_up_songs_1">Có thể mất tới %1$s nếu mọi bài hát đã bị thay đổi.</string>
+    <!-- Asked before importing a playlist file of another service (an Exportify file of a Spotify playlist), whose songs must be searched for on YouTube Music -->
+    <string name="dialog_title_search_songs">Tìm bài hát?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Another service" = another music app, e.g. Spotify -->
+    <string name="dialog_body_search_songs">Tệp này chứa %1$s từ dịch vụ khác. Mọi bài nhạc phải được tìm trên %2$s trước khi được nhập vào danh sách nhạc.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_search_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds"; songs already in the library aren't searched for, so it can be shorter -->
+    <string name="dialog_body_search_songs_1">Có thể mất tới %1$s.</string>
+    <string name="dialog_title_export_playlist">Xuất danh sách</string>
+    <!-- Heading over a checkbox per music source; unchecked sources' songs are left out of the file, a source the playlist has no songs of is grayed out -->
+    <string name="dialog_body_export_playlist_origins">Bao gồm nhạc từ</string>
     <string name="dialog_title_restart_the_app">Khởi động lại ứng dụng?</string>
     <string name="dialog_body_restart_the_app">Mọi thứ sẽ được khỏi động lại để áp dụng cài đặt.</string>
     <string name="dialog_title_restart_the_player">Khỏi động lại trình phát?</string>
@@ -58,9 +73,6 @@
     <string name="dialog_body_stop_download">%1$s sẽ không được tải.</string>
     <string name="dialog_title_restore_a_backup">Khôi phục từ bản sao lưu?</string>
     <string name="dialog_body_restore_a_backup">Tất cả hồ sơ, cài đặt và thư viện sẽ thay thế nhưng gì đang có, sau đó ứng dụng sẽ khởi động lại. Mật khẩu và đăng nhập đang có vẫn sẽ được giữ nguyên.</string>
-    <string name="dialog_title_clear_history">Xóa tất cả lịch sử?</string>
-    <string name="dialog_body_clear_history">Nhạc đã nghe trên hồ sơ này sẽ bị xóa sạch.</string>
-    <string name="dialog_body_clear_history_shown">Chỉ xóa các bài hát đang hiển thị. Phần còn lại được giữ nguyên.</string>
     <string name="dialog_title_undislike_all">Bỏ ghét tất cả?</string>
     <string name="dialog_body_undislike_all">Bỏ ghét tất cả bài nhạc.</string>
     <string name="dialog_body_undislike_all_shown">Chỉ bỏ ghét các bài hát đang hiển thị. Phần còn lại được giữ nguyên.</string>
@@ -104,4 +116,28 @@
     <string name="dialog_title_old_app_downloads">Các bản tải trước từ phiên bản trước</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
     <string name="dialog_body_old_app_downloads">Tìm thấy %1$s từ thư viện trước. Tải những bài này cho phiên bản này?</string>
+    <!-- %1$s is Discord -->
+    <string name="dialog_body_sign_out_of_discord">Mọi liên kết trên %1$s sẽ bị ngưng. Đăng nhập lại bất cứ lúc nào để tiếp tục.</string>
+    <!-- Naming the song playing nearby from what the microphone heard -->
+    <string name="dialog_title_recognize_song">Đoán bài hát</string>
+    <string name="dialog_body_recognize_song_identifying">Đang phân tích…</string>
+    <string name="dialog_body_recognize_song_no_match">Không có kết quả phù hợp. Hãy thử lại lần nữa</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Under the Play button: the recognized song wasn't found there to play -->
+    <string name="dialog_body_recognize_song_not_on_youtube">Không tìm được bài này trên %1$s</string>
+    <string name="dialog_body_recognize_song_failed">Không tìm được, kiểm tra kết nối mạng</string>
+    <!-- Under a big microphone button that listens while held -->
+    <string name="dialog_body_recognize_song_hold">Nhấn và giữ ít nhất %1$s khi nhạc đang phát</string>
+    <string name="dialog_body_recognize_song_listening">Đang ghi âm…</string>
+    <string name="dialog_title_reset_settings">Đặt lại cài đặt?</string>
+    <!-- "Storage sizes" are the cache and download sizes of the Data settings, shared by every profile -->
+    <string name="dialog_body_reset_settings">Mọi cài đặt của hồ sơ này sẽ được đặt về lại giá trị mặc định, đăng nhập cũng sẽ bị xóa. Chỉ cài đặt chung được giữ lại.</string>
+    <string name="dialog_title_clear_search_history">Xóa lịch sử tìm kiếm?</string>
+    <string name="dialog_body_clear_search_history">Mọi tìm kiếm trên hồ sơ này sẽ bị xóa.</string>
+    <string name="dialog_title_clear_listening_history">Xóa lịch sử nghe?</string>
+    <string name="dialog_body_clear_listening_history">Lịch sử nghe trên hồ sơ này sẽ bi xóa, thống kê cũng sẽ bắt đầu lại từ đầu.</string>
+    <string name="dialog_title_clean_up_database">Dọn cơ sở dữ liệu?</string>
+    <string name="dialog_body_clean_up_database">Áp dụng cho mọi hồ sơ: Nhạc chưa bị thay đổi hoặc chưa nghe, album/nghệ sĩ chưa bị thay đổi, và danh sách không chứa nhạc sẽ bị xóa. Nhạc trên hệ thống sẽ được giữ nguyên.</string>
+    <!-- Title of the app's release notes, opened from About > Version. %1$s is a version number, e.g. 3.1.0 -->
+    <!-- %1$s is the new version, %2$s the one installed, e.g. 3.1.0 and 3.0.2. The release notes follow it -->
+    <!-- Title of the dialog shown while an update downloads and installs. %1$s is the new version, e.g. 3.1.0 -->
 </resources>

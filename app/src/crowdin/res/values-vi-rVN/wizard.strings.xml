@@ -34,6 +34,8 @@
     <string name="wizard_notifications_description">Xem lỗi và các tác vụ ngầm khác</string>
     <string name="wizard_sign_in_intro">Không bắt buộc. Mọi thứ có thể làm lại trong cài đặt.</string>
     <string name="wizard_sign_in_tile_description">Nhấn để đăng nhập</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; the user can allow it in the app's settings once setup is done -->
+    <string name="wizard_sign_in_status_certificate_untrusted">%1$s trình chứng chỉ chưa được tin, vào cài đặt khi xong để cho chép</string>
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <string name="wizard_import_intro">Có bản sao lưu từ phiên bản %1$s khác? Tải lên đây để khôi phục chúng. Có thể bỏ qua bước này.</string>
     <string name="wizard_reading_the_backup">Đang đọc bản sao lưu…</string>

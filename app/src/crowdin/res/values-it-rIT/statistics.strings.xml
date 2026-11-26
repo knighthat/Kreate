@@ -37,6 +37,7 @@
     <string name="statistics_storage_download_covers">Copertine scaricate</string>
     <string name="statistics_storage_lyrics">Testi</string>
     <string name="statistics_storage_other">Altre app e sistema</string>
+    <string name="statistics_plays">Riproduzioni</string>
     <string name="statistics_song_first_discovered">Data scoperta</string>
     <string name="statistics_album_first_discovered">Data scoperta</string>
     <string name="statistics_artist_first_discovered">Data scoperta</string>

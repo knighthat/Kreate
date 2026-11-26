@@ -21,11 +21,19 @@
     <string name="constant_theme_mode_automatic">System</string>
     <string name="constant_theme_mode_automatic_dynamic">Hintergrundbild</string>
     <string name="constant_theme_mode_light">Hell</string>
+    <string name="constant_history_range_all_time">Alles</string>
     <string name="constant_history_range_today">Heute</string>
     <string name="constant_history_range_last_7_days">Letzte 7 Tage</string>
     <string name="constant_history_range_last_30_days">Letzte 30 Tage</string>
     <string name="constant_history_range_this_year">Dieses Jahr</string>
+    <string name="constant_statistics_period_all_time">Insgesamt</string>
+    <string name="constant_statistics_period_this_month">Dieser Monat</string>
+    <string name="constant_statistics_period_last_3_months">3 Monate</string>
+    <string name="constant_statistics_period_last_6_months">6 Monate</string>
+    <string name="constant_statistics_period_this_year">Dieses Jahr</string>
+    <string name="constant_theme_mode_light_dynamic">Hell dynamisch</string>
     <string name="constant_theme_mode_dark">Dunkel</string>
+    <string name="constant_theme_mode_dark_dynamic">Dunkel dynamisch</string>
     <string name="constant_theme_mode_pitch_black">Tiefschwarz</string>
     <string name="constant_theme_mode_thumbnail">Vorschaubild</string>
     <string name="constant_contrast_level_normal">Normal</string>
@@ -41,12 +49,21 @@
     <string name="constant_sync_mode_all">Alle</string>
     <string name="constant_opensubsonic_auth_password">Passwort</string>
     <string name="constant_opensubsonic_auth_api_key">API-Key</string>
+    <string name="constant_auto_tap_action_open">Zugehörige Songs anzeigen</string>
     <string name="constant_auto_tap_action_play_from_start">Von Anfang an abspielen</string>
     <string name="constant_auto_tap_action_play_randomly">In zufälliger Reihenfolge abspielen</string>
+    <string name="constant_queue_action_shuffle">Zufällige Wiedergabe</string>
+    <string name="constant_queue_action_enqueue">Zur Queue hinzufügen</string>
+    <string name="constant_queue_action_play_next">Als Nächstes abspielen</string>
+    <string name="constant_playlist_button_shuffle">Zufällige Wiedergabe</string>
+    <string name="constant_playlist_button_play_next">Als Nächstes abspielen</string>
+    <string name="constant_playlist_button_enqueue">Zur Queue hinzufügen</string>
     <string name="constant_playlist_button_share">Teilen</string>
     <string name="constant_playback_failure_action_skip">Zum nächsten Song springen</string>
     <string name="constant_playback_failure_action_retry_then_skip">Erneut versuchen, dann überspringen</string>
+    <string name="constant_playback_failure_action_stop">Abbrechen</string>
     <string name="constant_playback_login_never">Niemals</string>
+    <string name="constant_playback_login_on_failure">Bei einem Fehlschlag</string>
     <string name="constant_playback_login_always">Immer</string>
     <string name="constant_stream_quality_ytm_low">Niedrig, ungefähr 48 kbps</string>
     <string name="constant_stream_quality_ytm_medium">Mittel, ungefähr 128 kbps</string>
@@ -64,8 +81,13 @@
     <string name="constant_download_stage_queued">Eingereiht</string>
     <string name="constant_download_stage_paused">Pausiert</string>
     <string name="constant_download_stage_failed">Fehlgeschlagen</string>
+    <string name="constant_import_step_reading">Datei wird gelesen</string>
+    <string name="constant_import_step_waiting">Warte auf deine Antwort</string>
+    <string name="constant_import_step_searching">Suche nach fehlenden Songs</string>
+    <string name="constant_import_step_saving">Playlist wird gespeichert</string>
     <string name="constant_lyrics_sync_word">Wort für Wort</string>
     <string name="constant_lyrics_sync_line">Zeile für Zeile</string>
+    <string name="constant_lyrics_sync_none">Rohtext</string>
     <string name="constant_log_level_verbose">Ausführlich</string>
     <string name="constant_log_level_debug">Debug</string>
     <string name="constant_log_level_info">Info</string>
@@ -74,4 +96,5 @@
     <string name="constant_playlist_privacy_public">Öffentlich</string>
     <string name="constant_playlist_privacy_unlisted">Jeder, der über diesen Link verfügt</string>
     <string name="constant_playlist_privacy_private">Privat</string>
+    <!-- Values of the Auto update mode setting: never check on its own, install updates by itself, ask the user about each one -->
 </resources>

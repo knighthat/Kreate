@@ -21,14 +21,49 @@
     <string name="notification_playback_title_channel">Probleme bei der Wiedergabe</string>
     <string name="notification_playback_subtitle_channel">Ein Song konnte nicht abgespielt werden</string>
     <string name="notification_other_title_channel">Sonstige</string>
+    <string name="notification_other_subtitle_channel">Einmalige Meldungen, wie z. B. ein Backup, das nicht wiederhergestellt werden konnte, und Musik, die im Hintergrund anfängt zu spielen</string>
+    <string name="notification_local_scan_title_channel">Musik auf diesem Gerät</string>
     <string name="notification_sleep_timer_title_channel">Einschlaf-Timer</string>
+    <string name="notification_local_scan_title_scanning">Musik wird gescannt</string>
+    <string name="notification_local_scan_title_scanned">Musik-Scan abgeschlossen</string>
     <!-- %1$s is a counted plural, e.g. "12 songs". Found on the device by a scan for local music -->
+    <string name="notification_local_scan_subtitle_scanned">%1$s wurden gescannt</string>
     <!-- %1$d is the number of songs processed so far, %2$d the total, both whole numbers, shown as a fraction, e.g. 3/10 -->
+    <string name="notification_local_scan_subtitle_progress">%1$d/%2$d</string>
     <!-- %1$d is the number of songs whose loudness was measured, %2$d the total, both whole numbers. "Measured" = the loudness (volume level) of the song was analyzed -->
     <!-- Whole numbers. %1$d = songs measured, %2$d = total songs, %3$d = failures listed in the notification (shown as child notifications), %4$d = all failures. Measured = the loudness of the song was analyzed -->
     <!-- %1$s is the internal id of a song (text/number, not translated), used as its name when the song has no title -->
+    <string name="notification_local_scan_title_song">Song %1$s</string>
     <string name="notification_sleep_timer_title_running">Einschlaf-Timer</string>
+    <string name="notification_sleep_timer_subtitle_on_hold">Angehalten</string>
+    <string name="notification_sleep_timer_subtitle_until_song_ends">Bis zum Ende des Songs</string>
     <!-- %1$s is a clock time of the device, e.g. 22:30. The sleep timer paused the music at that time -->
+    <string name="notification_sleep_timer_subtitle_paused_at">Musik um %1$s pausiert</string>
+    <string name="notification_other_title_resuming">Musik wird fortgesetzt</string>
+    <!-- %1$s is Discord (proper noun, don't decline it). Discord no longer accepts the app's sign in, so what the user plays isn't shown there anymore -->
     <string name="notification_downloads_title_channel">Downloads</string>
+    <string name="notification_downloads_title_downloading">Wird heruntergeladen</string>
+    <string name="notification_downloads_title_downloaded">Heruntergeladen</string>
+    <string name="notification_downloads_title_failed">Download fehlgeschlagen</string>
     <string name="notification_downloads_subtitle_paused">Pausiert</string>
+    <string name="notification_backup_title_channel">Backup</string>
+    <string name="notification_backup_subtitle_channel">Backups, die nicht erstellt, wiederhergestellt oder gelöscht werden konnten</string>
+    <string name="notification_playlist_import_title_channel">Playlist-Imports</string>
+    <string name="notification_playlist_import_subtitle_channel">Fortschritt beim Importieren von Playlist-Dateien und die Songs die nicht importiert werden konnten</string>
+    <!-- %1$s is the name of the playlist made from a playlist file (as the file or the user named it, not translated) -->
+    <string name="notification_playlist_import_title_imported">%1$s erfolgreich importiert</string>
+    <!-- %1$s is the name of the playlist made from a playlist file (as the file or the user named it, not translated). Some of its songs couldn't be imported, they are listed under it -->
+    <string name="notification_playlist_import_title_imported_with_errors">%1$s mit Fehlern importiert</string>
+    <!-- %1$s is the name of a playlist of a playlist file (as the file or the user named it, not translated). None of its songs could be imported, so the playlist wasn't made -->
+    <string name="notification_playlist_import_title_not_imported">%1$s konnte nicht importiert werden</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Every song of the imported playlist was found there -->
+    <string name="notification_playlist_import_subtitle_all_found">Alle %1$s wurden auf %2$s gefunden</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs". Every song of the playlist file went into the imported playlist -->
+    <string name="notification_playlist_import_subtitle_all_imported">Alle %1$s wurden importiert</string>
+    <!-- %1$d is how many songs were imported (whole number), %2$s the counted plural of all the playlist's songs, e.g. "9 of 10 songs imported" -->
+    <string name="notification_playlist_import_subtitle_some_imported">%1$d von %2$s importiert</string>
+    <!-- None of the songs of a playlist of a playlist file could be imported -->
+    <string name="notification_playlist_import_subtitle_nothing">Keine Songs importiert</string>
+    <!-- %1$s is the title of the notification, e.g. "Mix imported with errors"; %2$d is how many of the songs that couldn't be imported are listed as notifications under it, %3$d how many there are (whole numbers) -->
+    <string name="notification_playlist_import_subtitle_failures_listed">%1$s, %2$d von %3$d Fehlern aufgelistet</string>
 </resources>

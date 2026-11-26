@@ -35,7 +35,7 @@
     <string name="screen_title_data">Datos</string>
     <string name="screen_title_player">Reproductor</string>
     <string name="screen_title_ui">Interfaz</string>
-    <string name="screen_title_font_preview">Vista previa de tipografía</string>
+    <string name="screen_title_font_preview">Preview de fuente</string>
     <string name="screen_title_network">Red</string>
     <string name="screen_title_backup">Copia de seguridad</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
@@ -51,17 +51,21 @@
     <string name="screen_title_download_queue">Cola de descargas</string>
     <string name="screen_title_switch_profile">Cambiar perfil</string>
     <string name="screen_title_about">Acerca de</string>
-    <string name="screen_title_open_source_licenses">Licencias de código abierto</string>
+    <string name="screen_title_licenses">Licencias</string>
     <string name="screen_title_voice_search">Búsqueda por voz</string>
     <string name="screen_title_proxy">Proxy</string>
     <string name="tab_songs">Canciones</string>
     <string name="tab_albums">Álbumes</string>
     <string name="tab_artists">Artistas</string>
-    <string name="tab_playlists">Listas de reproducción</string>
+    <string name="tab_playlists">Listas</string>
     <string name="tab_lyrics">Letra</string>
     <string name="tab_player">Reproductor</string>
     <string name="tab_queue">Cola</string>
-    <string name="section_header_top_songs">Top canciones</string>
+    <!-- Backup page tab: backups saved as files on this device -->
+    <string name="tab_local">Local</string>
+    <!-- Backup page tab: backups kept online with the Patreon account -->
+    <string name="tab_remote">Remoto</string>
+    <string name="section_header_top_songs">Top de canciones</string>
     <string name="section_header_top_albums">Top de álbumes</string>
     <string name="section_header_top_artists">Top de artistas</string>
     <string name="section_header_releases">Lanzamientos</string>
@@ -72,6 +76,7 @@
     <string name="section_header_listening_over_time">Escucha a lo largo del tiempo</string>
     <string name="section_header_listening_by_hour">Por hora del día</string>
     <string name="section_header_listening_by_weekday">Por día de la semana</string>
+    <!-- Headings of the lists in the app's release notes (About > Version): features added, features removed, features that work differently, bugs fixed -->
     <string name="section_header_source">Fuente</string>
     <string name="section_header_look_for">Buscar</string>
     <string name="section_header_suggested_searches">Búsquedas sugeridas</string>

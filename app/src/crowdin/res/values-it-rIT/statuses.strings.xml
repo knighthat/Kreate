@@ -25,6 +25,7 @@
     <string name="status_signed_in">Accesso effettuato</string>
     <string name="status_unlimited">Illimitato</string>
     <string name="status_not_set">Non impostato</string>
+    <!-- Under a menu entry that is grayed out because its feature is switched off in settings -->
     <string name="optional">Facoltativo</string>
     <!-- %1$s is a counted time period, e.g. "3 days" or "1 hour", from the plurals day, week, month and year. English word order: the period comes first, then "ago" -->
     <string name="status_ago">%1$s fa</string>
@@ -32,4 +33,17 @@
     <string name="status_no_playlists_yet">Ancora nessuna playlist</string>
     <string name="status_couldnt_load_playlists">Impossibile caricare la playlist</string>
     <string name="status_playlist_empty">Questa playlist non ha brani</string>
+    <!-- Under a playlist being imported: %1$s songs of %2$s have been searched for on YouTube Music so far, both numbers formatted, e.g. "Searching 120 of 1,722" -->
+    <!-- Under a playlist just made on a music source that the source doesn't list yet; %1$s is the name of the source, e.g. YouTube Music (proper noun, don't decline it) -->
+    <!-- %1$s is the name of the app's build, e.g. FOSS (free and open source software, the build made for F-Droid). Shown for a feature that build leaves out: under the Discord and song recognition rows of Network settings, and as a message when the Songs tab is held to recognize a song -->
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <!-- %1$s is the name of a music source or the user's server, e.g. YouTube Music or Navidrome (proper noun, don't decline it). "Can't reach" = no network connection to it -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); "you" is the user, gender unknown. The source ended the login session, so the user must sign in again -->
+    <!-- %1$s is the name of the user's server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). The app is testing the connection; "Checking" is a present participle -->
+    <!-- A backup file of the app (profiles, settings and library) couldn't be opened or read -->
+    <!-- A backup file of the app (profiles, settings and library) couldn't be written -->
+    <!-- The sign in page of an online service (e.g. Discord, Patreon) is open in the browser and the app waits for it to finish -->
+    <!-- Value of a date row (e.g. a membership's renewal date) when no date is coming -->
+    <!-- An update of the app is being installed -->
 </resources>

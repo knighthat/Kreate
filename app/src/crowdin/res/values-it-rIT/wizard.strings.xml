@@ -31,6 +31,7 @@
     <string name="wizard_music_description">Leggere i file audio memorizzati su questo dispositivo per generare la tua libreria</string>
     <string name="wizard_notifications">Notifiche</string>
     <string name="wizard_notifications_description">Permesso di informarti su cosa accade all\'interno dell\'app</string>
+    <!-- %1$s is the name of the user's server as the server calls itself, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate; the user can allow it in the app's settings once setup is done -->
     <!-- %1$s is the name of this app, Kreate. "Have a backup" = a file made earlier by the app; "Choose" is a verb (imperative: pick the file); "profiles" = separate sets of settings and library -->
     <string name="wizard_import_intro">Hai un backup di %1$s? Puoi scegliere di importare i tuoi profili, le tue impostazioni e la tua libreria. Puoi anche saltare questo passaggio.</string>
     <string name="wizard_reading_the_backup">Lettura del backup…</string>

@@ -24,6 +24,7 @@
     <string name="action_cancel">Anulează</string>
     <string name="action_ok">OK</string>
     <string name="action_skip">Sari</string>
+    <!-- Confirms looking up the songs of a playlist file again on the music source before importing them -->
     <string name="action_forget">Uită</string>
     <string name="action_sign_in">Autentifică-te</string>
     <string name="action_update">Actualizează</string>
@@ -34,9 +35,12 @@
     <string name="action_search">Caută</string>
     <string name="action_create">Creează</string>
     <string name="action_try_again">Încearcă din nou</string>
+    <!-- Runs a check that already ran once again, e.g. asks an online service for the user's membership -->
+    <!-- Puts the app's data back from a backup -->
     <string name="action_retry">Reîncercați</string>
     <string name="action_undo">Anulează</string>
     <string name="action_reload">Reîncarcă</string>
+    <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
     <string name="action_account_switch">Comutați</string>
     <string name="action_delete">Șterge</string>
     <string name="action_add">Adaugă</string>
@@ -79,4 +83,6 @@
     <string name="menu_monthly_only">Doar lunar</string>
     <string name="menu_off">Dezactivat</string>
     <string name="menu_end_of_song">Sfârșitul melodiei</string>
+    <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
+    <!-- Never offers this version of the app again on its own -->
 </resources>

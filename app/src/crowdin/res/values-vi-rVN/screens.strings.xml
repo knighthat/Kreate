@@ -51,7 +51,7 @@
     <string name="screen_title_download_queue">Hàng chờ tải xuống</string>
     <string name="screen_title_switch_profile">Đổi hồ sơ</string>
     <string name="screen_title_about">Giới thiệu</string>
-    <string name="screen_title_open_source_licenses">Giấy phép mã nguồn mở</string>
+    <string name="screen_title_licenses">Giấy phép</string>
     <string name="screen_title_voice_search">Tìm kiếm bằng giọng nói</string>
     <string name="screen_title_proxy">Proxy</string>
     <string name="tab_songs">Nhạc</string>
@@ -61,6 +61,10 @@
     <string name="tab_lyrics">Lời bài hát</string>
     <string name="tab_player">Trình phát</string>
     <string name="tab_queue">Danh sách nhạc</string>
+    <!-- Backup page tab: backups saved as files on this device -->
+    <string name="tab_local">Nội bộ</string>
+    <!-- Backup page tab: backups kept online with the Patreon account -->
+    <string name="tab_remote">Trên mạng</string>
     <string name="section_header_top_songs">Nghe nhiều nhất</string>
     <string name="section_header_top_albums">Xem nhiều nhất</string>
     <string name="section_header_top_artists">Theo dõi nhiều nhất</string>
@@ -72,6 +76,7 @@
     <string name="section_header_listening_over_time">Lượt nghe xếp theo thời gian</string>
     <string name="section_header_listening_by_hour">Xếp theo số giờ mỗi ngày</string>
     <string name="section_header_listening_by_weekday">Xếp theo số ngày mỗi tuần</string>
+    <!-- Headings of the lists in the app's release notes (About > Version): features added, features removed, features that work differently, bugs fixed -->
     <string name="section_header_source">Nguồn</string>
     <string name="section_header_look_for">Tìm kiếm</string>
     <string name="section_header_suggested_searches">Gợi ý</string>

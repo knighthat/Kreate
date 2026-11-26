@@ -17,4 +17,6 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <!-- Display names of enum values. -->
-<resources></resources>
+<resources>
+    <!-- Values of the Auto update mode setting: never check on its own, install updates by itself, ask the user about each one -->
+</resources>

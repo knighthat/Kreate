@@ -19,6 +19,7 @@
 <!-- Errors shown to the user and snackbar messages. -->
 <resources>
     <string name="error_playback_file_missing">Die Datei existiert nicht</string>
+    <string name="error_playback_permission_denied">keine Berechtigung</string>
     <string name="error_playback_no_connection">Keine Verbindung</string>
     <string name="error_playback_server_refused">Der Server verweigert den Zugriff</string>
     <string name="error_playback_file_damaged">Die Datei ist beschädigt</string>
@@ -27,45 +28,115 @@
     <string name="error_playback_source_off">Die Quelle ist nicht verfügbar</string>
     <string name="error_playback_not_playable">Es gibt nichts zum Abspielen</string>
     <string name="error_playback_too_slow">Das Laden hat zu lange gedauert</string>
+    <string name="error_unknown">unbekannter Fehler</string>
     <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
+    <string name="error_backup_not_a_backup">Es handelt sich nicht um ein %1$s-Backup</string>
+    <string name="error_backup_newer_version">Das Backup stammt aus einer neueren Version, aktualisiere die App</string>
     <string name="error_backup_damaged">Das Backup ist beschädigt</string>
     <string name="error_player_not_ready">Der Player ist nicht einsatzbereit</string>
+    <string name="error_no_equalizer">Es wurde kein Equalizer gefunden</string>
+    <string name="error_no_browser">Keine App kann Links öffnen</string>
+    <string name="error_album_reset_order">Die Reihenfolge konnte nicht zurückgesetzt werden</string>
+    <string name="error_move_song">Der Song konnte nicht verschoben werden</string>
+    <string name="error_playlist_remove_song">Der Song konnte nicht entfernt werden</string>
+    <string name="error_playlist_delete">Die Playlist konnte nicht gelöscht werden</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="error_playlist_delete_not_owner">Nur der Eigentümer kann %1$s löschen</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
+    <string name="error_playlist_save_changes">Die Änderungen konnten nicht gespeichert werden: %1$s</string>
+    <string name="error_edit_apply">Die Änderungen konnten nicht gespeichert werden</string>
+    <string name="error_edit_load">Die Details konnten nicht zum Bearbeiten geladen werden</string>
+    <string name="snackbar_changes_saved">Änderungen gespeichert</string>
+    <string name="error_playlist_changed_on_server">Die Playlist wurde auf dem Server geändert, deine Änderungen wurden nicht gespeichert</string>
+    <string name="error_lyrics_load">Der Songtext konnte nicht geladen werden</string>
+    <string name="error_lyrics_file_unreadable">Die Datei konnte nicht gelesen werden</string>
+    <string name="error_lyrics_file_too_large">Die Datei ist zu groß, um ein Songtext zu enthalten</string>
+    <!-- The picked file is a song, a picture etc., not a text file -->
+    <string name="error_lyrics_file_not_text">Die Datei ist keine Textdatei</string>
+    <string name="error_lyrics_file_empty">In der Datei wurde kein Songtext gefunden</string>
+    <string name="error_lyrics_import">Der Songtext konnte nicht gespeichert werden</string>
+    <string name="error_remove_imported_lyrics">Der importierte Songtext konnte nicht entfernt werden</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
+    <string name="error_unreachable">%1$s kann nicht erreicht werden</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
+    <string name="error_details">Die Details konnten nicht von %1$s abgerufen werden</string>
     <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="error_export_playlist">%1$s konnte nicht exportiert werden</string>
+    <string name="error_nothing_to_play">Es gibt nichts zum Abspielen</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
+    <string name="error_voice_search_no_match">%1$s konnte nicht gefunden werden</string>
+    <string name="error_open_file">Diese Datei konnte nicht geöffnet werden</string>
+    <string name="error_open_link">Dieser Link konnte nicht geöffnet werden</string>
+    <string name="error_font_wrong_type">Wähle eine .ttf- oder .otf-Datei</string>
+    <string name="error_read_font">%1$s konnte nicht als Schriftart gelesen werden</string>
+    <string name="error_save_font">Die Schriftart %1$s konnte nicht gespeichert werden</string>
+    <string name="error_songs_not_playable">Diese Songs konnten nicht abgespielt werden</string>
+    <string name="error_song_not_playable">Dieser Song konnte nicht abgespielt werden</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
+    <string name="error_share_unsupported_song">%1$s unterstützt das Teilen des Songs %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the song's title isn't known; "this song" is the song the user tried to share -->
+    <string name="error_share_unsupported_song_unnamed">%1$s unterstützt das Teilen dieses Songs nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no way to share a link to a album -->
+    <string name="error_share_unsupported_album">%1$s unterstützt das Teilen des Albums %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user tried to share -->
+    <string name="error_share_unsupported_album_unnamed">%1$s unterstützt das Teilen dieses Albums nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no way to share a link to a artist -->
+    <string name="error_share_unsupported_artist">%1$s unterstützt das Teilen des Interpreten %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user tried to share -->
+    <string name="error_share_unsupported_artist_unnamed">%1$s unterstützt das Teilen dieses Interpreten nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no way to share a link to a playlist -->
+    <string name="error_share_unsupported_playlist">%1$s unterstützt das Teilen der Playlist %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user tried to share -->
+    <string name="error_share_unsupported_playlist_unnamed">%1$s unterstützt das Teilen dieser Playlist nicht</string>
     <!-- %1$s is the title of a song in quotes (the user's own text, not declined). "Share" = send a link to the song to another app -->
+    <string name="error_cant_share_song">Der Song %1$s kann nicht geteilt werden</string>
+    <string name="error_cant_share_song_unnamed">Dieser Song kann nicht geteilt werden</string>
     <!-- %1$s is the title of a album in quotes (the user's own text, not declined). "Share" = send a link to the album to another app -->
+    <string name="error_cant_share_album">Das Album %1$s kann nicht geteilt werden</string>
+    <string name="error_cant_share_album_unnamed">Dieses Album kann nicht geteilt werden</string>
     <!-- %1$s is the title of a artist in quotes (the user's own text, not declined). "Share" = send a link to the artist to another app -->
+    <string name="error_cant_share_artist">Der Interpret %1$s kann nicht geteilt werden</string>
+    <string name="error_cant_share_artist_unnamed">Dieser Interpret kann nicht geteilt werden</string>
     <!-- %1$s is the title of a playlist in quotes (the user's own text, not declined). "Share" = send a link to the playlist to another app -->
+    <string name="error_cant_share_playlist">Die Playlist %1$s kann nicht geteilt werden</string>
+    <string name="error_cant_share_playlist_unnamed">Diese Playlist kann nicht geteilt werden</string>
     <!-- %1$s is the name of the user's OpenSubsonic server (e.g. Navidrome) or a music source, proper noun. Can't be reached over the network, so no share link could be made -->
+    <string name="error_share_unreachable">%1$s kann zum Teilen nicht erreicht werden</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Search" is a verb (look for songs, albums...) -->
+    <string name="error_cant_search">Konnte auf %1$s nicht suchen</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the reason the source gave, text that is not translated -->
+    <string name="error_source_refused">%1$s lehnte die Anfrage ab: %2$s</string>
     <!-- %1$d is the status code (a number) the server answered with, e.g. 403. Shown only when the server sent no message of its own -->
+    <string name="error_server_code">Fehler %1$d</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the reason from the network, e.g. a timeout, text that may not be translated -->
+    <string name="error_server_unreachable">%1$s konnte nicht erreicht werden: %2$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Certificate = the server's security certificate -->
+    <string name="error_server_certificate_untrusted">Das Zertifikat von %1$s ist nicht vertrauenswürdig</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Certificate = the server's security certificate -->
+    <string name="error_server_certificate_changed">Das Zertifikat von %1$s hat sich geändert, überprüfe es in den %2$s-Einstellungen</string>
+    <string name="error_download_failed">Download fehlgeschlagen</string>
+    <string name="error_download_not_saved">Download fehlgeschlagen, der Song konnte nicht gespeichert werden</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the album in quotes. The source has no such album -->
+    <string name="error_source_not_found_album">%1$s hat das Album %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the album's title isn't known; "this album" is the album the user opened -->
+    <string name="error_source_not_found_album_unnamed">%1$s hat dieses Album nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the artist in quotes. The source has no such artist -->
+    <string name="error_source_not_found_artist">%1$s hat den Interpreten %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the artist's title isn't known; "this artist" is the artist the user opened -->
+    <string name="error_source_not_found_artist_unnamed">%1$s hat diesen Interpreten nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the playlist in quotes. The source has no such playlist -->
+    <string name="error_source_not_found_playlist">%1$s hat die Playlist %2$s nicht</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the playlist's title isn't known; "this playlist" is the playlist the user opened -->
+    <string name="error_source_not_found_playlist_unnamed">%1$s hat diese Playlist nicht</string>
     <!-- %1$s is an album title in quotes, or "this album" when unknown. "Bookmark" is a verb: save the album to the user's library on the source -->
+    <string name="error_bookmark_album">Das Lesezeichen %1$s konnte nicht entfernt werden</string>
     <!-- %1$s is an album title in quotes, or "this album" when unknown. Removes the album saved with a bookmark from the user's library on the source -->
     <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Follow" = subscribe to the artist on the source -->
     <!-- %1$s is an artist name in quotes, or "this artist" when unknown. "Unfollow" = cancel the subscription to the artist on the source -->
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Like" is a verb: the thumbs-up reaction, not "similar to" -->
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Shown when its album or artist can't be fetched to open their page -->
+    <string name="error_song_lookup">Die Details von %1$s konnten nicht geladen werden</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known -->
     <!-- %1$s is a song or album title in quotes, or "this song" / "this album" when the title isn't known -->
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Takes back the thumbs-up reaction given to the song -->
@@ -76,6 +147,19 @@
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "refused" = rejected the request -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "you" is the user, gender unknown -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
+    <string name="error_reason_unknown">etwas ist schiefgelaufen</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file gives no id for the song -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names no music source for the songs, or one this app doesn't know -->
+    <string name="error_reason_import_unknown_source">unbekannte Quelle</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were files on a device and this device's library doesn't have them -->
+    <!-- %1$s is the name of a music source, OpenSubsonic (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs aren't from the server the user is signed in to -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". A song of another music source already uses the same id in the library -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The file lists the song twice for the same playlist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were looked up again and the source no longer has them -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": tracks of another service's playlist (e.g. Spotify) for which no song with the same title, artist and length was found on that source -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": the source couldn't be reached, or refused, before these tracks were searched for -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
+    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. Shown alone, the wrong columns only go to the app log -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "This" is the content the user tried to open (a list, an album...) -->
@@ -93,19 +177,60 @@
     <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles; "change undone" = the change was reverted -->
     <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
     <!-- %1$s is the song's quoted title, or how many songs -->
+    <!-- %1$s is a file name in quotes; the file was written where the user picked -->
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is a counted plural of playlists, e.g. "2 playlists". The songs of a playlist file went into new playlists -->
+    <!-- %1$s is a counted plural of songs, e.g. "3 songs"; %2$s is the reason, a lowercase fragment from the error_reason_import_* strings. Shown under the import's result, one line per reason -->
+    <!-- The playlist file the user picked lists no songs -->
+    <!-- None of the songs of the playlist file could be imported; the reasons follow on the next lines -->
+    <string name="snackbar_playlist_import_nothing">Keine Songs importiert</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source refused to look the songs up again, which a song taken down or made private does, so they went in as the file has them -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source couldn't be reached (e.g. the connection dropped) to look the songs up again, so they went in as the file has them -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
-    <string name="snackbar_history_cleared">Verlauf gelöscht</string>
+    <string name="snackbar_disliked">Du magst %1$s nicht</string>
+    <string name="snackbar_removed_from_history">Aus dem Verlauf entfernt</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
     <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-up reaction was taken back from those songs -->
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-up reaction was taken back; %2$d is a whole number, how many songs failed -->
+    <string name="snackbar_this_playlist">diese Playlist</string>
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "The queue" is the list of songs to be played next -->
+    <string name="snackbar_added_to_queue">%1$s wurden zur Queue hinzugefügt</string>
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
+    <string name="snackbar_will_play_next">Wird %1$s als Nächstes abspielen</string>
+    <string name="snackbar_lyrics_copied">Songtext kopiert</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_lyrics_imported">Songtext für %1$s importiert</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_imported_lyrics_removed">Der importierte Songtext von %1$s wurde entfernt</string>
+    <string name="snackbar_turn_shuffle_off">Schalte zufällige Wiedergabe aus, um Songs zu bewegen</string>
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
+    <string name="snackbar_added_to_playlist">Zu %1$s hinzugefügt</string>
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song is already in it -->
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song couldn't be added to it -->
+    <string name="snackbar_log_copied">Protokoll kopiert</string>
+    <string name="snackbar_log_saved">Protokoll gespeichert</string>
+    <string name="snackbar_log_save_failed">Das Protokoll konnte nicht gespeichert werden</string>
+    <string name="snackbar_log_empty">Es gibt noch kein Protokoll</string>
     <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="snackbar_playlist_created">%1$s wurde erstellt</string>
     <!-- %1$s is the name of the playlist, in quotes. The playlist exists, only its description and who can see it were not saved -->
     <!-- %1$s is the name of the playlist, in quotes -->
+    <string name="error_create_playlist">%1$s konnte nicht erstellt werden</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
+    <string name="snackbar_old_app_downloads_started">%1$s aus der alten App werden heruntergeladen</string>
+    <!-- %1$s is Discord -->
+    <string name="error_discord_sign_in">Die Anmeldung bei %1$s ist fehlgeschlagen</string>
+    <!-- %1$s is Discord. The app was closed during the sign in, it has to be started again -->
+    <string name="error_discord_sign_in_again">Die %1$s-Anmeldung ist abgelaufen, versuche es erneut</string>
+    <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
+    <string name="snackbar_recognize_song_disabled">In den Einstellungen deaktiviert</string>
+    <!-- %1$s is a counted plural, e.g. "8 seconds". The Songs tab, or the big microphone button of the song recognition dialog, was let go too early while it listened to name the song playing nearby. Shown as a message and in that dialog -->
+    <string name="snackbar_search_history_cleared">Der Suchverlauf wurde gelöscht</string>
+    <string name="snackbar_search_history_not_cleared">Der Suchverlauf konnte nicht gelöscht werden</string>
+    <string name="snackbar_listening_history_cleared">Hörverlauf gelöscht</string>
+    <string name="snackbar_listening_history_not_cleared">Der Hörverlauf konnte nicht gelöscht werden</string>
+    <!-- The downloaded file isn't the one the release lists (size or checksum differ) -->
+    <!-- The user turned down the system's install confirmation -->
 </resources>

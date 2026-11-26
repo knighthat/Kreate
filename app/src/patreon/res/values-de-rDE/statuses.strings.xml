@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Single-word statuses that are not tied to one setting (off, on, ...). -->
+<!-- Only in the patreon build. -->
+<resources>
+    <string name="status_no_remote_backups">Du hast noch keine Backups online gespeichert</string>
+    <string name="status_couldnt_load_remote_backups">Die Online-Backups konnten nicht geladen werden</string>
+    <string name="status_remote_backups_kept">Jedes Backup wird 180 Tage nach dem Hochladen gelöscht</string>
+    <string name="status_remote_backups_not_in_tier">Die Stufe deiner Mitgliedschaft beinhaltet keine Cloud-Backups</string>
+    <!-- Value of the Tier row on the Patreon page when the account pledges to no tier -->
+    <string name="status_not_a_patron">Du bist kein Unterstützer auf Patreon</string>
+</resources>

@@ -19,10 +19,13 @@
 <!-- Errors shown to the user and snackbar messages. -->
 <resources>
     <!-- %1$s is the name of this app, Kreate. The chosen file isn't a backup made by it -->
+    <!-- %1$s is the playlist's quoted name -->
     <!-- %1$s is why the server refused, or couldn't be reached -->
+    <!-- The picked file is a song, a picture etc., not a text file -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
     <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it); %2$s is the title of the song in quotes. The source has no way to share a link to a song -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Used when the song's title isn't known; "this song" is the song the user tried to share -->
@@ -65,6 +68,17 @@
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "refused" = rejected the request -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>"; "you" is the user, gender unknown -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file gives no id for the song -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names no music source for the songs, or one this app doesn't know -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were files on a device and this device's library doesn't have them -->
+    <!-- %1$s is the name of a music source, OpenSubsonic (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs aren't from the server the user is signed in to -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". A song of another music source already uses the same id in the library -->
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The file lists the song twice for the same playlist -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were looked up again and the source no longer has them -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": tracks of another service's playlist (e.g. Spotify) for which no song with the same title, artist and length was found on that source -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": the source couldn't be reached, or refused, before these tracks were searched for -->
+    <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
+    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. Shown alone, the wrong columns only go to the app log -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). "This" is the content the user tried to open (a list, an album...) -->
@@ -78,6 +92,15 @@
     <!-- %1$s is the reason, a technical error text that may not be translated. Profiles are separate sets of settings and library; app-wide settings are shared by all profiles; "change undone" = the change was reverted -->
     <!-- %1$s is a playlist name (the user's own text, not quoted), or "this playlist" when unknown. The song was removed from that playlist -->
     <!-- %1$s is the song's quoted title, or how many songs -->
+    <!-- %1$s is a file name in quotes; the file was written where the user picked -->
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is a counted plural of playlists, e.g. "2 playlists". The songs of a playlist file went into new playlists -->
+    <!-- %1$s is a counted plural of songs, e.g. "3 songs"; %2$s is the reason, a lowercase fragment from the error_reason_import_* strings. Shown under the import's result, one line per reason -->
+    <!-- The playlist file the user picked lists no songs -->
+    <!-- None of the songs of the playlist file could be imported; the reasons follow on the next lines -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source refused to look the songs up again, which a song taken down or made private does, so they went in as the file has them -->
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source couldn't be reached (e.g. the connection dropped) to look the songs up again, so they went in as the file has them -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
     <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
@@ -85,6 +108,8 @@
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-up reaction was taken back; %2$d is a whole number, how many songs failed -->
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "The queue" is the list of songs to be played next -->
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <!-- %1$s is the song's quoted title, or "this song" -->
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song is already in it -->
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). The song couldn't be added to it -->
@@ -92,4 +117,10 @@
     <!-- %1$s is the name of the playlist, in quotes. The playlist exists, only its description and who can see it were not saved -->
     <!-- %1$s is the name of the playlist, in quotes -->
     <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
+    <!-- %1$s is Discord -->
+    <!-- %1$s is Discord. The app was closed during the sign in, it has to be started again -->
+    <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
+    <!-- %1$s is a counted plural, e.g. "8 seconds". The Songs tab, or the big microphone button of the song recognition dialog, was let go too early while it listened to name the song playing nearby. Shown as a message and in that dialog -->
+    <!-- The downloaded file isn't the one the release lists (size or checksum differ) -->
+    <!-- The user turned down the system's install confirmation -->
 </resources>

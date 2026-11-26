@@ -20,7 +20,10 @@
 <resources>
     <!-- %1$s is an artist name (the user's library data, not declined). Screen title listing the songs of that artist -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
+    <!-- Backup page tab: backups saved as files on this device -->
+    <!-- Backup page tab: backups kept online with the Patreon account -->
     <!-- %1$d is a whole number. "Disc" is a physical disc (CD) of a multi-disc album, not a music player -->
+    <!-- Headings of the lists in the app's release notes (About > Version): features added, features removed, features that work differently, bugs fixed -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
     <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
     <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->

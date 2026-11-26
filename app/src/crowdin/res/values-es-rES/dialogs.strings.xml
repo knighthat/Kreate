@@ -20,7 +20,7 @@
 <resources>
     <string name="dialog_title_certificate_changed">El certificado cambió</string>
     <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
-    <string name="dialog_body_certificate_changed">%1$s tiene un certificado de autofirma diferente del que tú confiaste. Si no lo reemplazaste tú alguien puede estar fingiendo ser tu servidor.</string>
+    <string name="dialog_body_certificate_changed">%1$s tiene un certificado autofirmado diferente del que tú confiaste. Si no lo reemplazaste tú, alguien puede estar fingiendo ser tu servidor.</string>
     <string name="dialog_title_trust_certificate">¿Confiar en este certificado?</string>
     <!-- %1$s is the host name or address of the user's own server. Self-signed = a security certificate the server made itself, not checked by anyone else -->
     <string name="dialog_body_trust_certificate">%1$s presenta un certificado autofirmado. Confía en él solo si tú configuraste este servidor.</string>
@@ -39,9 +39,24 @@
     <string name="dialog_body_unsaved_edits">Has hecho cambios pero aún no los has guardado.</string>
     <string name="dialog_title_delete_playlist">¿Eliminar lista de reproducción?</string>
     <!-- %1$s is the playlist's quoted name -->
-    <string name="dialog_body_delete_playlist">Se eliminará %1$s. Sus canciones seguirán en tu biblioteca.</string>
+    <string name="dialog_body_delete_playlist">Se eliminará %1$s. Las canciones seguirán en tu biblioteca.</string>
+    <!-- Asked before importing a playlist file that has songs of YouTube Music -->
+    <string name="dialog_title_look_up_songs">¿Buscar canciones de nuevo?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Skip" (action_skip) imports the songs as the file has them -->
+    <string name="dialog_body_look_up_songs">%1$s del archivo están en %2$s. La búsqueda muestra el título y artistas actuales. Salta para importarlos como estén en el archivo.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_look_up_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds". Songs that source no longer has are searched for one by one, which takes this long at most -->
+    <string name="dialog_body_look_up_songs_1">Tarda hasta %1$s si se tienen que volver a buscar todas las canciones.</string>
+    <!-- Asked before importing a playlist file of another service (an Exportify file of a Spotify playlist), whose songs must be searched for on YouTube Music -->
+    <string name="dialog_title_search_songs">¿Buscar canciones?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Another service" = another music app, e.g. Spotify -->
+    <string name="dialog_body_search_songs">El archivo tiene %1$s de otro servicio. Todo se busca en %2$s y se mete la canción que coincida con su título, artistas y longitud. Las canciones sin coincidencia son ignoradas.</string>
+    <!-- Second paragraph of the dialog, under dialog_body_search_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds"; songs already in the library aren't searched for, so it can be shorter -->
+    <string name="dialog_body_search_songs_1">Tarda hasta %1$s.</string>
+    <string name="dialog_title_export_playlist">Exportar lista de reproducción</string>
+    <!-- Heading over a checkbox per music source; unchecked sources' songs are left out of the file, a source the playlist has no songs of is grayed out -->
+    <string name="dialog_body_export_playlist_origins">Incluir canciones desde</string>
     <string name="dialog_title_restart_the_app">¿Reiniciar la aplicación?</string>
-    <string name="dialog_body_restart_the_app">La reproducción se detiene y la aplicación se abre de nuevo, se aplican los ajustes que necesitan reinicio.</string>
+    <string name="dialog_body_restart_the_app">La reproducción se detiene y la aplicación se abre de nuevo, se aplican los ajustes que requieren reinicio.</string>
     <string name="dialog_title_restart_the_player">¿Reiniciar reproductor?</string>
     <string name="dialog_body_restart_the_player_1">La reproducción se detiene un momento, luego continúa donde estaba con los nuevos ajustes.</string>
     <string name="dialog_body_restart_the_player_2">El temporizador de apagado está encendido, se detiene con el reproductor.</string>
@@ -57,20 +72,17 @@
     <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
     <string name="dialog_body_stop_download">%1$s no se descargará.</string>
     <string name="dialog_title_restore_a_backup">¿Restaurar una copia de seguridad?</string>
-    <string name="dialog_body_restore_a_backup">Cada perfil, ajuste y la biblioteca se reemplazan por los de la copia de seguridad, y la aplicación se reinicia. Las contraseñas y los inicios de sesión de los perfiles que ya están en este dispositivo se guardan.</string>
-    <string name="dialog_title_clear_history">¿Borrar historial?</string>
-    <string name="dialog_body_clear_history">Todas las canciones que reprodujo este perfil se borran de su historial.</string>
-    <string name="dialog_body_clear_history_shown">Solo se eliminarán las reproducciones que coincidan con tus filtros. El resto del historial se queda.</string>
+    <string name="dialog_body_restore_a_backup">Cada perfil, ajuste y la biblioteca se reemplazan por los de la copia y la aplicación se reinicia. Las contraseñas y las sesiones de los perfiles que ya están aquí se guardan.</string>
     <string name="dialog_title_undislike_all">¿Quitar los \'no me gusta\'?</string>
     <string name="dialog_body_undislike_all">Todas las canciones que no le gustan a este perfil vuelven a aparecer en las listas.</string>
     <string name="dialog_body_undislike_all_shown">Solo volverán a aparecer en tus listas las canciones que coincidan con tus filtros. El resto siguen ocultas.</string>
-    <string name="dialog_title_unlike_all">¿Quitar los me gusta?</string>
+    <string name="dialog_title_unlike_all">¿Quitar los \'me gusta\'?</string>
     <string name="dialog_body_unlike_all">Se eliminan todos los me gusta a canciones en este perfil.</string>
     <string name="dialog_body_unlike_all_shown">Solo se eliminan los me gusta a las canciones que coincidan con tus filtros. Las demás lo mantienen.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
-    <string name="dialog_body_unlike_all_ytm">También se quita el me gusta de las canciones de %1$s mientras la sesión esté iniciada y la sincronización de me gustas activada.</string>
+    <string name="dialog_body_unlike_all_ytm">También se quita el \'me gusta\' de las canciones de %1$s mientras la sesión esté iniciada y la sincronización de likes, activada.</string>
     <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
-    <string name="dialog_body_unlike_all_opensubsonic">También se quita el me gusta de las canciones en %1$s si está activada la sincronización de me gustas.</string>
+    <string name="dialog_body_unlike_all_opensubsonic">También se quita el \'me gusta\' de las canciones en %1$s si está activada la sincronización de likes.</string>
     <string name="dialog_title_delete_all_downloads">¿Borrar todas las descargas?</string>
     <string name="dialog_body_delete_all_downloads">Todas las canciones que este perfil ha descargado se eliminan del dispositivo. Todavía se pueden escuchar.</string>
     <string name="dialog_body_delete_all_downloads_shown">Las canciones descargadas que se muestran se eliminarán de este dispositivo, las demás se quedan. Todavía se pueden escuchar.</string>
@@ -79,11 +91,11 @@
     <string name="dialog_body_clear_image_cache_2">Borrar también las imágenes guardadas en memoria</string>
     <string name="dialog_title_clear_song_cache">¿Borrar el caché de canciones?</string>
     <string name="dialog_body_clear_song_cache">Todas las canciones escuchadas en este dispositivo se eliminan de cada perfil. Las descargas NO se borran.</string>
-    <string name="dialog_title_delete_every_download">¿Borrar las descargas de todos los perfiles?</string>
-    <string name="dialog_body_delete_every_download">Todas las canciones descargadas se eliminan de cada perfil de este dispositivo. Todavía se pueden escuchar.</string>
-    <string name="dialog_title_shrink_cache">Más pequeño que lo que está almacenado</string>
+    <string name="dialog_title_delete_every_download">¿Borrar descargas de los perfiles?</string>
+    <string name="dialog_body_delete_every_download">Todas las canciones descargadas se eliminan de TODOS los perfiles de este dispositivo. Todavía se pueden escuchar.</string>
+    <string name="dialog_title_shrink_cache">Menor que lo que está almacenado</string>
     <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
-    <string name="dialog_body_shrink_cache">%1$s están guardados, más de %2$s. Una vez que la aplicación se reinicie, lo que no entre se borrará, empezando por lo que se usó hace más tiempo.</string>
+    <string name="dialog_body_shrink_cache">%1$s están guardados, más de %2$s. Una vez que la aplicación se reinicie lo que no entre se borrará, empezando por lo que se usó hace más tiempo.</string>
     <string name="dialog_title_turn_off">¿Desactivarlo?</string>
     <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
     <string name="dialog_body_turn_off_cache">%1$s están guardados. Una vez que la aplicación se reinicie, todo se elimina y no se guarda nada nuevo.</string>
@@ -94,7 +106,7 @@
     <string name="dialog_title_search_lyrics">Buscar letra</string>
     <string name="dialog_title_find_recording">Buscar la grabación</string>
     <string name="dialog_body_find_recording_no_matches">No se encontraron grabaciones</string>
-    <string name="dialog_title_find_artist">Encontrar el artista</string>
+    <string name="dialog_title_find_artist">Buscar el artista</string>
     <string name="dialog_body_find_artist_no_matches">No se han encontrado artistas</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
     <string name="dialog_title_sign_out">¿Cerrar sesión en %1$s?</string>
@@ -103,5 +115,29 @@
     <string name="dialog_body_sign_out_of_youtube">Tu biblioteca de %1$s deja de aparecer aquí, las canciones que te gustaron se quedan. Puedes iniciar sesión de nuevo cuando quieras.</string>
     <string name="dialog_title_old_app_downloads">Descargas de la aplicación antigua</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
-    <string name="dialog_body_old_app_downloads">Se han encontrado %1$s de tu biblioteca descargadas en la aplicación antigua. ¿Descargar de nuevo?</string>
+    <string name="dialog_body_old_app_downloads">Hay %1$s de tu biblioteca en las descargas de la aplicación antigua. ¿Descargar de nuevo?</string>
+    <!-- %1$s is Discord -->
+    <string name="dialog_body_sign_out_of_discord">Tu perfil de %1$s deja de mostrar lo que reproduces. Puedes volver a iniciar sesión cuando quieras.</string>
+    <!-- Naming the song playing nearby from what the microphone heard -->
+    <string name="dialog_title_recognize_song">Reconocer canción</string>
+    <string name="dialog_body_recognize_song_identifying">Identificando canción…</string>
+    <string name="dialog_body_recognize_song_no_match">No se encontró coincidencia. Inténtalo de nuevo más cerca de la música</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Under the Play button: the recognized song wasn't found there to play -->
+    <string name="dialog_body_recognize_song_not_on_youtube">No se pudo encontrar en %1$s</string>
+    <string name="dialog_body_recognize_song_failed">No se pudo buscar la canción, comprueba la conexión</string>
+    <!-- Under a big microphone button that listens while held -->
+    <string name="dialog_body_recognize_song_hold">Mantén el botón por lo menos %1$s mientras la canción suena</string>
+    <string name="dialog_body_recognize_song_listening">Escuchando…</string>
+    <string name="dialog_title_reset_settings">¿Restablecer ajustes?</string>
+    <!-- "Storage sizes" are the cache and download sizes of the Data settings, shared by every profile -->
+    <string name="dialog_body_reset_settings">Todos los ajustes en este perfil vuelven a su valor por defecto, y se cierran las sesiones de cuentas y servidores. Los tamaños de almacenamiento se quedan.</string>
+    <string name="dialog_title_clear_search_history">¿Borrar historial de búsqueda?</string>
+    <string name="dialog_body_clear_search_history">Todas las búsquedas que hizo este perfil se olvidan.</string>
+    <string name="dialog_title_clear_listening_history">¿Borrar historial de escucha?</string>
+    <string name="dialog_body_clear_listening_history">Todas las canciones reproducidas en este perfil salen del historial, y las estadísticas empiezan de cero.</string>
+    <string name="dialog_title_clean_up_database">¿Limpiar base de datos?</string>
+    <string name="dialog_body_clean_up_database">En cada perfil: las canciones que no han sonado, sido editadas ni están en listas; álbumes y artistas sin cambiar; y listas sin canciones se eliminan. Las descargas permanecen.</string>
+    <!-- Title of the app's release notes, opened from About > Version. %1$s is a version number, e.g. 3.1.0 -->
+    <!-- %1$s is the new version, %2$s the one installed, e.g. 3.1.0 and 3.0.2. The release notes follow it -->
+    <!-- Title of the dialog shown while an update downloads and installs. %1$s is the new version, e.g. 3.1.0 -->
 </resources>

@@ -20,4 +20,5 @@
 <resources>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Accessibility description of an icon: the item comes from that server -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Accessibility description of an icon: the item comes from that source -->
+    <!-- A button that listens to the song playing nearby while held -->
 </resources>

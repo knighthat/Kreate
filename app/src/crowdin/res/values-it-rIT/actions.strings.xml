@@ -26,19 +26,31 @@
     <string name="action_cancel">Annulla</string>
     <string name="action_ok">OK</string>
     <string name="action_skip">Salta</string>
+    <!-- Confirms looking up the songs of a playlist file again on the music source before importing them -->
+    <string name="action_look_up">Cerca</string>
+    <string name="action_forget">Dimentica</string>
     <string name="action_sign_in">Accedi</string>
     <string name="action_update">Aggiorna</string>
     <string name="action_sign_out">Esci</string>
     <string name="action_pick_backup">Scegli backup</string>
+    <string name="action_trust_new_certificate">Accetta nuovo certificato</string>
     <string name="action_not_now">Non ora</string>
     <string name="action_accept">Accetta</string>
     <string name="action_deny">Rifiuta</string>
     <string name="action_search">Cerca</string>
     <string name="action_create">Crea</string>
     <string name="action_try_again">Prova di nuovo</string>
+    <!-- Runs a check that already ran once again, e.g. asks an online service for the user's membership -->
+    <string name="action_check_again">Controlla di nuovo</string>
+    <!-- Puts the app's data back from a backup -->
+    <string name="action_restore">Ripristina</string>
     <string name="action_retry">Riprova</string>
+    <string name="action_show_matches">Mostra corrispondenze</string>
+    <string name="action_view_on">Visualizza su %1$s</string>
     <string name="action_undo">Annulla</string>
     <string name="action_reload">Ricarica</string>
+    <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
+    <string name="action_import_lyrics_file">Importa da file</string>
     <string name="action_account_switch">Cambia</string>
     <string name="action_delete">Elimina</string>
     <string name="action_add">Aggiungi</string>
@@ -48,7 +60,14 @@
     <string name="action_apply">Applica</string>
     <string name="action_apply_and_restart">Applica e riavvia</string>
     <string name="action_reset">Ripristina</string>
+    <string name="action_choose_image">Scegli immagine</string>
+    <string name="menu_edit">Modifica</string>
+    <string name="menu_recognize_song">Riconosci il brano</string>
+    <string name="menu_remove_imported_lyrics">Rimuovi i testi importati</string>
+    <string name="action_use_original">Usa originale</string>
     <string name="action_clear">Pulisci</string>
+    <string name="action_undislike">Togli \"Non mi piace\"</string>
+    <string name="action_unlike">Non mi piace</string>
     <string name="action_grant">Concedi</string>
     <string name="action_go_back">Indietro</string>
     <string name="action_next">Avanti</string>
@@ -61,26 +80,55 @@
     <string name="action_queue">Coda</string>
     <string name="action_pause">Pausa</string>
     <string name="action_resume">Riprendi</string>
+    <string name="menu_shortcut_dislike">Non mi piace</string>
+    <string name="menu_shortcut_like">Mi piace</string>
+    <string name="menu_shortcut_share">Condividi</string>
+    <string name="menu_shortcut_download">Scarica</string>
+    <string name="menu_shortcut_cached">In cache</string>
+    <string name="menu_shortcut_downloading">Scaricando</string>
+    <string name="menu_shortcut_downloaded">Scaricato</string>
+    <string name="menu_shortcut_paused">In pausa</string>
     <string name="menu_play_next">Riproduci successivo</string>
+    <string name="menu_shortcut_play_next">Riproduci successivo</string>
     <string name="menu_add_to_queue">Aggiungi alla coda</string>
+    <string name="menu_shortcut_add_to_queue">Aggiungi alla coda</string>
     <string name="menu_add_to_playlist">Aggiungi alla playlist</string>
     <string name="menu_start_radio">Avvia radio</string>
     <string name="menu_details">Dettagli</string>
+    <string name="menu_shortcut_play">Riproduci</string>
+    <string name="menu_shortcut_follow">Segui</string>
+    <string name="menu_shortcut_bookmark">Preferito</string>
+    <string name="menu_shortcut_add_to_library">Aggiungi alla libreria</string>
     <string name="menu_statistics">Statistiche</string>
     <string name="menu_go_to_album">Vai all\'album</string>
     <string name="menu_title_artists">Artisti</string>
     <string name="menu_title_add_to_playlist">Aggiungi alla playlist</string>
     <string name="menu_remove_from_playlist">Rimuovi dalla playlist</string>
     <string name="menu_delete_from_history">Elimina dalla cronologia</string>
+    <string name="menu_shortcut_play_all">Riproduci tutto</string>
     <string name="menu_shuffle">Casuale</string>
+    <string name="menu_shortcut_shuffle">Casuale</string>
+    <string name="menu_shortcut_open_random">Apri casualmente</string>
+    <string name="menu_shortcut_play_random">Riproduci casualmente</string>
     <string name="menu_show_disliked">Mostra \"non mi piace\"</string>
     <string name="menu_cached_only">Solo in cache</string>
     <string name="menu_downloaded_only">Solo scaricati</string>
     <string name="menu_bookmarked_only">Solo preferiti</string>
     <string name="menu_followed_only">Solo seguiti</string>
     <string name="menu_monthly_only">Solo mensili</string>
+    <string name="menu_delete_all">Cancella tutto</string>
+    <string name="menu_shortcut_undislike_all">Togli \"Non mi piace\"</string>
+    <string name="menu_shortcut_unlike_all">Togli \"Mi piace\" a tutto</string>
     <string name="menu_off">Disattivato</string>
     <string name="menu_end_of_song">Fine del brano</string>
     <string name="action_copy">Copia</string>
     <string name="action_export">Esporta</string>
+    <string name="action_download_all">Scarica tutto</string>
+    <string name="action_select">Seleziona</string>
+    <string name="action_clear_all">Cancella tutto</string>
+    <string name="action_select_all">Seleziona tutto</string>
+    <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
+    <string name="menu_import_from_file">Importa da file</string>
+    <string name="action_clean_up">Pulisci</string>
+    <!-- Never offers this version of the app again on its own -->
 </resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Settings screens: titles, descriptions, headers and the status of one setting. -->
+<!-- Only in the patreon build. -->
+<resources>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_sign_in_patreon">Liest deinen %1$s-Namen und deine Mitgliedschaft, sonst nichts</string>
+    <string name="setting_title_cloud_backup">Cloud-Backup</string>
+    <string name="setting_title_tier">Stufe</string>
+    <string name="setting_title_renewal_date">Verlängerungsdatum</string>
+    <string name="setting_title_check_membership">Mitgliedschaft erneut überprüfen</string>
+    <!-- %1$s is Patreon. Shown when the tier lacks cloud backup: a pledge changed there shows only after this -->
+    <string name="setting_description_check_membership">Ruft die Stufe deiner %1$s-Mitgliedschaft erneut ab</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="setting_description_cloud_backup">Speichert deine Backups mit deinem %1$s-Konto online</string>
+</resources>

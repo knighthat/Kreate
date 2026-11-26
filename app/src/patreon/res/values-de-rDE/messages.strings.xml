@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- Errors shown to the user and snackbar messages. -->
+<!-- Only in the patreon build. -->
+<resources>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_patreon_sign_in">Die Anmeldung bei %1$s ist fehlgeschlagen</string>
+    <!-- %1$s is "Patreon" -->
+    <string name="error_cloud_backup_too_large">Die Sicherung als Cloud-Backup ist nicht möglich, da das Backup zu groß ist</string>
+    <string name="error_cloud_backup_full">Die Sicherung als Cloud-Backup ist nicht möglich, da die Cloud voll ist. Lösche alte Backups auf der Backup-Seite</string>
+    <string name="error_remote_backup_save">Das Backup konnte nicht gespeichert werden</string>
+    <string name="error_remote_backup_delete">Das Backup konnte nicht gelöscht werden</string>
+    <!-- %1$s is the backup's file name in quotes, e.g. "kreate_backup_2026-11-18_09-30-00.zip" -->
+    <string name="snackbar_remote_backup_deleted">%1$s wurde gelöscht</string>
+    <string name="error_remote_backup_download">Das Backup konnte nicht heruntergeladen werden</string>
+    <string name="error_patreon_check_membership">Deine %1$s-Mitgliedschaft konnte nicht überprüft werden</string>
+    <string name="error_patreon_sign_in_again">Die %1$s-Anmeldung ist abgelaufen, versuche es erneut</string>
+</resources>

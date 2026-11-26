@@ -40,6 +40,8 @@
     <string name="error_move_song">Không thể di chuyển vị trí</string>
     <string name="error_playlist_remove_song">Không thể xóa nhạc</string>
     <string name="error_playlist_delete">Không thể xóa danh sách nhạc</string>
+    <!-- %1$s is the playlist's quoted name -->
+    <string name="error_playlist_delete_not_owner">Chỉ chủ danh sách %1$s mới xóa được</string>
     <!-- %1$s is why the server refused, or couldn't be reached -->
     <string name="error_playlist_save_changes">Không thể lưu thay đổi: %1$s</string>
     <string name="error_edit_apply">Không thể lưu thay đổi</string>
@@ -48,12 +50,21 @@
     <string name="error_playlist_changed_on_server">Máy chủ đã thay đổi danh sách nhạc, thay đổi này sẽ không được lưu</string>
     <string name="error_queue_every_song">Không thể thêm nhạc vào danh sách phát</string>
     <string name="error_lyrics_load">Không thể tải lời bài hát</string>
+    <string name="error_lyrics_file_unreadable">Không thể đọc tập tin này</string>
+    <string name="error_lyrics_file_too_large">Tệp quá lớn</string>
+    <!-- The picked file is a song, a picture etc., not a text file -->
+    <string name="error_lyrics_file_not_text">Tệp chứa ký tự không phải chữ</string>
+    <string name="error_lyrics_file_empty">Không tìm thấy lời bài hát trong tệp này</string>
+    <string name="error_lyrics_import">Không thể lưu lời bài hát</string>
+    <string name="error_remove_imported_lyrics">Không thể xóa lời bài hát đã nhập</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Can't reach" = no network connection to it -->
     <string name="error_unreachable">Không thể truy cập %1$s</string>
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). Details = extra information about the song, album or artist -->
     <string name="error_details">Không thể tải thông tin từ %1$s</string>
     <!-- %1$s is the quoted name of an album, artist or playlist, or "this album" etc. when it has none. Shown when its songs can't be loaded to play or add them -->
     <string name="error_collection_songs">Không thể tìm nhạc từ %1$s</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="error_export_playlist">Không thể xuất %1$s</string>
     <string name="error_loudness_failed">Phân tích độ ồn thất bại</string>
     <string name="error_nothing_to_play">Không có gì để nghe</string>
     <!-- %1$s is what the user said to a voice assistant, in quotes (the user's own text). Nothing in the library matched it -->
@@ -155,6 +166,28 @@
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). A lowercase fragment used as the reason in "Couldn't sync ...: <reason>". Certificate = the server's security certificate -->
     <string name="error_reason_certificate_changed">chứng chỉ từ %1$s đã thay đổi</string>
     <string name="error_reason_unknown">đã xảy ra sự cố</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file gives no id for the song -->
+    <string name="error_reason_import_no_id">không có id</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The playlist file names no music source for the songs, or one this app doesn't know -->
+    <string name="error_reason_import_unknown_source">không rõ nguồn</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were files on a device and this device's library doesn't have them -->
+    <string name="error_reason_import_not_on_device">không có trên thiết bị này</string>
+    <!-- %1$s is the name of a music source, OpenSubsonic (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs aren't from the server the user is signed in to -->
+    <string name="error_reason_import_not_on_server">không có từ máy chủ %1$s</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". A song of another music source already uses the same id in the library -->
+    <string name="error_reason_import_id_taken">id bị trùng</string>
+    <!-- A lowercase fragment used as the reason in "3 songs skipped: <reason>". The file lists the song twice for the same playlist -->
+    <string name="error_reason_import_duplicate">đã có trong danh sách</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). A lowercase fragment used as the reason in "3 songs skipped: <reason>". The songs were looked up again and the source no longer has them -->
+    <string name="error_reason_import_gone">không còn trên %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": tracks of another service's playlist (e.g. Spotify) for which no song with the same title, artist and length was found on that source -->
+    <string name="error_reason_import_no_match">không tìm được trên %1$s</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Lowercase fragment after "3 songs skipped:": the source couldn't be reached, or refused, before these tracks were searched for -->
+    <string name="error_reason_import_not_searched">không phần hồi từ %1$s</string>
+    <!-- %1$s is the reason, a technical error text that may not be translated. Importing = making playlists out of a file the user picked -->
+    <string name="error_import_playlists">Không thể nhập: %1$s</string>
+    <!-- The picked file isn't a playlist file of this app or its old version: its header row (the column names) is wrong. Shown alone, the wrong columns only go to the app log -->
+    <string name="error_import_playlists_bad_columns">Tệp không hỗ trợ</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it); %2$s is the name of the Network settings screen. Asks the user to log in to the server, "sign in" is a verb -->
     <string name="error_server_not_configured">Đăng nhập vào %1$s ở trong %2$s</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome, or OpenSubsonic until it answers (proper noun, don't decline it). Its answer wasn't a valid OpenSubsonic answer -->
@@ -191,6 +224,24 @@
     <!-- %1$s is the song's quoted title, or how many songs -->
     <string name="snackbar_removed_from_playlist">Đã gỡ %1$s ra khỏi danh sách</string>
     <string name="snackbar_playlist_deleted">Đã xóa %1$s</string>
+    <!-- %1$s is a file name in quotes; the file was written where the user picked -->
+    <string name="snackbar_file_saved">Đã lưu %1$s</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is a counted plural of playlists, e.g. "2 playlists". The songs of a playlist file went into new playlists -->
+    <string name="snackbar_playlists_imported">Đã nhập %1$s vào %2$s</string>
+    <!-- %1$s is a counted plural of songs, e.g. "3 songs"; %2$s is the reason, a lowercase fragment from the error_reason_import_* strings. Shown under the import's result, one line per reason -->
+    <string name="snackbar_playlist_import_skipped">Đã bỏ qua %1$s: %2$s</string>
+    <!-- The playlist file the user picked lists no songs -->
+    <string name="snackbar_playlist_import_empty">Tệp không chứa bài hát nào</string>
+    <!-- None of the songs of the playlist file could be imported; the reasons follow on the next lines -->
+    <string name="snackbar_playlist_import_nothing">Không có bài nào được nhập vào danh sách</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source refused to look the songs up again, which a song taken down or made private does, so they went in as the file has them -->
+    <string name="snackbar_playlist_import_not_looked_up">Một hoặc nhiều bài hát đã bị xóa hoặc ẩn trên %1$s. Tất cả nhạc được nhập theo như tệp chứa chúng.</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Shown under the import's result: the source couldn't be reached (e.g. the connection dropped) to look the songs up again, so they went in as the file has them -->
+    <string name="snackbar_playlist_import_not_looked_up_unreachable">Không thể kết nối tới %1$s. Tất cả nhạc được nhập theo như tệp chứa chúng.</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="snackbar_playlist_exported">Đã xuất danh sách %1$s</string>
+    <!-- %1$s is the playlist's quoted name, or "this playlist" -->
+    <string name="snackbar_playlist_export_empty">Danh sách %1$s không có nhạc để xuất</string>
     <string name="snackbar_removed_from_dislike">Đã bỏ ghét</string>
     <string name="snackbar_removed_from_like">Đã bỏ ghét</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. "Disliked" is a verb in the past tense: the thumbs-down reaction was given -->
@@ -199,7 +250,6 @@
     <string name="snackbar_queue_cleared">Đã xóa danh sách phát</string>
     <string name="snackbar_playback_stopped">Trình phát đã ngừng</string>
     <string name="snackbar_removed_from_history">Đã xóa khỏi lịch sử</string>
-    <string name="snackbar_history_cleared">Lịch sử nghe đã được dọn sạch</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". The thumbs-down reaction was taken back from those songs -->
     <string name="snackbar_removed_from_dislike_count">Đã bỏ ghét %1$s</string>
     <!-- %1$s is a counted plural, e.g. "3 songs" whose thumbs-down reaction was taken back; %2$d is a whole number, how many songs failed -->
@@ -214,6 +264,10 @@
     <!-- %1$s is a song title in quotes, or a counted plural such as "3 songs". "Play next" = right after the current song; "play" is a verb -->
     <string name="snackbar_will_play_next">%1$s sẽ được phát kế tiếp</string>
     <string name="snackbar_lyrics_copied">Đã sao chép lời</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_lyrics_imported">Đã nhập lời cho bài %1$s</string>
+    <!-- %1$s is the song's quoted title, or "this song" -->
+    <string name="snackbar_imported_lyrics_removed">Đã xóa lời của bài %1$s</string>
     <string name="snackbar_turn_shuffle_off">Tắt phát ngẫu nhiên để thay đổi thứ tự</string>
     <!-- %1$s is the name of a playlist (the user's own text, not quoted). A song was added to it -->
     <string name="snackbar_added_to_playlist">Đã thêm bài hát vào danh sách %1$s</string>
@@ -235,4 +289,23 @@
     <string name="error_create_playlist">Không thể tạo %1$s</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Their download starts, the songs come from the old version of this app -->
     <string name="snackbar_old_app_downloads_started">Đang tải %1$s từ phiên bản trước</string>
+    <!-- %1$s is Discord -->
+    <string name="error_discord_sign_in">Không thể đăng nhập vào %1$s</string>
+    <!-- %1$s is Discord. The app was closed during the sign in, it has to be started again -->
+    <string name="error_discord_sign_in_again">Phiên đăng nhập vào %1$s đã hết hạn, hãy thử lại</string>
+    <!-- The Songs tab was held to recognize the song playing nearby, but song recognition is switched off in settings -->
+    <string name="snackbar_recognize_song_disabled">Tắt trong cài đặt</string>
+    <string name="snackbar_recognize_song_no_microphone">Cho phép dùng microphone để ghi âm</string>
+    <!-- %1$s is a counted plural, e.g. "8 seconds". The Songs tab, or the big microphone button of the song recognition dialog, was let go too early while it listened to name the song playing nearby. Shown as a message and in that dialog -->
+    <string name="snackbar_recognize_song_too_short">Đoạn ghi âm quá ngắn, cần ít nhất %1$s để đoán</string>
+    <string name="snackbar_settings_reset">Cài đặt đã được trả về mặc định</string>
+    <string name="snackbar_search_history_cleared">Lịch sử tìm kiếm đã được xóa</string>
+    <string name="snackbar_search_history_not_cleared">Không thể xóa lịch sử tìm kiếm</string>
+    <string name="snackbar_listening_history_cleared">Lịch sử nghe đã được xóa</string>
+    <string name="snackbar_listening_history_not_cleared">Không thể xóa lịch sử nghe</string>
+    <string name="snackbar_database_cleaned_up">Cơ sở dữ liệu đã được dọn sạch</string>
+    <string name="snackbar_database_nothing_to_clean_up">Không có gì để dọn</string>
+    <string name="snackbar_database_not_cleaned_up">Không thể dọn cơ sở dữ liệu</string>
+    <!-- The downloaded file isn't the one the release lists (size or checksum differ) -->
+    <!-- The user turned down the system's install confirmation -->
 </resources>

@@ -55,7 +55,7 @@
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun). The string labels the identifier (ID) that database gave to the song or artist, shown next to it -->
     <string name="details_musicbrainz_id">ID de %1$s</string>
     <string name="details_type">Tipo</string>
-    <string name="details_area">Área</string>
+    <string name="details_area">Zona</string>
     <string name="details_born">Nacimiento</string>
     <string name="details_died">Fallecimiento</string>
     <string name="details_formed">Formación</string>

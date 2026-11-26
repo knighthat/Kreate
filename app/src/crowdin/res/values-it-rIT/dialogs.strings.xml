@@ -18,30 +18,120 @@
   -->
 <!-- Dialog titles and bodies. -->
 <resources>
+    <string name="dialog_title_certificate_changed">Certificato modificato</string>
     <!-- %1$s is the host name or address of the user's own server. "Someone" is an unknown attacker, no gender. Self-signed certificate = a security certificate the server made itself -->
+    <string name="dialog_body_certificate_changed">%1$s presenta un certificato autofirmato diverso da quello che hai considerato attendibile. Se non l\'hai sostituito, qualcuno potrebbe spacciarsi per il tuo server.</string>
+    <string name="dialog_title_trust_certificate">Certificato attendibile?</string>
     <!-- %1$s is the host name or address of the user's own server. Self-signed = a security certificate the server made itself, not checked by anyone else -->
+    <string name="dialog_body_trust_certificate">%1$s presenta un certificato che ha firmato autonomamente. Consideralo attendibile solo se hai configurato tu stesso questo server.</string>
+    <string name="dialog_title_choose_a_channel">Scegli un canale</string>
+    <string name="dialog_title_clear_the_queue">Svuotare la coda?</string>
+    <string name="dialog_body_clear_the_queue_1">Tutti i brani, tranne quello in riproduzione, vengono rimossi dalla coda.</string>
+    <string name="dialog_body_clear_the_queue_2">Rimuovi il brano attualmente in riproduzione</string>
+    <string name="dialog_body_clear_the_queue_3">In questo modo il lettore multimediale verrà interrotto e il lettore a schermo intero verrà chiuso</string>
+    <string name="dialog_title_forget_certificate">Rimuovere il certificato?</string>
     <!-- %1$s is the name of the user's OpenSubsonic server as the server calls itself, e.g. Navidrome (proper noun, shown with a possessive 's); "you" is the user, gender unknown. Certificate = the server's security certificate -->
+    <string name="dialog_body_forget_certificate">Ti verrà chiesto di nuovo prima che il certificato di %1$s venga considerato attendibile.</string>
+    <string name="dialog_title_reset_the_order">Ripristinare l\'ordine?</string>
+    <string name="dialog_body_reset_the_order">I brani seguono l\'ordine dell\'album stesso.</string>
+    <string name="dialog_title_unsaved_changes">Salvare le modifiche?</string>
+    <string name="dialog_body_unsaved_changes">Hai modificato questa playlist ma non l\'hai ancora salvata.</string>
+    <string name="dialog_body_unsaved_edits">Hai apportato delle modifiche ma non le hai ancora salvate.</string>
     <string name="dialog_title_delete_playlist">Eliminare la playlist?</string>
     <!-- %1$s is the playlist's quoted name -->
     <string name="dialog_body_delete_playlist">%1$s verrà eliminata. I brani rimarranno nella tua libreria.</string>
+    <!-- Asked before importing a playlist file that has songs of YouTube Music -->
+    <string name="dialog_title_look_up_songs">Cercare di nuovo i brani?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Skip" (action_skip) imports the songs as the file has them -->
+    <!-- Second paragraph of the dialog, under dialog_body_look_up_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds". Songs that source no longer has are searched for one by one, which takes this long at most -->
+    <string name="dialog_body_look_up_songs_1">Cercare nuovamente ogni brano potrebbe richiedere fino a %1$s</string>
+    <!-- Asked before importing a playlist file of another service (an Exportify file of a Spotify playlist), whose songs must be searched for on YouTube Music -->
+    <string name="dialog_title_search_songs">Cercare i brani?</string>
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Another service" = another music app, e.g. Spotify -->
+    <!-- Second paragraph of the dialog, under dialog_body_search_songs. %1$s is a length of time in words, e.g. "4 minutes" or "30 seconds"; songs already in the library aren't searched for, so it can be shorter -->
+    <string name="dialog_body_search_songs_1">Potrebbe richiedere fino a %1$s.</string>
+    <string name="dialog_title_export_playlist">Esporta playlist</string>
+    <!-- Heading over a checkbox per music source; unchecked sources' songs are left out of the file, a source the playlist has no songs of is grayed out -->
+    <string name="dialog_body_export_playlist_origins">Includi brani da</string>
     <string name="dialog_title_restart_the_app">Riavviare l\'app?</string>
+    <string name="dialog_body_restart_the_app">La riproduzione si interrompe e l\'app si riapre; a quel punto vengono applicate le impostazioni che richiedono un riavvio.</string>
     <string name="dialog_title_restart_the_player">Riavviare il lettore?</string>
+    <string name="dialog_body_restart_the_player_1">La riproduzione si interrompe per un attimo, poi riprende dal punto in cui era rimasta con le nuove impostazioni.</string>
+    <string name="dialog_body_restart_the_player_2">Il timer di spegnimento è attivo e si disattiva insieme al lettore multimediale.</string>
     <string name="dialog_title_cached_song">Brano in cache</string>
+    <string name="dialog_body_cached_song_move">Verrà spostato nei tuoi scaricamenti e rimarrà su questo dispositivo finché non lo eliminerai.</string>
+    <string name="dialog_body_cached_song_worse_1">La copia memorizzata nella cache è di qualità inferiore rispetto a quella attualmente impostata, quindi il brano verrà scaricato nuovamente.</string>
     <!-- Two audio quality names, e.g. High or Low. %1$s is the quality of the copy already cached, %2$s is the quality a download would get. Each is followed by its own line, \n is a line break -->
+    <string name="dialog_body_cached_song_worse_2">In cache: %1$s\nScaricamenti in: %2$s</string>
+    <string name="dialog_title_delete_download">Eliminare lo scaricamento?</string>
     <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A downloaded copy is deleted from the device -->
+    <string name="dialog_body_delete_download">%1$s verrà rimosso da questo dispositivo. È comunque possibile ascoltarlo in streaming.</string>
+    <string name="dialog_title_stop_download">Interrompere lo scaricamento?</string>
     <!-- %1$s is the title of a song in quotes (the user's own text, not declined), or "this song" when unknown. A download in progress is cancelled -->
+    <string name="dialog_body_stop_download">%1$s non verrà scaricato.</string>
+    <string name="dialog_title_restore_a_backup">Ripristinare un backup?</string>
+    <string name="dialog_title_undislike_all">Togliere \"Non mi piace\" a tutto?</string>
+    <string name="dialog_body_undislike_all">Tutti i brani che questo profilo ha contrassegnato come “Non mi piace” compaiono nuovamente nelle sue playlist.</string>
+    <string name="dialog_body_undislike_all_shown">Nelle tue playlist compariranno nuovamente solo i brani che corrispondono ai tuoi filtri. Gli altri rimarranno nascosti.</string>
+    <string name="dialog_title_unlike_all">Togliere \"Mi piace\" a tutto?</string>
+    <string name="dialog_body_unlike_all">Tutti i brani che questo profilo ha contrassegnato come “Mi piace” non lo sono più.</string>
+    <string name="dialog_body_unlike_all_shown">Solo i brani che corrispondono ai tuoi filtri non sono più tra i \"Mi piace\". Gli altri rimangono contrassegnati.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Liked" = given a like (thumbs up); the account is the user's account on that source -->
+    <string name="dialog_body_unlike_all_ytm">Anche i brani a cui hai messo “Mi piace” su %1$s verranno rimossi dal tuo account mentre sei connesso e la sincronizzazione dei brani a cui hai messo “Mi piace” è attiva.</string>
     <!-- %1$s is the name of a music source, e.g. OpenSubsonic (proper noun, don't decline it). "Favorites" = the songs marked with a star on the server -->
+    <string name="dialog_body_unlike_all_opensubsonic">Anche i brani a cui hai messo “Mi piace” su %1$s vengono rimossi dai suoi preferiti quando la sincronizzazione dei brani aggiunti ai “Mi piace” è attiva.</string>
+    <string name="dialog_title_delete_all_downloads">Eliminare tutti gli scaricamenti?</string>
+    <string name="dialog_body_delete_all_downloads">Tutti i brani scaricati da questo profilo vengono rimossi da questo dispositivo. È comunque possibile ascoltarli in streaming.</string>
+    <string name="dialog_body_delete_all_downloads_shown">I brani scaricati visualizzati vengono rimossi da questo dispositivo, mentre gli altri rimangono. È comunque possibile riprodurli in streaming.</string>
     <string name="dialog_title_clear_image_cache">Svuotare la cache delle immagini?</string>
+    <string name="dialog_body_clear_image_cache_1">Tutte le immagini memorizzate su questo dispositivo vengono eliminate; vengono ricaricate al momento della visualizzazione.</string>
+    <string name="dialog_body_clear_image_cache_2">Cancella anche le immagini conservate in memoria</string>
+    <string name="dialog_title_clear_song_cache">Svuotare la cache dei brani?</string>
+    <string name="dialog_body_clear_song_cache">Tutti i brani in streaming presenti su questo dispositivo vengono rimossi, per ogni profilo. I brani scaricati rimangono.</string>
+    <string name="dialog_body_delete_every_download">Ogni brano scaricato viene rimosso da questo dispositivo, per ogni profilo. È comunque possibile riprodurli in streaming.</string>
     <!-- %1$s is the size currently stored, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback; "the app" restarts -->
+    <string name="dialog_body_shrink_cache">%1$s in memoria, %2$s sopra al limite. Al riavvio dell\'app, ciò che non rientra nel limite viene rimosso, a partire da ciò che è stato utilizzato per ultimo.</string>
+    <string name="dialog_title_turn_off">Vuoi disattivarlo?</string>
     <!-- %1$s is the size currently stored, a file size with unit, e.g. 1.2 GB. Cache = temporary copies of songs kept for faster playback -->
+    <string name="dialog_body_turn_off_cache">%1$s in memoria. Una volta riavviata l\'app, tutto viene eliminato e non viene conservato nulla di nuovo.</string>
     <!-- %1$s is the space the downloaded songs take, a file size with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_turn_off_downloads">Gli scaricamenti richiedono %1$s. Nulla viene eliminato, ma non è possibile scaricare nuovi brani.</string>
     <!-- %1$s is the space the downloaded songs take, %2$s is the new, smaller limit, both file sizes with unit, e.g. 1.2 GB. "Take" = occupy, not remove -->
+    <string name="dialog_body_shrink_downloads">Gli scaricamenti occupano %1$s, %2$s sopra al limite. Nulla viene eliminato, ma i nuovi scaricamenti falliranno finché non si libera spazio.</string>
     <string name="dialog_title_search_lyrics">Cerca testi online</string>
     <string name="dialog_title_find_recording">Trova la registrazione</string>
     <string name="dialog_body_find_recording_no_matches">Nessuna registrazione trovata</string>
+    <string name="dialog_title_find_artist">Trova l\'artista</string>
+    <string name="dialog_body_find_artist_no_matches">Nessun artista trovato</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). A question in a dialog title; "sign out" = log out of the account -->
+    <string name="dialog_title_sign_out">Disconnettersi da %1$s?</string>
     <string name="dialog_body_sign_out_of_opensubsonic">Il nome utente, la password e la chiave API salvati vengono rimossi. È possibile accedere nuovamente in qualsiasi momento.</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). "Library" = the songs, playlists and artists the user saved. "Liked" = given a like (thumbs up) on the source -->
+    <string name="dialog_body_sign_out_of_youtube">La tua libreria %1$s non viene più visualizzata qui, ma i brani che ti sono piaciuti rimangono tra i tuoi preferiti. Puoi effettuare nuovamente l\'accesso in qualsiasi momento.</string>
+    <string name="dialog_title_old_app_downloads">Scaricamenti dalla vecchia app</string>
     <!-- %1$s is a counted plural, e.g. "3 songs". Songs of the user's library that were downloaded in the old version of this app -->
+    <string name="dialog_body_old_app_downloads">Sono stati trovati %1$s elementi della tua libreria scaricati nella versione precedente dell\'app. Vuoi scaricarli di nuovo?</string>
+    <!-- %1$s is Discord -->
+    <string name="dialog_body_sign_out_of_discord">Il tuo profilo %1$s non mostra più le tue riproduzioni. Puoi effettuare nuovamente l\'accesso in qualsiasi momento.</string>
+    <!-- Naming the song playing nearby from what the microphone heard -->
+    <string name="dialog_title_recognize_song">Riconosci il brano</string>
+    <string name="dialog_body_recognize_song_identifying">Identificazione del brano…</string>
+    <string name="dialog_body_recognize_song_no_match">Nessuna corrispondenza trovata. Riprova più vicino alla musica</string>
+    <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Under the Play button: the recognized song wasn't found there to play -->
+    <string name="dialog_body_recognize_song_not_on_youtube">Impossibile trovarlo su %1$s</string>
+    <string name="dialog_body_recognize_song_failed">Impossibile cercare il brano, controlla la connessione</string>
+    <!-- Under a big microphone button that listens while held -->
+    <string name="dialog_body_recognize_song_hold">Tieni premuto il pulsante mentre il brano viene riprodotto per almeno %1$s</string>
+    <string name="dialog_body_recognize_song_listening">In ascolto…</string>
+    <string name="dialog_title_reset_settings">Ripristinare le impostazioni?</string>
+    <!-- "Storage sizes" are the cache and download sizes of the Data settings, shared by every profile -->
+    <string name="dialog_body_reset_settings">Tutte le impostazioni di questo profilo tornano ai valori predefiniti e l\'utente viene disconnesso da tutti gli account e dai server. Le dimensioni dello spazio di archiviazione rimangono invariate.</string>
+    <string name="dialog_title_clear_search_history">Svuotare la cronologia ricerche?</string>
+    <string name="dialog_body_clear_search_history">Ogni ricerca fatta questo profilo viene dimenticata.</string>
+    <string name="dialog_title_clear_listening_history">Svuotare la cronologia d\'ascolto?</string>
+    <string name="dialog_body_clear_listening_history">Tutti i brani riprodotti da questo profilo vengono rimossi dalla cronologia e le relative statistiche vengono azzerate.</string>
+    <string name="dialog_title_clean_up_database">Pulire il database?</string>
+    <!-- Title of the app's release notes, opened from About > Version. %1$s is a version number, e.g. 3.1.0 -->
+    <!-- %1$s is the new version, %2$s the one installed, e.g. 3.1.0 and 3.0.2. The release notes follow it -->
+    <!-- Title of the dialog shown while an update downloads and installs. %1$s is the new version, e.g. 3.1.0 -->
 </resources>

@@ -33,38 +33,59 @@
     <string name="screen_title_settings">Einstellungen</string>
     <string name="screen_title_general">Allgemein</string>
     <string name="screen_title_data">Daten</string>
+    <string name="screen_title_player">Player</string>
     <string name="screen_title_ui">Benutzeroberfläche</string>
     <string name="screen_title_network">Netzwerk</string>
     <string name="screen_title_backup">Backup</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Screen title; "sign in" is a verb (log in to the account) -->
     <string name="screen_title_sign_in">Anmelden</string>
-    <string name="screen_title_account">Account</string>
+    <string name="screen_title_account">Konto</string>
     <string name="screen_title_history">Verlauf</string>
     <string name="screen_title_statistics">Statistiken</string>
+    <string name="screen_title_details">Details</string>
+    <string name="screen_title_liked">Was ich mag</string>
     <string name="screen_title_disliked">Mag ich nicht</string>
     <string name="screen_title_downloaded">Heruntergeladen</string>
     <string name="screen_title_download_queue">Download-Warteschlange</string>
     <string name="screen_title_switch_profile">Profil wechseln</string>
     <string name="screen_title_about">Info</string>
-    <string name="screen_title_open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="screen_title_licenses">Lizenzen</string>
     <string name="screen_title_voice_search">Sprachsuche</string>
+    <string name="screen_title_proxy">Proxy</string>
     <string name="tab_songs">Songs</string>
     <string name="tab_albums">Alben</string>
     <string name="tab_artists">Interpreten</string>
     <string name="tab_playlists">Playlists</string>
+    <string name="tab_lyrics">Songtext</string>
+    <string name="tab_player">Player</string>
     <string name="tab_queue">Queue</string>
+    <!-- Backup page tab: backups saved as files on this device -->
+    <string name="tab_local">Lokal</string>
+    <!-- Backup page tab: backups kept online with the Patreon account -->
+    <string name="tab_remote">Cloud</string>
     <!-- %1$d is a whole number. "Disc" is a physical disc (CD) of a multi-disc album, not a music player -->
+    <!-- Headings of the lists in the app's release notes (About > Version): features added, features removed, features that work differently, bugs fixed -->
+    <string name="section_header_source">Quelle</string>
+    <string name="section_header_today">Heute</string>
+    <string name="section_header_yesterday">Gestern</string>
+    <string name="section_header_date_range">Datumsspanne</string>
+    <string name="section_header_in_progress">Im Gange</string>
+    <string name="screen_search_hint_library">Durchsuche deine Bibliothek</string>
     <!-- %1$s is the name of a music source, e.g. YouTube Music, or of the user's OpenSubsonic server as the server calls itself (proper noun, don't decline it). Hint inside the search field; "Search" is a verb (imperative) -->
+    <string name="screen_search_hint_source">Durchsuche %1$s</string>
     <!-- %1$s is the name of this app, Kreate. An example of what to say to a voice assistant, e.g. "Play ... on Kreate"; "Play" is a verb (imperative), "..." stands for a song, album or artist name the user says -->
+    <string name="screen_voice_search_hint_phrase">Spiele … auf %1$s ab</string>
     <!-- %1$s is the example phrase from screen_voice_search_hint_phrase, in quotes, e.g. "Play ... on Kreate" (a voice command). "These" are the sources listed below the text. "A match" = a song, album or artist found -->
     <!-- %1$s is what the user typed, in quotes (the user's own text). Search suggestions -->
     <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for songs -->
     <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for albums -->
     <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for artists -->
     <!-- %1$s is what the user searched for, in quotes (the user's own text). Empty search results for playlists -->
+    <string name="screen_youtube_more_status_nothing_here">Nichts gefunden</string>
     <!-- %1$s is a song title in quotes, or "this song" when the title isn't known. Lyrics = the words of the song -->
     <!-- %1$s is the name of a lyrics provider, e.g. LRCLIB (proper noun); %2$s is a song title in quotes, or "this song" when unknown. Lyrics = the words of the song -->
     <!-- %1$s is the name of the lyrics provider that supplied the lyrics (proper noun, don't decline it), shown as a credit -->
+    <string name="screen_open_source_licenses_hint_search">Programmbibliotheken durchsuchen</string>
     <!-- %1$s is what the user typed in the search field, in quotes (the user's own text). "Library" is a software library, not a place with books -->
     <!-- %1$s is a small icon character standing for the Change source button, shown as it appears in the interface. "Press" = tap. Don't translate it -->
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is a song title in quotes, or "this song" when unknown -->
@@ -74,10 +95,32 @@
     <!-- %1$s is the name of a music database, MusicBrainz (proper noun); %2$s is an album title in quotes, or "this album" when unknown -->
     <!-- %1$s is a date, e.g. "3 November 2026", formatted by the device. Since when the profile (a separate set of settings and library) has been in use -->
     <!-- %1$s is a relative time from the device, e.g. "2 days ago". When the profile was last used. "Seen" = in use, not about a person -->
+    <string name="screen_liked_status_nothing_liked">Es gibt keine Songs, die du magst</string>
+    <string name="screen_liked_status_no_matches">Keine Songs, die du magst, entsprechen den Filtern</string>
+    <string name="screen_disliked_status_nothing_disliked">Es gibt keine Songs, die du nicht magst</string>
+    <string name="screen_disliked_status_no_matches">Keine Songs, die du nicht magst, entsprechen den Filtern</string>
+    <string name="screen_downloaded_status_nothing_downloaded">Keine heruntergeladenen Songs</string>
+    <string name="screen_downloaded_status_no_matches">Keine heruntergeladenen Songs entsprechen den Filtern</string>
+    <string name="status_downloads_waiting_for_wifi">Warte auf eine WLAN-Verbindung</string>
+    <string name="status_downloads_waiting_for_battery">Es wird gewartet, der Akkustand ist niedrig</string>
     <!-- %1$s is the downloaded part of a file and %2$s the whole file, both file sizes, e.g. "1.2 MB of 4 MB" -->
+    <string name="status_download_progress">%1$s von %2$s</string>
+    <string name="status_download_next_in_line">Als Nächstes dran</string>
+    <string name="status_download_in_line_2">Als Zweites dran</string>
+    <string name="status_download_in_line_3">Als Drittes dran</string>
+    <string name="status_download_in_line_4">Als Viertes dran</string>
+    <string name="status_download_in_line_5">Als Fünftes dran</string>
     <!-- %1$s is a percentage, e.g. 40%. A download that was paused (stopped for a while) when it reached that point -->
+    <string name="status_download_paused_at">Pausiert bei %1$s</string>
+    <string name="screen_download_queue_status_nothing">Es wird nichts heruntergeladen</string>
     <!-- %1$s is the time left, e.g. 4:32. The sleep timer is on hold (not counting down) because the music is paused; "left" = remaining -->
     <!-- %1$s is the time left, e.g. 4:32. "Pauses" is a verb: the sleep timer will pause the music after that time -->
+    <string name="screen_crash_status_no_log">Das Absturzprotokoll konnte nicht gelesen werden.</string>
+    <string name="screen_title_new_playlist">Neue Playlist</string>
+    <string name="screen_title_edit_song">Song bearbeiten</string>
+    <string name="screen_title_edit_album">Album bearbeiten</string>
+    <string name="screen_edit_hint_artists">Ein Interpret pro Zeile</string>
+    <string name="screen_title_old_app_downloads">Alte Downloads</string>
     <!-- %1$d is how many songs were found so far, %2$d how many there are in all -->
     <!-- %1$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it) -->
 </resources>

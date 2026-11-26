@@ -24,4 +24,13 @@
     <!-- Whole numbers. %1$d = songs measured, %2$d = total songs, %3$d = failures listed in the notification (shown as child notifications), %4$d = all failures. Measured = the loudness of the song was analyzed -->
     <!-- %1$s is the internal id of a song (text/number, not translated), used as its name when the song has no title -->
     <!-- %1$s is a clock time of the device, e.g. 22:30. The sleep timer paused the music at that time -->
+    <!-- %1$s is Discord (proper noun, don't decline it). Discord no longer accepts the app's sign in, so what the user plays isn't shown there anymore -->
+    <!-- %1$s is the name of the playlist made from a playlist file (as the file or the user named it, not translated) -->
+    <!-- %1$s is the name of the playlist made from a playlist file (as the file or the user named it, not translated). Some of its songs couldn't be imported, they are listed under it -->
+    <!-- %1$s is the name of a playlist of a playlist file (as the file or the user named it, not translated). None of its songs could be imported, so the playlist wasn't made -->
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs"; %2$s is the name of a music source, e.g. YouTube Music (proper noun, don't decline it). Every song of the imported playlist was found there -->
+    <!-- %1$s is a counted plural of songs, e.g. "12 songs". Every song of the playlist file went into the imported playlist -->
+    <!-- %1$d is how many songs were imported (whole number), %2$s the counted plural of all the playlist's songs, e.g. "9 of 10 songs imported" -->
+    <!-- None of the songs of a playlist of a playlist file could be imported -->
+    <!-- %1$s is the title of the notification, e.g. "Mix imported with errors"; %2$d is how many of the songs that couldn't be imported are listed as notifications under it, %3$d how many there are (whole numbers) -->
 </resources>

@@ -19,11 +19,18 @@
 <!-- App name, source names, units and other single words shared across the app. -->
 <resources>
     <!-- %1$d is a whole number, the percentage sign follows it -->
+    <string name="percent">%1$d%%</string>
     <string name="name">Nome</string>
     <string name="description">Descrizione</string>
+    <string name="title">Titolo</string>
+    <string name="artists">Artisti</string>
     <!-- %1$s is any title or name the app shows between quotes (song, playlist, search text...). Use the quotation marks of your language -->
+    <string name="quoted">\"%1$s\"</string>
+    <string name="sleep_timer_to_end_of_song">Fino alla fine del brano</string>
     <string name="playlist_type_monthly">Mensili</string>
     <string name="source_local">Sul dispositivo</string>
+    <!-- Shown as a lyrics source, next to LRCLIB etc.: lyrics the user imported from a file on the device for one song -->
+    <string name="source_lyrics_file">File importato</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="bytes">%1$s B</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
@@ -45,4 +52,5 @@
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
     <string name="tb">%1$s TB</string>
     <!-- %1$s is a number already formatted, e.g. 1.5; the unit symbol is part of the string and goes after it. A file size unit, not a generic number -->
+    <string name="pb">%1$s PB</string>
 </resources>

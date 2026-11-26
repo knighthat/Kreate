@@ -53,6 +53,9 @@
     <plurals name="unit_song">
         <item quantity="other">bài hát</item>
     </plurals>
+    <plurals name="unit_search">
+        <item quantity="other">tìm kiếm</item>
+    </plurals>
     <plurals name="unit_album">
         <item quantity="other">album</item>
     </plurals>
@@ -61,6 +64,9 @@
     </plurals>
     <plurals name="unit_file">
         <item quantity="other">tệp</item>
+    </plurals>
+    <plurals name="playlist">
+        <item quantity="other">%1$d danh sách</item>
     </plurals>
     <plurals name="unit_playlist">
         <item quantity="other">danh sách phát</item>

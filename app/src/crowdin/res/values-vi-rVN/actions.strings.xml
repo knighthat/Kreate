@@ -26,6 +26,8 @@
     <string name="action_cancel">Hủy</string>
     <string name="action_ok">Đồng ý</string>
     <string name="action_skip">Bỏ qua</string>
+    <!-- Confirms looking up the songs of a playlist file again on the music source before importing them -->
+    <string name="action_look_up">Tra cứu</string>
     <string name="action_forget">Quên</string>
     <string name="action_sign_in">Đăng nhập</string>
     <string name="action_update">Cập nhật</string>
@@ -38,9 +40,17 @@
     <string name="action_search">Tìm</string>
     <string name="action_create">Tạo mới</string>
     <string name="action_try_again">Thử lại lần nữa</string>
+    <!-- Runs a check that already ran once again, e.g. asks an online service for the user's membership -->
+    <string name="action_check_again">Kiểm tra lại</string>
+    <!-- Puts the app's data back from a backup -->
+    <string name="action_restore">Khôi phục</string>
     <string name="action_retry">Thử lại</string>
+    <string name="action_show_matches">Xem kết quả tương tự</string>
+    <string name="action_view_on">Xem trên %1$s</string>
     <string name="action_undo">Hoàn tác</string>
     <string name="action_reload">Tải lại</string>
+    <!-- Button on the lyrics page when no source has lyrics: pick a lyrics file (LRC, TTML, text) on the device -->
+    <string name="action_import_lyrics_file">Nhập từ tệp</string>
     <string name="action_account_switch">Chuyển</string>
     <string name="action_delete">Xóa</string>
     <string name="action_add">Thêm</string>
@@ -52,6 +62,8 @@
     <string name="action_reset">Đặt lại</string>
     <string name="action_choose_image">Chọn hình</string>
     <string name="menu_edit">Chỉnh sửa</string>
+    <string name="menu_recognize_song">Đoán bài hát</string>
+    <string name="menu_remove_imported_lyrics">Xóa lời đã nhập</string>
     <string name="action_use_original">Dùng nguyên bản</string>
     <string name="action_clear">Xóa</string>
     <string name="action_undislike">Xóa khỏi không thích</string>
@@ -96,17 +108,15 @@
     <string name="menu_shortcut_play_all">Phát tất cả</string>
     <string name="menu_shuffle">Phát ngẫu nhiên</string>
     <string name="menu_shortcut_shuffle">Phát ngẫu nhiên</string>
-    <string name="menu_shortcut_clear_history">Xóa lịch sử</string>
     <string name="menu_shortcut_open_random">Mở ngẫu nhiên</string>
     <string name="menu_shortcut_play_random">Phát ngẫu nhiên</string>
-    <string name="menu_shortcut_create_playlist">Tạo</string>
     <string name="menu_show_disliked">Hiện nhạc đã ghét</string>
     <string name="menu_cached_only">Lọc nhạc đã lưu vào bộ đệm</string>
     <string name="menu_downloaded_only">Lọc nhạc đã tải xuống</string>
     <string name="menu_bookmarked_only">Lọc album đã đánh dấu</string>
     <string name="menu_followed_only">Lọc nghệ sẽ đang theo dõi</string>
     <string name="menu_monthly_only">Lọc danh sách nhạc tháng</string>
-    <string name="menu_shortcut_delete_all">Xóa tất cả</string>
+    <string name="menu_delete_all">Xóa tất cả</string>
     <string name="menu_shortcut_undislike_all">Bỏ ghét tất cả</string>
     <string name="menu_shortcut_unlike_all">Bỏ thích tất cả</string>
     <string name="menu_off">Tắt</string>
@@ -117,4 +127,8 @@
     <string name="action_select">Chọn</string>
     <string name="action_clear_all">Bỏ chọn</string>
     <string name="action_select_all">Chọn hết</string>
+    <!-- Opens a file picker to import from a file on the device. In the Playlists screen's options: makes playlists out of a playlist file, e.g. one exported from this app or its old version. In the lyrics' Change source menu: a lyrics file (LRC, TTML, text) for this song -->
+    <string name="menu_import_from_file">Nhập từ tệp</string>
+    <string name="action_clean_up">Dọn sạch</string>
+    <!-- Never offers this version of the app again on its own -->
 </resources>
