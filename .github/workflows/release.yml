@@ -211,7 +211,7 @@ jobs:
         if: ${{ env.ACT }}
         run: git checkout --force --detach "refs/tags/${{ needs.tag.outputs.tag }}"
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           pattern: apk-*
           path: dist
