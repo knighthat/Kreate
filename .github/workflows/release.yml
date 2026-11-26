@@ -55,7 +55,7 @@ jobs:
     outputs:
       tag: ${{ steps.pick.outputs.tag }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -107,7 +107,7 @@ jobs:
     steps:
       # Under nektos/act nothing is built: every step up to the upload is skipped and a phony APK of the
       # same name stands in, so the release job still finds all six
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         if: ${{ !env.ACT }}
         with:
           ref: refs/tags/${{ needs.tag.outputs.tag }}
@@ -198,14 +198,14 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         if: ${{ !env.ACT }}
         with:
           ref: refs/tags/${{ needs.tag.outputs.tag }}
       # nektos/act copies the local folder in place of a checkout without a ref, but clones one with
       # a ref from GitHub, where this repository isn't (it lives on GitLab). So under act the local
       # copy is taken and the tag checked out in it; the copy is act's, the working tree is untouched
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         if: ${{ env.ACT }}
       - name: Check out the tag (act)
         if: ${{ env.ACT }}
